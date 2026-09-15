@@ -50,9 +50,10 @@ The same check runs on every change here, and a host runs it again before it tru
 }
 ```
 
-The revision is a 40-character commit identifier. A branch names whatever it points at now, and a
-tag can be moved to point somewhere else, so neither is a pin. Work with whatever reference suits
-you and resolve it to a commit before packaging; the pipeline refuses anything else.
+The revision is a 40-character commit identifier, and it names a commit that holds the package's
+source. A branch names whatever it points at now, and a tag can be moved to point somewhere else, so
+neither is a pin. Work with whatever reference suits you and resolve it to a commit before
+packaging; the pipeline refuses anything else.
 
 Keep your source wherever you like. A reviewed catalogue entry pins the publisher, that revision and
 the package digest, and a host installs the release by digest. It never runs a vendor repository's
