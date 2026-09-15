@@ -41,9 +41,9 @@ works offline. `bench` measures where those two limits bind for the packages you
 
 ```text
 entries              10000
-index size           17750095 bytes (16.9 MiB)
-bytes per entry      1775
-index fits 64 MiB    37807 entries
+index size           17800095 bytes (17.0 MiB)
+bytes per entry      1780
+index fits 64 MiB    37701 entries
 ```
 
 The last line counts the index and nothing else. The TUF metadata over it grows with the target
@@ -73,18 +73,24 @@ packages/kalareach/example-declarative/0.1.0/presentation.json
 
 Each role's metadata version is the generation number. A client refuses metadata whose version is
 lower than the one it already trusts, so a generation replayed after a later one is rejected rather
-than accepted as an update. A generation is written once: `build` refuses a directory that already
-holds one unless `--replace` says otherwise.
+than accepted as an update.
+
+A generation is written once. `build` checks the generation number, the destination and the keys
+before it writes or removes anything, assembles the generation beside its destination, and moves it
+into place only once every target matches what the index declares. `--replace` writes over a
+destination that already holds a generation, and only one: a directory holding anything else is
+refused rather than deleted, so pointing a build at a signing directory or a checkout is a mistake
+that stops rather than one that costs you the directory.
 
 Before signing, every staged byte is hashed again and compared with what validation saw. Staging
 reopens the package files, and a file edited in between would otherwise be signed without ever
 having been checked.
 
 `verify` runs the `tough` client over a generation, with the same expiry enforcement a host uses,
-and reads every target through it. Each one's digest and length are checked as it streams, and then
-against what the index declares, so a payload that was replaced with another package's, truncated or
-removed is caught rather than left for a host to find. Metadata whose signature no longer covers it
-fails before any target is read.
+and reads every target through it, one at a time. Each one's digest and length are checked as it
+streams, and then against what the index declares, so a payload that was replaced with another
+package's, truncated or removed is caught rather than left for a host to find. Metadata whose
+signature no longer covers it fails before any target is read.
 
 `snapshots/README.md` describes the committed development generation and what it is for.
 
@@ -99,11 +105,12 @@ Each role's key is its own. A trust root that named one key for all four would g
 every role, and the pipeline refuses to build one.
 
 Keys never live in this repository. Before anything is signed, the pipeline walks the working tree
-and refuses to run if it finds a private key inside it. The scan checks names and content: a key
-renamed to `notes.txt` is found, and so is one pasted into the middle of a long file or inside a
-configuration value, because every PEM key carries a header this looks for. It skips `.git`,
-`target` and `node_modules`, all of which Git ignores, so nothing it skips can reach a commit. The
-signing directory itself is checked too, and one inside the repository is refused.
+and refuses to run if it finds a private key inside it. The scan checks names and content, reads
+every file to its end, and looks for the PEM header anywhere in a line: a key renamed to
+`notes.txt` is found, and so is one pasted into the middle of a long file or inside a configuration
+value. It skips only Git's own object store, which holds compressed objects rather than files and
+whose contents are whatever the working tree already holds. The signing directory itself is checked
+too, and one inside the repository is refused.
 
 That check is not a formality. A key that reaches a commit has to be rotated, and rotation means
 publishing a new root, waiting for every client to pick it up, and explaining why.
@@ -144,5 +151,8 @@ no Git configuration, and it applies to every Git subprocess the command starts.
 
 ## Continuous integration
 
-`.github/workflows/plugins-ci.yml` formats, lints, tests, validates every package and verifies the
-committed development generation. It does not sign: signing needs keys, and keys are not in CI.
+`.github/workflows/plugins-ci.yml` formats, lints, generates a development key set outside the
+checkout, writes a trust root over it, runs the tests, validates every package, builds and verifies
+a generation, verifies the committed development generation, and measures a ten thousand entry
+catalogue. The keys it makes are its own and last as long as the run; production signing happens in
+the signing environment and not here.

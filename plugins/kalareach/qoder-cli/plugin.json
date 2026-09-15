@@ -9,7 +9,7 @@
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "refs/tags/qoder-cli-0.1.0"
+    "revision": "19029842dede2f9b1901486835e6deb14d927759"
   },
   "match_rules": [
     {

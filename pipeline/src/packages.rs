@@ -15,7 +15,7 @@ use kr_plugin_sdk::package::{MANIFEST_FILE, Package};
 use kr_plugin_sdk::validate::{Report, validate_package_directory};
 use serde::{Deserialize, Serialize};
 
-use crate::{Error, Result, read, read_json};
+use crate::{Error, Result, read_json};
 
 /// One publisher's record on disk.
 ///
@@ -138,6 +138,23 @@ pub fn load(root: &Path) -> Result<Loaded> {
     let mut repository = Repository::default();
     let mut rejected = Vec::new();
 
+    // The layout directories themselves are checked, not only their contents. A link in place of
+    // `plugins/` would put a whole tree from outside the repository into a signed release.
+    for name in ["plugins", "publishers", "revocations"] {
+        let path = root.join(name);
+        match std::fs::symlink_metadata(&path) {
+            Ok(metadata) if metadata.is_symlink() => {
+                return Err(Error::Layout {
+                    detail: format!(
+                        "{} is a link; the catalogue holds the files it publishes",
+                        path.display()
+                    ),
+                });
+            }
+            _ => {}
+        }
+    }
+
     for entry in sorted_dir(&root.join("publishers"))? {
         if entry.extension().and_then(|extension| extension.to_str()) != Some("json") {
             continue;
@@ -256,27 +273,50 @@ pub fn load(root: &Path) -> Result<Loaded> {
                 });
             }
             seen.insert(key, relative.clone());
-            let manifest_bytes = read(&package_dir.join(MANIFEST_FILE))?;
+            // The digest and the length come from the validator's own scan rather than from a
+            // second read. Reading the file again would let the index combine one document's
+            // fields with another document's digest.
+            let manifest_path =
+                kr_plugin_sdk::paths::PackagePath::new(MANIFEST_FILE).map_err(|rejection| {
+                    Error::Layout {
+                        detail: rejection.to_string(),
+                    }
+                })?;
+            let Some(manifest_file) = package.file(&manifest_path).cloned() else {
+                return Err(Error::Layout {
+                    detail: format!("{relative} holds no {MANIFEST_FILE}"),
+                });
+            };
             repository.packages.push(LoadedPackage {
                 directory: package_dir,
                 relative,
                 package,
-                manifest_digest: PayloadDigest::of(&manifest_bytes),
-                manifest_size_bytes: manifest_bytes.len() as u64,
+                manifest_digest: manifest_file.digest,
+                manifest_size_bytes: manifest_file.size_bytes,
             });
         }
     }
 
-    for (publisher, plugin, version) in repository.revocations.keys() {
-        let known = repository.packages.iter().any(|package| {
+    for ((publisher, plugin, version), withdrawal) in &repository.revocations {
+        let Some(release) = repository.packages.iter().find(|package| {
             package.package.manifest.publisher_id.as_str() == publisher
                 && package.package.manifest.plugin_name.as_str() == plugin
                 && package.package.manifest.version.to_string() == *version
-        });
-        if !known {
+        }) else {
             return Err(Error::Layout {
                 detail: format!(
                     "a withdrawal names {publisher}/{plugin} {version}, which this repository does not publish"
+                ),
+            });
+        };
+        // The digest is what makes a withdrawal apply to the bytes it was written for. A mistyped
+        // one would otherwise produce a build that quietly published the release it withdraws.
+        if withdrawal.manifest_digest != release.manifest_digest {
+            return Err(Error::Layout {
+                detail: format!(
+                    "the withdrawal of {publisher}/{plugin} {version} names the manifest digest {} \
+                     and the release has {}",
+                    withdrawal.manifest_digest, release.manifest_digest
                 ),
             });
         }
@@ -300,21 +340,21 @@ pub fn load(root: &Path) -> Result<Loaded> {
 /// Checks that a package's source revision names something that cannot move.
 ///
 /// Section 4 has a reviewed catalogue entry pin the publisher, the source revision and the released
-/// package digest. A branch reference is none of those: it names whatever that branch points at
-/// now, so an entry that pinned one would say nothing about which source the release came from.
-/// A commit identifier or a release tag says something a reader can check.
+/// package digest. Only a commit identifier is a pin: a branch names whatever it points at now, and
+/// a tag can be moved to point somewhere else. The release process resolves whatever reference a
+/// publisher works with into the commit identifier that goes in the manifest.
 fn check_source_pin(relative: &str, revision: &str) -> Result<()> {
     let is_commit = revision.len() == 40
         && revision
             .chars()
             .all(|character| character.is_ascii_digit() || matches!(character, 'a'..='f'));
-    if is_commit || revision.starts_with("refs/tags/") {
+    if is_commit {
         return Ok(());
     }
     Err(Error::Layout {
         detail: format!(
-            "{relative} pins its source at {revision:?}, which moves; \
-             use a commit identifier or a refs/tags reference"
+            "{relative} pins its source at {revision:?}; a source pin is a 40-character commit \
+             identifier, because a branch and a tag both move"
         ),
     })
 }

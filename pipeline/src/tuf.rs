@@ -22,7 +22,7 @@
 //! uses. A tampered target fails the digest check the targets metadata pins, not a check this
 //! pipeline invented.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use kr_plugin_sdk::catalogue::CatalogueIndex;
@@ -141,52 +141,41 @@ pub async fn build(
     out_dir: &Path,
     replace: bool,
 ) -> Result<BuildOutcome> {
-    // A generation is immutable. Writing into a directory that already holds one would leave a
-    // mixture of two if anything failed part-way, and the metadata would then describe targets
-    // that are not there.
-    if out_dir.exists() {
-        let empty = std::fs::read_dir(out_dir)
-            .map_err(|source| Error::Io {
-                path: out_dir.to_path_buf(),
-                source,
-            })?
-            .next()
-            .is_none();
-        if !empty {
-            if !replace {
-                return Err(Error::Layout {
-                    detail: format!(
-                        "{} already holds a generation; a generation is written once",
-                        out_dir.display()
-                    ),
-                });
-            }
-            std::fs::remove_dir_all(out_dir).map_err(|source| Error::Io {
-                path: out_dir.to_path_buf(),
-                source,
-            })?;
-        }
-    }
-
-    let targets_dir = out_dir.join(TARGETS_DIR);
-    let metadata_dir = out_dir.join(METADATA_DIR);
-    let staged = stage_targets(repository, index, &targets_dir)?;
-    check_staged_against_validation(
-        repository,
-        &staged,
-        report_paths(index)?,
-        report_index(index)?,
-    )?;
-
-    let root_source = signing.root_path();
-    let root_bytes = read(&root_source)?;
-    write(&out_dir.join("root.json"), &root_bytes)?;
-
-    // Every role's version is the generation. A client rejects metadata whose version is lower
-    // than the one it already trusts, and versions that stayed at one would make every generation
-    // look like the same one, which is how a rollback goes unnoticed.
+    // Everything that can be checked is checked before anything is written or removed: the
+    // generation number, the destination, and the keys. A build that fails afterwards leaves the
+    // destination as it found it.
     let version = generation_version(index)?;
-    let mut editor = RepositoryEditor::new(&root_source).await?;
+    let existing = describe_destination(out_dir)?;
+    if existing == Destination::Occupied && !replace {
+        return Err(Error::Layout {
+            detail: format!(
+                "{} already holds a generation; a generation is written once, and --replace says to \
+                 write over this one",
+                out_dir.display()
+            ),
+        });
+    }
+    let key_sources = signing.key_sources()?;
+    let root_bytes = read(&signing.root_path())?;
+
+    // The generation is assembled beside its destination and moved into place once it verifies, so
+    // the destination is never a half-written generation and never a mixture of two.
+    let staging = staging_dir(out_dir);
+    if staging.exists() {
+        std::fs::remove_dir_all(&staging).map_err(|source| Error::Io {
+            path: staging.clone(),
+            source,
+        })?;
+    }
+    let targets_dir = staging.join(TARGETS_DIR);
+    let metadata_dir = staging.join(METADATA_DIR);
+    let staged = stage_targets(repository, index, &targets_dir)?;
+    let declared = report_paths(index)?;
+    check_staged_against_validation(&staged, &declared, &report_index(index)?)?;
+
+    write(&staging.join("root.json"), &root_bytes)?;
+
+    let mut editor = RepositoryEditor::new(&staging.join("root.json")).await?;
     editor
         .targets_version(version)?
         .targets_expires(expiries.targets)?
@@ -196,18 +185,132 @@ pub async fn build(
         .timestamp_expires(expiries.timestamp);
     for target in &staged {
         let built = Target::from_path(&target.path).await.map_err(Error::from)?;
+        check_target_against_validation(&target.name, &built, &declared, &report_index(index)?)?;
         editor.add_target(target.name.as_str(), built)?;
     }
 
-    let signed = editor.sign(&signing.key_sources()?).await?;
+    let signed = editor.sign(&key_sources).await?;
     signed.write(&metadata_dir).await?;
     write(&metadata_dir.join("root.json"), &root_bytes)?;
 
+    publish(&staging, out_dir, existing)?;
+
     Ok(BuildOutcome {
         target_count: staged.len(),
-        metadata_dir,
-        targets_dir,
+        metadata_dir: out_dir.join(METADATA_DIR),
+        targets_dir: out_dir.join(TARGETS_DIR),
     })
+}
+
+/// What is already at a build's destination.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Destination {
+    /// Nothing is there.
+    Absent,
+    /// A directory is there and it is empty.
+    Empty,
+    /// A generation is there.
+    Occupied,
+}
+
+/// Returns what is at a destination, refusing one that holds something other than a generation.
+///
+/// `--replace` removes what it finds, so it only ever looks at a directory that is recognisably a
+/// generation: a root, its metadata and its targets. Pointing a build at a signing directory or a
+/// checkout is a mistake that would otherwise delete them.
+fn describe_destination(out_dir: &Path) -> Result<Destination> {
+    if !out_dir.exists() {
+        return Ok(Destination::Absent);
+    }
+    if !out_dir.is_dir() {
+        return Err(Error::Layout {
+            detail: format!("{} is not a directory", out_dir.display()),
+        });
+    }
+    let empty = std::fs::read_dir(out_dir)
+        .map_err(|source| Error::Io {
+            path: out_dir.to_path_buf(),
+            source,
+        })?
+        .next()
+        .is_none();
+    if empty {
+        return Ok(Destination::Empty);
+    }
+    let looks_like_a_generation = out_dir.join("root.json").is_file()
+        && out_dir.join(METADATA_DIR).is_dir()
+        && out_dir.join(TARGETS_DIR).is_dir();
+    if looks_like_a_generation {
+        Ok(Destination::Occupied)
+    } else {
+        Err(Error::Layout {
+            detail: format!(
+                "{} holds something that is not a generation; a build writes generations",
+                out_dir.display()
+            ),
+        })
+    }
+}
+
+/// Returns the staging directory a build assembles a generation in.
+fn staging_dir(out_dir: &Path) -> PathBuf {
+    let name = out_dir
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("generation");
+    out_dir.with_file_name(format!(".{name}.building"))
+}
+
+/// Moves a finished generation into its destination.
+///
+/// The previous generation is moved aside first and removed only once the new one is in place, so
+/// an interrupted publication leaves one whole generation rather than none.
+fn publish(staging: &Path, out_dir: &Path, existing: Destination) -> Result<()> {
+    let retired = out_dir.with_file_name(format!(
+        ".{}.retired",
+        out_dir
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("generation")
+    ));
+    if retired.exists() {
+        std::fs::remove_dir_all(&retired).map_err(|source| Error::Io {
+            path: retired.clone(),
+            source,
+        })?;
+    }
+    if existing != Destination::Absent {
+        std::fs::rename(out_dir, &retired).map_err(|source| Error::Io {
+            path: out_dir.to_path_buf(),
+            source,
+        })?;
+    }
+    if let Some(parent) = out_dir.parent() {
+        std::fs::create_dir_all(parent).map_err(|source| Error::Io {
+            path: parent.to_path_buf(),
+            source,
+        })?;
+    }
+    match std::fs::rename(staging, out_dir) {
+        Ok(()) => {}
+        Err(source) => {
+            // Put the previous generation back rather than leaving the destination empty.
+            if existing != Destination::Absent {
+                let _ = std::fs::rename(&retired, out_dir);
+            }
+            return Err(Error::Io {
+                path: out_dir.to_path_buf(),
+                source,
+            });
+        }
+    }
+    if retired.exists() {
+        std::fs::remove_dir_all(&retired).map_err(|source| Error::Io {
+            path: retired,
+            source,
+        })?;
+    }
+    Ok(())
 }
 
 /// Returns the metadata version for one generation.
@@ -232,25 +335,26 @@ fn report_index(index: &CatalogueIndex) -> Result<Vec<u8>> {
         })
 }
 
+/// What the index declares for each target, by target name.
+type Declared = BTreeMap<String, (PayloadDigest, u64)>;
+
 /// Returns the digest and length the index declares for every package payload.
-fn report_paths(index: &CatalogueIndex) -> Result<Vec<(String, PayloadDigest, u64)>> {
-    let mut declared = Vec::new();
+fn report_paths(index: &CatalogueIndex) -> Result<Declared> {
+    let mut declared = Declared::new();
     for entry in &index.entries {
         let prefix = format!(
             "packages/{}/{}/{}",
             entry.publisher_id, entry.plugin_name, entry.version
         );
-        declared.push((
+        declared.insert(
             format!("{prefix}/{}", kr_plugin_sdk::package::MANIFEST_FILE),
-            entry.manifest_digest,
-            entry.manifest_size_bytes.get(),
-        ));
+            (entry.manifest_digest, entry.manifest_size_bytes.get()),
+        );
         for payload in &entry.payloads {
-            declared.push((
+            declared.insert(
                 format!("{prefix}/{}", payload.path),
-                payload.digest,
-                payload.size_bytes.get(),
-            ));
+                (payload.digest, payload.size_bytes.get()),
+            );
         }
     }
     Ok(declared)
@@ -259,49 +363,88 @@ fn report_paths(index: &CatalogueIndex) -> Result<Vec<(String, PayloadDigest, u6
 /// Checks that every staged byte is a byte validation saw.
 ///
 /// Staging reopens the package files, so a file edited between validation and signing would
-/// otherwise be signed without ever being checked. Every staged target is hashed again and
-/// compared with what the index declares, and the index itself is compared with its canonical
-/// rendering.
+/// otherwise be signed without ever being checked. Every staged target is hashed again and compared
+/// with what the index declares, and the index itself is compared with its canonical rendering.
 fn check_staged_against_validation(
-    _repository: &Repository,
     staged: &[StagedTarget],
-    declared: Vec<(String, PayloadDigest, u64)>,
-    index_bytes: Vec<u8>,
+    declared: &Declared,
+    index_bytes: &[u8],
 ) -> Result<()> {
     for target in staged {
         let bytes = read(&target.path)?;
-        if target.name == INDEX_TARGET {
-            if bytes != index_bytes {
-                return Err(Error::Layout {
-                    detail: "the staged index is not the index that was built".to_owned(),
-                });
-            }
-            continue;
-        }
-        let Some((_, digest, size)) = declared.iter().find(|(name, _, _)| name == &target.name)
-        else {
-            return Err(Error::Layout {
-                detail: format!(
-                    "{} was staged and the index does not declare it",
-                    target.name
-                ),
-            });
-        };
-        if bytes.len() as u64 != *size || &PayloadDigest::of(&bytes) != digest {
-            return Err(Error::Layout {
-                detail: format!(
-                    "{} changed between validation and signing; it was not signed",
-                    target.name
-                ),
-            });
-        }
+        check_bytes_against_validation(&target.name, &bytes, declared, index_bytes)?;
     }
-    for (name, _, _) in &declared {
+    for name in declared.keys() {
         if !staged.iter().any(|target| &target.name == name) {
             return Err(Error::Layout {
                 detail: format!("the index declares {name} and nothing staged it"),
             });
         }
+    }
+    Ok(())
+}
+
+/// Checks one target's bytes against what the index declares.
+fn check_bytes_against_validation(
+    name: &str,
+    bytes: &[u8],
+    declared: &Declared,
+    index_bytes: &[u8],
+) -> Result<()> {
+    if name == INDEX_TARGET {
+        if bytes != index_bytes {
+            return Err(Error::Layout {
+                detail: "the index target is not the index that was built".to_owned(),
+            });
+        }
+        return Ok(());
+    }
+    let Some((digest, size)) = declared.get(name) else {
+        return Err(Error::Layout {
+            detail: format!("{name} is a target the index does not declare"),
+        });
+    };
+    if bytes.len() as u64 != *size || &PayloadDigest::of(bytes) != digest {
+        return Err(Error::Layout {
+            detail: format!("{name} is not the payload the index declares"),
+        });
+    }
+    Ok(())
+}
+
+/// Checks the descriptor the editor built against what the index declares.
+///
+/// The editor reads each staged file itself, so this compares the digest and length it recorded
+/// rather than trusting that the file was the same one a moment earlier. A file changed between the
+/// two reads is refused rather than signed.
+fn check_target_against_validation(
+    name: &str,
+    target: &Target,
+    declared: &Declared,
+    index_bytes: &[u8],
+) -> Result<()> {
+    let digest = PayloadDigest::parse(&hex::encode(&target.hashes.sha256)).map_err(|error| {
+        Error::Layout {
+            detail: format!("{name}: {error}"),
+        }
+    })?;
+    if name == INDEX_TARGET {
+        if digest != PayloadDigest::of(index_bytes) || target.length != index_bytes.len() as u64 {
+            return Err(Error::Layout {
+                detail: "the index target changed between staging and signing".to_owned(),
+            });
+        }
+        return Ok(());
+    }
+    let Some((expected, size)) = declared.get(name) else {
+        return Err(Error::Layout {
+            detail: format!("{name} is a target the index does not declare"),
+        });
+    };
+    if &digest != expected || target.length != *size {
+        return Err(Error::Layout {
+            detail: format!("{name} changed between staging and signing; it was not signed"),
+        });
     }
     Ok(())
 }
@@ -367,27 +510,20 @@ pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verif
     // Every target is read through the client, which checks each one's digest and length as it
     // streams. Reading only the index would verify the metadata and leave a replaced, truncated or
     // absent package payload undiscovered until a host fetched it.
-    let mut contents: BTreeMap<String, Vec<u8>> = BTreeMap::new();
-    for name in names {
-        let bytes = repository
-            .read_target(&name)
-            .await?
-            .ok_or_else(|| Error::Layout {
-                detail: format!(
-                    "the metadata pins {} and the generation does not carry it",
-                    name.raw()
-                ),
-            })?
-            .into_vec()
-            .await?;
-        contents.insert(name.raw().to_owned(), bytes);
-    }
-
-    let index_bytes = contents.get(INDEX_TARGET).ok_or_else(|| Error::Layout {
-        detail: format!("the generation does not carry {INDEX_TARGET}"),
-    })?;
+    //
+    // One target is held at a time. A release is as large as the packages in it, and holding all of
+    // them to compare them afterwards would make verification cost as much memory as the release.
+    let index_name = TargetName::new(INDEX_TARGET)?;
+    let index_bytes = repository
+        .read_target(&index_name)
+        .await?
+        .ok_or_else(|| Error::Layout {
+            detail: format!("the generation does not carry {INDEX_TARGET}"),
+        })?
+        .into_vec()
+        .await?;
     let index: CatalogueIndex =
-        serde_json::from_slice(index_bytes).map_err(|source| Error::Json {
+        serde_json::from_slice(&index_bytes).map_err(|source| Error::Json {
             path: PathBuf::from(INDEX_TARGET),
             source,
         })?;
@@ -396,22 +532,28 @@ pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verif
     // package consists of. Comparing the two is what makes a target name mean one package's file
     // rather than whatever happens to be under that name.
     let declared = report_paths(&index)?;
-    for (name, digest, size) in &declared {
-        let Some(bytes) = contents.get(name) else {
-            return Err(Error::Layout {
-                detail: format!("the index declares {name} and the generation does not carry it"),
-            });
-        };
-        if bytes.len() as u64 != *size || &PayloadDigest::of(bytes) != digest {
-            return Err(Error::Layout {
-                detail: format!("{name} is not the payload the index declares"),
-            });
+    let mut seen: BTreeSet<String> = BTreeSet::new();
+    for name in names {
+        let raw = name.raw().to_owned();
+        if raw == INDEX_TARGET {
+            seen.insert(raw);
+            continue;
         }
+        let bytes = repository
+            .read_target(&name)
+            .await?
+            .ok_or_else(|| Error::Layout {
+                detail: format!("the metadata pins {raw} and the generation does not carry it"),
+            })?
+            .into_vec()
+            .await?;
+        check_bytes_against_validation(&raw, &bytes, &declared, &index_bytes)?;
+        seen.insert(raw);
     }
-    for name in contents.keys() {
-        if name != INDEX_TARGET && !declared.iter().any(|(declared, _, _)| declared == name) {
+    for name in declared.keys() {
+        if !seen.contains(name) {
             return Err(Error::Layout {
-                detail: format!("the generation carries {name} and the index does not declare it"),
+                detail: format!("the index declares {name} and the metadata does not pin it"),
             });
         }
     }

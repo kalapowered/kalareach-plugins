@@ -31,7 +31,8 @@ Its keys are development keys, and nothing else about it should be read as a rel
 - Its index carries a fixed `produced_at`, so rebuilding it from the same packages produces the
   same bytes.
 
-Rebuild it after changing a package:
+Rebuild it after changing a package. `--replace` is what writes over a generation that is already
+there; without it a build refuses the destination, because a generation is written once.
 
 ```bash
 cargo run -p kalareach-catalogue -- build \
@@ -39,8 +40,12 @@ cargo run -p kalareach-catalogue -- build \
   --out snapshots/development \
   --generation 1 \
   --produced-at 1760000000000 \
-  --expires-in-days 3650
+  --expires-in-days 3650 \
+  --replace
 ```
+
+The new generation is assembled beside its destination and moved into place once every target
+matches what the index declares, so a build that fails leaves the previous one intact.
 
 A production generation is signed in the signing environment, with keys that were generated there
 and never left it, and is published rather than committed.

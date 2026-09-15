@@ -10,7 +10,6 @@
 //! an old generation; it does not let them publish a package.
 
 use std::collections::{HashMap, HashSet};
-use std::io::Read as _;
 use std::num::NonZeroU64;
 use std::path::{Path, PathBuf};
 
@@ -33,10 +32,11 @@ pub const ROLE_KEY_FILES: &[(RoleType, &str)] = &[
 /// The file name of the trust root inside the signing directory.
 pub const ROOT_FILE: &str = "root.json";
 
-/// Directories the key scan never descends into.
+/// Directories the fallback walk does not descend into.
 ///
-/// Every one of them is ignored by Git, so nothing inside can reach a commit, and every one can be
-/// arbitrarily large. The scan covers what a commit could carry.
+/// The scan normally asks Git which files could reach a commit, which is exact. The walk below is
+/// what runs when Git cannot answer, and these are the directories that hold build output rather
+/// than sources: scanning a compiled artefact finds the scanner's own header constants inside it.
 const SKIPPED: &[&str] = &[".git", "target", "node_modules"];
 
 /// The start of the PEM header that opens a private key block.
@@ -50,27 +50,65 @@ const PEM_HEADER_END: &str = concat!("PRIVATE", " KEY-----");
 
 /// Bytes the key scan reads at a time.
 ///
-/// The scan reads whole files. A key pasted into the middle of a long file is still a key, and a
-/// scan that stopped after the first few kilobytes would be a scan somebody could step over.
+/// The scan reads every file to its end in fixed-size chunks, carrying enough of the previous chunk
+/// to catch a header that straddles the boundary. Reading to the end is the point: a key pasted
+/// into the middle of a long file is still a key, and a scan that stopped early would be a scan
+/// somebody could step over.
 const SCAN_CHUNK: usize = 64 * 1024;
-
-/// Maximum bytes of one file the key scan reads.
-///
-/// A PEM key is a few kilobytes. Reading the first megabyte of every file finds one wherever a
-/// person would realistically have put it, and keeps the scan bounded on a tree with large data
-/// files in it.
-const SCAN_LIMIT: u64 = 1024 * 1024;
 
 /// Refuses to continue when a private key is inside the repository.
 ///
-/// The scan is by content as well as by name. A key renamed to `notes.txt` is still a key, and the
-/// PEM header is in the first few bytes of every one of them.
+/// The scan is by content as well as by name, and it reads every file to its end: a key renamed to
+/// `notes.txt` is a key, and so is one pasted into the middle of a long file or inside a
+/// configuration value.
 ///
 /// # Errors
 ///
 /// Returns [`Error::KeyInTree`] naming the first file that looks like a private key, and
-/// [`Error::Io`] when the tree cannot be walked.
+/// [`Error::Io`] when the tree cannot be read.
 pub fn refuse_keys_in_tree(root: &Path) -> Result<()> {
+    match tracked_and_untracked(root) {
+        Some(paths) => {
+            for path in paths {
+                check_file(&path)?;
+            }
+            Ok(())
+        }
+        None => walk(root),
+    }
+}
+
+/// Returns every file that could reach a commit, as Git sees them.
+///
+/// `git ls-files -co --exclude-standard` lists the tracked files and the untracked files Git would
+/// add, which is exactly the set a commit can carry without somebody overriding an ignore rule. It
+/// includes a tracked file wherever it sits, so a key committed under a directory the fallback walk
+/// would skip is still found, and it leaves out build output, where the scan would otherwise find
+/// its own header constants compiled into a binary.
+///
+/// Returns `None` when Git cannot answer, which is when the tree is not a checkout.
+fn tracked_and_untracked(root: &Path) -> Option<Vec<PathBuf>> {
+    let output = std::process::Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["ls-files", "-z", "-c", "-o", "--exclude-standard"])
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    Some(
+        output
+            .stdout
+            .split(|byte| *byte == 0)
+            .filter(|name| !name.is_empty())
+            .map(|name| root.join(String::from_utf8_lossy(name).into_owned()))
+            .collect(),
+    )
+}
+
+/// Walks a tree that Git cannot describe.
+fn walk(root: &Path) -> Result<()> {
     let mut queue = vec![root.to_path_buf()];
     while let Some(directory) = queue.pop() {
         let entries = std::fs::read_dir(&directory).map_err(|source| Error::Io {
@@ -97,49 +135,84 @@ pub fn refuse_keys_in_tree(root: &Path) -> Result<()> {
                 }
                 continue;
             }
-            if !metadata.is_file() {
-                continue;
-            }
-            if name.ends_with(".pem") || name.ends_with(".key") {
-                return Err(Error::KeyInTree { path });
-            }
-            if looks_like_private_key(&path)? {
-                return Err(Error::KeyInTree { path });
+            if metadata.is_file() {
+                check_file(&path)?;
             }
         }
     }
     Ok(())
 }
 
-fn looks_like_private_key(path: &Path) -> Result<bool> {
-    use std::io::{BufRead as _, BufReader};
+/// Refuses one file that looks like a private key.
+fn check_file(path: &Path) -> Result<()> {
+    let name = path
+        .file_name()
+        .map(|name| name.to_string_lossy().into_owned())
+        .unwrap_or_default();
+    if name.ends_with(".pem") || name.ends_with(".key") {
+        return Err(Error::KeyInTree {
+            path: path.to_path_buf(),
+        });
+    }
+    let metadata = match std::fs::symlink_metadata(path) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(source) => {
+            return Err(Error::Io {
+                path: path.to_path_buf(),
+                source,
+            });
+        }
+    };
+    if !metadata.is_file() {
+        return Ok(());
+    }
+    if looks_like_private_key(path)? {
+        return Err(Error::KeyInTree {
+            path: path.to_path_buf(),
+        });
+    }
+    Ok(())
+}
 
-    let file = std::fs::File::open(path).map_err(|source| Error::Io {
+fn looks_like_private_key(path: &Path) -> Result<bool> {
+    use std::io::Read as _;
+
+    let mut file = std::fs::File::open(path).map_err(|source| Error::Io {
         path: path.to_path_buf(),
         source,
     })?;
-    let mut reader = BufReader::with_capacity(SCAN_CHUNK, file.take(SCAN_LIMIT));
-    let mut line = Vec::new();
+    // The carry is the longest header the scan looks for, less one byte, so a header split across
+    // two chunks is still seen whole. Memory stays at one chunk whatever the file's size.
+    let carry = PEM_HEADER_START.len() + PEM_HEADER_END.len() + 64;
+    let mut buffer = vec![0u8; SCAN_CHUNK + carry];
+    let mut held = 0usize;
     loop {
-        line.clear();
-        let read = reader
-            .read_until(b'\n', &mut line)
-            .map_err(|source| Error::Io {
-                path: path.to_path_buf(),
-                source,
-            })?;
+        let read = file.read(&mut buffer[held..]).map_err(|source| Error::Io {
+            path: path.to_path_buf(),
+            source,
+        })?;
         if read == 0 {
             return Ok(false);
         }
-        // The header is looked for anywhere in the line rather than at its start, because a key
-        // pasted into a source file, a JSON document or a configuration value is still a key.
-        let text = String::from_utf8_lossy(&line);
-        if let Some(start) = text.find(PEM_HEADER_START)
-            && text[start + PEM_HEADER_START.len()..].contains(PEM_HEADER_END)
-        {
+        let filled = held + read;
+        if contains_pem_header(&buffer[..filled]) {
             return Ok(true);
         }
+        held = filled.min(carry);
+        buffer.copy_within(filled - held..filled, 0);
     }
+}
+
+/// Returns true when a window of bytes carries a private key header.
+///
+/// The header is looked for anywhere in a line rather than at its start, because a key pasted into
+/// a source file, a JSON document or a configuration value is still a key.
+fn contains_pem_header(window: &[u8]) -> bool {
+    String::from_utf8_lossy(window).lines().any(|line| {
+        line.find(PEM_HEADER_START)
+            .is_some_and(|start| line[start + PEM_HEADER_START.len()..].contains(PEM_HEADER_END))
+    })
 }
 
 /// A directory of signing keys outside the repository.

@@ -313,6 +313,94 @@ async fn one_key_cannot_hold_every_role() {
     assert!(error.to_string().contains("same key"), "{error}");
 }
 
+#[tokio::test]
+async fn a_build_refuses_a_destination_that_is_not_a_generation() {
+    let Some(signing_dir) = std::env::var_os("KALAREACH_SIGNING_DIR") else {
+        return;
+    };
+    let repository_root = root();
+    let signing = SigningDirectory::open(Path::new(&signing_dir), &repository_root)
+        .expect("the signing directory opens");
+    let loaded = packages::load(&repository_root).expect("the repository loads");
+    let catalogue = index::build(
+        &loaded.repository,
+        RepositoryGeneration::new(1),
+        fixed_time(),
+    );
+    let expires = Timestamp::now()
+        .checked_add(Span::new().hours(24))
+        .expect("an hour arithmetic that fits");
+    let expiries = Expiries {
+        targets: expires,
+        snapshot: expires,
+        timestamp: expires,
+    };
+
+    // A directory that holds something other than a generation is refused rather than emptied.
+    // Pointing a build at a signing directory or a checkout is a mistake that stops here.
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let precious = temporary.path().join("precious");
+    std::fs::create_dir_all(&precious).expect("the directory creates");
+    std::fs::write(precious.join("root.pem"), "a key").expect("the file writes");
+
+    let refused = tuf::build(
+        &loaded.repository,
+        &catalogue,
+        &signing,
+        expiries,
+        &precious,
+        true,
+    )
+    .await
+    .expect_err("a directory that is not a generation is refused");
+    assert!(
+        refused.to_string().contains("not a generation"),
+        "{refused}"
+    );
+    assert!(
+        precious.join("root.pem").is_file(),
+        "the directory was emptied"
+    );
+}
+
+#[tokio::test]
+async fn a_build_refuses_generation_zero_before_it_writes() {
+    let Some(signing_dir) = std::env::var_os("KALAREACH_SIGNING_DIR") else {
+        return;
+    };
+    let repository_root = root();
+    let signing = SigningDirectory::open(Path::new(&signing_dir), &repository_root)
+        .expect("the signing directory opens");
+    let loaded = packages::load(&repository_root).expect("the repository loads");
+    let catalogue = index::build(
+        &loaded.repository,
+        RepositoryGeneration::new(0),
+        fixed_time(),
+    );
+    let expires = Timestamp::now()
+        .checked_add(Span::new().hours(24))
+        .expect("an hour arithmetic that fits");
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let out = temporary.path().join("generation");
+
+    let refused = tuf::build(
+        &loaded.repository,
+        &catalogue,
+        &signing,
+        Expiries {
+            targets: expires,
+            snapshot: expires,
+            timestamp: expires,
+        },
+        &out,
+        true,
+    )
+    .await
+    .expect_err("generation zero is refused");
+    assert!(refused.to_string().contains("starts at 1"), "{refused}");
+    assert!(!out.exists(), "the destination was written to");
+}
+
 #[test]
 fn a_signing_directory_inside_the_repository_is_refused() {
     let temporary = tempfile::tempdir().expect("a temporary directory");

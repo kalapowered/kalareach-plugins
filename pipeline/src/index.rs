@@ -65,9 +65,9 @@ fn revocation_for(revocations: &Revocations, entry: &IndexEntry) -> Option<Revoc
         entry.plugin_name.to_string(),
         entry.version.to_string(),
     );
-    let withdrawal = revocations.get(&key)?;
-    if withdrawal.manifest_digest != entry.manifest_digest {
-        return None;
-    }
-    Some(withdrawal.record.clone())
+    // The digest was matched when the repository loaded, so a record that is here is a record for
+    // these exact bytes.
+    revocations
+        .get(&key)
+        .map(|withdrawal| withdrawal.record.clone())
 }
