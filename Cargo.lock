@@ -745,7 +745,7 @@ dependencies = [
 [[package]]
 name = "kr-cbor"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=328396aa9101603ed13770d4f68ca45017a780af#328396aa9101603ed13770d4f68ca45017a780af"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=1c03d15c5ed855b59318ee4b3ec05c59159ffb0d#1c03d15c5ed855b59318ee4b3ec05c59159ffb0d"
 dependencies = [
  "ciborium",
  "serde",
@@ -756,7 +756,7 @@ dependencies = [
 [[package]]
 name = "kr-plugin-sdk"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=328396aa9101603ed13770d4f68ca45017a780af#328396aa9101603ed13770d4f68ca45017a780af"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=1c03d15c5ed855b59318ee4b3ec05c59159ffb0d#1c03d15c5ed855b59318ee4b3ec05c59159ffb0d"
 dependencies = [
  "hex",
  "kr-protocol",
@@ -771,7 +771,7 @@ dependencies = [
 [[package]]
 name = "kr-protocol"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=328396aa9101603ed13770d4f68ca45017a780af#328396aa9101603ed13770d4f68ca45017a780af"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=1c03d15c5ed855b59318ee4b3ec05c59159ffb0d#1c03d15c5ed855b59318ee4b3ec05c59159ffb0d"
 dependencies = [
  "base64 0.23.1",
  "kr-cbor",
