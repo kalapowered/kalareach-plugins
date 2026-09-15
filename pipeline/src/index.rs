@@ -7,11 +7,13 @@
 //! keys are sorted and the rendering is fixed, so the same packages always produce the same bytes.
 //! Without that, a signature over an index would only prove which run produced it.
 
-use kr_plugin_sdk::catalogue::{CatalogueIndex, INDEX_VERSION, IndexEntry};
+use kr_plugin_sdk::catalogue::{CatalogueIndex, INDEX_VERSION, IndexEntry, RevocationRecord};
 use kr_plugin_sdk::ids::RepositoryGeneration;
 use kr_plugin_sdk::scalars::TimestampMs;
 
-use crate::packages::Repository;
+use kr_plugin_sdk::scalars::Nullable;
+
+use crate::packages::{Repository, Revocations};
 
 /// Builds the index for one generation.
 ///
@@ -23,6 +25,7 @@ pub fn build(
     generation: RepositoryGeneration,
     produced_at: TimestampMs,
 ) -> CatalogueIndex {
+    let revocations: &Revocations = &repository.revocations;
     let mut index = CatalogueIndex {
         index_version: INDEX_VERSION,
         generation,
@@ -36,14 +39,35 @@ pub fn build(
             .packages
             .iter()
             .map(|loaded| {
-                IndexEntry::from_manifest(
+                let mut entry = IndexEntry::from_manifest(
                     &loaded.package.manifest,
                     loaded.manifest_digest,
                     loaded.manifest_size_bytes,
-                )
+                );
+                entry.revocation = Nullable(revocation_for(revocations, &entry));
+                entry
             })
             .collect(),
     };
     index.sort();
     index
+}
+
+/// Returns the revocation record for one entry, where the repository carries one.
+///
+/// A revocation is a committed input like the package it withdraws, keyed to the exact release and
+/// its manifest digest. Keeping it in the repository is what makes a rebuild produce the same
+/// index: a record that lived only in a published generation would be lost the next time one was
+/// built.
+fn revocation_for(revocations: &Revocations, entry: &IndexEntry) -> Option<RevocationRecord> {
+    let key = (
+        entry.publisher_id.to_string(),
+        entry.plugin_name.to_string(),
+        entry.version.to_string(),
+    );
+    let withdrawal = revocations.get(&key)?;
+    if withdrawal.manifest_digest != entry.manifest_digest {
+        return None;
+    }
+    Some(withdrawal.record.clone())
 }

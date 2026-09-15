@@ -69,6 +69,35 @@ pub struct LoadedPackage {
     pub manifest_size_bytes: u64,
 }
 
+/// One withdrawn release, keyed to the exact package it withdraws.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WithdrawalFile {
+    /// The record format version.
+    pub record_version: u32,
+    /// The publisher.
+    pub publisher_id: PublisherId,
+    /// The plugin name under that publisher.
+    pub plugin_name: kr_plugin_sdk::ids::PluginName,
+    /// The version withdrawn.
+    pub version: kr_plugin_sdk::version::PackageVersion,
+    /// The manifest digest of the release withdrawn.
+    ///
+    /// A revocation names the bytes it withdraws. Without the digest it would apply to whatever is
+    /// under that version now, which is the opposite of what a revocation is for.
+    pub manifest_digest: PayloadDigest,
+    /// What the index carries.
+    pub record: kr_plugin_sdk::catalogue::RevocationRecord,
+}
+
+impl WithdrawalFile {
+    /// The record format version this pipeline reads.
+    pub const CURRENT_VERSION: u32 = 1;
+}
+
+/// The withdrawn releases, by publisher, plugin name and version.
+pub type Revocations = BTreeMap<(String, String, String), WithdrawalFile>;
+
 /// Everything the repository holds.
 #[derive(Debug, Default)]
 pub struct Repository {
@@ -76,6 +105,8 @@ pub struct Repository {
     pub publishers: BTreeMap<String, PublisherFile>,
     /// The packages, ordered by their relative path.
     pub packages: Vec<LoadedPackage>,
+    /// The withdrawn releases.
+    pub revocations: Revocations,
 }
 
 /// One package that did not validate.
@@ -138,9 +169,39 @@ pub fn load(root: &Path) -> Result<Loaded> {
         repository.publishers.insert(file.id.to_string(), file);
     }
 
+    let revocations_dir = root.join("revocations");
+    if revocations_dir.is_dir() {
+        for entry in sorted_dir(&revocations_dir)? {
+            if entry.extension().and_then(|extension| extension.to_str()) != Some("json") {
+                continue;
+            }
+            let file: WithdrawalFile = read_json(&entry)?;
+            if file.record_version != WithdrawalFile::CURRENT_VERSION {
+                return Err(Error::Layout {
+                    detail: format!(
+                        "{}: withdrawal record version {} is not version {}",
+                        entry.display(),
+                        file.record_version,
+                        WithdrawalFile::CURRENT_VERSION
+                    ),
+                });
+            }
+            let key = (
+                file.publisher_id.to_string(),
+                file.plugin_name.to_string(),
+                file.version.to_string(),
+            );
+            if repository.revocations.insert(key, file).is_some() {
+                return Err(Error::Layout {
+                    detail: format!("{} withdraws a release twice", entry.display()),
+                });
+            }
+        }
+    }
+
     let mut seen: BTreeMap<(String, String), String> = BTreeMap::new();
     for publisher_dir in sorted_dir(&root.join("plugins"))? {
-        if !publisher_dir.is_dir() {
+        if !is_real_dir(&publisher_dir)? {
             continue;
         }
         let publisher = publisher_dir
@@ -154,7 +215,7 @@ pub fn load(root: &Path) -> Result<Loaded> {
             });
         }
         for package_dir in sorted_dir(&publisher_dir)? {
-            if !package_dir.is_dir() {
+            if !is_real_dir(&package_dir)? {
                 continue;
             }
             let name = package_dir
@@ -181,6 +242,7 @@ pub fn load(root: &Path) -> Result<Loaded> {
                     ),
                 });
             }
+            check_source_pin(&relative, &package.manifest.source.revision)?;
             let key = (
                 package.manifest.plugin_id().to_string(),
                 package.manifest.version.to_string(),
@@ -205,12 +267,55 @@ pub fn load(root: &Path) -> Result<Loaded> {
         }
     }
 
+    for (publisher, plugin, version) in repository.revocations.keys() {
+        let known = repository.packages.iter().any(|package| {
+            package.package.manifest.publisher_id.as_str() == publisher
+                && package.package.manifest.plugin_name.as_str() == plugin
+                && package.package.manifest.version.to_string() == *version
+        });
+        if !known {
+            return Err(Error::Layout {
+                detail: format!(
+                    "a withdrawal names {publisher}/{plugin} {version}, which this repository does not publish"
+                ),
+            });
+        }
+    }
+
     repository
         .packages
         .sort_by(|left, right| left.relative.cmp(&right.relative));
     Ok(Loaded {
         repository,
         rejected,
+    })
+}
+
+/// Lists a directory's entries in a stable order, refusing links.
+///
+/// A symbolic link in the layout, whether it stands in for a publisher record, a publisher
+/// directory or a package directory, would put files from outside the repository into a signed
+/// release. The layout is checked with `symlink_metadata`, which reports the link rather than what
+/// it points at.
+/// Checks that a package's source revision names something that cannot move.
+///
+/// Section 4 has a reviewed catalogue entry pin the publisher, the source revision and the released
+/// package digest. A branch reference is none of those: it names whatever that branch points at
+/// now, so an entry that pinned one would say nothing about which source the release came from.
+/// A commit identifier or a release tag says something a reader can check.
+fn check_source_pin(relative: &str, revision: &str) -> Result<()> {
+    let is_commit = revision.len() == 40
+        && revision
+            .chars()
+            .all(|character| character.is_ascii_digit() || matches!(character, 'a'..='f'));
+    if is_commit || revision.starts_with("refs/tags/") {
+        return Ok(());
+    }
+    Err(Error::Layout {
+        detail: format!(
+            "{relative} pins its source at {revision:?}, which moves; \
+             use a commit identifier or a refs/tags reference"
+        ),
     })
 }
 
@@ -230,8 +335,30 @@ fn sorted_dir(directory: &Path) -> Result<Vec<PathBuf>> {
         if name.starts_with('.') {
             continue;
         }
-        paths.push(entry.path());
+        let path = entry.path();
+        let metadata = std::fs::symlink_metadata(&path).map_err(|source| Error::Io {
+            path: path.clone(),
+            source,
+        })?;
+        if metadata.is_symlink() {
+            return Err(Error::Layout {
+                detail: format!(
+                    "{} is a link; the catalogue holds the files it publishes",
+                    path.display()
+                ),
+            });
+        }
+        paths.push(path);
     }
     paths.sort();
     Ok(paths)
+}
+
+/// Returns true when a path is a directory and not a link to one.
+fn is_real_dir(path: &Path) -> Result<bool> {
+    let metadata = std::fs::symlink_metadata(path).map_err(|source| Error::Io {
+        path: path.to_path_buf(),
+        source,
+    })?;
+    Ok(metadata.is_dir())
 }

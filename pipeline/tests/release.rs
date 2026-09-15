@@ -148,11 +148,12 @@ async fn a_replaced_metadata_signature_fails_verification() {
 
 #[tokio::test]
 async fn a_generation_signs_and_verifies_end_to_end() {
-    let Some(signing_dir) = std::env::var_os("KALAREACH_SIGNING_DIR") else {
-        // Signing needs keys, and keys live outside the repository. Without them this test has
-        // nothing to sign with; the committed development generation still proves verification.
-        return;
-    };
+    let signing_dir = std::env::var_os("KALAREACH_SIGNING_DIR").unwrap_or_else(|| {
+        panic!(
+            "set KALAREACH_SIGNING_DIR to a directory outside the repository; \
+             scripts/generate-development-keys.sh writes one"
+        )
+    });
     let repository_root = root();
     keys::refuse_keys_in_tree(&repository_root).expect("no key is in the tree");
     let signing = SigningDirectory::open(Path::new(&signing_dir), &repository_root)
@@ -180,6 +181,7 @@ async fn a_generation_signs_and_verifies_end_to_end() {
             timestamp: expires,
         },
         &out,
+        false,
     )
     .await
     .expect("the generation signs");
@@ -189,6 +191,70 @@ async fn a_generation_signs_and_verifies_end_to_end() {
         .expect("the generation verifies");
     assert_eq!(verified.target_count, outcome.target_count);
     assert_eq!(verified.index.generation, RepositoryGeneration::new(7));
+
+    // The metadata version is the generation, so a client that already trusts generation 7 rejects
+    // an older one rather than accepting it as an update.
+    let targets: serde_json::Value = serde_json::from_str(
+        &std::fs::read_to_string(out.join(METADATA_DIR).join("targets.json"))
+            .expect("the metadata reads"),
+    )
+    .expect("the metadata parses");
+    assert_eq!(targets["signed"]["version"], 7);
+
+    // A generation is written once.
+    let refused = tuf::build(
+        &loaded.repository,
+        &catalogue,
+        &signing,
+        Expiries {
+            targets: expires,
+            snapshot: expires,
+            timestamp: expires,
+        },
+        &out,
+        false,
+    )
+    .await
+    .expect_err("a second build into the same directory is refused");
+    assert!(refused.to_string().contains("written once"), "{refused}");
+}
+
+#[tokio::test]
+async fn a_replaced_package_payload_fails_verification() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let generation = temporary.path().join("generation");
+    copy_tree(&development_generation(), &generation);
+    tuf::verify(&generation, true)
+        .await
+        .expect("the copy verifies");
+
+    // One package's document replaced by another's. Both are signed targets of this generation, so
+    // only reading each target under the name the index declares catches it.
+    let targets = generation.join(TARGETS_DIR).join("packages/kalareach");
+    let from = targets.join("codex/0.1.0/presentation.json");
+    let to = targets.join("opencode/0.1.0/presentation.json");
+    std::fs::copy(&from, &to).expect("the document copies");
+
+    tuf::verify(&generation, true)
+        .await
+        .expect_err("a swapped package payload does not verify");
+}
+
+#[tokio::test]
+async fn a_missing_package_payload_fails_verification() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let generation = temporary.path().join("generation");
+    copy_tree(&development_generation(), &generation);
+    std::fs::remove_file(
+        generation
+            .join(TARGETS_DIR)
+            .join("packages/kalareach/codex/0.1.0/README.md"),
+    )
+    .expect("the asset is removed");
+
+    tuf::verify(&generation, true)
+        .await
+        .expect_err("a missing package payload does not verify");
 }
 
 #[test]
@@ -203,13 +269,48 @@ fn a_private_key_in_the_tree_stops_the_pipeline() {
         "-----BEGIN {} KEY-----\nMIIB\n-----END {} KEY-----\n",
         "PRIVATE", "PRIVATE"
     );
-    std::fs::write(tree.join("notes.txt"), header).expect("the file writes");
+    std::fs::write(tree.join("notes.txt"), &header).expect("the file writes");
     let error = keys::refuse_keys_in_tree(tree).expect_err("a key in the tree stops the pipeline");
     assert!(error.to_string().contains("private signing key"));
+
+    // A key pasted a long way into a file, and a key pasted inside a value, are both keys.
+    let buried = format!("{}{header}", "x\n".repeat(200_000));
+    std::fs::write(tree.join("notes.txt"), buried).expect("the file writes");
+    keys::refuse_keys_in_tree(tree).expect_err("a key past the first few kilobytes is still a key");
+
+    let embedded = format!(
+        "{{\"key\": \"-----BEGIN {} KEY-----MIIB-----END {} KEY-----\"}}\n",
+        "PRIVATE", "PRIVATE"
+    );
+    std::fs::write(tree.join("notes.txt"), embedded).expect("the file writes");
+    keys::refuse_keys_in_tree(tree).expect_err("a key inside a value is still a key");
 
     std::fs::write(tree.join("notes.txt"), "nothing to see").expect("the file writes");
     std::fs::write(tree.join("root.pem"), "not really a key").expect("the file writes");
     keys::refuse_keys_in_tree(tree).expect_err("a .pem file in the tree stops the pipeline");
+}
+
+#[tokio::test]
+async fn one_key_cannot_hold_every_role() {
+    let Some(signing_dir) = std::env::var_os("KALAREACH_SIGNING_DIR") else {
+        return;
+    };
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let reused = temporary.path().join("signing");
+    std::fs::create_dir_all(&reused).expect("the directory creates");
+    let source = Path::new(&signing_dir).join("root.pem");
+    for role in ["root.pem", "targets.pem", "snapshot.pem", "timestamp.pem"] {
+        std::fs::copy(&source, reused.join(role)).expect("the key copies");
+    }
+
+    let signing = SigningDirectory::open(&reused, &root()).expect("the directory opens");
+    let expires = Timestamp::now()
+        .checked_add(Span::new().hours(24))
+        .expect("an hour arithmetic that fits");
+    let error = keys::build_root(&signing, expires)
+        .await
+        .expect_err("one key for four roles is refused");
+    assert!(error.to_string().contains("same key"), "{error}");
 }
 
 #[test]

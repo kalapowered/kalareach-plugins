@@ -41,10 +41,15 @@ works offline. `bench` measures where those two limits bind for the packages you
 
 ```text
 entries              10000
-index size           17070095 bytes (16.3 MiB)
-bytes per entry      1707
-fits 64 MiB budget   39313 entries
+index size           17750095 bytes (16.9 MiB)
+bytes per entry      1775
+index fits 64 MiB    37807 entries
 ```
+
+The last line counts the index and nothing else. The TUF metadata over it grows with the target
+count too, so the real figure is lower. Every synthetic entry comes from one template, so the size
+per entry is that package's metadata: a catalogue of longer descriptions and more match rules costs
+more per entry.
 
 ## The generation
 
@@ -66,10 +71,20 @@ packages/kalareach/example-declarative/0.1.0/plugin.json
 packages/kalareach/example-declarative/0.1.0/presentation.json
 ```
 
+Each role's metadata version is the generation number. A client refuses metadata whose version is
+lower than the one it already trusts, so a generation replayed after a later one is rejected rather
+than accepted as an update. A generation is written once: `build` refuses a directory that already
+holds one unless `--replace` says otherwise.
+
+Before signing, every staged byte is hashed again and compared with what validation saw. Staging
+reopens the package files, and a file edited in between would otherwise be signed without ever
+having been checked.
+
 `verify` runs the `tough` client over a generation, with the same expiry enforcement a host uses,
-and reads the index back through it. A target whose bytes changed fails the digest check that the
-targets metadata pins, and metadata whose signature no longer covers it fails before any target is
-read.
+and reads every target through it. Each one's digest and length are checked as it streams, and then
+against what the index declares, so a payload that was replaced with another package's, truncated or
+removed is caught rather than left for a host to find. Metadata whose signature no longer covers it
+fails before any target is read.
 
 `snapshots/README.md` describes the committed development generation and what it is for.
 
@@ -80,10 +95,15 @@ compromised timestamp key lets an attacker hold a client on an old generation; i
 publish a package. A compromised targets key lets them publish a package; it does not let them
 change which keys are trusted.
 
+Each role's key is its own. A trust root that named one key for all four would grant whoever holds it
+every role, and the pipeline refuses to build one.
+
 Keys never live in this repository. Before anything is signed, the pipeline walks the working tree
-and refuses to run if it finds a private key inside it. The scan checks names and content, so a key
-renamed to `notes.txt` is still found: every PEM key opens with a header this looks for. The signing
-directory itself is also checked, and one inside the repository is refused.
+and refuses to run if it finds a private key inside it. The scan checks names and content: a key
+renamed to `notes.txt` is found, and so is one pasted into the middle of a long file or inside a
+configuration value, because every PEM key carries a header this looks for. It skips `.git`,
+`target` and `node_modules`, all of which Git ignores, so nothing it skips can reach a commit. The
+signing directory itself is checked too, and one inside the repository is refused.
 
 That check is not a formality. A key that reaches a commit has to be rotated, and rotation means
 publishing a new root, waiting for every client to pick it up, and explaining why.
@@ -106,20 +126,21 @@ Production keys are generated in the signing environment, on the machine that wi
 never leave it. The pipeline reads keys through a source abstraction, so a key store that is not a
 file plugs into the same path.
 
-## Working against an unreleased core revision
+## Building against a local core checkout
 
 `pipeline/Cargo.toml` depends on `kr-plugin-sdk` by Git URL and exact revision. That pin is the
 package contract this catalogue is built against.
 
-When the SDK and the catalogue change together, the revision exists in a local checkout before it is
-anywhere else. `scripts/with-local-core.sh` rewrites the fetch URL for the duration of one command:
+`scripts/with-local-core.sh` rewrites the fetch URL for the duration of one command, so Cargo reads
+a checkout on this machine instead of the network:
 
 ```bash
 KALAREACH_CORE=/path/to/kalareach scripts/with-local-core.sh cargo test
 ```
 
-`Cargo.toml` and `Cargo.lock` are untouched, so what this builds is what a fetch from the published
-repository builds.
+The revision is unchanged, so Cargo resolves the same commit object either way, and `Cargo.toml` and
+`Cargo.lock` keep the canonical URL. The rewrite lives in that one command's environment: it changes
+no Git configuration, and it applies to every Git subprocess the command starts.
 
 ## Continuous integration
 

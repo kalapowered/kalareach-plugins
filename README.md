@@ -11,6 +11,7 @@ Licensed under the BSD 3-Clause License. See [LICENSE](LICENSE).
 | `plugins/<publisher>/<plugin>/` | One package each: manifest, presentation document, optional connector table, assets and fixtures |
 | `publishers/` | One record per publisher: identifier, display name, homepage and whether it ships with KalaReach |
 | `pipeline/` | The `kalareach-catalogue` command: validation, the index build, TUF signing and verification |
+| `revocations/` | One record per withdrawn release, keyed to its exact version and manifest digest |
 | `snapshots/` | Built generations. `snapshots/development/` is a signed fixture; everything else is build output |
 | `scripts/` | Development key generation, and running the pipeline against a local core checkout |
 | `docs/` | How to publish a package, and how the pipeline works |
@@ -33,7 +34,8 @@ cargo run -p kalareach-catalogue -- verify snapshots/development
 
 Validation checks every package against the package contract, then evaluates each package's
 fixtures against its own control predicates. Verification runs the TUF client over the committed
-development generation, which is a really signed generation produced with a development key.
+development generation, which is a really signed generation produced with a development key, and
+reads every target through it.
 
 ## Building a generation
 

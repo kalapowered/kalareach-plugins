@@ -9,7 +9,8 @@
 //! them is the point of the design. A compromised timestamp key lets an attacker hold a client on
 //! an old generation; it does not let them publish a package.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use std::io::Read as _;
 use std::num::NonZeroU64;
 use std::path::{Path, PathBuf};
 
@@ -33,6 +34,9 @@ pub const ROLE_KEY_FILES: &[(RoleType, &str)] = &[
 pub const ROOT_FILE: &str = "root.json";
 
 /// Directories the key scan never descends into.
+///
+/// Every one of them is ignored by Git, so nothing inside can reach a commit, and every one can be
+/// arbitrarily large. The scan covers what a commit could carry.
 const SKIPPED: &[&str] = &[".git", "target", "node_modules"];
 
 /// The start of the PEM header that opens a private key block.
@@ -44,8 +48,18 @@ const PEM_HEADER_START: &str = "-----BEGIN ";
 /// itself look like a key to the scan it implements.
 const PEM_HEADER_END: &str = concat!("PRIVATE", " KEY-----");
 
-/// Maximum bytes of a file the key scan reads looking for the PEM marker.
-const SCAN_BYTES: usize = 4096;
+/// Bytes the key scan reads at a time.
+///
+/// The scan reads whole files. A key pasted into the middle of a long file is still a key, and a
+/// scan that stopped after the first few kilobytes would be a scan somebody could step over.
+const SCAN_CHUNK: usize = 64 * 1024;
+
+/// Maximum bytes of one file the key scan reads.
+///
+/// A PEM key is a few kilobytes. Reading the first megabyte of every file finds one wherever a
+/// person would realistically have put it, and keeps the scan bounded on a tree with large data
+/// files in it.
+const SCAN_LIMIT: u64 = 1024 * 1024;
 
 /// Refuses to continue when a private key is inside the repository.
 ///
@@ -98,21 +112,34 @@ pub fn refuse_keys_in_tree(root: &Path) -> Result<()> {
 }
 
 fn looks_like_private_key(path: &Path) -> Result<bool> {
-    use std::io::Read as _;
-    let mut file = std::fs::File::open(path).map_err(|source| Error::Io {
+    use std::io::{BufRead as _, BufReader};
+
+    let file = std::fs::File::open(path).map_err(|source| Error::Io {
         path: path.to_path_buf(),
         source,
     })?;
-    let mut buffer = vec![0u8; SCAN_BYTES];
-    let read = file.read(&mut buffer).map_err(|source| Error::Io {
-        path: path.to_path_buf(),
-        source,
-    })?;
-    buffer.truncate(read);
-    Ok(String::from_utf8_lossy(&buffer).lines().any(|line| {
-        let line = line.trim();
-        line.starts_with(PEM_HEADER_START) && line.ends_with(PEM_HEADER_END)
-    }))
+    let mut reader = BufReader::with_capacity(SCAN_CHUNK, file.take(SCAN_LIMIT));
+    let mut line = Vec::new();
+    loop {
+        line.clear();
+        let read = reader
+            .read_until(b'\n', &mut line)
+            .map_err(|source| Error::Io {
+                path: path.to_path_buf(),
+                source,
+            })?;
+        if read == 0 {
+            return Ok(false);
+        }
+        // The header is looked for anywhere in the line rather than at its start, because a key
+        // pasted into a source file, a JSON document or a configuration value is still a key.
+        let text = String::from_utf8_lossy(&line);
+        if let Some(start) = text.find(PEM_HEADER_START)
+            && text[start + PEM_HEADER_START.len()..].contains(PEM_HEADER_END)
+        {
+            return Ok(true);
+        }
+    }
 }
 
 /// A directory of signing keys outside the repository.
@@ -208,6 +235,10 @@ pub async fn build_root(
         HashMap::new();
     let mut roles: HashMap<RoleType, RoleKeys> = HashMap::new();
 
+    // One key per role. A root that named one key for all four would grant whoever holds it every
+    // role, which is exactly what separating them exists to prevent, and a root file cannot say
+    // afterwards which of the four it was meant to be.
+    let mut seen: HashSet<Vec<u8>> = HashSet::new();
     for (role, _) in ROLE_KEY_FILES {
         let source = LocalKeySource {
             path: directory.key_path(*role),
@@ -217,6 +248,14 @@ pub async fn build_root(
         })?;
         let key: Key = sign.tuf_key();
         let key_id = key.key_id()?;
+        if !seen.insert(key_id.to_vec()) {
+            return Err(Error::Signing {
+                detail: format!(
+                    "{} is the same key as another role's; each role has its own",
+                    directory.key_path(*role).display()
+                ),
+            });
+        }
         keys.insert(key_id.clone(), key);
         roles.insert(
             *role,

@@ -47,11 +47,32 @@ jobs:
       - name: Clippy
         run: cargo clippy --locked --workspace --all-targets -- -D warnings
 
+      # Signing keys live outside the repository, so the run makes a set of its own outside the
+      # checkout. The pipeline refuses to sign if it finds a private key inside the tree, and that
+      # check runs here on the real tree rather than only on a temporary one.
+      - name: Generate development signing keys
+        run: |
+          set -euo pipefail
+          signing="$RUNNER_TEMP/kalareach-signing"
+          scripts/generate-development-keys.sh "$signing"
+          echo "KALAREACH_SIGNING_DIR=$signing" >> "$GITHUB_ENV"
+
+      - name: Write the trust root
+        run: cargo run --locked -p kalareach-catalogue -- root --signing-dir "$KALAREACH_SIGNING_DIR"
+
       - name: Test
         run: cargo test --locked
 
       - name: Validate every package
         run: cargo run --locked -p kalareach-catalogue -- validate
+
+      - name: Build and verify a generation
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/generation"
+          cargo run --locked -p kalareach-catalogue -- build \
+            --signing-dir "$KALAREACH_SIGNING_DIR" --out "$out" --generation 2
+          cargo run --locked -p kalareach-catalogue -- verify "$out"
 
       - name: Verify the development generation
         run: cargo run --locked -p kalareach-catalogue -- verify snapshots/development

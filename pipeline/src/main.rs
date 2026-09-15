@@ -84,6 +84,9 @@ struct BuildArgs {
     /// How many days the targets, snapshot and timestamp metadata are valid for.
     #[arg(long, default_value_t = 30)]
     expires_in_days: i64,
+    /// Replace a generation that is already in the output directory.
+    #[arg(long)]
+    replace: bool,
 }
 
 #[derive(Debug, Args)]
@@ -193,6 +196,7 @@ async fn build(root: &std::path::Path, args: &BuildArgs) -> Result<()> {
             timestamp: expires,
         },
         &args.out,
+        args.replace,
     )
     .await?;
 

@@ -46,13 +46,17 @@ The same check runs on every change here, and a host runs it again before it tru
 ```json
 "source": {
   "repository": "https://github.com/example-vendor/example-agent-plugin",
-  "revision": "refs/tags/v1.4.0"
+  "revision": "8f0c6c2a1d4e5b7a9c3f2e1d0b8a7c6d5e4f3a2b"
 }
 ```
 
+The revision is a commit identifier or a `refs/tags/` reference. A branch is neither: it names
+whatever it points at now, so an entry that pinned one would say nothing about which source the
+release came from. The pipeline refuses a branch reference.
+
 Keep your source wherever you like. A reviewed catalogue entry pins the publisher, that revision and
-the package digest, and a host installs the release. It never runs a vendor repository's current
-branch, so a tag that moves changes nothing for anybody who already installed the package.
+the package digest, and a host installs the release by digest. It never runs a vendor repository's
+current branch.
 
 ### Fixtures
 
@@ -86,7 +90,11 @@ edit that changes what a person sees fails the build instead of shipping.
 
 ## What a review looks at
 
-A reviewer reads the manifest, not the code, because the manifest is what the host enforces.
+A review starts with the manifest, because the manifest is what the host enforces. It does not stop
+there. A connector table is a claim about how an upstream protocol behaves, and a native bridge is
+code that runs under the application's own permissions: neither can be checked by reading the
+document that declares it. A package that carries one is reviewed with its source and its
+qualification fixtures beside the manifest.
 
 **Capabilities and the reasons beside them.** Every capability outside the default ceiling needs a
 reason a person will read while deciding whether to grant it. "Required for functionality" is not a
@@ -118,9 +126,29 @@ that forwards to the core hook over anything larger.
 A version is immutable. Publishing a fix means publishing a new version, because hosts pin packages
 by hash and an active binding stays on the hash it bound to.
 
-To withdraw a release, add a revocation record to its index entry with the reason
-(`withdrawn`, `vulnerable`, `key_compromise` or `superseded`), the time and a statement a person
-reads. A revoked release stops new bindings. An active binding receives a warning and follows the
+To withdraw a release, add a file under `revocations/`:
+
+```json
+{
+  "record_version": 1,
+  "publisher_id": "example-vendor",
+  "plugin_name": "example-agent",
+  "version": "1.4.0",
+  "manifest_digest": "2f0b...",
+  "record": {
+    "reason": "vulnerable",
+    "revoked_at": "1760000000000",
+    "statement": "Replaced by 1.4.1, which fixes the path handling."
+  }
+}
+```
+
+The reason is `withdrawn`, `vulnerable`, `key_compromise` or `superseded`. The manifest digest names
+the exact bytes being withdrawn, so the record applies to that release and not to whatever is under
+that version later. The builder reads `revocations/` and writes the record into the index entry, so
+a rebuild produces the same index as the release it rebuilds.
+
+A revoked release stops new bindings. An active binding receives a warning and follows the
 administrator's explicit disable policy; it does not change under a live request, because changing a
 binding mid-request is how a person ends up approving something other than what they read.
 

@@ -34,9 +34,13 @@ pub struct Measurement {
 impl Measurement {
     /// Renders the measurement as the lines a benchmark log carries.
     ///
-    /// The last line is the one that decides an enrolment budget. A repository has two default
-    /// limits, 64 MiB of metadata and 100,000 entries, and whichever binds first is the one a host
-    /// reports when a sync runs out of room.
+    /// The last line is an index-only estimate. A repository has two default limits, 64 MiB of
+    /// metadata and 100,000 entries, and whichever binds first is the one a host reports when a
+    /// sync runs out of room. The estimate counts the index and nothing else: the TUF metadata over
+    /// it grows with the target count too, so the real figure is lower.
+    ///
+    /// Every entry comes from one template, so the size per entry is the size of that package's
+    /// metadata. A catalogue of longer descriptions and more match rules costs more per entry.
     #[must_use]
     pub fn report(&self) -> String {
         let per_entry = if self.entries == 0 {
@@ -57,7 +61,7 @@ impl Measurement {
              offline lookup       {:.3} s\n\
              index size           {} bytes ({:.1} MiB)\n\
              bytes per entry      {per_entry:.0}\n\
-             fits 64 MiB budget   {fits} entries\n",
+             index fits 64 MiB    {fits} entries\n",
             self.entries,
             self.build.as_secs_f64(),
             self.render.as_secs_f64(),
@@ -112,8 +116,14 @@ pub fn measure(template: &PluginManifest, entries: usize) -> Measurement {
         serde_json::from_str(&rendered).expect("the rendered index parses back");
     let parse = started.elapsed();
 
+    // The lookup path comes from the template's own match rule, so the measurement is the template
+    // finding itself rather than a name this function happens to know.
+    let executable = template.match_rules.first().map_or_else(
+        || "example-agent".to_owned(),
+        |rule| format!("/usr/local/bin/{}", rule.executable.file_stem),
+    );
     let started = Instant::now();
-    let matches = parsed.matching_executable("/usr/local/bin/example-agent");
+    let matches = parsed.matching_executable(&executable);
     let lookup = started.elapsed();
     assert_eq!(matches.len(), entries, "every synthetic entry matches");
 

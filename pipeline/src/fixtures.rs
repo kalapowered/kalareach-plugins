@@ -72,25 +72,14 @@ pub struct FixtureContext {
 /// Returns [`Error::FixtureMismatch`] when a case's declared answer is not the answer the
 /// package's predicates produce, and a read error when the fixture file cannot be read.
 pub fn check(name: &str, directory: &Path, package: &Package) -> Result<usize> {
-    let Some(payload) = package
+    let fixtures: Vec<_> = package
         .manifest
         .payloads
         .iter()
-        .find(|payload| payload.role == kr_plugin_sdk::plugin::PayloadRole::Fixture)
-    else {
+        .filter(|payload| payload.role == kr_plugin_sdk::plugin::PayloadRole::Fixture)
+        .collect();
+    if fixtures.is_empty() {
         return Ok(0);
-    };
-    let file: FixtureFile = read_json(&directory.join(payload.path.as_str()))?;
-    if file.fixture_version != FixtureFile::CURRENT_VERSION {
-        return Err(Error::FixtureMismatch {
-            package: name.to_owned(),
-            case: "<file>".to_owned(),
-            detail: format!(
-                "fixture version {} is not version {}",
-                file.fixture_version,
-                FixtureFile::CURRENT_VERSION
-            ),
-        });
     }
 
     let controls: Vec<&Control> = package
@@ -99,6 +88,30 @@ pub fn check(name: &str, directory: &Path, package: &Package) -> Result<usize> {
         .iter()
         .flat_map(|node| node.body.controls())
         .collect();
+
+    // A package may carry several fixture files, and every one of them runs. Running only the
+    // first would make adding a second file a way to stop the others being checked.
+    let mut cases = 0usize;
+    for payload in fixtures {
+        cases += check_file(name, &directory.join(payload.path.as_str()), &controls)?;
+    }
+    Ok(cases)
+}
+
+/// Runs one fixture file against a package's controls.
+fn check_file(name: &str, path: &Path, controls: &[&Control]) -> Result<usize> {
+    let file: FixtureFile = read_json(path)?;
+    if file.fixture_version != FixtureFile::CURRENT_VERSION {
+        return Err(Error::FixtureMismatch {
+            package: name.to_owned(),
+            case: path.display().to_string(),
+            detail: format!(
+                "fixture version {} is not version {}",
+                file.fixture_version,
+                FixtureFile::CURRENT_VERSION
+            ),
+        });
+    }
 
     for case in &file.visibility {
         let context = PredicateContext {

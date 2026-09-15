@@ -22,9 +22,11 @@
 //! uses. A tampered target fails the digest check the targets metadata pins, not a check this
 //! pipeline invented.
 
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use kr_plugin_sdk::catalogue::CatalogueIndex;
+use kr_plugin_sdk::digest::PayloadDigest;
 use kr_plugin_sdk::package::MANIFEST_FILE;
 use tough::editor::RepositoryEditor;
 use tough::schema::Target;
@@ -137,22 +139,60 @@ pub async fn build(
     signing: &SigningDirectory,
     expiries: Expiries,
     out_dir: &Path,
+    replace: bool,
 ) -> Result<BuildOutcome> {
+    // A generation is immutable. Writing into a directory that already holds one would leave a
+    // mixture of two if anything failed part-way, and the metadata would then describe targets
+    // that are not there.
+    if out_dir.exists() {
+        let empty = std::fs::read_dir(out_dir)
+            .map_err(|source| Error::Io {
+                path: out_dir.to_path_buf(),
+                source,
+            })?
+            .next()
+            .is_none();
+        if !empty {
+            if !replace {
+                return Err(Error::Layout {
+                    detail: format!(
+                        "{} already holds a generation; a generation is written once",
+                        out_dir.display()
+                    ),
+                });
+            }
+            std::fs::remove_dir_all(out_dir).map_err(|source| Error::Io {
+                path: out_dir.to_path_buf(),
+                source,
+            })?;
+        }
+    }
+
     let targets_dir = out_dir.join(TARGETS_DIR);
     let metadata_dir = out_dir.join(METADATA_DIR);
     let staged = stage_targets(repository, index, &targets_dir)?;
+    check_staged_against_validation(
+        repository,
+        &staged,
+        report_paths(index)?,
+        report_index(index)?,
+    )?;
 
     let root_source = signing.root_path();
     let root_bytes = read(&root_source)?;
     write(&out_dir.join("root.json"), &root_bytes)?;
 
+    // Every role's version is the generation. A client rejects metadata whose version is lower
+    // than the one it already trusts, and versions that stayed at one would make every generation
+    // look like the same one, which is how a rollback goes unnoticed.
+    let version = generation_version(index)?;
     let mut editor = RepositoryEditor::new(&root_source).await?;
     editor
-        .targets_version(one())?
+        .targets_version(version)?
         .targets_expires(expiries.targets)?
-        .snapshot_version(one())
+        .snapshot_version(version)
         .snapshot_expires(expiries.snapshot)
-        .timestamp_version(one())
+        .timestamp_version(version)
         .timestamp_expires(expiries.timestamp);
     for target in &staged {
         let built = Target::from_path(&target.path).await.map_err(Error::from)?;
@@ -170,8 +210,100 @@ pub async fn build(
     })
 }
 
-fn one() -> std::num::NonZeroU64 {
-    std::num::NonZeroU64::new(1).expect("one is not zero")
+/// Returns the metadata version for one generation.
+///
+/// # Errors
+///
+/// Returns [`Error::Layout`] for generation zero, which TUF does not have a version for.
+fn generation_version(index: &CatalogueIndex) -> Result<std::num::NonZeroU64> {
+    std::num::NonZeroU64::new(index.generation.get()).ok_or_else(|| Error::Layout {
+        detail: "a generation starts at 1".to_owned(),
+    })
+}
+
+/// Returns the canonical index bytes, for comparing what was staged against what was validated.
+fn report_index(index: &CatalogueIndex) -> Result<Vec<u8>> {
+    index
+        .canonical_json()
+        .map(String::into_bytes)
+        .map_err(|source| Error::Json {
+            path: PathBuf::from(INDEX_TARGET),
+            source,
+        })
+}
+
+/// Returns the digest and length the index declares for every package payload.
+fn report_paths(index: &CatalogueIndex) -> Result<Vec<(String, PayloadDigest, u64)>> {
+    let mut declared = Vec::new();
+    for entry in &index.entries {
+        let prefix = format!(
+            "packages/{}/{}/{}",
+            entry.publisher_id, entry.plugin_name, entry.version
+        );
+        declared.push((
+            format!("{prefix}/{}", kr_plugin_sdk::package::MANIFEST_FILE),
+            entry.manifest_digest,
+            entry.manifest_size_bytes.get(),
+        ));
+        for payload in &entry.payloads {
+            declared.push((
+                format!("{prefix}/{}", payload.path),
+                payload.digest,
+                payload.size_bytes.get(),
+            ));
+        }
+    }
+    Ok(declared)
+}
+
+/// Checks that every staged byte is a byte validation saw.
+///
+/// Staging reopens the package files, so a file edited between validation and signing would
+/// otherwise be signed without ever being checked. Every staged target is hashed again and
+/// compared with what the index declares, and the index itself is compared with its canonical
+/// rendering.
+fn check_staged_against_validation(
+    _repository: &Repository,
+    staged: &[StagedTarget],
+    declared: Vec<(String, PayloadDigest, u64)>,
+    index_bytes: Vec<u8>,
+) -> Result<()> {
+    for target in staged {
+        let bytes = read(&target.path)?;
+        if target.name == INDEX_TARGET {
+            if bytes != index_bytes {
+                return Err(Error::Layout {
+                    detail: "the staged index is not the index that was built".to_owned(),
+                });
+            }
+            continue;
+        }
+        let Some((_, digest, size)) = declared.iter().find(|(name, _, _)| name == &target.name)
+        else {
+            return Err(Error::Layout {
+                detail: format!(
+                    "{} was staged and the index does not declare it",
+                    target.name
+                ),
+            });
+        };
+        if bytes.len() as u64 != *size || &PayloadDigest::of(&bytes) != digest {
+            return Err(Error::Layout {
+                detail: format!(
+                    "{} changed between validation and signing; it was not signed",
+                    target.name
+                ),
+            });
+        }
+    }
+    for (name, _, _) in &declared {
+        if !staged.iter().any(|target| &target.name == name) {
+            return Err(Error::Layout {
+                detail: format!("the index declares {name} and nothing staged it"),
+            });
+        }
+    }
+    Ok(())
 }
 
 /// What a build produced.
@@ -223,20 +355,66 @@ pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verif
         .load()
         .await?;
 
-    let target_count = repository.targets().signed.targets.len();
-    let name = TargetName::new(INDEX_TARGET)?;
-    let bytes = repository
-        .read_target(&name)
-        .await?
-        .ok_or_else(|| Error::Layout {
-            detail: format!("the generation does not carry {INDEX_TARGET}"),
-        })?
-        .into_vec()
-        .await?;
-    let index: CatalogueIndex = serde_json::from_slice(&bytes).map_err(|source| Error::Json {
-        path: PathBuf::from(INDEX_TARGET),
-        source,
+    let names: Vec<TargetName> = repository
+        .targets()
+        .signed
+        .targets
+        .keys()
+        .cloned()
+        .collect();
+    let target_count = names.len();
+
+    // Every target is read through the client, which checks each one's digest and length as it
+    // streams. Reading only the index would verify the metadata and leave a replaced, truncated or
+    // absent package payload undiscovered until a host fetched it.
+    let mut contents: BTreeMap<String, Vec<u8>> = BTreeMap::new();
+    for name in names {
+        let bytes = repository
+            .read_target(&name)
+            .await?
+            .ok_or_else(|| Error::Layout {
+                detail: format!(
+                    "the metadata pins {} and the generation does not carry it",
+                    name.raw()
+                ),
+            })?
+            .into_vec()
+            .await?;
+        contents.insert(name.raw().to_owned(), bytes);
+    }
+
+    let index_bytes = contents.get(INDEX_TARGET).ok_or_else(|| Error::Layout {
+        detail: format!("the generation does not carry {INDEX_TARGET}"),
     })?;
+    let index: CatalogueIndex =
+        serde_json::from_slice(index_bytes).map_err(|source| Error::Json {
+            path: PathBuf::from(INDEX_TARGET),
+            source,
+        })?;
+
+    // The metadata proves the targets are the bytes it signed. The index says which bytes each
+    // package consists of. Comparing the two is what makes a target name mean one package's file
+    // rather than whatever happens to be under that name.
+    let declared = report_paths(&index)?;
+    for (name, digest, size) in &declared {
+        let Some(bytes) = contents.get(name) else {
+            return Err(Error::Layout {
+                detail: format!("the index declares {name} and the generation does not carry it"),
+            });
+        };
+        if bytes.len() as u64 != *size || &PayloadDigest::of(bytes) != digest {
+            return Err(Error::Layout {
+                detail: format!("{name} is not the payload the index declares"),
+            });
+        }
+    }
+    for name in contents.keys() {
+        if name != INDEX_TARGET && !declared.iter().any(|(declared, _, _)| declared == name) {
+            return Err(Error::Layout {
+                detail: format!("the generation carries {name} and the index does not declare it"),
+            });
+        }
+    }
 
     Ok(Verified {
         target_count,
