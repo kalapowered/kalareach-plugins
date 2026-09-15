@@ -77,6 +77,9 @@ impl Measurement {
 /// is malformed rather than a runtime condition.
 #[must_use]
 pub fn measure(template: &PluginManifest, entries: usize) -> Measurement {
+    let manifest_size_bytes = serde_json::to_vec(template)
+        .expect("the template manifest is serialisable")
+        .len() as u64;
     let started = Instant::now();
     let mut index = CatalogueIndex {
         index_version: INDEX_VERSION,
@@ -92,6 +95,7 @@ pub fn measure(template: &PluginManifest, entries: usize) -> Measurement {
         let mut entry = IndexEntry::from_manifest(
             &manifest,
             PayloadDigest::of(format!("synthetic-{ordinal}").as_bytes()),
+            manifest_size_bytes,
         );
         entry.plugin_id = plugin_id(&manifest.publisher_id, &manifest.plugin_name);
         index.entries.push(entry);

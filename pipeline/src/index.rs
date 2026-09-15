@@ -36,7 +36,11 @@ pub fn build(
             .packages
             .iter()
             .map(|loaded| {
-                IndexEntry::from_manifest(&loaded.package.manifest, loaded.manifest_digest)
+                IndexEntry::from_manifest(
+                    &loaded.package.manifest,
+                    loaded.manifest_digest,
+                    loaded.manifest_size_bytes,
+                )
             })
             .collect(),
     };

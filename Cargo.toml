@@ -15,7 +15,7 @@ aws-lc-rs = "=1.18.1"
 clap = { version = "=4.6.7", features = ["derive", "env"] }
 hex = "=0.4.3"
 jiff = "=0.2.37"
-kr-plugin-sdk = { git = "https://github.com/kalapowered/kalareach.git", rev = "6aa7fac1122e1f5bdeb1fb51ccdb07f1a8805d9a" }
+kr-plugin-sdk = { git = "https://github.com/kalapowered/kalareach.git", rev = "328396aa9101603ed13770d4f68ca45017a780af" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 sha2 = "=0.11.0"

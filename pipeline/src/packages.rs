@@ -65,6 +65,8 @@ pub struct LoadedPackage {
     pub package: Package,
     /// The digest of `plugin.json`.
     pub manifest_digest: PayloadDigest,
+    /// The exact length of `plugin.json`.
+    pub manifest_size_bytes: u64,
 }
 
 /// Everything the repository holds.
@@ -192,12 +194,13 @@ pub fn load(root: &Path) -> Result<Loaded> {
                 });
             }
             seen.insert(key, relative.clone());
-            let manifest_digest = PayloadDigest::of(&read(&package_dir.join(MANIFEST_FILE))?);
+            let manifest_bytes = read(&package_dir.join(MANIFEST_FILE))?;
             repository.packages.push(LoadedPackage {
                 directory: package_dir,
                 relative,
                 package,
-                manifest_digest,
+                manifest_digest: PayloadDigest::of(&manifest_bytes),
+                manifest_size_bytes: manifest_bytes.len() as u64,
             });
         }
     }
