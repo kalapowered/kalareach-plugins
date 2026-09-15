@@ -32,3 +32,14 @@ dist/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Signing keys never live in the tree
+signing/
+*.pem
+*.key
+
+# Catalogue generations are build output. The development generation is the exception: it is a
+# signed fixture, produced with a development key, that the core repository's sync tests read.
+/snapshots/*
+!/snapshots/README.md
+!/snapshots/development/
