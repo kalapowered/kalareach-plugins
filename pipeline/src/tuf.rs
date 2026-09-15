@@ -25,9 +25,11 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
+use futures::StreamExt as _;
 use kr_plugin_sdk::catalogue::CatalogueIndex;
 use kr_plugin_sdk::digest::PayloadDigest;
 use kr_plugin_sdk::package::MANIFEST_FILE;
+use sha2::{Digest as _, Sha256};
 use tough::editor::RepositoryEditor;
 use tough::schema::Target;
 use tough::{
@@ -159,14 +161,20 @@ pub async fn build(
     let root_bytes = read(&signing.root_path())?;
 
     // The generation is assembled beside its destination and moved into place once it verifies, so
-    // the destination is never a half-written generation and never a mixture of two.
+    // the destination is never a half-written generation and never a mixture of two. The staging
+    // directory is created rather than emptied: something already there was left by an interrupted
+    // build, and deleting it would be deleting evidence somebody may want.
     let staging = staging_dir(out_dir);
-    if staging.exists() {
-        std::fs::remove_dir_all(&staging).map_err(|source| Error::Io {
-            path: staging.clone(),
+    if let Some(parent) = staging.parent() {
+        std::fs::create_dir_all(parent).map_err(|source| Error::Io {
+            path: parent.to_path_buf(),
             source,
         })?;
     }
+    std::fs::create_dir(&staging).map_err(|source| Error::Io {
+        path: staging.clone(),
+        source,
+    })?;
     let targets_dir = staging.join(TARGETS_DIR);
     let metadata_dir = staging.join(METADATA_DIR);
     let staged = stage_targets(repository, index, &targets_dir)?;
@@ -193,6 +201,9 @@ pub async fn build(
     signed.write(&metadata_dir).await?;
     write(&metadata_dir.join("root.json"), &root_bytes)?;
 
+    // The generation verifies where it was assembled. Only then does it become the one at the
+    // destination, so a generation that does not verify never replaces one that did.
+    verify(&staging, false).await?;
     publish(&staging, out_dir, existing)?;
 
     Ok(BuildOutcome {
@@ -237,10 +248,32 @@ fn describe_destination(out_dir: &Path) -> Result<Destination> {
     if empty {
         return Ok(Destination::Empty);
     }
-    let looks_like_a_generation = out_dir.join("root.json").is_file()
+    // A generation holds exactly three things. A directory that holds anything else is somebody's
+    // data, and `--replace` removes what it finds.
+    let mut names: Vec<String> = Vec::new();
+    for entry in std::fs::read_dir(out_dir).map_err(|source| Error::Io {
+        path: out_dir.to_path_buf(),
+        source,
+    })? {
+        let entry = entry.map_err(|source| Error::Io {
+            path: out_dir.to_path_buf(),
+            source,
+        })?;
+        names.push(entry.file_name().to_string_lossy().into_owned());
+    }
+    names.sort();
+    let expected = [
+        "root.json".to_owned(),
+        METADATA_DIR.to_owned(),
+        TARGETS_DIR.to_owned(),
+    ];
+    let mut expected: Vec<String> = expected.into();
+    expected.sort();
+    if names == expected
+        && out_dir.join("root.json").is_file()
         && out_dir.join(METADATA_DIR).is_dir()
-        && out_dir.join(TARGETS_DIR).is_dir();
-    if looks_like_a_generation {
+        && out_dir.join(TARGETS_DIR).is_dir()
+    {
         Ok(Destination::Occupied)
     } else {
         Err(Error::Layout {
@@ -274,10 +307,12 @@ fn publish(staging: &Path, out_dir: &Path, existing: Destination) -> Result<()> 
             .unwrap_or("generation")
     ));
     if retired.exists() {
-        std::fs::remove_dir_all(&retired).map_err(|source| Error::Io {
-            path: retired.clone(),
-            source,
-        })?;
+        return Err(Error::Layout {
+            detail: format!(
+                "{} is left over from an interrupted publication; move it aside first",
+                retired.display()
+            ),
+        });
     }
     if existing != Destination::Absent {
         std::fs::rename(out_dir, &retired).map_err(|source| Error::Io {
@@ -374,8 +409,9 @@ fn check_staged_against_validation(
         let bytes = read(&target.path)?;
         check_bytes_against_validation(&target.name, &bytes, declared, index_bytes)?;
     }
+    let names: BTreeSet<&str> = staged.iter().map(|target| target.name.as_str()).collect();
     for name in declared.keys() {
-        if !staged.iter().any(|target| &target.name == name) {
+        if !names.contains(name.as_str()) {
             return Err(Error::Layout {
                 detail: format!("the index declares {name} and nothing staged it"),
             });
@@ -514,6 +550,25 @@ pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verif
     // One target is held at a time. A release is as large as the packages in it, and holding all of
     // them to compare them afterwards would make verification cost as much memory as the release.
     let index_name = TargetName::new(INDEX_TARGET)?;
+    // The index is held whole, because it is parsed. Its signed length is checked against the
+    // repository metadata budget first, so what is held is what a host would be willing to hold.
+    let index_length = repository
+        .targets()
+        .signed
+        .targets
+        .get(&index_name)
+        .map(|target| target.length)
+        .ok_or_else(|| Error::Layout {
+            detail: format!("the metadata does not pin {INDEX_TARGET}"),
+        })?;
+    if index_length > kr_plugin_sdk::limits::METADATA_BUDGET_BYTES {
+        return Err(Error::Layout {
+            detail: format!(
+                "the index is {index_length} bytes, over the {} byte metadata budget",
+                kr_plugin_sdk::limits::METADATA_BUDGET_BYTES
+            ),
+        });
+    }
     let index_bytes = repository
         .read_target(&index_name)
         .await?
@@ -539,15 +594,38 @@ pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verif
             seen.insert(raw);
             continue;
         }
-        let bytes = repository
+        // A payload is hashed as it arrives and never held whole. A release is as large as the
+        // packages in it, and reading one into memory to hash it would make verification cost as
+        // much memory as the largest package.
+        let Some((expected, size)) = declared.get(&raw).copied() else {
+            return Err(Error::Layout {
+                detail: format!("the generation carries {raw} and the index does not declare it"),
+            });
+        };
+        let mut stream = repository
             .read_target(&name)
             .await?
             .ok_or_else(|| Error::Layout {
                 detail: format!("the metadata pins {raw} and the generation does not carry it"),
-            })?
-            .into_vec()
-            .await?;
-        check_bytes_against_validation(&raw, &bytes, &declared, &index_bytes)?;
+            })?;
+        let mut hasher = Sha256::new();
+        let mut length: u64 = 0;
+        while let Some(chunk) = stream.next().await {
+            let chunk = chunk?;
+            length = length.saturating_add(chunk.len() as u64);
+            if length > size {
+                return Err(Error::Layout {
+                    detail: format!("{raw} is longer than the index declares"),
+                });
+            }
+            hasher.update(&chunk);
+        }
+        let digest = PayloadDigest::from_bytes(hasher.finalize().into());
+        if length != size || digest != expected {
+            return Err(Error::Layout {
+                detail: format!("{raw} is not the payload the index declares"),
+            });
+        }
         seen.insert(raw);
     }
     for name in declared.keys() {

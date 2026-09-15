@@ -67,15 +67,26 @@ const SCAN_CHUNK: usize = 64 * 1024;
 /// Returns [`Error::KeyInTree`] naming the first file that looks like a private key, and
 /// [`Error::Io`] when the tree cannot be read.
 pub fn refuse_keys_in_tree(root: &Path) -> Result<()> {
-    match tracked_and_untracked(root) {
-        Some(paths) => {
-            for path in paths {
-                check_file(&path)?;
-            }
-            Ok(())
+    if is_checkout(root) {
+        // Inside a checkout, Git decides. A command that then fails is a failure rather than a
+        // reason to fall back to a coarser scan of the same tree.
+        let paths = tracked_and_untracked(root)?;
+        for path in paths {
+            check_file(&path)?;
         }
-        None => walk(root),
+        return Ok(());
     }
+    walk(root)
+}
+
+/// Returns true when a directory is inside a Git checkout.
+fn is_checkout(root: &Path) -> bool {
+    std::process::Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args(["rev-parse", "--git-dir"])
+        .output()
+        .is_ok_and(|output| output.status.success())
 }
 
 /// Returns every file that could reach a commit, as Git sees them.
@@ -86,25 +97,54 @@ pub fn refuse_keys_in_tree(root: &Path) -> Result<()> {
 /// would skip is still found, and it leaves out build output, where the scan would otherwise find
 /// its own header constants compiled into a binary.
 ///
-/// Returns `None` when Git cannot answer, which is when the tree is not a checkout.
-fn tracked_and_untracked(root: &Path) -> Option<Vec<PathBuf>> {
+/// # Errors
+///
+/// Returns [`Error::Signing`] when Git is inside a checkout and still cannot list it, and when a
+/// listed name is not something this platform can turn back into a path. A name the scan cannot
+/// open is a file the scan cannot check, and the safe answer to that is to stop.
+fn tracked_and_untracked(root: &Path) -> Result<Vec<PathBuf>> {
     let output = std::process::Command::new("git")
         .arg("-C")
         .arg(root)
         .args(["ls-files", "-z", "-c", "-o", "--exclude-standard"])
         .output()
-        .ok()?;
+        .map_err(|source| Error::Signing {
+            detail: format!("git could not list {}: {source}", root.display()),
+        })?;
     if !output.status.success() {
-        return None;
+        return Err(Error::Signing {
+            detail: format!(
+                "git could not list {}: {}",
+                root.display(),
+                String::from_utf8_lossy(&output.stderr).trim()
+            ),
+        });
     }
-    Some(
-        output
-            .stdout
-            .split(|byte| *byte == 0)
-            .filter(|name| !name.is_empty())
-            .map(|name| root.join(String::from_utf8_lossy(name).into_owned()))
-            .collect(),
-    )
+    let mut paths = Vec::new();
+    for name in output
+        .stdout
+        .split(|byte| *byte == 0)
+        .filter(|name| !name.is_empty())
+    {
+        // The bytes are kept as they are. A file name that is not valid UTF-8 is a real file on
+        // Linux, and converting it lossily would produce a path that opens nothing.
+        #[cfg(unix)]
+        let relative = {
+            use std::os::unix::ffi::OsStrExt as _;
+            PathBuf::from(std::ffi::OsStr::from_bytes(name))
+        };
+        #[cfg(not(unix))]
+        let relative = match std::str::from_utf8(name) {
+            Ok(text) => PathBuf::from(text),
+            Err(error) => {
+                return Err(Error::Signing {
+                    detail: format!("git listed a name this platform cannot open: {error}"),
+                });
+            }
+        };
+        paths.push(root.join(relative));
+    }
+    Ok(paths)
 }
 
 /// Walks a tree that Git cannot describe.
@@ -154,16 +194,10 @@ fn check_file(path: &Path) -> Result<()> {
             path: path.to_path_buf(),
         });
     }
-    let metadata = match std::fs::symlink_metadata(path) {
-        Ok(metadata) => metadata,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
-        Err(source) => {
-            return Err(Error::Io {
-                path: path.to_path_buf(),
-                source,
-            });
-        }
-    };
+    let metadata = std::fs::symlink_metadata(path).map_err(|source| Error::Io {
+        path: path.to_path_buf(),
+        source,
+    })?;
     if !metadata.is_file() {
         return Ok(());
     }

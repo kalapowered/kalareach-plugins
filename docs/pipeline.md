@@ -76,11 +76,13 @@ lower than the one it already trusts, so a generation replayed after a later one
 than accepted as an update.
 
 A generation is written once. `build` checks the generation number, the destination and the keys
-before it writes or removes anything, assembles the generation beside its destination, and moves it
-into place only once every target matches what the index declares. `--replace` writes over a
-destination that already holds a generation, and only one: a directory holding anything else is
-refused rather than deleted, so pointing a build at a signing directory or a checkout is a mistake
-that stops rather than one that costs you the directory.
+before it writes or removes anything, assembles the generation in a directory it creates beside the
+destination, verifies it there, and moves it into place only then. `--replace` writes over a
+destination that already holds a generation, and only one: a directory that holds anything besides
+a root, its metadata and its targets is refused rather than deleted, so pointing a build at a
+signing directory or a checkout is a mistake that stops rather than one that costs you the
+directory. An interrupted publication leaves the previous generation beside the destination under a
+name the next build reports rather than removes.
 
 Before signing, every staged byte is hashed again and compared with what validation saw. Staging
 reopens the package files, and a file edited in between would otherwise be signed without ever
@@ -105,12 +107,15 @@ Each role's key is its own. A trust root that named one key for all four would g
 every role, and the pipeline refuses to build one.
 
 Keys never live in this repository. Before anything is signed, the pipeline walks the working tree
-and refuses to run if it finds a private key inside it. The scan checks names and content, reads
-every file to its end, and looks for the PEM header anywhere in a line: a key renamed to
+and refuses to run if it finds a private key inside it. It asks Git which files could reach a
+commit, which is every tracked file wherever it sits plus every untracked file Git would add, and
+scans exactly those. That leaves out build output, where the scan would otherwise find its own
+header constants compiled into a binary, and it leaves nothing out that a commit could carry.
+Outside a checkout it walks the tree instead, skipping the directories that hold build output.
+
+Each file is read to its end, and the PEM header is looked for anywhere in a line: a key renamed to
 `notes.txt` is found, and so is one pasted into the middle of a long file or inside a configuration
-value. It skips only Git's own object store, which holds compressed objects rather than files and
-whose contents are whatever the working tree already holds. The signing directory itself is checked
-too, and one inside the repository is refused.
+value. The signing directory itself is checked too, and one inside the repository is refused.
 
 That check is not a formality. A key that reaches a commit has to be rotated, and rotation means
 publishing a new root, waiting for every client to pick it up, and explaining why.

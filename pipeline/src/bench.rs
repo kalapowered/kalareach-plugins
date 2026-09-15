@@ -118,9 +118,20 @@ pub fn measure(template: &PluginManifest, entries: usize) -> Measurement {
 
     // The lookup path comes from the template's own match rule, so the measurement is the template
     // finding itself rather than a name this function happens to know.
+    // The lookup path comes from the template's own match rule, suffix included, so the
+    // measurement is that rule finding itself rather than a name this function happens to know.
     let executable = template.match_rules.first().map_or_else(
-        || "example-agent".to_owned(),
-        |rule| format!("/usr/local/bin/{}", rule.executable.file_stem),
+        || "/usr/local/bin/example-agent".to_owned(),
+        |rule| {
+            let mut path = String::from("/usr/local/bin");
+            for segment in &rule.executable.path_suffix {
+                path.push('/');
+                path.push_str(segment);
+            }
+            path.push('/');
+            path.push_str(&rule.executable.file_stem);
+            path
+        },
     );
     let started = Instant::now();
     let matches = parsed.matching_executable(&executable);

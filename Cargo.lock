@@ -163,6 +163,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 
 [[package]]
+name = "cap-fs-ext"
+version = "4.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56ff379b70af8e08307a8f65e7040c7301cb4a572538ade16b4984f0da77847f"
+dependencies = [
+ "cap-primitives",
+ "cap-std",
+ "io-lifetimes 3.0.1",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "cap-primitives"
 version = "4.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -437,9 +449,9 @@ checksum = "42703706b716c37f96a77aea830392ad231f44c9e9a67872fa5548707e11b11c"
 
 [[package]]
 name = "futures"
-version = "0.3.34"
+version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a31d2a3fbaaeb2af2368bbdd904aa8e812d3c04a1ee10d3171f52d556e5d0a3"
+checksum = "8b147ee9d1f6d097cef9ce628cd2ee62288d963e16fb287bd9286455b241382d"
 dependencies = [
  "futures-channel",
  "futures-core",
@@ -804,6 +816,7 @@ version = "0.1.0"
 dependencies = [
  "aws-lc-rs",
  "clap",
+ "futures",
  "hex",
  "jiff",
  "kr-plugin-sdk",
@@ -820,7 +833,7 @@ dependencies = [
 [[package]]
 name = "kr-cbor"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=fa70e9f1cb17011e405cdfbed57073ad8aec3339#fa70e9f1cb17011e405cdfbed57073ad8aec3339"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=050f88b6c4cb804408bb54baa6e7cba02ea036d2#050f88b6c4cb804408bb54baa6e7cba02ea036d2"
 dependencies = [
  "ciborium",
  "serde",
@@ -831,11 +844,13 @@ dependencies = [
 [[package]]
 name = "kr-plugin-sdk"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=fa70e9f1cb17011e405cdfbed57073ad8aec3339#fa70e9f1cb17011e405cdfbed57073ad8aec3339"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=050f88b6c4cb804408bb54baa6e7cba02ea036d2#050f88b6c4cb804408bb54baa6e7cba02ea036d2"
 dependencies = [
+ "cap-fs-ext",
  "cap-std",
  "hex",
  "kr-protocol",
+ "libc",
  "schemars",
  "semver",
  "serde",
@@ -847,7 +862,7 @@ dependencies = [
 [[package]]
 name = "kr-protocol"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=fa70e9f1cb17011e405cdfbed57073ad8aec3339#fa70e9f1cb17011e405cdfbed57073ad8aec3339"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=050f88b6c4cb804408bb54baa6e7cba02ea036d2#050f88b6c4cb804408bb54baa6e7cba02ea036d2"
 dependencies = [
  "base64 0.23.1",
  "kr-cbor",
