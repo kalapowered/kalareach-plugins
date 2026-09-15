@@ -144,6 +144,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2f6c7dbe95a6ed67ad9f18e57daf93a2f034c524b99fd2b76d18fdfeb6660aa"
 dependencies = [
  "hybrid-array",
+ "zeroize",
 ]
 
 [[package]]
@@ -374,6 +375,7 @@ dependencies = [
  "block-buffer",
  "const-oid",
  "crypto-common",
+ "zeroize",
 ]
 
 [[package]]
@@ -833,7 +835,7 @@ dependencies = [
 [[package]]
 name = "kr-cbor"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=050f88b6c4cb804408bb54baa6e7cba02ea036d2#050f88b6c4cb804408bb54baa6e7cba02ea036d2"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=c8e824854402253353c308972a24dde9c6348b1c#c8e824854402253353c308972a24dde9c6348b1c"
 dependencies = [
  "ciborium",
  "serde",
@@ -844,7 +846,7 @@ dependencies = [
 [[package]]
 name = "kr-plugin-sdk"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=050f88b6c4cb804408bb54baa6e7cba02ea036d2#050f88b6c4cb804408bb54baa6e7cba02ea036d2"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=c8e824854402253353c308972a24dde9c6348b1c#c8e824854402253353c308972a24dde9c6348b1c"
 dependencies = [
  "cap-fs-ext",
  "cap-std",
@@ -862,13 +864,15 @@ dependencies = [
 [[package]]
 name = "kr-protocol"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=050f88b6c4cb804408bb54baa6e7cba02ea036d2#050f88b6c4cb804408bb54baa6e7cba02ea036d2"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=c8e824854402253353c308972a24dde9c6348b1c#c8e824854402253353c308972a24dde9c6348b1c"
 dependencies = [
  "base64 0.23.1",
  "kr-cbor",
  "schemars",
  "serde",
  "serde_json",
+ "thiserror",
+ "zeroize",
 ]
 
 [[package]]
@@ -1725,6 +1729,20 @@ name = "zeroize"
 version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e13c156562582aa81c60cb29407084cdb54c4164760106ab78e6c5b0858cf64e"
+dependencies = [
+ "zeroize_derive",
+]
+
+[[package]]
+name = "zeroize_derive"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3c50655cbb0fe3fc43170059e702f1ce5e19b84cec58dc87b037a09935c2f328"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
 
 [[package]]
 name = "zerotrie"

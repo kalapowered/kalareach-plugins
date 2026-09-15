@@ -16,7 +16,7 @@ clap = { version = "=4.6.7", features = ["derive", "env"] }
 futures = "=0.3.32"
 hex = "=0.4.3"
 jiff = "=0.2.37"
-kr-plugin-sdk = { git = "https://github.com/kalapowered/kalareach.git", rev = "050f88b6c4cb804408bb54baa6e7cba02ea036d2" }
+kr-plugin-sdk = { git = "https://github.com/kalapowered/kalareach.git", rev = "c8e824854402253353c308972a24dde9c6348b1c" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 sha2 = "=0.11.0"
