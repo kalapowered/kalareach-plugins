@@ -1,0 +1,150 @@
+# Publishing a package
+
+A package is a directory under `plugins/<publisher>/<plugin>/`. Its contents, its manifest fields
+and the rules a host checks are the package contract, documented in the core repository at
+`docs/plugins/README.md`. This covers what happens around that: how a package gets into this
+catalogue, what a review pins, and how a package is withdrawn.
+
+## What you need first
+
+A publisher record. One JSON file at `publishers/<publisher>.json`, named after the identifier it
+declares:
+
+```json
+{
+  "record_version": 1,
+  "id": "example-vendor",
+  "display_name": "Example Vendor",
+  "homepage": "https://example.test",
+  "first_party": false,
+  "contact": "https://example.test/contact"
+}
+```
+
+The identifier is immutable. It becomes a directory name, a path segment in every target this
+catalogue signs, and half of every plugin identifier you publish. Choosing a new one later means
+publishing new packages, not renaming existing ones.
+
+## Adding a package
+
+Create `plugins/<publisher>/<plugin>/` with `plugin.json`, `presentation.json`, and whatever else
+the manifest declares. Declare every file: a file the manifest does not name is a defect, because a
+package whose contents differ from its manifest is a package whose hash does not mean what it says.
+
+Validate before you open a change:
+
+```bash
+cargo run -p kalareach-catalogue -- validate
+```
+
+The same check runs on every change here, and a host runs it again before it trusts the package.
+
+### The source pin
+
+`plugin.json` carries the repository and revision the release was built from:
+
+```json
+"source": {
+  "repository": "https://github.com/example-vendor/example-agent-plugin",
+  "revision": "refs/tags/v1.4.0"
+}
+```
+
+Keep your source wherever you like. A reviewed catalogue entry pins the publisher, that revision and
+the package digest, and a host installs the release. It never runs a vendor repository's current
+branch, so a tag that moves changes nothing for anybody who already installed the package.
+
+### Fixtures
+
+A package with controls should carry a fixture file. It lists cases, each naming what the host knows
+and which controls that case should show and enable:
+
+```json
+{
+  "fixture_version": 1,
+  "visibility": [
+    {
+      "name": "bound and idle",
+      "context": {
+        "rights": ["session.view"],
+        "binding_state": "bound",
+        "flags": [],
+        "capabilities": [],
+        "present_nodes": ["controls"]
+      },
+      "visible_controls": ["refresh"],
+      "enabled_controls": ["refresh"]
+    }
+  ]
+}
+```
+
+The pipeline evaluates your own predicates against each context and compares the result. A predicate
+edit that changes what a person sees fails the build instead of shipping.
+
+`plugins/kalareach/example-declarative/` is a complete working example.
+
+## What a review looks at
+
+A reviewer reads the manifest, not the code, because the manifest is what the host enforces.
+
+**Capabilities and the reasons beside them.** Every capability outside the default ceiling needs a
+reason a person will read while deciding whether to grant it. "Required for functionality" is not a
+reason. Ask for what you use and nothing more: a capability you requested and never exercise is a
+capability a reviewer has to take on trust.
+
+**Effect classes.** Every action declares one, and the broker enforces it. An action labelled
+`observe` that needs to send something upstream will fail at dispatch rather than quietly working,
+so declare the class the action actually has.
+
+**Match rules.** An `exact` rule identifies the application by something that cannot be coincidence:
+a bundle identifier, a package name in a registry. An `inferred` rule recognises an executable by
+name and is presented to the user as a guess. Claiming `exact` for a name match is the one thing in
+a manifest that is straightforwardly dishonest.
+
+**Connector tables.** A `connector.json` is a semantic trust claim, not a configuration file. It
+says: these methods observe, these mutate, these carry credentials, and this one is outside what I
+can proxy safely. Each classification carries the evidence you qualified it against, and the table
+is pinned to the protocol version you tested. A method you leave out is treated as a mutation, which
+is the safe answer rather than a gap.
+
+**Native bridges.** A bridge runs under the application's own permissions, outside the sandbox. The
+recipe lists exact files, configuration edits, hashes, version requirements and the operations that
+remove them again, and the installation grant states what it is. Prefer a small registration file
+that forwards to the core hook over anything larger.
+
+## Versions and revocation
+
+A version is immutable. Publishing a fix means publishing a new version, because hosts pin packages
+by hash and an active binding stays on the hash it bound to.
+
+To withdraw a release, add a revocation record to its index entry with the reason
+(`withdrawn`, `vulnerable`, `key_compromise` or `superseded`), the time and a statement a person
+reads. A revoked release stops new bindings. An active binding receives a warning and follows the
+administrator's explicit disable policy; it does not change under a live request, because changing a
+binding mid-request is how a person ends up approving something other than what they read.
+
+## Delegation
+
+Everything in this repository is currently signed by the top-level targets role. The catalogue
+format supports delegated targets roles beneath the root, scoped by publisher path, with snapshot
+pinning, terminating-role semantics, bounded depth and revocation.
+
+The plan for a vendor that wants to sign its own packages:
+
+1. The vendor generates its keys in its own signing environment. The private halves never leave it.
+2. The catalogue adds a delegated role for `packages/<publisher>/*`, holding the vendor's public
+   keys, with its own threshold and expiry.
+3. The vendor signs its own targets. This repository signs the delegation, not the packages.
+4. Revoking the delegation stops new bindings for everything under that path in one step.
+
+Until a vendor takes that on, its packages are signed here and the review above is what stands
+behind them.
+
+## What a signature does not mean
+
+A signature says which publisher released these exact bytes. It does not say the package is safe,
+that this host has permission to run it, or that a publisher's classification of an upstream method
+is correct. An installed connector is a semantic trust boundary: sandboxing a decoder does not make
+it truthful, which is why the publisher and the methods are recorded, and why granting a decoder is
+a decision a person makes rather than a consequence of installation.
