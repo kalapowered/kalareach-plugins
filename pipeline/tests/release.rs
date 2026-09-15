@@ -1,0 +1,237 @@
+//! The index build is deterministic, and the signed generation verifies.
+
+use std::path::{Path, PathBuf};
+
+use jiff::{Span, Timestamp};
+use kalareach_catalogue::keys::SigningDirectory;
+use kalareach_catalogue::tuf::{Expiries, INDEX_TARGET, METADATA_DIR, TARGETS_DIR};
+use kalareach_catalogue::{index, keys, packages, repository_root, tuf};
+use kr_plugin_sdk::ids::RepositoryGeneration;
+use kr_plugin_sdk::scalars::TimestampMs;
+
+fn root() -> PathBuf {
+    repository_root(Path::new(env!("CARGO_MANIFEST_DIR"))).expect("the repository root is above us")
+}
+
+/// The committed development generation.
+fn development_generation() -> PathBuf {
+    root().join("snapshots/development")
+}
+
+fn fixed_time() -> TimestampMs {
+    TimestampMs::new(1_760_000_000_000)
+}
+
+#[test]
+fn the_index_build_is_byte_identical_on_repeat() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let first = index::build(
+        &loaded.repository,
+        RepositoryGeneration::new(1),
+        fixed_time(),
+    );
+    let second = index::build(
+        &loaded.repository,
+        RepositoryGeneration::new(1),
+        fixed_time(),
+    );
+    let first = first.canonical_json().expect("the index renders");
+    let second = second.canonical_json().expect("the index renders");
+    assert_eq!(first, second);
+    assert!(first.ends_with('\n'));
+}
+
+#[test]
+fn the_index_carries_every_package_with_its_payload_hashes() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let index = index::build(
+        &loaded.repository,
+        RepositoryGeneration::new(1),
+        fixed_time(),
+    );
+    assert_eq!(index.entries.len(), loaded.repository.packages.len());
+    for entry in &index.entries {
+        assert!(
+            !entry.payloads.is_empty(),
+            "{} has no payloads",
+            entry.plugin_id
+        );
+        assert!(entry.total_size_bytes.get() > 0);
+        assert!(entry.accepts_new_bindings());
+    }
+    // Entries are ordered by publisher, plugin name and version.
+    let keys: Vec<_> = index
+        .entries
+        .iter()
+        .map(kr_plugin_sdk::catalogue::IndexEntry::sort_key)
+        .collect();
+    let mut sorted = keys.clone();
+    sorted.sort();
+    assert_eq!(keys, sorted);
+}
+
+#[tokio::test]
+async fn the_committed_development_generation_verifies() {
+    let verified = tuf::verify(&development_generation(), true)
+        .await
+        .expect("the development generation verifies");
+    assert!(verified.target_count > 0);
+    assert!(!verified.index.entries.is_empty());
+    assert_eq!(verified.index.generation, RepositoryGeneration::new(1));
+}
+
+#[tokio::test]
+async fn the_development_generation_matches_the_packages_it_was_built_from() {
+    let verified = tuf::verify(&development_generation(), true)
+        .await
+        .expect("the development generation verifies");
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let rebuilt = index::build(
+        &loaded.repository,
+        verified.index.generation,
+        verified.index.produced_at,
+    );
+    assert_eq!(
+        rebuilt.canonical_json().expect("the index renders"),
+        verified.index.canonical_json().expect("the index renders"),
+        "snapshots/development is stale; rebuild it as snapshots/README.md describes"
+    );
+}
+
+#[tokio::test]
+async fn a_tampered_target_fails_verification() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let generation = temporary.path().join("generation");
+    copy_tree(&development_generation(), &generation);
+
+    // Verification passes before the change, so the failure after it is the change.
+    tuf::verify(&generation, true)
+        .await
+        .expect("the copy verifies");
+
+    let index = generation.join(TARGETS_DIR).join(INDEX_TARGET);
+    let mut text = std::fs::read_to_string(&index).expect("the index reads");
+    text = text.replace("Recognises", "Replaces");
+    std::fs::write(&index, text).expect("the index writes");
+
+    let error = tuf::verify(&generation, true)
+        .await
+        .expect_err("a tampered target does not verify");
+    let message = error.to_string();
+    assert!(
+        message.contains("Hash mismatch") || message.contains("mismatch"),
+        "{message}"
+    );
+}
+
+#[tokio::test]
+async fn a_replaced_metadata_signature_fails_verification() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let generation = temporary.path().join("generation");
+    copy_tree(&development_generation(), &generation);
+
+    let targets = generation.join(METADATA_DIR).join("targets.json");
+    let mut document: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&targets).expect("the metadata reads"))
+            .expect("the metadata parses");
+    document["signed"]["version"] = serde_json::json!(2);
+    std::fs::write(
+        &targets,
+        serde_json::to_string_pretty(&document).expect("the metadata renders"),
+    )
+    .expect("the metadata writes");
+
+    tuf::verify(&generation, true)
+        .await
+        .expect_err("metadata whose signature no longer covers it does not verify");
+}
+
+#[tokio::test]
+async fn a_generation_signs_and_verifies_end_to_end() {
+    let Some(signing_dir) = std::env::var_os("KALAREACH_SIGNING_DIR") else {
+        // Signing needs keys, and keys live outside the repository. Without them this test has
+        // nothing to sign with; the committed development generation still proves verification.
+        return;
+    };
+    let repository_root = root();
+    keys::refuse_keys_in_tree(&repository_root).expect("no key is in the tree");
+    let signing = SigningDirectory::open(Path::new(&signing_dir), &repository_root)
+        .expect("the signing directory opens");
+
+    let loaded = packages::load(&repository_root).expect("the repository loads");
+    let catalogue = index::build(
+        &loaded.repository,
+        RepositoryGeneration::new(7),
+        fixed_time(),
+    );
+
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let out = temporary.path().join("generation");
+    let expires = Timestamp::now()
+        .checked_add(Span::new().hours(24))
+        .expect("an hour arithmetic that fits");
+    let outcome = tuf::build(
+        &loaded.repository,
+        &catalogue,
+        &signing,
+        Expiries {
+            targets: expires,
+            snapshot: expires,
+            timestamp: expires,
+        },
+        &out,
+    )
+    .await
+    .expect("the generation signs");
+
+    let verified = tuf::verify(&out, true)
+        .await
+        .expect("the generation verifies");
+    assert_eq!(verified.target_count, outcome.target_count);
+    assert_eq!(verified.index.generation, RepositoryGeneration::new(7));
+}
+
+#[test]
+fn a_private_key_in_the_tree_stops_the_pipeline() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let tree = temporary.path();
+    std::fs::write(tree.join("notes.txt"), "nothing to see").expect("the file writes");
+    keys::refuse_keys_in_tree(tree).expect("an ordinary tree is fine");
+
+    // A key renamed to look like anything else is still a key: the scan reads the header.
+    let header = format!(
+        "-----BEGIN {} KEY-----\nMIIB\n-----END {} KEY-----\n",
+        "PRIVATE", "PRIVATE"
+    );
+    std::fs::write(tree.join("notes.txt"), header).expect("the file writes");
+    let error = keys::refuse_keys_in_tree(tree).expect_err("a key in the tree stops the pipeline");
+    assert!(error.to_string().contains("private signing key"));
+
+    std::fs::write(tree.join("notes.txt"), "nothing to see").expect("the file writes");
+    std::fs::write(tree.join("root.pem"), "not really a key").expect("the file writes");
+    keys::refuse_keys_in_tree(tree).expect_err("a .pem file in the tree stops the pipeline");
+}
+
+#[test]
+fn a_signing_directory_inside_the_repository_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    let inside = repository.join("signing");
+    std::fs::create_dir_all(&inside).expect("the directories create");
+    let error = SigningDirectory::open(&inside, &repository)
+        .expect_err("a signing directory inside the repository is refused");
+    assert!(error.to_string().contains("outside the repository"));
+}
+
+fn copy_tree(from: &Path, to: &Path) {
+    std::fs::create_dir_all(to).expect("the destination directory");
+    for entry in std::fs::read_dir(from).expect("the source directory reads") {
+        let entry = entry.expect("a readable entry");
+        let target = to.join(entry.file_name());
+        if entry.path().is_dir() {
+            copy_tree(&entry.path(), &target);
+        } else {
+            std::fs::copy(entry.path(), target).expect("the file copies");
+        }
+    }
+}
