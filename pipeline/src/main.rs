@@ -207,6 +207,12 @@ async fn build(root: &std::path::Path, args: &BuildArgs) -> Result<()> {
         catalogue.entries.len(),
         outcome.target_count
     );
+    if let Some(retired) = &outcome.retired {
+        println!(
+            "the generation it replaced is at {}; remove it when you no longer want it",
+            retired.display()
+        );
+    }
     Ok(())
 }
 

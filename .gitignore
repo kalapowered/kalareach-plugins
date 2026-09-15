@@ -40,6 +40,8 @@ signing/
 
 # Catalogue generations are build output. The development generation is the exception: it is a
 # signed fixture, produced with a development key, that the core repository's sync tests read.
+# A generation a build replaced is left beside it under a dotted name, and is build output too.
 /snapshots/*
 !/snapshots/README.md
 !/snapshots/development/
+/snapshots/.*

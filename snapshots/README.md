@@ -44,8 +44,10 @@ cargo run -p kalareach-catalogue -- build \
   --replace
 ```
 
-The new generation is assembled beside its destination and moved into place once every target
-matches what the index declares, so a build that fails leaves the previous one intact.
+The new generation is assembled beside its destination and moved into place once it verifies there,
+so a build that fails leaves the previous one intact. The generation it replaced is moved beside it
+under a dotted name and left there; the build prints where. Removing it is yours to decide, because
+a directory the pipeline checked before a build is not necessarily the same directory afterwards.
 
 A production generation is signed in the signing environment, with keys that were generated there
 and never left it, and is published rather than committed.

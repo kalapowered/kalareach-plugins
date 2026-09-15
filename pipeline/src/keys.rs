@@ -90,41 +90,25 @@ enum CheckoutState {
     NotACheckout,
 }
 
-/// Asks Git whether a directory is inside a checkout.
+/// Returns whether a directory is inside a Git checkout.
 ///
-/// A probe that cannot run, or that fails for a reason other than "not a repository", is an error.
-/// Treating it as a non-checkout would quietly narrow the scan to the fallback walk, which skips
-/// the directories that hold build output, and a tracked key under one of those would then pass.
-///
-/// # Errors
-///
-/// Returns [`Error::Signing`] when Git cannot be run or answers in a way this cannot read.
+/// The answer comes from the filesystem rather than from a command's message. A `.git` directory or
+/// file at this directory or above it is a checkout, and nothing else is. Asking Git and reading
+/// what it said would depend on the wording of one version's diagnostics in one language, and on an
+/// inherited `GIT_DIR` that can make a checkout answer that it is not one.
 fn checkout_state(root: &Path) -> Result<CheckoutState> {
-    let output = std::process::Command::new("git")
-        .arg("-C")
-        .arg(root)
-        .args(["rev-parse", "--git-dir"])
-        .output()
-        .map_err(|source| Error::Signing {
-            detail: format!(
-                "git could not be run to check whether {} is a checkout: {source}",
-                root.display()
-            ),
-        })?;
-    if output.status.success() {
-        return Ok(CheckoutState::Checkout);
+    let mut current = std::fs::canonicalize(root).map_err(|source| Error::Io {
+        path: root.to_path_buf(),
+        source,
+    })?;
+    loop {
+        if current.join(".git").exists() {
+            return Ok(CheckoutState::Checkout);
+        }
+        if !current.pop() {
+            return Ok(CheckoutState::NotACheckout);
+        }
     }
-    let message = String::from_utf8_lossy(&output.stderr);
-    if message.contains("not a git repository") {
-        return Ok(CheckoutState::NotACheckout);
-    }
-    Err(Error::Signing {
-        detail: format!(
-            "git could not say whether {} is a checkout: {}",
-            root.display(),
-            message.trim()
-        ),
-    })
 }
 
 /// Returns every file that could reach a commit, as Git sees them.

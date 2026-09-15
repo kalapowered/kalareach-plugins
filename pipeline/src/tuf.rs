@@ -205,12 +205,13 @@ pub async fn build(
     // The generation verifies where it was assembled. Only then does it become the one at the
     // destination, so a generation that does not verify never replaces one that did.
     verify(&staging, false).await?;
-    publish(&staging, out_dir, existing)?;
+    let published = publish(&staging, out_dir, existing)?;
 
     Ok(BuildOutcome {
         target_count: staged.len(),
         metadata_dir: out_dir.join(METADATA_DIR),
         targets_dir: out_dir.join(TARGETS_DIR),
+        retired: published.retired,
     })
 }
 
@@ -297,77 +298,85 @@ fn staging_dir(out_dir: &Path) -> PathBuf {
 
 /// Moves a finished generation into its destination.
 ///
-/// The previous generation is moved aside first and removed only once the new one is in place, so
-/// an interrupted publication leaves one whole generation rather than none.
-fn publish(staging: &Path, out_dir: &Path, existing: Destination) -> Result<()> {
-    let retired = out_dir.with_file_name(format!(
-        ".{}.retired",
-        out_dir
-            .file_name()
-            .and_then(|name| name.to_str())
-            .unwrap_or("generation")
-    ));
-    if retired.exists() {
+/// The previous generation is moved aside under its own name and left there. Nothing this did not
+/// write is removed: a directory that was checked before a build started is not the same directory
+/// when the build finishes, and the only safe answer to that is to keep it. An empty destination is
+/// removed, because removing an empty directory destroys nothing.
+fn publish(staging: &Path, out_dir: &Path, existing: Destination) -> Result<PublishOutcome> {
+    // What is at the destination now, rather than what was there when the build started.
+    if describe_destination(out_dir)? != existing {
         return Err(Error::Layout {
             detail: format!(
-                "{} is left over from an interrupted publication; move it aside first",
-                retired.display()
+                "{} changed while the generation was being built; nothing was replaced",
+                out_dir.display()
             ),
         });
     }
-    if existing != Destination::Absent {
-        // The destination is checked again here. The build takes time, and the check that permitted
-        // a replacement was made before it started: anything added since is somebody's file, and
-        // the answer to that is to stop rather than to remove it.
-        if describe_destination(out_dir)? != Destination::Occupied {
-            return Err(Error::Layout {
-                detail: format!(
-                    "{} changed while the generation was being built; nothing was replaced",
-                    out_dir.display()
-                ),
-            });
+
+    let mut retired = None;
+    match existing {
+        Destination::Absent => {}
+        Destination::Empty => {
+            std::fs::remove_dir(out_dir).map_err(|source| Error::Io {
+                path: out_dir.to_path_buf(),
+                source,
+            })?;
         }
-        std::fs::rename(out_dir, &retired).map_err(|source| Error::Io {
-            path: out_dir.to_path_buf(),
-            source,
-        })?;
+        Destination::Occupied => {
+            let aside = retired_dir(out_dir)?;
+            std::fs::rename(out_dir, &aside).map_err(|source| Error::Io {
+                path: out_dir.to_path_buf(),
+                source,
+            })?;
+            retired = Some(aside);
+        }
     }
+
     if let Some(parent) = out_dir.parent() {
         std::fs::create_dir_all(parent).map_err(|source| Error::Io {
             path: parent.to_path_buf(),
             source,
         })?;
     }
-    match std::fs::rename(staging, out_dir) {
-        Ok(()) => {}
-        Err(source) => {
-            // Put the previous generation back rather than leaving the destination empty.
-            if existing != Destination::Absent {
-                let _ = std::fs::rename(&retired, out_dir);
-            }
-            return Err(Error::Io {
-                path: out_dir.to_path_buf(),
-                source,
-            });
+    if let Err(source) = std::fs::rename(staging, out_dir) {
+        // Put the previous generation back rather than leaving the destination empty.
+        if let Some(aside) = &retired {
+            let _ = std::fs::rename(aside, out_dir);
         }
-    }
-    if retired.exists() {
-        // Only a generation is removed. Anything else under that name is left where it is and
-        // reported, because a directory this did not recognise is a directory it did not put there.
-        if describe_destination(&retired)? != Destination::Occupied {
-            return Err(Error::Layout {
-                detail: format!(
-                    "the replaced generation was moved to {} and is not a generation; it was left there",
-                    retired.display()
-                ),
-            });
-        }
-        std::fs::remove_dir_all(&retired).map_err(|source| Error::Io {
-            path: retired,
+        return Err(Error::Io {
+            path: out_dir.to_path_buf(),
             source,
-        })?;
+        });
     }
-    Ok(())
+    Ok(PublishOutcome { retired })
+}
+
+/// Where a publication put the generation it replaced.
+#[derive(Clone, Debug)]
+struct PublishOutcome {
+    /// The directory the previous generation was moved to, where there was one.
+    retired: Option<PathBuf>,
+}
+
+/// Returns an unused name beside the destination for the generation being replaced.
+fn retired_dir(out_dir: &Path) -> Result<PathBuf> {
+    let name = out_dir
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("generation");
+    for ordinal in 0..1000u32 {
+        let candidate = out_dir.with_file_name(format!(".{name}.retired.{ordinal}"));
+        if !candidate.exists() {
+            return Ok(candidate);
+        }
+    }
+    Err(Error::Layout {
+        detail: format!(
+            "every name beside {} is taken by a generation this replaced; remove the ones you no \
+             longer want",
+            out_dir.display()
+        ),
+    })
 }
 
 /// Returns the metadata version for one generation.
@@ -516,6 +525,11 @@ pub struct BuildOutcome {
     pub metadata_dir: PathBuf,
     /// Where the targets were written.
     pub targets_dir: PathBuf,
+    /// Where the generation this replaced was moved to, where it replaced one.
+    ///
+    /// It is left there. Removing it is the operator's decision, because a directory the pipeline
+    /// checked before a build is not necessarily the same directory when the build finishes.
+    pub retired: Option<PathBuf>,
 }
 
 /// What verification found.

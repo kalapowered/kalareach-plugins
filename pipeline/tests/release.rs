@@ -364,6 +364,70 @@ async fn a_build_refuses_a_destination_that_is_not_a_generation() {
 }
 
 #[tokio::test]
+async fn a_replaced_generation_is_kept_rather_than_removed() {
+    let Some(signing_dir) = std::env::var_os("KALAREACH_SIGNING_DIR") else {
+        return;
+    };
+    let repository_root = root();
+    let signing = SigningDirectory::open(Path::new(&signing_dir), &repository_root)
+        .expect("the signing directory opens");
+    let loaded = packages::load(&repository_root).expect("the repository loads");
+    let expires = Timestamp::now()
+        .checked_add(Span::new().hours(24))
+        .expect("an hour arithmetic that fits");
+    let expiries = Expiries {
+        targets: expires,
+        snapshot: expires,
+        timestamp: expires,
+    };
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let out = temporary.path().join("generation");
+
+    let first_index = index::build(
+        &loaded.repository,
+        RepositoryGeneration::new(1),
+        fixed_time(),
+    );
+    let first = tuf::build(
+        &loaded.repository,
+        &first_index,
+        &signing,
+        expiries,
+        &out,
+        false,
+    )
+    .await
+    .expect("the first generation signs");
+    assert!(first.retired.is_none());
+
+    let second_index = index::build(
+        &loaded.repository,
+        RepositoryGeneration::new(2),
+        fixed_time(),
+    );
+    let second = tuf::build(
+        &loaded.repository,
+        &second_index,
+        &signing,
+        expiries,
+        &out,
+        true,
+    )
+    .await
+    .expect("the second generation signs");
+
+    // The generation it replaced is still there, under its own name, with its metadata intact.
+    let retired = second.retired.expect("the replaced generation was kept");
+    assert!(retired.join("root.json").is_file(), "{}", retired.display());
+    let verified = tuf::verify(&out, true).await.expect("the new one verifies");
+    assert_eq!(verified.index.generation, RepositoryGeneration::new(2));
+    let previous = tuf::verify(&retired, true)
+        .await
+        .expect("the replaced one still verifies");
+    assert_eq!(previous.index.generation, RepositoryGeneration::new(1));
+}
+
+#[tokio::test]
 async fn a_build_refuses_generation_zero_before_it_writes() {
     let Some(signing_dir) = std::env::var_os("KALAREACH_SIGNING_DIR") else {
         return;
