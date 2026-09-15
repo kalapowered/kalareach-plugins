@@ -67,26 +67,64 @@ const SCAN_CHUNK: usize = 64 * 1024;
 /// Returns [`Error::KeyInTree`] naming the first file that looks like a private key, and
 /// [`Error::Io`] when the tree cannot be read.
 pub fn refuse_keys_in_tree(root: &Path) -> Result<()> {
-    if is_checkout(root) {
-        // Inside a checkout, Git decides. A command that then fails is a failure rather than a
-        // reason to fall back to a coarser scan of the same tree.
-        let paths = tracked_and_untracked(root)?;
-        for path in paths {
-            check_file(&path)?;
+    match checkout_state(root)? {
+        CheckoutState::Checkout => {
+            // Inside a checkout, Git decides which files could reach a commit. A command that then
+            // fails is a failure rather than a reason to fall back to a coarser scan of the same
+            // tree.
+            for path in tracked_and_untracked(root)? {
+                check_file(&path)?;
+            }
+            Ok(())
         }
-        return Ok(());
+        CheckoutState::NotACheckout => walk(root),
     }
-    walk(root)
 }
 
-/// Returns true when a directory is inside a Git checkout.
-fn is_checkout(root: &Path) -> bool {
-    std::process::Command::new("git")
+/// Whether a directory is inside a Git checkout.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum CheckoutState {
+    /// Git answered that it is.
+    Checkout,
+    /// Git answered that it is not.
+    NotACheckout,
+}
+
+/// Asks Git whether a directory is inside a checkout.
+///
+/// A probe that cannot run, or that fails for a reason other than "not a repository", is an error.
+/// Treating it as a non-checkout would quietly narrow the scan to the fallback walk, which skips
+/// the directories that hold build output, and a tracked key under one of those would then pass.
+///
+/// # Errors
+///
+/// Returns [`Error::Signing`] when Git cannot be run or answers in a way this cannot read.
+fn checkout_state(root: &Path) -> Result<CheckoutState> {
+    let output = std::process::Command::new("git")
         .arg("-C")
         .arg(root)
         .args(["rev-parse", "--git-dir"])
         .output()
-        .is_ok_and(|output| output.status.success())
+        .map_err(|source| Error::Signing {
+            detail: format!(
+                "git could not be run to check whether {} is a checkout: {source}",
+                root.display()
+            ),
+        })?;
+    if output.status.success() {
+        return Ok(CheckoutState::Checkout);
+    }
+    let message = String::from_utf8_lossy(&output.stderr);
+    if message.contains("not a git repository") {
+        return Ok(CheckoutState::NotACheckout);
+    }
+    Err(Error::Signing {
+        detail: format!(
+            "git could not say whether {} is a checkout: {}",
+            root.display(),
+            message.trim()
+        ),
+    })
 }
 
 /// Returns every file that could reach a commit, as Git sees them.

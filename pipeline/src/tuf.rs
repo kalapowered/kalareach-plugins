@@ -179,7 +179,8 @@ pub async fn build(
     let metadata_dir = staging.join(METADATA_DIR);
     let staged = stage_targets(repository, index, &targets_dir)?;
     let declared = report_paths(index)?;
-    check_staged_against_validation(&staged, &declared, &report_index(index)?)?;
+    let index_bytes = report_index(index)?;
+    check_staged_against_validation(&staged, &declared, &index_bytes)?;
 
     write(&staging.join("root.json"), &root_bytes)?;
 
@@ -193,7 +194,7 @@ pub async fn build(
         .timestamp_expires(expiries.timestamp);
     for target in &staged {
         let built = Target::from_path(&target.path).await.map_err(Error::from)?;
-        check_target_against_validation(&target.name, &built, &declared, &report_index(index)?)?;
+        check_target_against_validation(&target.name, &built, &declared, &index_bytes)?;
         editor.add_target(target.name.as_str(), built)?;
     }
 
@@ -315,6 +316,17 @@ fn publish(staging: &Path, out_dir: &Path, existing: Destination) -> Result<()> 
         });
     }
     if existing != Destination::Absent {
+        // The destination is checked again here. The build takes time, and the check that permitted
+        // a replacement was made before it started: anything added since is somebody's file, and
+        // the answer to that is to stop rather than to remove it.
+        if describe_destination(out_dir)? != Destination::Occupied {
+            return Err(Error::Layout {
+                detail: format!(
+                    "{} changed while the generation was being built; nothing was replaced",
+                    out_dir.display()
+                ),
+            });
+        }
         std::fs::rename(out_dir, &retired).map_err(|source| Error::Io {
             path: out_dir.to_path_buf(),
             source,
@@ -340,6 +352,16 @@ fn publish(staging: &Path, out_dir: &Path, existing: Destination) -> Result<()> 
         }
     }
     if retired.exists() {
+        // Only a generation is removed. Anything else under that name is left where it is and
+        // reported, because a directory this did not recognise is a directory it did not put there.
+        if describe_destination(&retired)? != Destination::Occupied {
+            return Err(Error::Layout {
+                detail: format!(
+                    "the replaced generation was moved to {} and is not a generation; it was left there",
+                    retired.display()
+                ),
+            });
+        }
         std::fs::remove_dir_all(&retired).map_err(|source| Error::Io {
             path: retired,
             source,
