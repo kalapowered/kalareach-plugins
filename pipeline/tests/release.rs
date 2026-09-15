@@ -465,6 +465,21 @@ async fn a_build_refuses_generation_zero_before_it_writes() {
     assert!(!out.exists(), "the destination was written to");
 }
 
+#[cfg(unix)]
+#[test]
+fn a_broken_checkout_marker_is_still_a_checkout() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let tree = temporary.path().join("tree");
+    std::fs::create_dir_all(&tree).expect("the directory creates");
+    // A `.git` that points at nothing. Reading it fails; its presence still says this is a
+    // checkout, and the scan must ask Git rather than fall back to the coarser walk.
+    std::os::unix::fs::symlink(tree.join("missing"), tree.join(".git")).expect("the link is made");
+
+    let error =
+        keys::refuse_keys_in_tree(&tree).expect_err("a checkout Git cannot list stops the scan");
+    assert!(error.to_string().contains("git could not list"), "{error}");
+}
+
 #[test]
 fn a_signing_directory_inside_the_repository_is_refused() {
     let temporary = tempfile::tempdir().expect("a temporary directory");

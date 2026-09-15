@@ -102,8 +102,18 @@ fn checkout_state(root: &Path) -> Result<CheckoutState> {
         source,
     })?;
     loop {
-        if current.join(".git").exists() {
-            return Ok(CheckoutState::Checkout);
+        let marker = current.join(".git");
+        // `symlink_metadata` reports the entry itself. A `.git` that is a broken link is still a
+        // `.git`, and treating it as absent would quietly fall back to the coarser walk.
+        match std::fs::symlink_metadata(&marker) {
+            Ok(_) => return Ok(CheckoutState::Checkout),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(source) => {
+                return Err(Error::Io {
+                    path: marker,
+                    source,
+                });
+            }
         }
         if !current.pop() {
             return Ok(CheckoutState::NotACheckout);
