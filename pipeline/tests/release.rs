@@ -7,6 +7,7 @@ use kalareach_catalogue::keys::SigningDirectory;
 use kalareach_catalogue::tuf::{Expiries, INDEX_TARGET, METADATA_DIR, TARGETS_DIR};
 use kalareach_catalogue::{index, keys, packages, repository_root, tuf};
 use kr_plugin_sdk::ids::RepositoryGeneration;
+use kr_plugin_sdk::plugin::PayloadRole;
 use kr_plugin_sdk::scalars::TimestampMs;
 
 fn root() -> PathBuf {
@@ -16,6 +17,28 @@ fn root() -> PathBuf {
 /// The committed development generation.
 fn development_generation() -> PathBuf {
     root().join("snapshots/development")
+}
+
+/// The target path one package payload has in a generation, as the index names it.
+///
+/// Derived from the package the generation was built from rather than written out here, so a
+/// package that publishes a new version does not silently stop being the target a test edits.
+fn target_path(plugin_id: &str, role: PayloadRole) -> String {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let package = loaded
+        .repository
+        .packages
+        .iter()
+        .find(|package| package.package.manifest.plugin_id().as_str() == plugin_id)
+        .unwrap_or_else(|| panic!("{plugin_id} is published by this repository"));
+    let manifest = &package.package.manifest;
+    let payload = manifest
+        .payload(role)
+        .unwrap_or_else(|| panic!("{plugin_id} declares a {role:?} payload"));
+    format!(
+        "packages/{}/{}/{}/{}",
+        manifest.publisher_id, manifest.plugin_name, manifest.version, payload.path
+    )
 }
 
 fn fixed_time() -> TimestampMs {
@@ -230,9 +253,9 @@ async fn a_replaced_package_payload_fails_verification() {
 
     // One package's document replaced by another's. Both are signed targets of this generation, so
     // only reading each target under the name the index declares catches it.
-    let targets = generation.join(TARGETS_DIR).join("packages/kalareach");
-    let from = targets.join("codex/0.1.0/presentation.json");
-    let to = targets.join("opencode/0.1.0/presentation.json");
+    let targets = generation.join(TARGETS_DIR);
+    let from = targets.join(target_path("kalareach/codex", PayloadRole::Presentation));
+    let to = targets.join(target_path("kalareach/opencode", PayloadRole::Presentation));
     std::fs::copy(&from, &to).expect("the document copies");
 
     tuf::verify(&generation, true)
@@ -248,7 +271,7 @@ async fn a_missing_package_payload_fails_verification() {
     std::fs::remove_file(
         generation
             .join(TARGETS_DIR)
-            .join("packages/kalareach/codex/0.1.0/README.md"),
+            .join(target_path("kalareach/codex", PayloadRole::Asset)),
     )
     .expect("the asset is removed");
 
