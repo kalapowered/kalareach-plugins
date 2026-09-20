@@ -1,9 +1,10 @@
 //! Every package in the repository validates, and a broken one does not.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use kalareach_catalogue::{fixtures, packages, repository_root};
+use kr_plugin_sdk::connector::{FieldPath, FieldSegment, MethodClass};
 use kr_plugin_sdk::matching::MatchConfidence;
 
 fn root() -> PathBuf {
@@ -78,6 +79,26 @@ fn the_bundled_connectors_claim_only_what_they_carry() {
     }
 }
 
+/// The bundled connectors, and the identities each one is qualified against.
+///
+/// A generic check cannot tell whether two packages swapped their applications, because both
+/// arrangements are structurally sound. The repository knows its own packages, so the expected
+/// pairing is written here and a new connector has to be added deliberately.
+const BUNDLED_CONNECTORS: &[(&str, &str, &str, &str)] = &[
+    (
+        "kalareach/claude-code",
+        "claude-code-channels",
+        "npm",
+        "@anthropic-ai/claude-code",
+    ),
+    (
+        "kalareach/codex",
+        "codex-app-server",
+        "npm",
+        "@openai/codex",
+    ),
+];
+
 #[test]
 fn a_native_bridge_grant_states_where_the_code_runs() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -88,26 +109,39 @@ fn a_native_bridge_grant_states_where_the_code_runs() {
         };
         recipes += 1;
         // The validator checks that a recipe is complete and removable. It cannot check that the
-        // grant a person reads before accepting it says what accepting it means. The two facts
-        // section 11 requires are whose permissions the code runs under and that it runs outside
-        // the sandbox, and both have to be asserted rather than merely mentioned: "runs inside the
-        // sandbox with its own permissions" contains both words and states the opposite.
+        // grant a person reads before accepting it says what accepting it means. Section 11 asks
+        // for two facts, and both have to be asserted rather than mentioned: "runs inside the
+        // sandbox with its own permissions; nothing runs outside the sandbox" contains every word
+        // and states the opposite. So the clause is read in order, from "runs under" onwards.
         let statement = bridge.grant_statement.as_str();
-        assert!(
-            statement.contains("own permissions"),
-            "{}: the grant does not say whose permissions the bridge runs under: {statement}",
-            package.relative
-        );
-        let outside = statement.find("outside the").unwrap_or_else(|| {
+        let runs = statement.find("runs under").unwrap_or_else(|| {
             panic!(
-                "{}: the grant says nothing runs outside anything: {statement}",
+                "{}: the grant does not say what the bridge runs under: {statement}",
                 package.relative
             )
         });
-        let clause: String = statement[outside..].chars().take(60).collect();
+        let clause = &statement[runs..];
+        let permissions = clause.find("own permissions").unwrap_or_else(|| {
+            panic!(
+                "{}: the grant does not say whose permissions it runs under: {clause}",
+                package.relative
+            )
+        });
+        let outside = clause[permissions..].find("outside").unwrap_or_else(|| {
+            panic!(
+                "{}: the grant does not say the bridge runs outside anything: {clause}",
+                package.relative
+            )
+        });
+        let scope: String = clause[permissions + outside..].chars().take(60).collect();
         assert!(
-            clause.contains("sandbox"),
-            "{}: the grant says something runs outside, but not outside the sandbox: {clause}",
+            scope.contains("sandbox"),
+            "{}: the grant says something runs outside, but not outside the sandbox: {scope}",
+            package.relative
+        );
+        assert!(
+            clause.contains("Wasmtime"),
+            "{}: the grant does not name Wasmtime, which section 11 requires it to: {clause}",
             package.relative
         );
         assert!(
@@ -122,63 +156,189 @@ fn a_native_bridge_grant_states_where_the_code_runs() {
 #[test]
 fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
     let loaded = packages::load(&root()).expect("the repository loads");
-    let mut protocols: BTreeMap<String, String> = BTreeMap::new();
-    let mut distributions: BTreeMap<(String, String), String> = BTreeMap::new();
-    let mut connectors = 0;
+    let expected: BTreeMap<&str, (&str, &str, &str)> = BUNDLED_CONNECTORS
+        .iter()
+        .map(|(plugin, protocol, registry, identifier)| {
+            (*plugin, (*protocol, *registry, *identifier))
+        })
+        .collect();
+    let mut seen = BTreeSet::new();
     for package in &loaded.repository.packages {
         let Some(connector) = &package.package.connector else {
             continue;
         };
-        connectors += 1;
-        // One protocol, one profile. Two packages pinned to the same protocol name would leave a
-        // host choosing between two qualifications of one upstream.
-        if let Some(first) =
-            protocols.insert(connector.protocol.name.clone(), package.relative.clone())
-        {
-            panic!(
-                "{} and {} both claim the protocol {}",
-                first, package.relative, connector.protocol.name
-            );
-        }
+        let manifest = &package.package.manifest;
+        let plugin = manifest.plugin_id().to_string();
+        let Some((protocol, registry, identifier)) = expected.get(plugin.as_str()) else {
+            panic!("{plugin} carries a connector table and is not a listed bundled connector");
+        };
+        seen.insert(plugin.clone());
+        // One package, one protocol, and the protocol its own application speaks. Two packages
+        // that swapped their applications would each still be internally consistent.
+        assert_eq!(
+            &connector.protocol.name, protocol,
+            "{plugin} is pinned to the wrong protocol"
+        );
         // A profile is not selected by a name on disk alone. A package that reads somebody's
-        // protocol carries at least one rule that identifies the application by something that
-        // cannot be coincidence, and an executable name on its own is always inferred.
+        // protocol carries a rule that identifies the application by something that cannot be
+        // coincidence, and an executable name on its own is always inferred.
         let mut exact = 0;
-        for rule in &package.package.manifest.match_rules {
+        for rule in &manifest.match_rules {
             match &rule.distribution.0 {
                 None => assert_eq!(
                     rule.confidence,
                     MatchConfidence::Inferred,
-                    "{}: the rule {} claims an exact match from an executable name",
-                    package.relative,
+                    "{plugin}: the rule {} claims an exact match from an executable name",
                     rule.id
                 ),
                 Some(distribution) => {
-                    exact += usize::from(rule.confidence == MatchConfidence::Exact);
-                    // Two profiles that name one distribution are one application described twice.
-                    let key = (
-                        distribution.registry().to_owned(),
-                        distribution.identifier().to_owned(),
+                    assert_eq!(
+                        (distribution.registry(), distribution.identifier()),
+                        (*registry, *identifier),
+                        "{plugin}: the rule {} recognises another application's distribution",
+                        rule.id
                     );
-                    if let Some(first) = distributions.insert(key, package.relative.clone()) {
-                        panic!(
-                            "{} and {} both recognise {} {}",
-                            first,
-                            package.relative,
-                            distribution.registry(),
-                            distribution.identifier()
-                        );
-                    }
+                    exact += usize::from(rule.confidence == MatchConfidence::Exact);
                 }
             }
         }
         assert!(
             exact > 0,
-            "{} recognises its application by name alone",
-            package.relative
+            "{plugin} recognises its application by name alone"
         );
     }
-    assert!(connectors > 0, "no package carries a connector table");
+    assert_eq!(
+        seen.len(),
+        BUNDLED_CONNECTORS.len(),
+        "a listed bundled connector is not in the repository"
+    );
+}
+
+/// One pinned vendor frame and what the package's table has to make of it.
+#[derive(serde::Deserialize)]
+struct CorpusFrame {
+    situation: String,
+    #[allow(dead_code)]
+    note: String,
+    frame: serde_json::Value,
+    expect: Expectation,
+}
+
+#[derive(serde::Deserialize)]
+struct Expectation {
+    wire_name: String,
+    /// The method the table names, or nothing when the table does not route it.
+    method: Option<String>,
+    direction: Option<String>,
+    class: String,
+    /// The identifier the table's path finds, with its JSON type, or nothing when there is none.
+    request_id: Option<serde_json::Value>,
+}
+
+#[derive(serde::Deserialize)]
+struct FrameCorpus {
+    corpus_version: u32,
+    protocol: String,
+    tested_version: String,
+    #[allow(dead_code)]
+    source: String,
+    frames: Vec<CorpusFrame>,
+}
+
+/// Walks a connector's bounded field path over a decoded frame.
+fn at<'a>(value: &'a serde_json::Value, path: &FieldPath) -> Option<&'a serde_json::Value> {
+    let mut current = value;
+    for segment in &path.segments {
+        current = match segment {
+            FieldSegment::Member { name } => current.get(name)?,
+            FieldSegment::Index { index } => current.get(*index as usize)?,
+        };
+    }
+    Some(current)
+}
+
+#[test]
+fn every_pinned_frame_is_read_the_way_the_table_says() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let mut checked = 0;
+    for package in &loaded.repository.packages {
+        let Some(connector) = &package.package.connector else {
+            continue;
+        };
+        let path = package.directory.join("fixtures/frames.json");
+        let corpus: FrameCorpus = kalareach_catalogue::read_json(&path)
+            .unwrap_or_else(|error| panic!("{}: {error}", package.relative));
+        assert_eq!(corpus.corpus_version, 1, "{}", package.relative);
+        assert_eq!(
+            corpus.protocol, connector.protocol.name,
+            "{}: the corpus names another protocol",
+            package.relative
+        );
+        assert_eq!(
+            corpus.tested_version,
+            connector.protocol.tested_version.to_string(),
+            "{}: the corpus was taken from another version",
+            package.relative
+        );
+        let mut situations = BTreeSet::new();
+        for case in &corpus.frames {
+            situations.insert(case.situation.clone());
+            let where_ = format!("{} [{}]", package.relative, case.situation);
+            checked += 1;
+
+            // The method the table finds, at the path the table declares.
+            let wire = at(&case.frame, &connector.method_path)
+                .and_then(serde_json::Value::as_str)
+                .unwrap_or_else(|| panic!("{where_}: no method at the table's method path"));
+            assert_eq!(wire, case.expect.wire_name, "{where_}");
+
+            // The identifier the table finds, with the JSON type it was written with. A string
+            // identifier and the number that spells the same digits are different requests.
+            let found = at(&case.frame, &connector.request_id_path);
+            assert_eq!(
+                found,
+                case.expect.request_id.as_ref(),
+                "{where_}: the identifier at the table's path is not the one the corpus declares"
+            );
+
+            match connector.route_for_wire_name(wire) {
+                None => {
+                    assert!(
+                        case.expect.method.is_none(),
+                        "{where_}: the corpus expects this to be routed and the table does not route it"
+                    );
+                    // An unrouted request is a mutation, and nothing in a table changes that.
+                    assert_eq!(
+                        case.expect.class, "mutation",
+                        "{where_}: an unrouted method is a mutation"
+                    );
+                    assert_eq!(MethodClass::UNCLASSIFIED, MethodClass::Mutation);
+                }
+                Some(route) => {
+                    assert_eq!(
+                        Some(route.method.to_string()),
+                        case.expect.method,
+                        "{where_}: the table routes this to another method"
+                    );
+                    let direction = serde_json::to_value(route.direction)
+                        .ok()
+                        .and_then(|value| value.as_str().map(str::to_owned));
+                    assert_eq!(direction, case.expect.direction, "{where_}");
+                    let class = serde_json::to_value(connector.classify(&route.method))
+                        .ok()
+                        .and_then(|value| value.as_str().map(str::to_owned));
+                    assert_eq!(class, Some(case.expect.class.clone()), "{where_}");
+                }
+            }
+        }
+        assert!(
+            situations.len() >= 5,
+            "{}: the corpus covers {} situations",
+            package.relative,
+            situations.len()
+        );
+    }
+    assert!(checked > 0, "no package carries a frame corpus");
 }
 
 #[test]

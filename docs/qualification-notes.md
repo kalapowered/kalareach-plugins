@@ -22,12 +22,16 @@ exercised behaviour: no upstream was driven and no bridge was installed.
 The evidence itself is pinned by content, so a later reader can tell whether they are looking at the
 same bytes:
 
-| Evidence | SHA-256, first 16 hex characters |
-| --- | --- |
-| `codex` 0.155.1, the launcher npm installs at `@openai/codex/bin/codex.js` | `61b0194f3bb65344` |
-| Codex generated schema, `codex_app_server_protocol.schemas.json` | `f1f3591667d8dcf7` |
-| Codex generated schema, `codex_app_server_protocol.v2.schemas.json` | `f0402dc8ce8d2781` |
-| Claude Code 2.1.278 executable | `bd245662fb8a0e32` |
+| Evidence | Platform | SHA-256 |
+| --- | --- | --- |
+| Codex 0.155.1, the native executable at `@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex` | macOS, arm64 | `8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e` |
+| Codex 0.155.1, the launcher npm puts on the path at `@openai/codex/bin/codex.js` | any | `61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70` |
+| Codex generated schema, `codex_app_server_protocol.schemas.json` | | `f1f3591667d8dcf7` (first 16) |
+| Codex generated schema, `codex_app_server_protocol.v2.schemas.json` | | `f0402dc8ce8d2781` (first 16) |
+| Claude Code 2.1.278 executable | macOS, arm64 | `bd245662fb8a0e32` (first 16) |
+
+The App Server is the native executable, which is what the schema above was generated from. The
+launcher is listed beside it because it is what npm puts on the path.
 
 ## kalareach/codex
 
@@ -161,22 +165,23 @@ Because all three are notifications, none of them carries a JSON-RPC `id`. The c
 identifier is `params.request_id`, which is where the table puts it. Status: verified against the
 published documentation.
 
-The answer action binds one parameter, the decision. It does not bind the identifier, because the
-identifier is the field the broker owns. The vendor's own documented failure mode is the one this is
+The package registers no answer action. The identifier is the field the broker owns, so an answer's
+identifier comes from the request being resolved rather than from a caller. The vendor's own documented failure mode is the one this is
 meant to close: a reply in the wrong format falls through to Claude as an ordinary message, and a
 reply naming an identifier nobody issued is dropped in silence. Inside KalaReach neither becomes a
 message, because the message path is a separate action with its own effect class. Status: the
-notification shapes are a document check. Whether an answer reaches the request the person read is
-the host's dispatch path, and it is not verified here.
+notification shapes are a document check. The path an answer takes inside the host is not this
+package's and is not verified here.
 
-The package draws no Allow and Deny control of its own. A control's visibility is a predicate over
-facts the host knows, and the only fact available is that some approval is pending, which does not
-name one. A control drawn on that fact could be answered against a request that became pending after
-the person read a different one. The package therefore registers the action and leaves the control to
-the host, beside the ledger resource that names the request. The SDK has no parameter kind or control
-field that names an approval resource, and a package document cannot carry an `approval_ref` because
-that node names a runtime resource. Status: an open interface question, recorded rather than worked
-around.
+The package draws no Allow and Deny control and registers no answer action. A control's visibility is
+a predicate over facts the host knows, and the only fact available is that some approval is pending,
+which does not name one; a control drawn on that fact could be answered against a request that became
+pending after the person read a different one. The SDK's plugin-action invocation carries no
+reference to an approval resource either, while the host's own approval method does. So this package
+supplies the table and asks for the trust to have an answer encoded through it, and the answer is
+dispatched by the path that names the resource. The SDK has no parameter kind or control field that
+names an approval resource, and a package document cannot carry an `approval_ref` because that node
+names a runtime resource. Status: an interface limit, recorded rather than worked around.
 
 ### Runtime installation gates
 
@@ -199,10 +204,15 @@ Registering the channel does not enable it. Every one of these is decided where 
    registration when the feature is not available to the session, independently of the settings
    above.
 
+8. The skills directory is scanned at all. The installed executable carries managed marketplace
+   policy settings, `strictKnownMarketplaces` and `blockedMarketplaces`, that can suppress that
+   scan and leave the registration on disk and unloaded.
+
 Sources: `https://code.claude.com/docs/en/channels` and
 `https://code.claude.com/docs/en/channels-reference`, read 2026-09-20, for conditions 1 to 6;
-condition 7 is a binary check of the installed executable. Status: document checks and one binary
-check; none of them exercised. Whether any of them holds on a given machine is not something this package
+conditions 7 and 8 are binary checks of the installed executable. Status: document checks and two
+binary checks; none of them exercised. Whether a channel actually registered on a given machine is
+something only that machine can report. Whether any of them holds on a given machine is not something this package
 can claim, which is why the answer controls are hidden until the host has evidence for them.
 
 Claude Code applies whichever answer arrives first and drops the other. It sends the channel no
@@ -227,7 +237,9 @@ Every destination is relative to the user's own Claude Code directory, which is 
 
 A plugin in a skills directory loads as soon as it is there, and its default enablement is on unless
 the manifest says otherwise. The installed manifest sets `defaultEnabled` to `false`, so the
-settings key is what turns the registration on and removing that key is what turns it off. Source:
+settings key is what turns the registration on and removing that key is what turns it off. An
+explicit setting at another scope overrides the default, and a session that is already running keeps
+what it loaded until its plugins are reloaded or it starts again. Source:
 `https://code.claude.com/docs/en/plugins-reference`, read 2026-09-20. Status: document check.
 
 Each of the three files uses its own documented location rather than the inline form the manifest
@@ -252,12 +264,12 @@ Three things are unverified, and all three are recorded rather than assumed:
   packaging run does not do. What removal does when a file's digest no longer matches, and whether
   Claude Code picks the registration up without a restart, are unverified for the same reason.
 - The forwarder is named `kr-hook` and invoked as `kr-hook claude-code channel` and `kr-hook
-  claude-code hook`. That argument vector is this package's assumption about an interface the host
-  supplies. Status: unverified, and the interface itself is unwritten: nothing yet fixes the
-  forwarder's argument handling, its MCP negotiation and capability declarations, the framing on the
-  private exchange, what it returns on a hook, or how it binds a registration to a launch. That
-  contract belongs to the host rather than to this package.
-- The package's own claim about registration authentication is a requirement, not an observation.
-  None of the three installed files carries a session identifier or a secret, which can be checked by
-  reading them. That the registration is bound to the launch KalaReach made and to the worker's
-  private exchange is what the forwarder has to do, and it is unverified until the forwarder exists.
+  claude-code hook`. Those argument vectors are what this package requires of a host interface, and
+  they were checked against no host. The same applies to everything else the registration depends on:
+  the framing on the private exchange, the MCP negotiation and capability declarations the channel
+  server makes, what the forwarder returns on a hook, and how it binds a registration to a launch.
+  Status: unverified, and a requirement this package states rather than a behaviour it observed.
+- Registration authentication is a requirement here, not an observation. None of the three installed
+  files carries a session identifier or a secret, which can be checked by reading them, and that much
+  is verified. That the registration is bound to the launch KalaReach made and to the worker's
+  private exchange is what the forwarder must do, and it was not observed.

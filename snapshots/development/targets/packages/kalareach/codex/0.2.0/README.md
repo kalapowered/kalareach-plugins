@@ -82,6 +82,17 @@ to the gateway that drives the connection rather than to a catalogue package:
 | An uncertain `turn/start` result | Nothing. The binding state a control depends on is the host's, and this package declares no turn-starting action |
 | Competing approvals | The table classifies each reverse approval request as a mutation, and this package draws no control that would answer one |
 | `serverRequest/resolved` | The table routes it as an observation, which is how the host learns a pending request was answered or cleared |
-| Reconnect | The table declares no tested volatile forwarding, so the terminal is the supported path while receipts cannot be stored |
+| Reconnect | Nothing. Reconciling identifiers across a reconnected connection is the gateway's, and this table declares no tested volatile forwarding either, so the terminal is the supported path while receipts cannot be stored |
 
 A predicate edit that changes what any of the eight cases says a person sees fails the build.
+
+`fixtures/frames.json` is the other half: fifteen pinned App Server frames, taken from the published
+documentation's own examples and the required members of the generated schema, each with the method
+the table should find, the route and class it should reach, and the identifier the table's path
+should extract, with its JSON type. The build reads every frame through this package's own table. A
+route, a classification or a path edited so that a real frame is read differently fails there.
+
+The frames cover starting and unsubscribing a thread, steering with an expected turn, a turn whose
+result may not arrive, two approval requests pending at once, a resolved server request, a reconnect,
+two methods the table refuses, and one the table does not list at all, which is read as a mutation
+because that is what an unlisted method is.

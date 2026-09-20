@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "b9440161e47c40ea4a87969636a677f86b0f7106c2d4673f81e56ed86be2bdc7",
-      "size_bytes": "8226"
+      "digest": "ce9f90a0608e0365b29d85e82f59e655c57ddf53367067bdeec747031d6c9d98",
+      "size_bytes": "9261"
     },
     {
       "role": "native_bridge",
@@ -85,8 +85,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "e4c19308f6a23d685f05829c274c86b74f7a877af89e27d66138bef953c3924b",
-      "size_bytes": "2921"
+      "digest": "ef6b920d3a09dfba4c225930460ab6d985c836e1be022e7b7bcaeacfd3529d0d",
+      "size_bytes": "2968"
     },
     {
       "role": "fixture",
@@ -95,10 +95,16 @@
       "size_bytes": "4473"
     },
     {
+      "role": "asset",
+      "path": "fixtures/frames.json",
+      "digest": "f4fcb981d2c36a0d0a0bec5f7b67f6a608fd50d9f7d9355511b7d2bf4602d231",
+      "size_bytes": "3200"
+    },
+    {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "bdab9b87f64eb8ea22f4c84fe95acccb810d907540e73b128c009fa4a1ec9420",
-      "size_bytes": "4011"
+      "digest": "eac6ac927fead10e5f06e50237014af0d1a5051e5fab1dc923e9b0cfb8fb9ad3",
+      "size_bytes": "4052"
     }
   ],
   "capabilities": [
@@ -120,7 +126,7 @@
     },
     {
       "capability": "approval.respond",
-      "reason": "Answer the exact tool call Claude Code is waiting on, with the decision you chose"
+      "reason": "Encode an answer to a pending Channels tool approval through this package's table, which is what says where the request identifier and the decision go"
     },
     {
       "capability": "native_bridge.install",
@@ -168,56 +174,6 @@
         ]
       },
       "description": "Deliver a message into the session, which Claude reads on its next turn",
-      "confirmation_required": false
-    },
-    {
-      "id": "approval.respond",
-      "label": "Answer the tool call",
-      "effect": "approval.respond",
-      "implementation": {
-        "type": "upstream_method",
-        "method": "channel.permission",
-        "bindings": [
-          {
-            "parameter": "decision",
-            "field": {
-              "segments": [
-                {
-                  "type": "member",
-                  "name": "params"
-                },
-                {
-                  "type": "member",
-                  "name": "behavior"
-                }
-              ]
-            }
-          }
-        ]
-      },
-      "parameters": {
-        "parameters": [
-          {
-            "name": "decision",
-            "kind": {
-              "type": "choice",
-              "choices": [
-                {
-                  "id": "allow",
-                  "label": "Allow"
-                },
-                {
-                  "id": "deny",
-                  "label": "Deny"
-                }
-              ]
-            },
-            "label": "Decision",
-            "required": true
-          }
-        ]
-      },
-      "description": "Answer the pending tool call with allow or deny; the broker names the request",
       "confirmation_required": false
     },
     {
@@ -286,6 +242,6 @@
         "digest": "1cb6238953bafc5e2872e8af3a430d94ca8452c11e51dc43946889f7268b126c"
       }
     ],
-    "grant_statement": "Installs three registration files under Claude Code's own directory and adds one settings key that enables them. Claude Code then starts the KalaReach forwarder itself, so the forwarder runs under Claude Code's own permissions and outside the KalaReach plugin sandbox, outside Wasmtime, and it sees every lifecycle and tool event and every Channels tool approval this session produces. Removal takes the key back out and deletes exactly those three files, each only while it still holds the bytes that were installed."
+    "grant_statement": "Installs three registration files under your own Claude Code directory, where they apply to every project and every later session, and adds one settings key that enables them. Claude Code then starts the KalaReach forwarder itself, so the forwarder runs under Claude Code's own permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees the session's SessionStart, SessionEnd, PostToolUse, PostToolUseFailure and Notification events, and every Channels tool approval relayed to it. Removal takes the key back out and deletes exactly those three files, each only while it still holds the bytes that were installed."
   }
 }

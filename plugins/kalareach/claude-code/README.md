@@ -26,20 +26,22 @@ a five-letter `request_id`, the tool's name, a description of the call and a pre
 arguments. The answer is `notifications/claude/channel/permission`, carrying that same `request_id`
 and `allow` or `deny`.
 
-The broker owns the identifier. `connector.json` puts the correlation at `params.request_id`, and the
-answer action binds one parameter: the decision. A control cannot name a request, so an answer always
-belongs to the pending request the host is holding. Text that is not a decision for a pending request
-is not an answer, and it does not become an ordinary message to Claude either: the message path is a
-separate action with its own effect class, and the two never fall through into one another.
+The broker owns the identifier. `connector.json` puts the correlation at `params.request_id`, so the
+identifier in an answer is the host's to fill from the request it is resolving, never a value a
+caller supplies. Text that is not a decision for a pending request is not an answer, and it does not
+become an ordinary message to Claude either: the message path is a separate action with its own
+effect class, and the two never fall through into one another.
 
 This package interprets nothing. It ships no decoder, and the table routes and classifies rather than
 reading a request's fields, so the approval a person answers is the one the host already holds in its
 ledger.
 
-That is also why this package draws no Allow and Deny buttons of its own. A document it ships is
-written before any request exists, and the only fact it could test is that some approval is pending,
-which does not name one. The answer belongs beside the approval the host is holding, and the action
-registered here is what encodes it.
+That is also why this package registers no answer action and draws no Allow and Deny buttons of its
+own. A document it ships is written before any request exists, and the only fact a control could test
+is that some approval is pending, which does not name one. What the package supplies is the table: it
+says which method carries an answer, where the identifier goes and where the decision goes, and it
+asks for the trust to have an answer encoded through it. Dispatching one, against the resource that
+names the request, is the host's.
 
 Claude Code applies whichever answer reaches it first, the terminal's or this one, and drops the
 other. It does not tell the channel which happened, so a delivered answer is evidence that the
@@ -72,6 +74,9 @@ registers a channel only when every one of these holds where it runs:
 - The feature itself reaches this installation. It is a research preview, rolling out gradually, and
   a session it has not reached refuses the registration whatever the settings say.
 
+- The skills directory is scanned at all. Managed marketplace policy can suppress that scan, which
+  leaves the registration on disk and unloaded.
+
 Each of those is decided where Claude Code runs, not here. Until they all hold, the approval is
 answered in the terminal.
 
@@ -85,7 +90,7 @@ logic: each file names the core forwarder and the surface it should carry.
 | --- | --- |
 | `skills/kalareach-channels/.claude-plugin/plugin.json` | The plugin manifest, declaring one channel bound to the server below |
 | `skills/kalareach-channels/.mcp.json` | The channel server: the core forwarder, started over standard streams |
-| `skills/kalareach-channels/hooks/hooks.json` | Five hook registrations, all of them on events that cannot block |
+| `skills/kalareach-channels/hooks/hooks.json` | Five hook registrations, each bounded by its own timeout |
 
 The settings key is `enabledPlugins."kalareach-channels@skills-dir"`, set to `true`. The recipe adds
 that one key and leaves every other setting where it was.
@@ -93,17 +98,19 @@ that one key and leaves every other setting where it was.
 The hooks are registered on `SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolUseFailure` and
 `Notification`. Those five were chosen because none of them refuses what Claude Code was about to do
 when a handler exits with a failure code. That narrows the ways a hook can interfere; it does not
-remove them, because a handler that answers with a stop decision stops the session on any event.
-What makes these hooks observers is that the forwarder answers nothing: it writes the event to the
-worker and exits. Each registration also carries its own timeout, so a forwarder that cannot reach
-the worker costs seconds rather than the ten minutes a command hook may otherwise take.
+remove them, because a handler can answer with a stop decision on most events instead. What makes
+these hooks observers is that the forwarder answers nothing: it writes the event to the worker and
+exits. Each registration also carries its own timeout, one second for `SessionEnd` and five for the
+rest, so a forwarder that cannot reach the worker costs seconds rather than the ten minutes a command
+hook may otherwise take.
 
 The registration installs disabled. Claude Code loads a plugin from a skills directory as soon as it
 is there, so the manifest sets its default to off and the settings key is what turns it on. Removal
-takes that key out first, which is what stops the registration loading, and then deletes the three
-files in the reverse of the order it wrote them. Each file is checked against the digest it was
-installed with, and one that somebody has since edited is reported and left alone rather than
-deleted.
+takes that key out first and then deletes the three files in the reverse of the order it wrote them.
+Each file is checked against the digest it was installed with, and one that somebody has since edited
+is reported and left alone rather than deleted, which leaves a registration on disk that the key no
+longer enables. A session that is already running keeps what it loaded: Claude Code picks up a
+registration change when it reloads its plugins or starts again.
 
 The forwarder runs under Claude Code's own permissions, outside the KalaReach plugin sandbox and
 outside Wasmtime, because Claude Code is the process that starts it. The installation grant says
@@ -114,18 +121,24 @@ this package's.
 
 ## What it asks for
 
-Five capabilities. Matching, declarative presentation and broker semantic events are the reading
-half. The upstream action capability carries a message you wrote. The approval capability answers one
-pending tool call, through the action registered here. The bridge installation grant is declared with
-the recipe it installs.
+Six capabilities. Matching, declarative presentation and broker semantic events are the reading
+half. The upstream action capability carries a message you wrote. The approval capability is the
+trust to have an answer encoded through this package's table. The bridge installation capability is
+declared with the recipe it installs and the grant that says what accepting it means.
 
 ## Fixtures
 
 `fixtures/conformance.json` states what a person sees in six situations, and the build evaluates
 this package's own predicates against each one: a bound session, an actor who may only view,
 volatile-native operation, a session with no qualified evidence for acting upstream, an upload in
-progress, and a binding disabled by repeated faults. They are display conformance: the fixture runner
-evaluates control predicates and never reads a channel frame.
+progress, and a binding disabled by repeated faults.
+
+`fixtures/frames.json` is the other half: five pinned Channels frames, taken from the published
+reference's own examples and the field names in the installed executable, each with the method the
+table should find, the route and class it should reach, and the identifier the table's path should
+extract. The build reads every frame through this package's own table, including an answer naming a
+request nobody issued, whose identifier has to come back verbatim so the host can refuse it, and an
+ordinary MCP tool call, which this table does not list and which is therefore a mutation.
 
 Some of what this package promises is structural rather than conditional, and a fixture cannot state
 it. There is no action for project trust or MCP consent, so no right produces a control for either.

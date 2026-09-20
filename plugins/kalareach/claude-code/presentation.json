@@ -7,7 +7,7 @@
       "revision": "1",
       "body": {
         "kind": "markdown",
-        "source": "Claude Code keeps its own terminal. Lifecycle and tool hooks report what it is doing, and the Channels surface carries messages in and the answer to a tool approval back. The answer appears beside the approval the host is holding, because that is what names the request. Project trust and MCP consent are answered in the terminal, where Claude Code asks for them."
+        "source": "Claude Code keeps its own terminal. Lifecycle and tool hooks report what it is doing, and the Channels surface carries messages in and the answer to a tool approval back. This package supplies the reading of that surface and the message path; an approval is answered where the request it belongs to is recorded. Project trust and MCP consent are answered in the terminal, where Claude Code asks for them."
       }
     },
     {
