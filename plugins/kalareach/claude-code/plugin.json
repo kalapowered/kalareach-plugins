@@ -2,16 +2,29 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "claude-code",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "display_name": "Claude Code",
-  "description": "Recognises Claude Code and names the session after it. Terminal integration only.",
+  "description": "Recognises Claude Code, observes it through lifecycle and tool hooks, and answers a Channels tool approval.",
   "sdk_range": ">=0.1.0, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "4f8c69e538b5e4b7b220305822f1f6f6ad212416"
+    "revision": "44084fc058106bca25bfb4f2118cc349187419df"
   },
   "match_rules": [
+    {
+      "id": "claude-code-npm",
+      "executable": {
+        "file_stem": "claude",
+        "path_suffix": [],
+        "version_range": null
+      },
+      "distribution": {
+        "registry": "npm",
+        "package": "@anthropic-ai/claude-code"
+      },
+      "confidence": "exact"
+    },
     {
       "id": "claude-code-executable",
       "executable": {
@@ -48,27 +61,157 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "8215fbfe3ea2883bb619bfa4f6468980ecd02b2e9504609d497e8432b1df27df",
-      "size_bytes": "1341"
+      "digest": "6ce1b3080b90f7d2b0fc5b1ac38393ea839e6210e052657bfc281f0ca113c665",
+      "size_bytes": "4085"
+    },
+    {
+      "role": "connector",
+      "path": "connector.json",
+      "digest": "f3098013735bbc5b97928d08897a61c5eb41d37a788a0efb764cbdf8636b2428",
+      "size_bytes": "2475"
+    },
+    {
+      "role": "fixture",
+      "path": "fixtures/conformance.json",
+      "digest": "414d2b8dbd93bad18662af3381d60a595e4dcf9dc2907cc41b58dec7b356dddc",
+      "size_bytes": "7463"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "a47a31fffda0c988d39ef3fa05cbeeccfc033beee115c04edd86f5616d902abb",
-      "size_bytes": "462"
+      "digest": "ccc2b8b340071cf58147fb1f63b941bd656ddb81e990185b285c3cfad2e46a5f",
+      "size_bytes": "7791"
     }
   ],
   "capabilities": [
     {
       "capability": "metadata.match",
-      "reason": "Recognise Claude Code from its executable name"
+      "reason": "Recognise Claude Code from its executable name and its published package"
     },
     {
       "capability": "presentation.declarative",
-      "reason": "Name the session after Claude Code and describe it"
+      "reason": "Show what the session is doing and the tool call it is waiting on"
+    },
+    {
+      "capability": "broker.semantic_events",
+      "reason": "Read the lifecycle and tool observations the session already produces"
+    },
+    {
+      "capability": "upstream.action",
+      "reason": "Deliver a message you wrote into the session, on its own path and never as an approval"
+    },
+    {
+      "capability": "approval.respond",
+      "reason": "Answer the exact tool call Claude Code is waiting on, with the decision you chose"
     }
   ],
-  "actions": [],
+  "actions": [
+    {
+      "id": "prompt.send",
+      "label": "Send",
+      "effect": "upstream.prompt",
+      "implementation": {
+        "type": "upstream_method",
+        "method": "channel.event",
+        "bindings": [
+          {
+            "parameter": "text",
+            "field": {
+              "segments": [
+                {
+                  "type": "member",
+                  "name": "params"
+                },
+                {
+                  "type": "member",
+                  "name": "content"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "parameters": {
+        "parameters": [
+          {
+            "name": "text",
+            "kind": {
+              "type": "text",
+              "max_length": 8000,
+              "multiline": true
+            },
+            "label": "Message",
+            "required": true
+          }
+        ]
+      },
+      "description": "Deliver a message into the session, which Claude reads on its next turn",
+      "confirmation_required": false
+    },
+    {
+      "id": "approval.respond",
+      "label": "Answer the tool call",
+      "effect": "approval.respond",
+      "implementation": {
+        "type": "upstream_method",
+        "method": "channel.permission",
+        "bindings": [
+          {
+            "parameter": "decision",
+            "field": {
+              "segments": [
+                {
+                  "type": "member",
+                  "name": "params"
+                },
+                {
+                  "type": "member",
+                  "name": "behavior"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "parameters": {
+        "parameters": [
+          {
+            "name": "decision",
+            "kind": {
+              "type": "choice",
+              "choices": [
+                {
+                  "id": "allow",
+                  "label": "Allow"
+                },
+                {
+                  "id": "deny",
+                  "label": "Deny"
+                }
+              ]
+            },
+            "label": "Decision",
+            "required": true
+          }
+        ]
+      },
+      "description": "Answer the pending tool call with allow or deny; the broker names the request",
+      "confirmation_required": false
+    },
+    {
+      "id": "status.refresh",
+      "label": "Refresh",
+      "effect": "observe",
+      "implementation": {
+        "type": "presentation"
+      },
+      "parameters": {
+        "parameters": []
+      },
+      "description": "Read the session's state again and redraw this package's document",
+      "confirmation_required": false
+    }
+  ],
   "attachments": null,
   "native_bridge": null
 }

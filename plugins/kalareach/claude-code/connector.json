@@ -1,0 +1,85 @@
+{
+  "manifest_version": 1,
+  "plugin_id": "kalareach/claude-code",
+  "protocol": {
+    "name": "claude-code-channels",
+    "qualified_range": ">=2.1.234, <3.0.0",
+    "tested_version": "2.1.278"
+  },
+  "transport": "private_socket",
+  "framing": {
+    "type": "line_delimited_json",
+    "max_message_bytes": "1048576"
+  },
+  "request_id_path": {
+    "segments": [
+      {
+        "type": "member",
+        "name": "params"
+      },
+      {
+        "type": "member",
+        "name": "request_id"
+      }
+    ]
+  },
+  "method_path": {
+    "segments": [
+      {
+        "type": "member",
+        "name": "method"
+      }
+    ]
+  },
+  "response_correlation": {
+    "type": "matching_id",
+    "id_path": {
+      "segments": [
+        {
+          "type": "member",
+          "name": "params"
+        },
+        {
+          "type": "member",
+          "name": "request_id"
+        }
+      ]
+    }
+  },
+  "routes": [
+    {
+      "method": "channel.event",
+      "wire_name": "notifications/claude/channel",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "channel.permission-request",
+      "wire_name": "notifications/claude/channel/permission_request",
+      "direction": "upstream_to_host"
+    },
+    {
+      "method": "channel.permission",
+      "wire_name": "notifications/claude/channel/permission",
+      "direction": "host_to_upstream"
+    }
+  ],
+  "methods": [
+    {
+      "method": "channel.event",
+      "class": "mutation",
+      "evidence": "Delivers a message into the session, which Claude reads on its next turn and acts on; the write to the transport is the only acknowledgement, so delivery is not steering and not processing"
+    },
+    {
+      "method": "channel.permission-request",
+      "class": "mutation",
+      "evidence": "A reverse request carrying request_id, tool_name, description and input_preview for a tool call the session is waiting on; answering it runs or refuses that call"
+    },
+    {
+      "method": "channel.permission",
+      "class": "mutation",
+      "evidence": "Answers the pending request named by request_id with allow or deny, which runs or refuses the tool call"
+    }
+  ],
+  "volatile_forwarding": false,
+  "qualification_note": "Qualified against the Channels reference for Claude Code 2.1.278 and the three notification method names in the installed 2.1.278 binary. The correlation identifier is params.request_id, because every message on this surface is a JSON-RPC notification and carries no id member."
+}

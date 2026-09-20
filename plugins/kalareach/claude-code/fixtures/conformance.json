@@ -1,0 +1,351 @@
+{
+  "fixture_version": 1,
+  "visibility": [
+    {
+      "name": "a pending Channels approval offers allow and deny",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.prompt",
+          "agent.approval.respond"
+        ],
+        "binding_state": "awaiting_person",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "approval.respond",
+            "qualified_available"
+          ],
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "compose",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "approve",
+        "deny",
+        "send",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "approve",
+        "deny",
+        "send",
+        "refresh"
+      ]
+    },
+    {
+      "name": "no pending request leaves nothing to answer",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.prompt",
+          "agent.approval.respond"
+        ],
+        "binding_state": "bound",
+        "flags": [],
+        "capabilities": [
+          [
+            "approval.respond",
+            "qualified_available"
+          ],
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "compose",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "send",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "send",
+        "refresh"
+      ]
+    },
+    {
+      "name": "an actor without the approval right sees no answer control",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.prompt"
+        ],
+        "binding_state": "awaiting_person",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "approval.respond",
+            "qualified_available"
+          ],
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "compose",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "send",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "send",
+        "refresh"
+      ]
+    },
+    {
+      "name": "the channel is not registered for this session, so the terminal answers",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.prompt",
+          "agent.approval.respond"
+        ],
+        "binding_state": "awaiting_person",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "approval.respond",
+            "missing_installation"
+          ],
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "compose",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "send",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "send",
+        "refresh"
+      ]
+    },
+    {
+      "name": "a queued message to a busy session acknowledges nothing",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.prompt",
+          "agent.approval.respond"
+        ],
+        "binding_state": "upstream_busy",
+        "flags": [],
+        "capabilities": [
+          [
+            "approval.respond",
+            "qualified_available"
+          ],
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "compose",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "send",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "send",
+        "refresh"
+      ]
+    },
+    {
+      "name": "volatile-native operation withdraws the rich answer",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.prompt",
+          "agent.approval.respond"
+        ],
+        "binding_state": "native_only_volatile",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "approval.respond",
+            "qualified_available"
+          ],
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "compose",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "send",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "refresh"
+      ]
+    },
+    {
+      "name": "project trust and MCP consent stay in the terminal",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.prompt",
+          "agent.approval.respond",
+          "host.manage"
+        ],
+        "binding_state": "bound",
+        "flags": [],
+        "capabilities": [
+          [
+            "approval.respond",
+            "qualified_available"
+          ],
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "compose",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "send",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "send",
+        "refresh"
+      ]
+    },
+    {
+      "name": "an upload in progress does not stop the answer",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.prompt",
+          "agent.approval.respond"
+        ],
+        "binding_state": "awaiting_person",
+        "flags": [
+          "pending_approval",
+          "transfer_in_progress"
+        ],
+        "capabilities": [
+          [
+            "approval.respond",
+            "qualified_available"
+          ],
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "compose",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "approve",
+        "deny",
+        "send",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "approve",
+        "deny",
+        "send"
+      ]
+    },
+    {
+      "name": "repeated faults disable the binding",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.prompt",
+          "agent.approval.respond"
+        ],
+        "binding_state": "disabled",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "approval.respond",
+            "qualified_available"
+          ],
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "compose",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [],
+      "enabled_controls": []
+    }
+  ]
+}
