@@ -90,7 +90,8 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         protocol: "claude-code-channels",
         registry: "npm",
         identifier: "@anthropic-ai/claude-code",
-        file_stem: "claude",
+        file_stems: &["claude"],
+        captured_frames: &[],
         frames: &[
             (
                 "a message delivered into the session",
@@ -123,7 +124,8 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         protocol: "codex-app-server",
         registry: "npm",
         identifier: "@openai/codex",
-        file_stem: "codex",
+        file_stems: &["codex"],
+        captured_frames: &[],
         frames: &[
             ("a method the table does not list", "thread/name/set"),
             ("an uncertain turn/start result", "turn/start"),
@@ -159,16 +161,64 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             ("turn/steer", "params.expectedTurnId"),
         ],
     },
+    BundledConnector {
+        plugin: "kalareach/opencode",
+        protocol: "opencode-server-v2-events",
+        registry: "npm",
+        identifier: "opencode-ai",
+        file_stems: &["opencode"],
+        captured_frames: &[],
+        frames: &[
+            (
+                "a permission the session is waiting on",
+                "permission.v2.asked",
+            ),
+            ("a running turn's text", "session.next.text.delta"),
+            (
+                "a terminal command this connector refuses",
+                "tui.command.execute",
+            ),
+            ("an envelope from the other API family", "permission.asked"),
+            (
+                "an event only the other API family publishes",
+                "server.instance.disposed",
+            ),
+            (
+                "composer insertion this connector refuses",
+                "tui.prompt.append",
+            ),
+            ("the answer that resolved it", "permission.v2.replied"),
+            ("the shared server shutting down", "global.disposed"),
+            (
+                "the terminal moving to another session",
+                "tui.session.select",
+            ),
+        ],
+        required_members: &[
+            ("permission.v2.asked", "data.id"),
+            ("permission.v2.replied", "data.requestID"),
+            ("session.next.text.delta", "data.sessionID"),
+            ("tui.command.execute", "data.command"),
+            ("tui.prompt.append", "data.text"),
+            ("tui.session.select", "data.sessionID"),
+        ],
+    },
 ];
 
 struct BundledConnector {
     plugin: &'static str,
     protocol: &'static str,
+    /// The registry this application is published in.
     registry: &'static str,
+    /// Its identifier inside that registry.
     identifier: &'static str,
-    file_stem: &'static str,
+    /// The executable names the package's rules may recognise, and no others.
+    file_stems: &'static [&'static str],
     /// Every frame the corpus has to carry, as a situation and a wire name, in sorted order.
     frames: &'static [(&'static str, &'static str)],
+    /// The situations whose frames crossed a real connection, in sorted order. A corpus that
+    /// quietly promoted a written frame to a captured one would otherwise pass.
+    captured_frames: &'static [&'static str],
     /// Members a frame has to carry whatever the corpus says about itself, by wire name and
     /// dotted path. A corpus that drops both a member and its own expectation of it would
     /// otherwise stop checking the thing its situation is named after.
@@ -243,27 +293,26 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
             "{plugin} is pinned to the wrong protocol"
         );
         // A profile is not selected by a name on disk alone. A package that reads somebody's
-        // protocol carries a rule that identifies the application by something that cannot be
-        // coincidence, and an executable name on its own is always inferred.
+        // protocol carries a rule that identifies the application by something stronger than its
+        // executable name, and a rule that has only the name is always inferred.
         let mut exact = 0;
+        let mut anywhere = 0;
         for rule in &manifest.match_rules {
-            assert_eq!(
-                rule.executable.file_stem, entry.file_stem,
+            assert!(
+                entry
+                    .file_stems
+                    .contains(&rule.executable.file_stem.as_str()),
                 "{plugin}: the rule {} recognises another application's executable",
                 rule.id
             );
-            // A bundled connector recognises its application wherever it was installed, so a
-            // directory requirement would make it miss ordinary installations.
-            assert!(
-                rule.executable.path_suffix.is_empty(),
-                "{plugin}: the rule {} only matches under a directory",
-                rule.id
-            );
+            if rule.executable.path_suffix.is_empty() {
+                anywhere += 1;
+            }
             match &rule.distribution.0 {
                 None => assert_eq!(
                     rule.confidence,
                     MatchConfidence::Inferred,
-                    "{plugin}: the rule {} claims an exact match from an executable name",
+                    "{plugin}: the rule {} claims an exact match without a distribution",
                     rule.id
                 ),
                 Some(distribution) => {
@@ -277,6 +326,13 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
                 }
             }
         }
+        // Whatever else it carries, a bundled connector keeps one rule that recognises its
+        // application wherever it was installed. A package whose every rule required a directory
+        // would miss an ordinary installation and leave the agent unrecognised.
+        assert!(
+            anywhere > 0,
+            "{plugin}: every rule requires a directory, so an ordinary installation matches none"
+        );
         assert!(
             exact > 0,
             "{plugin} recognises its application by name alone"
@@ -289,12 +345,31 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
     );
 }
 
+/// Where a pinned frame came from.
+///
+/// A frame that crossed a real connection is worth more than one written from a schema, and a
+/// reader can only tell them apart if the corpus says which is which. The default is the weakest
+/// answer, so a corpus that says nothing claims nothing.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum Provenance {
+    /// Written from a published schema or document, and never sent or received.
+    #[default]
+    Written,
+    /// Exactly what crossed the connection.
+    Captured,
+    /// What crossed the connection, with a repeated part shortened and the corpus saying so.
+    AbridgedCapture,
+}
+
 /// One pinned vendor frame and what the package's table has to make of it.
 #[derive(serde::Deserialize)]
 struct CorpusFrame {
     situation: String,
     #[allow(dead_code)]
     note: String,
+    #[serde(default)]
+    provenance: Provenance,
     frame: serde_json::Value,
     expect: Expectation,
 }
@@ -386,6 +461,14 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
             let where_ = format!("{} [{}]", package.relative, case.situation);
             checked += 1;
 
+            // Provenance is a claim about evidence, so it is pinned rather than trusted. A frame
+            // the corpus calls captured has to be one the repository recorded as captured.
+            assert_eq!(
+                case.provenance == Provenance::Captured,
+                entry.captured_frames.contains(&case.situation.as_str()),
+                "{where_}: the corpus and this test disagree about whether the frame was captured"
+            );
+
             // The method the table finds, at the path the table declares.
             let wire = at(&case.frame, &connector.method_path)
                 .and_then(serde_json::Value::as_str)
@@ -476,6 +559,105 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
         );
     }
     assert!(checked > 0, "no package carries a frame corpus");
+}
+
+/// One frame from an API family a table is not qualified for, and how the table has to fail on it.
+struct SecondFamilyFrame {
+    plugin: &'static str,
+    situation: &'static str,
+    /// The member the pinned family's payload would be under, and which this frame does not carry.
+    absent_member: &'static str,
+    /// True when the table must not route this frame's method at all.
+    unrouted: bool,
+}
+
+/// The frames that belong to another profile of the same application.
+///
+/// OpenCode's server answers two API families from one build. They share event names and differ in
+/// where the payload sits, so a table qualified against one must find nothing in the other rather
+/// than read it as though the names were enough.
+const SECOND_FAMILY_FRAMES: &[SecondFamilyFrame] = &[
+    SecondFamilyFrame {
+        plugin: "kalareach/opencode",
+        situation: "an envelope from the other API family",
+        absent_member: "data",
+        unrouted: false,
+    },
+    SecondFamilyFrame {
+        plugin: "kalareach/opencode",
+        situation: "an event only the other API family publishes",
+        absent_member: "data",
+        unrouted: true,
+    },
+];
+
+#[test]
+fn a_second_family_frame_is_refused_rather_than_read() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let mut checked = 0;
+    for expected in SECOND_FAMILY_FRAMES {
+        let package = loaded
+            .repository
+            .packages
+            .iter()
+            .find(|package| package.package.manifest.plugin_id().as_str() == expected.plugin)
+            .unwrap_or_else(|| panic!("{} is not in the repository", expected.plugin));
+        let connector = package
+            .package
+            .connector
+            .as_ref()
+            .unwrap_or_else(|| panic!("{} carries no connector table", expected.plugin));
+        let corpus: FrameCorpus =
+            kalareach_catalogue::read_json(&package.directory.join("fixtures/frames.json"))
+                .unwrap_or_else(|error| panic!("{}: {error}", package.relative));
+        let case = corpus
+            .frames
+            .iter()
+            .find(|case| case.situation == expected.situation)
+            .unwrap_or_else(|| panic!("{}: no frame for {}", package.relative, expected.situation));
+        checked += 1;
+        let where_ = format!("{} [{}]", package.relative, expected.situation);
+
+        // The payload member this table reads is simply not there. Everything this table would go
+        // on to extract comes from under it, so there is nothing for it to misread.
+        assert!(
+            member(&case.frame, expected.absent_member).is_none(),
+            "{where_}: the frame carries {}, so it is not from the other family",
+            expected.absent_member
+        );
+        let wire = at(&case.frame, &connector.method_path)
+            .and_then(serde_json::Value::as_str)
+            .unwrap_or_else(|| panic!("{where_}: no method at the table's method path"));
+        match connector.route_for_wire_name(wire) {
+            None => assert!(
+                expected.unrouted,
+                "{where_}: the table does not route this and the repository expected it to"
+            ),
+            Some(route) => {
+                assert!(
+                    !expected.unrouted,
+                    "{where_}: the table routes this and the repository expected it not to"
+                );
+                // A shared name is the dangerous case: the route is found and the payload is
+                // somewhere else, so every member the situation depends on is missing.
+                for (wire_name, path) in BUNDLED_CONNECTORS
+                    .iter()
+                    .find(|entry| entry.plugin == expected.plugin)
+                    .expect("a listed bundled connector")
+                    .required_members
+                {
+                    if *wire_name == wire {
+                        assert!(
+                            member(&case.frame, path).is_none(),
+                            "{where_}: the frame carries {path}, which this family does not"
+                        );
+                    }
+                }
+                let _ = route;
+            }
+        }
+    }
+    assert_eq!(checked, SECOND_FAMILY_FRAMES.len());
 }
 
 #[test]

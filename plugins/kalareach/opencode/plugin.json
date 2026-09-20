@@ -2,9 +2,9 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "opencode",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "display_name": "OpenCode",
-  "description": "Recognises OpenCode and names the session after it. Terminal integration only.",
+  "description": "Recognises OpenCode, reads its shared server's event stream through a declarative table and stops the turn it is running.",
   "sdk_range": ">=0.1.0, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
@@ -12,6 +12,19 @@
     "revision": "4f8c69e538b5e4b7b220305822f1f6f6ad212416"
   },
   "match_rules": [
+    {
+      "id": "opencode-npm",
+      "executable": {
+        "file_stem": "opencode",
+        "path_suffix": [],
+        "version_range": null
+      },
+      "distribution": {
+        "registry": "npm",
+        "package": "opencode-ai"
+      },
+      "confidence": "exact"
+    },
     {
       "id": "opencode-executable",
       "executable": {
@@ -48,27 +61,80 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "0ab58d24548200e9dc279716a20fa43539e9e9d260c37835a64f4d7f4cb7cd17",
-      "size_bytes": "1331"
+      "digest": "6f832ba733222132bcd0ba8b89c305c7417b63c1006bfbb29e55ee15c9f523e6",
+      "size_bytes": "5814"
+    },
+    {
+      "role": "connector",
+      "path": "connector.json",
+      "digest": "31dfe31927878d2968987de303f6bee2eea94a9b2017571dcb4d63f71001d4ad",
+      "size_bytes": "28649"
+    },
+    {
+      "role": "fixture",
+      "path": "fixtures/conformance.json",
+      "digest": "b1db6178ee606513264272075d47c3638b4e6f6ae2de36ffb88d399f91a724e2",
+      "size_bytes": "4879"
+    },
+    {
+      "role": "asset",
+      "path": "fixtures/frames.json",
+      "digest": "0bbaa5262afb2df6e2319322fabaa5ed1add6a8fc604ddc1175f338426aa5e20",
+      "size_bytes": "7581"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "8f7a943b3d8b08c2d064ab025302d80f5d6f1c2f6040caddb1b318f921dcd8b2",
-      "size_bytes": "459"
+      "digest": "d95ec63150b25abd137b6210766d84a985c0c6ee395975ee432d8e230164bd69",
+      "size_bytes": "4067"
     }
   ],
   "capabilities": [
     {
       "capability": "metadata.match",
-      "reason": "Recognise OpenCode from its executable name"
+      "reason": "Recognise OpenCode from its published package and its executable name"
     },
     {
       "capability": "presentation.declarative",
-      "reason": "Name the session after OpenCode and describe it"
+      "reason": "Show what the OpenCode session is doing and the controls for its turn"
+    },
+    {
+      "capability": "broker.semantic_events",
+      "reason": "Read the turn, tool and permission events the bound server already publishes"
+    },
+    {
+      "capability": "upstream.action",
+      "reason": "Ask OpenCode to stop the turn it is running when you press Stop"
     }
   ],
-  "actions": [],
+  "actions": [
+    {
+      "id": "turn.cancel",
+      "label": "Stop the turn",
+      "effect": "upstream.cancel",
+      "implementation": {
+        "type": "upstream_cancel"
+      },
+      "parameters": {
+        "parameters": []
+      },
+      "description": "Cancel the turn the bound OpenCode execution is running, which ends it as interrupted",
+      "confirmation_required": false
+    },
+    {
+      "id": "session.refresh",
+      "label": "Refresh",
+      "effect": "observe",
+      "implementation": {
+        "type": "presentation"
+      },
+      "parameters": {
+        "parameters": []
+      },
+      "description": "Draw this package's document again from the session state the host already holds",
+      "confirmation_required": false
+    }
+  ],
   "attachments": null,
   "native_bridge": null
 }
