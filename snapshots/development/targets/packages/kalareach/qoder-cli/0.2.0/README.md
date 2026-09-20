@@ -23,10 +23,13 @@ does not offer one, and selecting the mode never replaces the terminal route.
 
 The table is pinned to Qoder CLI 1.1.59 and qualified against that version alone. Qoder CLI installs
 itself under `~/.qoder` and keeps its executable under a name that carries the version, selecting it
-through a stable dispatcher and a stable command name. The rules here recognise those two stable
-names, and report themselves as guesses rather than as proof. A host that resolves all the way to
-the versioned file recognises neither, because a match rule compares a whole file name and this
-package will not pin one release's spelling of it.
+through a stable dispatcher and a stable command name. The rules here recognise both: the two stable
+names wherever they are installed, and the versioned file of the release this package is qualified
+against, under the directory the vendor installs it into. A match rule compares a whole file name,
+so the versioned rule names one release and covers the one this table was qualified for; another
+release is recognised by the stable names until a package qualified against it names its file too.
+Every rule here reports itself as a guess rather than as proof, because no registry publishes this
+application.
 
 ## What it classifies
 

@@ -9,7 +9,7 @@
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "149ff4f44b9704e2e4b6c8374a776436c3281f89"
+    "revision": "378c9e2178093e2b711d0197f2550c363b4cdb87"
   },
   "match_rules": [
     {
@@ -44,6 +44,20 @@
       },
       "distribution": null,
       "confidence": "inferred"
+    },
+    {
+      "id": "qoder-cli-qualified-release",
+      "executable": {
+        "file_stem": "qodercli-1.1.59",
+        "path_suffix": [
+          ".qoder",
+          "bin",
+          "qodercli"
+        ],
+        "version_range": null
+      },
+      "distribution": null,
+      "confidence": "inferred"
     }
   ],
   "platforms": [
@@ -71,8 +85,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "fa54bc4619b15b4d5113f9e6eaac1815469e84b1426b57e9d8b961cf083d7e6c",
-      "size_bytes": "5367"
+      "digest": "aa892ec30162daffcf7b181adb83124e07c8cb5f18710deb2c6331f00107125e",
+      "size_bytes": "5632"
     },
     {
       "role": "connector",
@@ -102,7 +116,7 @@
   "capabilities": [
     {
       "capability": "metadata.match",
-      "reason": "Recognise Qoder CLI from its own installation directory, and its two executable names as a guess"
+      "reason": "Recognise Qoder CLI from its own installation directory, and from the executable names it installs, as a guess"
     },
     {
       "capability": "presentation.declarative",
