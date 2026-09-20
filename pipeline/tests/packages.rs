@@ -91,7 +91,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         registry: "npm",
         identifier: "@anthropic-ai/claude-code",
         file_stems: &["claude"],
-        captured_frames: &[],
+        provenance: &[],
         frames: &[
             (
                 "a message delivered into the session",
@@ -125,7 +125,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         registry: "npm",
         identifier: "@openai/codex",
         file_stems: &["codex"],
-        captured_frames: &[],
+        provenance: &[],
         frames: &[
             ("a method the table does not list", "thread/name/set"),
             ("an uncertain turn/start result", "turn/start"),
@@ -167,10 +167,24 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         registry: "npm",
         identifier: "@google/gemini-cli",
         file_stems: &["gemini"],
-        captured_frames: &[
-            "a method the table does not route",
-            "creating an execution",
-            "the capability negotiation that opens a connection",
+        provenance: &[
+            (
+                "a file read in the agent's own environment",
+                Provenance::Written,
+            ),
+            ("a method the table does not route", Provenance::Captured),
+            (
+                "a process started in the agent's own environment",
+                Provenance::Written,
+            ),
+            ("a tool call the agent is waiting on", Provenance::Written),
+            ("creating an execution", Provenance::Captured),
+            ("ending the turn in flight", Provenance::Written),
+            ("the agent's own update stream", Provenance::AbridgedCapture),
+            (
+                "the capability negotiation that opens a connection",
+                Provenance::Captured,
+            ),
         ],
         frames: &[
             (
@@ -211,7 +225,32 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         registry: "npm",
         identifier: "opencode-ai",
         file_stems: &["opencode"],
-        captured_frames: &[],
+        provenance: &[
+            (
+                "a permission the session is waiting on",
+                Provenance::Written,
+            ),
+            ("a running turn's text", Provenance::Written),
+            (
+                "a terminal command this connector refuses",
+                Provenance::Written,
+            ),
+            ("an envelope from the other API family", Provenance::Written),
+            (
+                "an event only the other API family publishes",
+                Provenance::Written,
+            ),
+            (
+                "composer insertion this connector refuses",
+                Provenance::Written,
+            ),
+            ("the answer that resolved it", Provenance::Written),
+            ("the shared per-user scope disposed", Provenance::Written),
+            (
+                "the terminal moving to another session",
+                Provenance::Written,
+            ),
+        ],
         frames: &[
             (
                 "a permission the session is waiting on",
@@ -232,7 +271,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
                 "tui.prompt.append",
             ),
             ("the answer that resolved it", "permission.v2.replied"),
-            ("the shared server shutting down", "global.disposed"),
+            ("the shared per-user scope disposed", "global.disposed"),
             (
                 "the terminal moving to another session",
                 "tui.session.select",
@@ -260,9 +299,12 @@ struct BundledConnector {
     file_stems: &'static [&'static str],
     /// Every frame the corpus has to carry, as a situation and a wire name, in sorted order.
     frames: &'static [(&'static str, &'static str)],
-    /// The situations whose frames crossed a real connection, in sorted order. A corpus that
-    /// quietly promoted a written frame to a captured one would otherwise pass.
-    captured_frames: &'static [&'static str],
+    /// Where each frame came from, as a situation and a provenance, in sorted order. Provenance
+    /// is a claim about evidence, so every frame's is pinned: a corpus that promoted a written
+    /// frame to a captured one, or quietly demoted a captured one, would otherwise pass. An empty
+    /// list says every frame in that corpus is written, which is the weakest claim a corpus can
+    /// make and the one a corpus that says nothing is held to.
+    provenance: &'static [(&'static str, Provenance)],
     /// Members a frame has to carry whatever the corpus says about itself, by wire name and
     /// dotted path. A corpus that drops both a member and its own expectation of it would
     /// otherwise stop checking the thing its situation is named after.
@@ -505,12 +547,24 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
             let where_ = format!("{} [{}]", package.relative, case.situation);
             checked += 1;
 
-            // Provenance is a claim about evidence, so it is pinned rather than trusted. A frame
-            // the corpus calls captured has to be one the repository recorded as captured.
+            // Provenance is a claim about evidence, so it is pinned rather than trusted, and all
+            // three states are pinned: promoting a written frame and demoting a captured one are
+            // the same kind of mistake.
+            let declared = if entry.provenance.is_empty() {
+                Provenance::Written
+            } else {
+                entry
+                    .provenance
+                    .iter()
+                    .find(|(situation, _)| *situation == case.situation)
+                    .map(|(_, provenance)| *provenance)
+                    .unwrap_or_else(|| {
+                        panic!("{where_}: the repository records no provenance for it")
+                    })
+            };
             assert_eq!(
-                case.provenance == Provenance::Captured,
-                entry.captured_frames.contains(&case.situation.as_str()),
-                "{where_}: the corpus and this test disagree about whether the frame was captured"
+                case.provenance, declared,
+                "{where_}: the corpus and this test disagree about where the frame came from"
             );
 
             // The method the table finds, at the path the table declares.
@@ -605,38 +659,51 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
     assert!(checked > 0, "no package carries a frame corpus");
 }
 
-/// One frame from an API family a table is not qualified for, and how the table has to fail on it.
+/// One frame from an API family a table is not qualified for, and what the table makes of it.
 struct SecondFamilyFrame {
     plugin: &'static str,
     situation: &'static str,
     /// The member the pinned family's payload would be under, and which this frame does not carry.
     absent_member: &'static str,
-    /// True when the table must not route this frame's method at all.
-    unrouted: bool,
+    /// The member the other family puts its payload under, which is where this frame's own
+    /// expectation has to read, because reading anywhere else would be reading this family's shape.
+    payload_member: &'static str,
+    /// The class the table gives this frame.
+    class: &'static str,
+    /// True when the name belongs to the other family alone, which the table may refuse outright.
+    refused_by_name: bool,
 }
 
 /// The frames that belong to another profile of the same application.
 ///
-/// OpenCode's server answers two API families from one build. They share event names and differ in
-/// where the payload sits, so a table qualified against one must find nothing in the other rather
-/// than read it as though the names were enough.
+/// OpenCode's server answers two API families from one build. They share almost every event name
+/// and differ in where the payload sits, so a name settles nothing: the profile is chosen from the
+/// installed version and the served schema before a connection opens. What a table can say is this.
+/// A name only the other family publishes is declared unsupported, so seeing it is an answer rather
+/// than a default. A shared name routes and carries nothing under the member this table reads, so
+/// nothing comes out of it. Both are pinned here, because the second is the weaker of the two and a
+/// reader should not have to guess which case they are looking at.
 const SECOND_FAMILY_FRAMES: &[SecondFamilyFrame] = &[
     SecondFamilyFrame {
         plugin: "kalareach/opencode",
         situation: "an envelope from the other API family",
         absent_member: "data",
-        unrouted: false,
+        payload_member: "properties",
+        class: "observation",
+        refused_by_name: false,
     },
     SecondFamilyFrame {
         plugin: "kalareach/opencode",
         situation: "an event only the other API family publishes",
         absent_member: "data",
-        unrouted: true,
+        payload_member: "properties",
+        class: "unsupported",
+        refused_by_name: true,
     },
 ];
 
 #[test]
-fn a_second_family_frame_is_refused_rather_than_read() {
+fn a_frame_from_the_other_api_family_is_unsupported_or_carries_no_payload() {
     let loaded = packages::load(&root()).expect("the repository loads");
     let mut checked = 0;
     for expected in SECOND_FAMILY_FRAMES {
@@ -663,7 +730,7 @@ fn a_second_family_frame_is_refused_rather_than_read() {
         let where_ = format!("{} [{}]", package.relative, expected.situation);
 
         // The payload member this table reads is simply not there. Everything this table would go
-        // on to extract comes from under it, so there is nothing for it to misread.
+        // on to extract comes from under it, so nothing comes out of the frame.
         assert!(
             member(&case.frame, expected.absent_member).is_none(),
             "{where_}: the frame carries {}, so it is not from the other family",
@@ -672,33 +739,52 @@ fn a_second_family_frame_is_refused_rather_than_read() {
         let wire = at(&case.frame, &connector.method_path)
             .and_then(serde_json::Value::as_str)
             .unwrap_or_else(|| panic!("{where_}: no method at the table's method path"));
-        match connector.route_for_wire_name(wire) {
-            None => assert!(
-                expected.unrouted,
-                "{where_}: the table does not route this and the repository expected it to"
-            ),
-            Some(route) => {
-                assert!(
-                    !expected.unrouted,
-                    "{where_}: the table routes this and the repository expected it not to"
-                );
-                // A shared name is the dangerous case: the route is found and the payload is
-                // somewhere else, so every member the situation depends on is missing.
-                for (wire_name, path) in BUNDLED_CONNECTORS
+        let route = connector.route_for_wire_name(wire).unwrap_or_else(|| {
+            panic!("{where_}: the table has to name this event to answer for it")
+        });
+        let class = serde_json::to_value(connector.classify(&route.method))
+            .ok()
+            .and_then(|value| value.as_str().map(str::to_owned));
+        assert_eq!(
+            class.as_deref(),
+            Some(expected.class),
+            "{where_}: the table gives this frame another class than the repository expects"
+        );
+        if expected.refused_by_name {
+            // A name only the other family publishes is the one case a table can refuse outright,
+            // and saying so is worth more than letting it fall to the unclassified default.
+            assert_eq!(
+                expected.class, "unsupported",
+                "{where_}: a name exclusive to the other family is refused by name"
+            );
+            assert!(
+                !connector
+                    .methods
                     .iter()
-                    .find(|entry| entry.plugin == expected.plugin)
-                    .expect("a listed bundled connector")
-                    .required_members
-                {
-                    if *wire_name == wire {
-                        assert!(
-                            member(&case.frame, path).is_none(),
-                            "{where_}: the frame carries {path}, which this family does not"
-                        );
-                    }
-                }
-                let _ = route;
+                    .any(|entry| entry.method.as_str() == wire
+                        && entry.class != MethodClass::Unsupported),
+                "{where_}: the table classifies this name twice"
+            );
+        } else {
+            // A shared name is the case a table cannot refuse: it routes, and everything under it
+            // sits where this table never looks. The corpus's own expectation has to say so,
+            // rather than quietly describing this family's shape on the other family's frame.
+            assert!(
+                !case.expect.members.is_empty(),
+                "{where_}: a frame that proves nothing about its payload proves nothing"
+            );
+            for path in case.expect.members.keys() {
+                assert!(
+                    path.starts_with(&format!("{}.", expected.payload_member)),
+                    "{where_}: the expectation reads {path}, which is not where this frame's family puts its payload"
+                );
             }
+            assert!(
+                SECOND_FAMILY_FRAMES
+                    .iter()
+                    .any(|other| other.plugin == expected.plugin && other.refused_by_name),
+                "{where_}: a package that pins a shared name also pins the name it can refuse"
+            );
         }
     }
     assert_eq!(checked, SECOND_FAMILY_FRAMES.len());
