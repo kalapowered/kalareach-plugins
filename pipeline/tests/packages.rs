@@ -79,6 +79,24 @@ fn the_bundled_connectors_claim_only_what_they_carry() {
     }
 }
 
+/// How a package proves which application it recognised.
+///
+/// A registry or bundle identity cannot be a coincidence, so a rule may claim it exactly. An
+/// application installed by its vendor has no such identity: the strongest thing a rule can name is
+/// the directory the vendor documents, which is a guess and stays one.
+enum ApplicationIdentity {
+    /// The application is published in a registry, under these identities.
+    Distribution {
+        /// Registry and identifier pairs, at least one of which a rule must claim exactly.
+        registries: &'static [(&'static str, &'static str)],
+    },
+    /// The application is installed by its vendor, into this directory.
+    VendorInstaller {
+        /// Whole path segments a rule must require, at least once.
+        path_suffix: &'static [&'static str],
+    },
+}
+
 /// The bundled connectors, and the identities each one is qualified against.
 ///
 /// A generic check cannot tell whether two packages swapped their applications, because both
@@ -88,8 +106,9 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
     BundledConnector {
         plugin: "kalareach/claude-code",
         protocol: "claude-code-channels",
-        registry: "npm",
-        identifier: "@anthropic-ai/claude-code",
+        identity: ApplicationIdentity::Distribution {
+            registries: &[("npm", "@anthropic-ai/claude-code")],
+        },
         file_stems: &["claude"],
         provenance: &[],
         frames: &[
@@ -122,8 +141,9 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
     BundledConnector {
         plugin: "kalareach/codex",
         protocol: "codex-app-server",
-        registry: "npm",
-        identifier: "@openai/codex",
+        identity: ApplicationIdentity::Distribution {
+            registries: &[("npm", "@openai/codex")],
+        },
         file_stems: &["codex"],
         provenance: &[],
         frames: &[
@@ -164,8 +184,9 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
     BundledConnector {
         plugin: "kalareach/gemini-cli",
         protocol: "gemini-cli-acp",
-        registry: "npm",
-        identifier: "@google/gemini-cli",
+        identity: ApplicationIdentity::Distribution {
+            registries: &[("npm", "@google/gemini-cli")],
+        },
         file_stems: &["gemini"],
         provenance: &[
             (
@@ -220,10 +241,70 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         ],
     },
     BundledConnector {
+        plugin: "kalareach/kimi-code-cli",
+        protocol: "kimi-code-cli-acp",
+        identity: ApplicationIdentity::VendorInstaller {
+            path_suffix: &[".kimi-code", "bin"],
+        },
+        file_stems: &["kimi"],
+        provenance: &[
+            (
+                "a file read in the agent's own environment",
+                Provenance::Written,
+            ),
+            ("a method the table does not route", Provenance::Captured),
+            (
+                "a process started in the agent's own environment",
+                Provenance::Written,
+            ),
+            ("a tool call the agent is waiting on", Provenance::Written),
+            ("creating an execution", Provenance::Captured),
+            ("ending the turn in flight", Provenance::Written),
+            ("the agent's own update stream", Provenance::Written),
+            (
+                "the capability negotiation that opens a connection",
+                Provenance::Captured,
+            ),
+        ],
+        frames: &[
+            (
+                "a file read in the agent's own environment",
+                "fs/read_text_file",
+            ),
+            (
+                "a method the table does not route",
+                "kalareach/not-a-method",
+            ),
+            (
+                "a process started in the agent's own environment",
+                "terminal/create",
+            ),
+            (
+                "a tool call the agent is waiting on",
+                "session/request_permission",
+            ),
+            ("creating an execution", "session/new"),
+            ("ending the turn in flight", "session/cancel"),
+            ("the agent's own update stream", "session/update"),
+            (
+                "the capability negotiation that opens a connection",
+                "initialize",
+            ),
+        ],
+        required_members: &[
+            ("fs/read_text_file", "params.path"),
+            ("session/new", "params.cwd"),
+            ("session/request_permission", "params.toolCall.toolCallId"),
+            ("session/update", "params.update.sessionUpdate"),
+            ("terminal/create", "params.command"),
+        ],
+    },
+    BundledConnector {
         plugin: "kalareach/opencode",
         protocol: "opencode-server-v2-events",
-        registry: "npm",
-        identifier: "opencode-ai",
+        identity: ApplicationIdentity::Distribution {
+            registries: &[("npm", "opencode-ai")],
+        },
         file_stems: &["opencode"],
         provenance: &[
             (
@@ -291,10 +372,8 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
 struct BundledConnector {
     plugin: &'static str,
     protocol: &'static str,
-    /// The registry this application is published in.
-    registry: &'static str,
-    /// Its identifier inside that registry.
-    identifier: &'static str,
+    /// What the package's match rules have to prove about the application they recognised.
+    identity: ApplicationIdentity,
     /// The executable names the package's rules may recognise, and no others.
     file_stems: &'static [&'static str],
     /// Every frame the corpus has to carry, as a situation and a wire name, in sorted order.
@@ -382,6 +461,7 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
         // protocol carries a rule that identifies the application by something stronger than its
         // executable name, and a rule that has only the name is always inferred.
         let mut exact = 0;
+        let mut directories = 0;
         let mut anywhere = 0;
         for rule in &manifest.match_rules {
             assert!(
@@ -393,6 +473,8 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
             );
             if rule.executable.path_suffix.is_empty() {
                 anywhere += 1;
+            } else {
+                directories += 1;
             }
             match &rule.distribution.0 {
                 None => assert_eq!(
@@ -402,9 +484,15 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
                     rule.id
                 ),
                 Some(distribution) => {
-                    assert_eq!(
-                        (distribution.registry(), distribution.identifier()),
-                        (entry.registry, entry.identifier),
+                    let named = (distribution.registry(), distribution.identifier());
+                    let ApplicationIdentity::Distribution { registries } = &entry.identity else {
+                        panic!(
+                            "{plugin}: the rule {} names a registry this application is not published in",
+                            rule.id
+                        )
+                    };
+                    assert!(
+                        registries.contains(&named),
                         "{plugin}: the rule {} recognises another application's distribution",
                         rule.id
                     );
@@ -419,10 +507,31 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
             anywhere > 0,
             "{plugin}: every rule requires a directory, so an ordinary installation matches none"
         );
-        assert!(
-            exact > 0,
-            "{plugin} recognises its application by name alone"
-        );
+        match &entry.identity {
+            ApplicationIdentity::Distribution { .. } => assert!(
+                exact > 0,
+                "{plugin} recognises its application by name alone"
+            ),
+            ApplicationIdentity::VendorInstaller { path_suffix } => {
+                // A vendor installer has no registry identity to claim, so nothing here may be
+                // exact and the directory the vendor documents is the strongest rule available.
+                assert_eq!(
+                    exact, 0,
+                    "{plugin} claims an exact match for an application no registry publishes"
+                );
+                assert!(
+                    directories > 0,
+                    "{plugin} names no installation directory, so it recognises its application by name alone"
+                );
+                assert!(
+                    manifest
+                        .match_rules
+                        .iter()
+                        .any(|rule| rule.executable.path_suffix == *path_suffix),
+                    "{plugin} names another installation directory than the one it was qualified against"
+                );
+            }
+        }
     }
     assert_eq!(
         seen.len(),
