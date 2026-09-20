@@ -24,7 +24,7 @@ note at all.
 | Distribution | npm `@openai/codex` | `https://registry.npmjs.org/@openai/codex`, `dist-tags.latest` = `0.155.1` | 2026-09-20 | Verified against the registry |
 | Protocol | Codex App Server, `codex-app-server` | `https://learn.chatgpt.com/docs/app-server` | 2026-09-20 | Verified against the published documentation |
 | Protocol version tested | 0.155.1 | The JSON Schema written by `codex app-server generate-json-schema`, whose v2 document is titled `CodexAppServerProtocolV2` | 2026-09-20 | Verified against a live install |
-| Qualified range | `>=0.155.0, <0.156.0` | This qualification | 2026-09-20 | Narrowed to the release the schema was generated from; the transport and the protocol are both documented as experimental, so the range covers no release that was not read |
+| Qualified range | `=0.155.1` | This qualification | 2026-09-20 | The only release whose schema was read. The transport and the protocol are both documented as experimental, so the range admits nothing that was not tested |
 
 ### The declarative proxy contract
 
@@ -42,11 +42,15 @@ Status: verified against the published documentation and a live install.
 
 ### Method classification
 
-Every wire name in `connector.json` was taken from the generated schema rather than from prose: the
-client requests from the `ClientRequest` union, the notifications from `ServerNotification`, and the
-reverse requests from `ServerRequest`. A name not in that schema is not in the table.
+Every wire name in `connector.json` but one was taken from the generated schema rather than from
+prose: the client requests from the `ClientRequest` union, the notifications from
+`ServerNotification`, and the reverse requests from `ServerRequest`.
 
-Status: verified against a live install.
+Status: verified against a live install, with one exception. `process/spawn` appears in the
+documentation as an experimental method behind the `experimentalApi` capability, and no request
+union in either generated schema lists it. It is classified `unsupported` anyway, because refusing
+it is what the table would do for a method it could not read. Status for that one entry:
+documentation only, unverified against the schema.
 
 The class beside each name is a judgement about what the method does, argued from the documented
 behaviour and recorded as evidence in the table itself. Those judgements were not exercised against
@@ -58,12 +62,32 @@ run should do.
 
 The native `--remote` terminal connection speaks WebSocket, over TCP or over a Unix socket with the
 standard HTTP upgrade handshake, rather than the line-delimited JSON the table declares. The table
-describes the leg between KalaReach and the App Server. The leg between the native terminal and the
-gateway is the gateway's own listener, and its framing is not expressible in a connector table
-today. Status: unverified, and named here so nobody reads the table as covering both legs.
+describes the leg between KalaReach and the App Server, and that leg alone is what meets the
+declarative proxy contract. The leg between the native terminal and the gateway is the gateway's own
+listener, and its framing is not expressible in a connector table today, because the SDK's `Framing`
+vocabulary has no WebSocket member. Status: unqualified, and named here so nobody reads the table as
+covering both legs or as establishing one App Server behind both clients.
+
+`max_message_bytes` is 8 MiB. That is the bound this host enforces while reading frames, chosen
+because a frame larger than it would not be read anyway. The vendor states no message limit, and a
+thread history or an input collection large enough to pass it would fail the connection rather than
+arrive in part. Status: a host bound, not a vendor fact.
+
+`thread/resume` reads stored history. It does not establish that this process owns the live
+execution, and nothing in the package treats it as though it did. Status: verified against the
+published documentation.
 
 Volatile forwarding is declared as untested, which is what `volatile_forwarding: false` means. Until
 it is tested, the unchanged terminal integration is the supported path when receipt storage fails.
+
+The classifications themselves are display and dispatch policy. The six behaviours the Codex row
+names, which are competing approvals, thread subscriptions, `turn/steer`'s `expectedTurnId`,
+`serverRequest/resolved`, reconnect and an uncertain `turn/start` result, each have a fixture case
+covering what a person sees in that situation. The protocol half of each, meaning frames,
+identifiers, transitions and dispatch, belongs to the gateway driver rather than to a catalogue
+package: the fixture format in this repository evaluates control predicates and reads no vendor
+frame. Status: the display half verified by the build on every run, the protocol half not covered
+here.
 
 ## kalareach/claude-code
 
@@ -75,7 +99,7 @@ it is tested, the unchanged terminal integration is the supported path when rece
 | Distribution | npm `@anthropic-ai/claude-code` | `https://registry.npmjs.org/@anthropic-ai/claude-code`, `dist-tags.latest` = `2.1.278` | 2026-09-20 | Verified against the registry |
 | Protocol | Claude Code Channels, `claude-code-channels` | `https://code.claude.com/docs/en/channels-reference` and `https://code.claude.com/docs/en/channels` | 2026-09-20 | Verified against the published documentation |
 | Protocol version tested | 2.1.278 | The three channel notification names are present in the installed 2.1.278 executable | 2026-09-20 | Verified against a live install |
-| Qualified range | `>=2.1.234, <3.0.0` | The version notes in the Channels reference | 2026-09-20 | 2.1.234 is the release that sends permission requests only to servers it registered as channels, treats an undeclared permission capability as undeclared, and masks credentials in the relayed fields. Below it the surface behaves differently enough that the table would be wrong |
+| Qualified range | `=2.1.278` | This qualification | 2026-09-20 | The only release checked. The documented behaviour floor is 2.1.234, the release that sends permission requests only to servers it registered as channels, treats an undeclared permission capability as undeclared, and masks credentials in the relayed fields; that floor is what the bridge recipe's `application_range` is written for, and it is not a claim that any release between it and 2.1.278 was tested |
 
 ### The declarative proxy contract
 
@@ -92,6 +116,15 @@ Status: verified against the published documentation.
 What the table then describes is the private exchange between the forwarder and the worker, not the
 MCP handshake. The forwarder terminates MCP; only the channel frames cross to the broker. Status:
 unverified against a live install, because it depends on the forwarder, which is core's.
+
+The table routes and classifies. It carries no mapping from a relayed permission request's
+`tool_name`, `description` and `input_preview` onto an approval resource a person can read, because
+the connector manifest has no field for such a mapping, and this package ships no component and so
+no decoder. The package supplies the answer, and the resource it answers is the one the host already
+holds: the approve and deny controls are gated on the ledger's pending-approval fact. A package's
+own document cannot carry an `approval_ref`, since that node names a runtime resource. Status: the
+answer path verified against the published documentation; the resource mapping is not this package's
+and is recorded as an open interface question rather than claimed.
 
 ### Method classification
 
@@ -119,17 +152,31 @@ is a separate action with its own effect class.
 
 ### Runtime installation gates
 
-Registering the channel does not enable it. Three conditions are decided where Claude Code runs:
+Registering the channel does not enable it. Every one of these is decided where Claude Code runs:
 
-1. The session names the plugin at launch, with `--channels` or the development flag. Being in the
-   MCP configuration is not enough.
+1. The session names the server or its plugin at launch, with `--channels` or with
+   `--dangerously-load-development-channels`. Being in the MCP configuration is not enough.
 2. The plugin is on the effective allowlist, which is Anthropic's list unless an organisation
-   replaces it with `allowedChannelPlugins`.
+   replaces it with `allowedChannelPlugins`. The development flag bypasses the allowlist alone.
 3. The organisation's `channelsEnabled` setting permits channels at all.
+4. The session authenticates through claude.ai or a Console API key. Channels are documented as
+   unavailable on Amazon Bedrock, Google Cloud's Agent Platform and Microsoft Foundry.
+5. The server declares `claude/channel`, and `claude/channel/permission` as well before any approval
+   is relayed to it.
+6. The negotiated MCP protocol revision is one this version registers a channel over. The
+   documentation names revision 2026-07-28 as one that stops a channel registering under the v2
+   client runtime.
 
-Source: `https://code.claude.com/docs/en/channels`, read 2026-09-20. Status: verified against the
-published documentation. Whether any of the three holds on a given machine is not something this
-package can claim, which is why the answer controls are hidden until the host has evidence for them.
+Sources: `https://code.claude.com/docs/en/channels` and
+`https://code.claude.com/docs/en/channels-reference`, read 2026-09-20. Status: verified against the
+published documentation. Whether any of them holds on a given machine is not something this package
+can claim, which is why the answer controls are hidden until the host has evidence for them.
+
+Claude Code applies whichever answer arrives first and drops the other. It sends the channel no
+notification of that outcome: the reference describes the local dialog closing and the pending
+remote request being dropped, and an identifier nobody issued being dropped in silence. So a
+delivered answer proves the answer was sent, not that it was the one applied. Status: verified
+against the published documentation.
 
 ### The bridge, and what is unverified about it
 

@@ -61,26 +61,26 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "d1f65b6b0066a6a47dbada7398a5d8cb622957db0ccd89bee0fb309eb3342419",
-      "size_bytes": "3454"
+      "digest": "5eb1b0bbfd023bbeaea843b71bbb0203e84cd6046d61035eae183ac06227e334",
+      "size_bytes": "4957"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "0cc43349c4e1c5e277255eb61120258cfbcb63efb2c9bd7b20661af63f8ffc18",
-      "size_bytes": "15596"
+      "digest": "c73d42b2e53ce1c21203e0b30f9db59795966457097a625459c3ba703c334b7f",
+      "size_bytes": "16050"
     },
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "b356f11e641d96b0bf9592d2599523127717724649453dd29907f412a1cb9524",
-      "size_bytes": "5014"
+      "digest": "19b0895210c013ef09492a7a2c6b5cb5aabdc85461f41da3d83c7bb701c8c697",
+      "size_bytes": "5578"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "c075243ee0ef458d446419ed7c992980a23b240e73a021453827ae20ba872c02",
-      "size_bytes": "3100"
+      "digest": "51c4a083904b315b7e3fd4839f3b7bde4d6e6f298f4fea0958e6fbf7e806ef12",
+      "size_bytes": "3390"
     }
   ],
   "capabilities": [
@@ -125,7 +125,7 @@
       "parameters": {
         "parameters": []
       },
-      "description": "Read the bound thread's state again and redraw this package's document",
+      "description": "Draw this package's document again from the thread state the host already holds",
       "confirmation_required": false
     }
   ],

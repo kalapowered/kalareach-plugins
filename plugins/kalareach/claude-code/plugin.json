@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "6f9bbb0a941152c2590e59f3a5b2cb3f891f01939cca87db17f4bf5d1ecb935d",
-      "size_bytes": "6082"
+      "digest": "86bb8d83ed070e9dab4856929790775bac0df431e974aae47d3140b45e2199ed",
+      "size_bytes": "6993"
     },
     {
       "role": "native_bridge",
@@ -85,20 +85,20 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "c6937814fbcaa543901d5eed7c816b83902108dee2545219a94f48cf766ee3af",
-      "size_bytes": "2682"
+      "digest": "18e7b81417ff29249add281b5abab043c44ee306edc359bb7654f7d478c410d5",
+      "size_bytes": "2833"
     },
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "414d2b8dbd93bad18662af3381d60a595e4dcf9dc2907cc41b58dec7b356dddc",
-      "size_bytes": "7463"
+      "digest": "030c4f59c7604c0b2b1c0302ce2b01b8f75174edf28fe71ce467827fdcc594b7",
+      "size_bytes": "7452"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "ccc2b8b340071cf58147fb1f63b941bd656ddb81e990185b285c3cfad2e46a5f",
-      "size_bytes": "7791"
+      "digest": "bfd491bc39c898579f0367ad7dc495850f8c3916ba45d734cf5960d2d01ee096",
+      "size_bytes": "7811"
     }
   ],
   "capabilities": [
@@ -230,7 +230,7 @@
       "parameters": {
         "parameters": []
       },
-      "description": "Read the session's state again and redraw this package's document",
+      "description": "Draw this package's document again from the session state the host already holds",
       "confirmation_required": false
     }
   ],

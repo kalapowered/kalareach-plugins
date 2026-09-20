@@ -28,12 +28,17 @@ and `allow` or `deny`.
 
 The broker owns the identifier. `connector.json` puts the correlation at `params.request_id`, and the
 answer action binds one parameter: the decision. A control cannot name a request, so an answer always
-belongs to the pending request the person read. Text that is not a decision for a pending request is
-not an answer, and it does not become an ordinary message to Claude either: the message path is a
+belongs to the pending request the host is holding. Text that is not a decision for a pending request
+is not an answer, and it does not become an ordinary message to Claude either: the message path is a
 separate action with its own effect class, and the two never fall through into one another.
 
-Local and remote answers race, and the first one to arrive wins. Whoever answers second is told the
-request is already resolved.
+This package interprets nothing. It ships no decoder, and the table routes and classifies rather than
+reading a request's fields, so the approval a person answers is the one the host already holds in its
+ledger. The answer controls appear only while such a resource is there.
+
+Claude Code applies whichever answer reaches it first, the terminal's or this one, and drops the
+other. It does not tell the channel which happened, so a delivered answer is evidence that the
+answer was sent and nothing more.
 
 Delivering a message is not steering and not an acknowledgement that anything was processed. Claude
 Code queues messages that arrive while a turn is running and delivers them together on the next turn,
@@ -47,10 +52,21 @@ neither, so this package offers no control for them, whatever rights the person 
 ## Runtime gates
 
 The registration is what makes the channel available; it is not what turns it on. Claude Code
-registers a channel only when the session names it at launch, when the plugin is on the effective
-allowlist, and when the organisation's channel setting permits channels at all. Each of those is
-decided where Claude Code runs, not here. Until all three hold, the answer controls stay hidden and
-the approval is answered in the terminal.
+registers a channel only when every one of these holds where it runs:
+
+- The session names the server or its plugin at launch. A registration Claude Code can see is not a
+  registration it uses.
+- The plugin is on the effective allowlist, which is the vendor's own unless an organisation replaces
+  it, or the session was started with the development flag instead.
+- The organisation's channel setting permits channels at all.
+- The session authenticates in a way that supports channels, which rules out the third-party model
+  providers.
+- The server declares the channel capability, and the permission capability as well before any
+  approval is relayed to it.
+- The negotiated protocol revision is one this version of Claude Code registers a channel over.
+
+Each of those is decided where Claude Code runs, not here. Until they all hold, the answer controls
+stay hidden and the approval is answered in the terminal.
 
 ## The registration it installs
 
@@ -87,16 +103,16 @@ environment.
 
 Five capabilities. Matching, declarative presentation and broker semantic events are the reading
 half. The upstream action capability carries a message you wrote. The approval capability answers one
-pending tool call. The bridge installation grant is declared with the recipe it installs, and it says
-that the registered forwarder runs under Claude Code's own permissions, outside the sandbox.
-
-No component ships here, so nothing in this package interprets bytes on its own: the approval a
-person sees is built from the fields Claude Code sends, read by core code through the table above.
+pending tool call. The bridge installation grant is declared with the recipe it installs.
 
 ## Fixtures
 
 `fixtures/conformance.json` states what a person sees in nine situations, and the build evaluates
 this package's own predicates against each one: a pending approval, no pending request, an actor
-without the right to answer, a session whose channel is not registered, a message queued behind a
-running turn, volatile-native operation, an actor holding host rights and still getting no trust
-control, an upload in progress, and a binding disabled by repeated faults.
+without the right to answer, an unavailable approval surface, a message queued behind a running turn,
+volatile-native operation, an actor holding host rights and still getting no trust control, an upload
+in progress, and a binding disabled by repeated faults. They are display conformance: the fixture
+runner evaluates predicates and never reads a channel frame.
+
+`docs/qualification-notes.md` in this repository records what every claim above was checked against,
+and which claims were not checked against a live install.

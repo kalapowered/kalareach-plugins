@@ -59,8 +59,17 @@
               "op": "all",
               "terms": [
                 {
-                  "op": "binding",
-                  "state": "upstream_busy"
+                  "op": "any",
+                  "terms": [
+                    {
+                      "op": "binding",
+                      "state": "upstream_busy"
+                    },
+                    {
+                      "op": "binding",
+                      "state": "awaiting_person"
+                    }
+                  ]
                 },
                 {
                   "op": "capability",
@@ -69,14 +78,14 @@
                 }
               ]
             },
-            "disabled_reason": "Codex is not running a turn this host can stop"
+            "disabled_reason": "Codex has no turn in flight that this host can stop"
           },
           {
             "id": "refresh",
             "revision": "1",
             "label": "Refresh",
             "icon": "retry",
-            "accessible_description": "Read the thread's current state again and redraw it",
+            "accessible_description": "Draw the thread's current state again from what this host already holds",
             "action_id": "thread.refresh",
             "parameters": {
               "parameters": []

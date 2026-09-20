@@ -120,7 +120,7 @@
       ]
     },
     {
-      "name": "the channel is not registered for this session, so the terminal answers",
+      "name": "the approval surface is unavailable, so the terminal answers",
       "context": {
         "rights": [
           "session.view",

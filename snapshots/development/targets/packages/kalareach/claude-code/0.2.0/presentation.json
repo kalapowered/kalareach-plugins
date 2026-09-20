@@ -248,7 +248,7 @@
             "revision": "1",
             "label": "Refresh",
             "icon": "retry",
-            "accessible_description": "Read the session's current state again and redraw it",
+            "accessible_description": "Draw the session's current state again from what this host already holds",
             "action_id": "status.refresh",
             "parameters": {
               "parameters": []
