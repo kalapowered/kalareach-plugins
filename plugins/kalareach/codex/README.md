@@ -6,8 +6,8 @@ running.
 ## What it does
 
 KalaReach matches the `codex` executable, labels the session, and runs Codex through its ordinary
-terminal path. The terminal is the product: this package adds a reading of what Codex is doing and
-one control over it, and never replaces the interface Codex draws.
+terminal path. That terminal stays exactly as Codex draws it. What this package adds on top is a
+reading of what Codex is doing, and one control over it.
 
 `connector.json` is the declarative native-proxy table. It states the framing (one JSON document per
 line), where a request carries its identifier, where a message names its method, how a response is

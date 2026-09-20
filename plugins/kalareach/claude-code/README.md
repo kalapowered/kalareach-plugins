@@ -8,18 +8,18 @@ is waiting on.
 KalaReach matches the `claude` executable, labels the session, and keeps Claude Code in the terminal
 KalaReach already owns. Nothing here replaces that terminal or starts a second Claude Code beside it.
 
-Two surfaces reach the session, and they are deliberately separate.
+Two surfaces reach the session, and they stay apart on purpose.
 
-**Hooks observe.** The installed registration points Claude Code's lifecycle and tool events at the
-core forwarder, which carries them to the worker that owns the terminal. They report; they never
-return a decision that would change what Claude Code permits.
+The hooks only watch. The installed registration points Claude Code's lifecycle and tool events at
+the core forwarder, which carries them to the worker that owns the terminal. They report what
+happened. They never return a decision that would change what Claude Code permits.
 
-**Channels carry messages and the answer to a tool approval.** Claude Code spawns a channel as an
-MCP server of its own and talks to it over that process's standard streams, so the gateway cannot sit
-between them. This package installs the registration that makes the core forwarder the channel, and
-`connector.json` states how the frames on that private exchange are read.
+Channels carry messages in and the answer to a tool approval back. Claude Code spawns a channel as
+an MCP server of its own and talks to it over that process's standard streams, so the gateway has
+nowhere to sit between them. This package installs the registration that makes the core forwarder
+that channel, and `connector.json` states how the frames on the private exchange are read.
 
-## The approval path, and why it is not the message path
+## How an approval is answered
 
 Claude Code relays a pending tool approval as `notifications/claude/channel/permission_request`, with
 a five-letter `request_id`, the tool's name, a description of the call and a preview of its
@@ -68,9 +68,9 @@ The settings key is `enabledPlugins."kalareach-channels@skills-dir"`, set to `tr
 that one key and leaves every other setting where it was.
 
 The hooks are registered on `SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolUseFailure` and
-`Notification`. None of those five can stop what Claude Code was about to do, whatever a handler
-returns, which is what makes the observation half observation. The forwarder writes the event to the
-worker and returns, so no hook holds the session open waiting for anybody.
+`Notification`. Claude Code cannot be stopped by a handler on any of those five, whatever the handler
+returns, so the observation stays observation by construction rather than by promise. The forwarder
+writes the event to the worker and returns, so no hook holds the session open waiting for anybody.
 
 Removal takes the settings key out first, so Claude Code stops loading the registration, and then
 deletes the three files in the reverse of the order it wrote them. Each file is checked against the

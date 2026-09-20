@@ -115,7 +115,10 @@ a manifest that is straightforwardly dishonest.
 says: these methods observe, these mutate, these carry credentials, and this one is outside what I
 can proxy safely. Each classification carries the evidence you qualified it against, and the table
 is pinned to the protocol version you tested. A method you leave out is treated as a mutation, which
-is the safe answer rather than a gap.
+is the safe answer rather than a gap. Record the qualification itself in
+`docs/qualification-notes.md`: what each identity and version was pinned to, which vendor schema
+or document it came from with its URL and the date you read it, and whether you checked it
+against a live install or left it unverified.
 
 **Native bridges.** A bridge runs under the application's own permissions, outside the sandbox. The
 recipe lists exact files, configuration edits, hashes, version requirements and the operations that

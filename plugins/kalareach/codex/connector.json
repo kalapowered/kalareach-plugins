@@ -533,5 +533,5 @@
     }
   ],
   "volatile_forwarding": false,
-  "qualification_note": "Qualified against the JSON Schema that codex-cli 0.155.1 generates with codex app-server generate-json-schema; every wire name here appears in that schema. Volatile forwarding is untested, so the unchanged terminal integration is the supported path when receipt storage fails."
+  "qualification_note": "Qualified against Codex CLI 0.155.1 (npm @openai/codex), the App Server documentation at learn.chatgpt.com/docs/app-server and the JSON Schema that codex app-server generate-json-schema writes, both read 2026-09-20; every wire name here appears in that schema. Volatile forwarding is untested, so the unchanged terminal integration is the supported path when receipt storage fails. docs/qualification-notes.md records what each claim was checked against."
 }

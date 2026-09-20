@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "17f12e61f1b922f0fe178b7f343c428dca8fe373401cdc67b2ec4796f5976139",
-      "size_bytes": "6055"
+      "digest": "6f9bbb0a941152c2590e59f3a5b2cb3f891f01939cca87db17f4bf5d1ecb935d",
+      "size_bytes": "6082"
     },
     {
       "role": "native_bridge",
@@ -85,8 +85,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "f3098013735bbc5b97928d08897a61c5eb41d37a788a0efb764cbdf8636b2428",
-      "size_bytes": "2475"
+      "digest": "c6937814fbcaa543901d5eed7c816b83902108dee2545219a94f48cf766ee3af",
+      "size_bytes": "2682"
     },
     {
       "role": "fixture",
