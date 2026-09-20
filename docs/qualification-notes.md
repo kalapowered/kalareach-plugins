@@ -29,6 +29,9 @@ same bytes:
 | Codex generated schema, `codex_app_server_protocol.schemas.json` | | `f1f3591667d8dcf77352c04be5d0667153e492d1a378e4205d69e9af6f31c0c3` |
 | Codex generated schema, `codex_app_server_protocol.v2.schemas.json` | | `f0402dc8ce8d278108f1e68e9d46ec7e59ddd9d153f5e70668d84d56f258dda3` |
 | Claude Code 2.1.278 executable | macOS, arm64 | `bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6` |
+| OpenCode 1.18.31, the native executable npm installs at `opencode-darwin-arm64/bin/opencode` | macOS, arm64 | `16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198` |
+| OpenCode 1.18.31, the OpenAPI document that build serves at `/doc` | | `46db986090aae41846cd6dbe16225a1d883f0bbcb4c48814008d3f6ce140aa5c` |
+| Gemini CLI 0.60.0, the bundle npm puts on the path at `@google/gemini-cli/bundle/gemini.js` | any | `fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2` |
 
 The App Server is the native executable, which is what the schema above was generated from. The
 launcher is listed beside it because it is what npm puts on the path.
@@ -297,3 +300,337 @@ Three things are unverified, and all three are recorded rather than assumed:
 
 `pipeline/tests/release.rs`: the edit deriving target paths dynamically was accepted as necessary
 due to the package version bump to 0.2.0 (lead ruling D-122.3).
+
+## kalareach/opencode
+
+### Identities
+
+| What | Value | Source | Read | Status |
+| --- | --- | --- | --- | --- |
+| Executable | `opencode` | `opencode --version` on the qualification machine, reporting `1.18.31` | 2026-09-20 | Verified against a live install |
+| Distribution | npm `opencode-ai` | The 1.18.31 release of that package, installed into a directory owned by this qualification and nowhere else | 2026-09-20 | Verified against the registry |
+| Protocol | The shared-server API family's durable event stream, `opencode-server-v2-events` | The OpenAPI document that build serves at `GET /doc`, pinned by digest above | 2026-09-20 | Binary check |
+| Protocol version tested | 1.18.31 | The same document | 2026-09-20 | Binary check |
+| Qualified range | `=1.18.31` | This qualification | 2026-09-20 | The only release whose schema was read. Both API families are served from one build and the earlier one is still there, so the range admits nothing that was not read |
+
+### The declarative proxy contract
+
+The event stream meets it, so the package ships no native bridge for that leg.
+
+`GET /api/event` is a server-sent event stream whose every message is one JSON document with `id`,
+`type` and `data`, and whose `id` matches `^evt_`. That gives the table a framing, a method name at
+`type`, an identifier at `id` and a correlation that finds the same identifier, which is every field
+the contract asks for. The durable envelope also carries `durable.aggregateID` and `durable.seq`,
+which is how the stream orders and resumes itself.
+
+The request leg does not meet it. Asking that server to do something is an HTTP request, and its
+method is a verb and a path (`POST /api/session/{sessionID}/interrupt`, `v2.session.interrupt`)
+rather than a member of a document. A connector table names a method by a bounded path into a
+decoded message, and `Framing` has no HTTP member, so the request leg is not expressible in a
+connector table today. Status: named here as outside the table, so nobody reads the table as
+covering both legs. Interrupting a turn therefore goes through the broker's own cancellation against
+the bound execution rather than through a route in this table.
+
+### The two API families
+
+One build answers both, and the qualification turns on telling them apart.
+
+| | This package's profile | The other profile |
+| --- | --- | --- |
+| Event stream | `GET /api/event`, schema `V2Event` | `GET /event`, schema `Event` |
+| Envelope payload | `data` | `properties` |
+| Operation identifiers | prefixed `v2.` | unprefixed |
+| Answering a permission | `POST /api/session/{sessionID}/permission/{requestID}/reply` | `POST /session/{sessionID}/permissions/{permissionID}` |
+| Server-wide operations | `/global/health`, `/global/event`, `/global/config`, `/global/dispose` | none |
+
+The two unions share 88 event names. The earlier one carries one more, `server.instance.disposed`,
+where this one has `global.disposed`. So a name is not a discriminator and the payload member is:
+a table qualified against this family finds nothing at `data` in the other family's envelope.
+`fixtures/frames.json` pins one envelope of each kind, and
+`a_second_family_frame_is_refused_rather_than_read` in `pipeline/tests/packages.rs` asserts that the
+payload member this table reads is absent from both and that the name only the other family
+publishes is not routed at all.
+
+Source: the OpenAPI document above, read 2026-09-20. Status: binary check.
+
+The earlier family is a separate profile, not an unsupported one. It needs its own package with its
+own immutable record, match rules and version line, qualified against the same document's
+unprefixed half.
+
+### Method classification
+
+Eighty-eight event names, every one of them in that document's `V2Event` union, with nothing added
+and nothing left out. Eighty-four are observations: an event on this stream reports what the session
+already did.
+
+Four are not reports, and they are the ones a gateway has to be careful with.
+`tui.session.select` moves the attached terminal to another conversation, which changes the
+execution owner a binding observes; `tui.toast.show` writes on that terminal's screen. Both are
+mutations. `tui.prompt.append` writes into the native composer, and `tui.command.execute` carries a
+command vocabulary that includes `prompt.submit` and `session.interrupt`. Both are declared
+unsupported, because forwarding either would be automatic composer insertion or a typed control
+surface over somebody's terminal, and this package qualified neither.
+
+No event on this stream carries a credential, so no entry is classified `credential`. Provider
+authentication happens on HTTP routes, which this table does not cover.
+
+Status: the names and their payload shapes are a binary check of the served document. The class
+beside each name is a judgement argued from the documented payload and recorded as evidence in the
+table itself; no classification was exercised against a running turn, because that needs a vendor
+account.
+
+### What is not qualified here
+
+`max_message_bytes` is 8 MiB, the bound this host enforces while reading frames. The vendor states
+no limit. Status: a host bound, not a vendor fact.
+
+Volatile forwarding is declared untested, which is what `volatile_forwarding: false` means. Until it
+is tested, the unchanged terminal integration is the supported path when receipt storage fails.
+
+The agent-protocol subcommand this build also offers is a different surface from the server API and
+is not what this package reads. Status: out of scope here.
+
+Nothing was driven: no turn was started, no permission was answered, and no account was signed in
+to. The server was started once, on loopback, with a home directory belonging to this qualification,
+only to read the document it serves.
+
+## kalareach/gemini-cli
+
+### Identities
+
+| What | Value | Source | Read | Status |
+| --- | --- | --- | --- | --- |
+| Executable | `gemini` | `gemini --version` on the qualification machine, reporting `0.60.0` | 2026-09-20 | Verified against a live install |
+| Distribution | npm `@google/gemini-cli` | The 0.60.0 release of that package, installed into a directory owned by this qualification and nowhere else | 2026-09-20 | Verified against the registry |
+| Protocol | The agent protocol over standard streams, `gemini-cli-acp` | The handshake that build answers | 2026-09-20 | Binary check |
+| Protocol version tested | 0.60.0 | `agentInfo` in that handshake: `{"name":"gemini-cli","title":"Gemini CLI","version":"0.60.0"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
+| Qualified range | `=0.60.0` | This qualification | 2026-09-20 | The only release probed |
+
+### The flag
+
+The published documentation disagrees on `--acp` and `--experimental-acp`. The pinned binary settles
+it: its own help lists both, describes `--acp` as "Starts the agent in ACP mode" and
+`--experimental-acp` as "Starts the agent in ACP mode (deprecated, use --acp instead)". The
+qualification used `--acp`, and that build answered.
+
+Source: `gemini --help` on 0.60.0. Status: binary check, performed.
+
+### The declarative proxy contract
+
+The agent protocol meets it, so this package ships no native bridge.
+
+It is JSON-RPC 2.0 over the started process's standard streams, one document per line. A request
+carries `method`, `params` and `id`; a response echoes the `id`; a notification omits it. That gives
+the table a framing, an identifier at `id`, a method at `method` and a correlation by matching `id`.
+
+Status: verified by sending requests to that build and reading what it wrote back.
+
+### Method classification
+
+Seventeen methods. Each host-to-upstream name was sent to the pinned build over its standard
+streams, and each upstream-to-host name is present in that build's own files.
+
+| Sent | What 0.60.0 answered |
+| --- | --- |
+| `initialize` | A result: protocol version 1, four authentication methods, `agentInfo`, and prompt capabilities for image, audio and embedded context |
+| `authenticate`, `session/load`, `session/prompt`, `session/set_mode`, `session/set_model` | An error about the request's own parameters, which is the method answering |
+| `session/new` | A result with a session identifier, the four approval modes and the model list |
+| `session/list`, `session/resume`, `session/close`, `session/delete`, `session/fork` | Method not found. This build supports none of them, and the table does not route them |
+| `session/cancel` | Method not found as a request. The specification defines it as a notification, and every build probed here answers the same way; it was not exercised as a notification |
+| A name nobody implements | Method not found, which is what an unrouted name gets |
+
+The nine upstream-to-host names (`session/update`, `session/request_permission`, the two `fs/`
+methods and the five `terminal/` methods) are present in that build's own bundle. They are the
+requests the agent makes of its client, so the agent does not answer them itself and probing them
+from the client side reports method not found, which is the correct answer rather than evidence of
+absence.
+
+Status: a binary check for every name. The class beside each name is a judgement argued from what
+the method does, recorded as evidence in the table itself, and not exercised against a live turn.
+
+### Hooks, and what this package does not install
+
+The pinned build's hook event names are `BeforeTool`, `AfterTool`, `BeforeAgent`, `AfterAgent`,
+`Notification`, `SessionStart`, `SessionEnd`, `PreCompress`, `BeforeModel`, `AfterModel` and
+`BeforeToolSelection`. They are configured under a `hooks` object in the settings file, keyed by
+event name, each value an array of hook definitions with a command. Status: binary check of 0.60.0.
+
+A hook's output is read. The build's own hook-output type carries `continue`, `stopReason`,
+`suppressOutput`, `systemMessage`, `decision`, `reason` and `hookSpecificOutput`, and it treats
+`decision` values of `block` and `deny` as refusals, `ask` as a prompt and `continue: false` as a
+stop. An observation hook that answered any of those would change upstream permission behaviour,
+which the specification forbids. The neutral answer is therefore an empty JSON object and exit 0,
+and nothing else.
+
+This package installs no hook registration, so none of that is a claim about a running session.
+Status: recorded as a requirement, not as observed behaviour.
+
+Two runtime gates were observed rather than documented: starting the pinned build in an untrusted
+folder wrote "Project hooks disabled because the folder is not trusted" and "Skipping project agents
+due to untrusted folder" to its error stream. Project-scoped hooks therefore depend on folder trust.
+Status: binary check.
+
+### What is not qualified here
+
+Agent-protocol mode creates its own execution. Nothing here attaches it to a conversation already
+running in a terminal, and the published documentation establishes no way to do so. Status: the
+mode's own behaviour is a binary check; the absence of an attachment API is a document check.
+
+Reverse filesystem and terminal requests must run in the selected host environment with resources
+the broker scopes. The names are a binary check; the behaviour needs a live turn and is not observed
+here.
+
+`max_message_bytes` is 8 MiB, this host's bound. Prompt content can carry an image inline, which is
+why the bound is not smaller. Volatile forwarding is untested.
+
+No account was signed in to and no turn was started.
+
+## kalareach/kimi-code-cli
+
+### Identities
+
+| What | Value | Source | Read | Status |
+| --- | --- | --- | --- | --- |
+| Executable | `kimi` | `kimi --version` on the qualification machine, reporting `2.0.2` | 2026-09-20 | Verified against a live install |
+| Distribution | The kimi.com installer into `~/.kimi-code` | The installed tree, whose executable is `~/.kimi-code/bin/kimi` and whose `config.toml` names `api.kimi.ai` | 2026-09-20 | Verified against a live install |
+| Protocol | The agent protocol over standard streams, `kimi-code-cli-acp` | The handshake that build answers under its `acp` subcommand | 2026-09-20 | Binary check |
+| Protocol version tested | 2.0.2 | `agentInfo` in that handshake: `{"name":"Kimi Code CLI","version":"2.0.2"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
+| Qualified range | `=2.0.2` | This qualification | 2026-09-20 | The only release probed |
+
+### The two distributions
+
+Two products share the name Kimi, and the qualification turns on telling them apart before any
+protocol is chosen.
+
+| | This package's profile | The other profile |
+| --- | --- | --- |
+| Home | `~/.kimi-code` | `~/.kimi` |
+| Installed by | the kimi.com installer | MoonshotAI's own distribution |
+| Reports itself as | `agentInfo.name` `Kimi Code CLI` | not observed here |
+| Server surface | `kimi web`, a local REST and WebSocket server, and the vendor's remote control | an experimental Wire surface, not observed here |
+
+The evidence that they are two: the installed build ships a `migrate` subcommand whose own help says
+it migrates "data from a legacy kimi-cli installation into kimi-code". `~/.kimi` does not exist on
+the qualification machine, so the other distribution is not installed and nothing here is a claim
+about its wire format. Status: binary check for this distribution; the other is named, not
+qualified.
+
+The match rule that names `~/.kimi-code/bin` is what identifies this one. A rule that recognises an
+executable called `kimi` by its name alone is `inferred` and is presented as a guess: an executable
+with that name establishes nothing about which server contract is available, and a directory of
+saved sessions establishes nothing about which process owns the live one.
+
+The refusal is declarative. When the host's evidence says the installed distribution is not this
+one, the capability is `incompatible`, and the case named in `fixtures/conformance.json` states that
+both controls then disappear, leaving the terminal path alone. `kalareach-catalogue validate`
+evaluates that case against this package's own predicates on every run. A frame-level discriminator
+would need the other distribution installed, and it is not here.
+
+Native-TUI attachment to a server this package selected would need source or executable verification
+this qualification does not have. Status: not claimed, and not offered.
+
+### The declarative proxy contract
+
+The agent protocol meets it, so this package ships no native bridge: JSON-RPC 2.0 over the started
+process's standard streams, one document per line, identifiers at `id`, methods at `method`,
+responses matched by repeating the `id`. Status: verified by sending requests to that build.
+
+### Method classification
+
+Twenty-two methods. Each host-to-upstream name was sent to the pinned build, and each
+upstream-to-host name is present in that build's own executable.
+
+| Sent | What 2.0.2 answered |
+| --- | --- |
+| `initialize` | A result: protocol version 1, `agentInfo`, prompt capabilities for image and embedded context, session capabilities for list, resume, close, delete, fork and additional directories, and one terminal login method |
+| `session/list` | A result |
+| `authenticate`, `session/load`, `session/prompt`, `session/set_mode`, `session/set_model`, `session/resume`, `session/close`, `session/delete`, `session/fork` | An error about the request's own parameters, which is the method answering |
+| `session/new` | Authentication required, so the request reached the method and created nothing |
+| `session/cancel` | Method not found as a request, which is what a notification-only handler does; not exercised as a notification |
+| A name nobody implements | Method not found |
+
+The nine upstream-to-host names are present in the installed executable. They are the requests the
+agent makes of its client, so probing them from the client side reports method not found, which is
+the correct answer rather than evidence of absence.
+
+Status: a binary check for every name. The class beside each name is a judgement recorded as
+evidence in the table itself and not exercised against a live turn.
+
+### What is not qualified here
+
+Nothing in this package depends on `kimi web`'s REST and WebSocket server or on the vendor's remote
+control. Both are the vendor's own services, and neither is evidence that KalaReach may reuse a
+service protocol. Status: out of scope, deliberately.
+
+`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. No account was
+signed in to and no turn was started; the probes ran with a home directory belonging to this
+qualification, and `~/.kimi-code` was unchanged before and after.
+
+## kalareach/qoder-cli
+
+### Identities
+
+| What | Value | Source | Read | Status |
+| --- | --- | --- | --- | --- |
+| Executable | `qoder`, dispatching to `qodercli` | `qoder --version` on the qualification machine, reporting `1.1.59` | 2026-09-20 | Verified against a live install |
+| Distribution | The qoder.com installer into `~/.qoder` | The installed tree: a dispatcher at `~/.qoder/entry/qoder`, the executable at `~/.qoder/bin/qodercli/qodercli-1.1.59` selected by a `version.txt` beside it, a `qodercli` link under `~/.local/bin`, and an install marker naming a shell installer | 2026-09-20 | Verified against a live install |
+| Protocol | The agent protocol over standard streams, `qoder-cli-acp` | The handshake that build answers under `--acp` | 2026-09-20 | Binary check |
+| Protocol version tested | 1.1.59 | `agentInfo` in that handshake: `{"name":"qoder-cli","title":"Qoder CLI","version":"1.1.59"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
+| Qualified range | `=1.1.59` | This qualification | 2026-09-20 | The only release probed |
+
+Nothing is published under `qoder`, `@qoder/cli`, `@qoder/qoder-cli` or `qoder-cli` in a registry
+this qualification could name, so no rule here claims an exact match. The rules name the two stable
+entry points and the installation directory, and every one of them is `inferred`. The executable
+itself carries its version in its file name, so it is not a stable name to recognise.
+
+### The flag
+
+`--acp` is not in that build's `--help`. It works: the build answered an initialize sent over its
+standard streams with it. Status: binary check, and the gap between the help text and the behaviour
+is recorded rather than smoothed over.
+
+### The declarative proxy contract
+
+The agent protocol meets it, so this package ships no native bridge: JSON-RPC 2.0 over the started
+process's standard streams, one document per line, identifiers at `id`, methods at `method`,
+responses matched by repeating the `id`. Status: verified by sending requests to that build.
+
+### Method classification
+
+Twenty-two methods. Each host-to-upstream name was sent to the pinned build, and each
+upstream-to-host name is present in that build's own executable.
+
+| Sent | What 1.1.59 answered |
+| --- | --- |
+| `initialize` | A result: protocol version 1, `agentInfo`, prompt capabilities for image and embedded context, session capabilities for list, resume, close, delete, fork and additional directories, one login method, and a vendor extension declaring prompt queueing |
+| `authenticate`, `session/load`, `session/prompt`, `session/set_mode`, `session/set_model`, `session/resume`, `session/close`, `session/delete`, `session/fork` | An error about the request's own parameters, which is the method answering |
+| `session/new`, `session/list` | Authentication required, so the request reached the method and created nothing |
+| `session/cancel` | Method not found as a request, which is what a notification-only handler does; not exercised as a notification |
+| A name nobody implements | Method not found |
+
+The nine upstream-to-host names are present in the installed executable, and probing them from the
+client side reports method not found, which is the correct answer rather than evidence of absence.
+
+Status: a binary check for every name. The class beside each name is a judgement recorded as
+evidence in the table itself and not exercised against a live turn.
+
+### Hooks, and what this package does not install
+
+The installed build has a `hooks` subcommand whose only operation migrates hooks from another
+agent's format, and a `plugins` subcommand with its own marketplace, install, enable and disable
+operations. This package installs neither a hook nor a plugin, so the observations a hook would add
+are not among the ones it claims. Status: binary check of the subcommands; no registration was
+written and none is declared.
+
+### What is not qualified here
+
+Agent-protocol mode starts a subprocess with its own execution. The published documentation
+establishes no attachment API for a terminal that is already running, so this package offers none.
+
+The vendor's remote-control feature runs through the vendor's own application and account. It is not
+evidence that KalaReach may reuse that service protocol, and nothing in this package depends on it.
+Status: out of scope, deliberately.
+
+`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. No account was
+signed in to and no turn was started; the probes ran with a home directory belonging to this
+qualification, and `~/.qoder` was unchanged before and after.
