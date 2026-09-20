@@ -61,35 +61,6 @@
       ]
     },
     {
-      "name": "a turn whose start was never confirmed leaves the binding idle",
-      "context": {
-        "rights": [
-          "session.view",
-          "agent.cancel"
-        ],
-        "binding_state": "bound",
-        "flags": [],
-        "capabilities": [
-          [
-            "upstream.action",
-            "temporarily_unavailable"
-          ]
-        ],
-        "present_nodes": [
-          "overview",
-          "activity",
-          "controls"
-        ]
-      },
-      "visible_controls": [
-        "cancel",
-        "refresh"
-      ],
-      "enabled_controls": [
-        "refresh"
-      ]
-    },
-    {
       "name": "a turn waiting on a person can still be stopped",
       "context": {
         "rights": [

@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "5eb1b0bbfd023bbeaea843b71bbb0203e84cd6046d61035eae183ac06227e334",
-      "size_bytes": "4957"
+      "digest": "e27e3a713274cbba05a0f2aefaa196e9e3614db1db2922ac46599dc021f45819",
+      "size_bytes": "5391"
     },
     {
       "role": "connector",
@@ -73,8 +73,8 @@
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "19b0895210c013ef09492a7a2c6b5cb5aabdc85461f41da3d83c7bb701c8c697",
-      "size_bytes": "5578"
+      "digest": "c3d63e248eb922313d6ea5366713ee95d095497122f59a0491d42b00c1ab4f3b",
+      "size_bytes": "4961"
     },
     {
       "role": "presentation",

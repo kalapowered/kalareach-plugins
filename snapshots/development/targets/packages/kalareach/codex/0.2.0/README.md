@@ -66,21 +66,22 @@ execution, and nothing in this package treats it as though it did.
 
 ## Fixtures
 
-`fixtures/conformance.json` states what a person sees in nine situations, and the build evaluates
+`fixtures/conformance.json` states what a person sees in eight situations, and the build evaluates
 this package's own predicates against each one. The cases are named for what they assert, which is
-which controls a person sees and which of those they can use. They are display conformance, not
-protocol conformance: the fixture runner evaluates predicates and never reads a Codex frame.
+which controls a person sees and which of those they can use. They are display conformance, and only
+that: the fixture runner evaluates control predicates and never reads a Codex frame, so nothing here
+exercises framing, identifiers, transitions or dispatch.
 
-The situations the Codex integration has to be exercised against map onto them like this, with the
-protocol half of each owned by the gateway rather than by this package:
+The Codex integration has to be exercised against six protocol situations, and each of them belongs
+to the gateway that drives the connection rather than to a catalogue package:
 
-| Situation | The case that fixes this package's half |
+| Situation | What this package contributes |
 | --- | --- |
-| Thread subscriptions | An idle bound thread has no turn to stop |
-| `turn/steer` and its `expectedTurnId` | A running turn can be stopped |
-| An uncertain `turn/start` result | A turn whose start was never confirmed leaves the binding idle |
-| Competing approvals | A turn waiting on a person can still be stopped, and no approval control appears |
-| `serverRequest/resolved` | An actor who can only view sees no turn control |
-| Reconnect | Volatile-native operation leaves no usable turn control |
+| Thread subscriptions | The table routes and classifies the subscription methods and the events they produce |
+| `turn/steer` and its `expectedTurnId` | The table classifies `turn/steer` as a mutation and states that its `expectedTurnId` must be the active turn |
+| An uncertain `turn/start` result | Nothing. The binding state a control depends on is the host's, and this package declares no turn-starting action |
+| Competing approvals | The table classifies each reverse approval request as a mutation, and this package draws no control that would answer one |
+| `serverRequest/resolved` | The table routes it as an observation, which is how the host learns a pending request was answered or cleared |
+| Reconnect | The table declares no tested volatile forwarding, so the terminal is the supported path while receipts cannot be stored |
 
-A predicate edit that changes any of those answers fails the build.
+A predicate edit that changes what any of the eight cases says a person sees fails the build.

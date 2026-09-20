@@ -7,5 +7,6 @@
     {
       "server": "kalareach"
     }
-  ]
+  ],
+  "defaultEnabled": false
 }

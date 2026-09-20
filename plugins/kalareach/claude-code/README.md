@@ -34,7 +34,12 @@ separate action with its own effect class, and the two never fall through into o
 
 This package interprets nothing. It ships no decoder, and the table routes and classifies rather than
 reading a request's fields, so the approval a person answers is the one the host already holds in its
-ledger. The answer controls appear only while such a resource is there.
+ledger.
+
+That is also why this package draws no Allow and Deny buttons of its own. A document it ships is
+written before any request exists, and the only fact it could test is that some approval is pending,
+which does not name one. The answer belongs beside the approval the host is holding, and the action
+registered here is what encodes it.
 
 Claude Code applies whichever answer reaches it first, the terminal's or this one, and drops the
 other. It does not tell the channel which happened, so a delivered answer is evidence that the
@@ -64,9 +69,11 @@ registers a channel only when every one of these holds where it runs:
 - The server declares the channel capability, and the permission capability as well before any
   approval is relayed to it.
 - The negotiated protocol revision is one this version of Claude Code registers a channel over.
+- The feature itself reaches this installation. It is a research preview, rolling out gradually, and
+  a session it has not reached refuses the registration whatever the settings say.
 
-Each of those is decided where Claude Code runs, not here. Until they all hold, the answer controls
-stay hidden and the approval is answered in the terminal.
+Each of those is decided where Claude Code runs, not here. Until they all hold, the approval is
+answered in the terminal.
 
 ## The registration it installs
 
@@ -84,35 +91,46 @@ The settings key is `enabledPlugins."kalareach-channels@skills-dir"`, set to `tr
 that one key and leaves every other setting where it was.
 
 The hooks are registered on `SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolUseFailure` and
-`Notification`. Claude Code cannot be stopped by a handler on any of those five, whatever the handler
-returns, so the observation stays observation by construction rather than by promise. The forwarder
-writes the event to the worker and returns, so no hook holds the session open waiting for anybody.
+`Notification`. Those five were chosen because none of them refuses what Claude Code was about to do
+when a handler exits with a failure code. That narrows the ways a hook can interfere; it does not
+remove them, because a handler that answers with a stop decision stops the session on any event.
+What makes these hooks observers is that the forwarder answers nothing: it writes the event to the
+worker and exits. Each registration also carries its own timeout, so a forwarder that cannot reach
+the worker costs seconds rather than the ten minutes a command hook may otherwise take.
 
-Removal takes the settings key out first, so Claude Code stops loading the registration, and then
-deletes the three files in the reverse of the order it wrote them. Each file is checked against the
-digest it was installed with, and one that somebody has since edited is reported and left alone
-rather than deleted.
+The registration installs disabled. Claude Code loads a plugin from a skills directory as soon as it
+is there, so the manifest sets its default to off and the settings key is what turns it on. Removal
+takes that key out first, which is what stops the registration loading, and then deletes the three
+files in the reverse of the order it wrote them. Each file is checked against the digest it was
+installed with, and one that somebody has since edited is reported and left alone rather than
+deleted.
 
-The forwarder runs under Claude Code's own permissions, outside the KalaReach plugin sandbox, because
-Claude Code is the process that starts it. The installation grant says exactly that, and it says what
-the forwarder can see. It also authenticates: the registration is bound to the launch KalaReach made
-and to the private exchange the worker opened, not to a session identifier taken from the
-environment.
+The forwarder runs under Claude Code's own permissions, outside the KalaReach plugin sandbox and
+outside Wasmtime, because Claude Code is the process that starts it. The installation grant says
+exactly that, and it says what the forwarder can see. None of the three files carries a session
+identifier or a secret: what the registration is worth is decided by the forwarder binding it to the
+launch KalaReach made and to the worker's private exchange, and the forwarder is the host's, not
+this package's.
 
 ## What it asks for
 
 Five capabilities. Matching, declarative presentation and broker semantic events are the reading
 half. The upstream action capability carries a message you wrote. The approval capability answers one
-pending tool call. The bridge installation grant is declared with the recipe it installs.
+pending tool call, through the action registered here. The bridge installation grant is declared with
+the recipe it installs.
 
 ## Fixtures
 
-`fixtures/conformance.json` states what a person sees in nine situations, and the build evaluates
-this package's own predicates against each one: a pending approval, no pending request, an actor
-without the right to answer, an unavailable approval surface, a message queued behind a running turn,
-volatile-native operation, an actor holding host rights and still getting no trust control, an upload
-in progress, and a binding disabled by repeated faults. They are display conformance: the fixture
-runner evaluates predicates and never reads a channel frame.
+`fixtures/conformance.json` states what a person sees in six situations, and the build evaluates
+this package's own predicates against each one: a bound session, an actor who may only view,
+volatile-native operation, a session with no qualified evidence for acting upstream, an upload in
+progress, and a binding disabled by repeated faults. They are display conformance: the fixture runner
+evaluates control predicates and never reads a channel frame.
+
+Some of what this package promises is structural rather than conditional, and a fixture cannot state
+it. There is no action for project trust or MCP consent, so no right produces a control for either.
+There is no action that steers a running turn, so a message delivered to a busy session cannot be
+presented as steering.
 
 `docs/qualification-notes.md` in this repository records what every claim above was checked against,
 and which claims were not checked against a live install.

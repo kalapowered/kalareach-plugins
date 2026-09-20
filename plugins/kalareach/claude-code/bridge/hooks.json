@@ -9,7 +9,8 @@
             "args": [
               "claude-code",
               "hook"
-            ]
+            ],
+            "timeout": 5
           }
         ]
       }
@@ -23,7 +24,8 @@
             "args": [
               "claude-code",
               "hook"
-            ]
+            ],
+            "timeout": 1
           }
         ]
       }
@@ -37,7 +39,8 @@
             "args": [
               "claude-code",
               "hook"
-            ]
+            ],
+            "timeout": 5
           }
         ]
       }
@@ -51,7 +54,8 @@
             "args": [
               "claude-code",
               "hook"
-            ]
+            ],
+            "timeout": 5
           }
         ]
       }
@@ -65,7 +69,8 @@
             "args": [
               "claude-code",
               "hook"
-            ]
+            ],
+            "timeout": 5
           }
         ]
       }

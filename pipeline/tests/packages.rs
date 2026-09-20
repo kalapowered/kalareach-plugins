@@ -79,7 +79,7 @@ fn the_bundled_connectors_claim_only_what_they_carry() {
 }
 
 #[test]
-fn a_native_bridge_grant_discloses_what_the_bridge_runs_as() {
+fn a_native_bridge_grant_states_where_the_code_runs() {
     let loaded = packages::load(&root()).expect("the repository loads");
     let mut recipes = 0;
     for package in &loaded.repository.packages {
@@ -88,17 +88,26 @@ fn a_native_bridge_grant_discloses_what_the_bridge_runs_as() {
         };
         recipes += 1;
         // The validator checks that a recipe is complete and removable. It cannot check that the
-        // grant a person reads before accepting it says what accepting it means, and bridge code
-        // runs under the application's own permissions rather than inside the plugin sandbox.
+        // grant a person reads before accepting it says what accepting it means. The two facts
+        // section 11 requires are whose permissions the code runs under and that it runs outside
+        // the sandbox, and both have to be asserted rather than merely mentioned: "runs inside the
+        // sandbox with its own permissions" contains both words and states the opposite.
         let statement = bridge.grant_statement.as_str();
         assert!(
             statement.contains("own permissions"),
             "{}: the grant does not say whose permissions the bridge runs under: {statement}",
             package.relative
         );
+        let outside = statement.find("outside the").unwrap_or_else(|| {
+            panic!(
+                "{}: the grant says nothing runs outside anything: {statement}",
+                package.relative
+            )
+        });
+        let clause: String = statement[outside..].chars().take(60).collect();
         assert!(
-            statement.contains("sandbox"),
-            "{}: the grant does not say the bridge runs outside the sandbox: {statement}",
+            clause.contains("sandbox"),
+            "{}: the grant says something runs outside, but not outside the sandbox: {clause}",
             package.relative
         );
         assert!(
@@ -111,9 +120,10 @@ fn a_native_bridge_grant_discloses_what_the_bridge_runs_as() {
 }
 
 #[test]
-fn connector_profiles_stay_separate_and_need_more_than_an_executable_name() {
+fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
     let loaded = packages::load(&root()).expect("the repository loads");
     let mut protocols: BTreeMap<String, String> = BTreeMap::new();
+    let mut distributions: BTreeMap<(String, String), String> = BTreeMap::new();
     let mut connectors = 0;
     for package in &loaded.repository.packages {
         let Some(connector) = &package.package.connector else {
@@ -133,28 +143,40 @@ fn connector_profiles_stay_separate_and_need_more_than_an_executable_name() {
         // A profile is not selected by a name on disk alone. A package that reads somebody's
         // protocol carries at least one rule that identifies the application by something that
         // cannot be coincidence, and an executable name on its own is always inferred.
-        assert!(
-            package
-                .package
-                .manifest
-                .match_rules
-                .iter()
-                .any(|rule| rule.confidence == MatchConfidence::Exact
-                    && rule.distribution.0.is_some()),
-            "{} recognises its application by name alone",
-            package.relative
-        );
+        let mut exact = 0;
         for rule in &package.package.manifest.match_rules {
-            if rule.distribution.0.is_none() {
-                assert_eq!(
+            match &rule.distribution.0 {
+                None => assert_eq!(
                     rule.confidence,
                     MatchConfidence::Inferred,
                     "{}: the rule {} claims an exact match from an executable name",
                     package.relative,
                     rule.id
-                );
+                ),
+                Some(distribution) => {
+                    exact += usize::from(rule.confidence == MatchConfidence::Exact);
+                    // Two profiles that name one distribution are one application described twice.
+                    let key = (
+                        distribution.registry().to_owned(),
+                        distribution.identifier().to_owned(),
+                    );
+                    if let Some(first) = distributions.insert(key, package.relative.clone()) {
+                        panic!(
+                            "{} and {} both recognise {} {}",
+                            first,
+                            package.relative,
+                            distribution.registry(),
+                            distribution.identifier()
+                        );
+                    }
+                }
             }
         }
+        assert!(
+            exact > 0,
+            "{} recognises its application by name alone",
+            package.relative
+        );
     }
     assert!(connectors > 0, "no package carries a connector table");
 }

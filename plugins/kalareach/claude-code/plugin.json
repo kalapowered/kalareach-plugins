@@ -61,14 +61,14 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "86bb8d83ed070e9dab4856929790775bac0df431e974aae47d3140b45e2199ed",
-      "size_bytes": "6993"
+      "digest": "b9440161e47c40ea4a87969636a677f86b0f7106c2d4673f81e56ed86be2bdc7",
+      "size_bytes": "8226"
     },
     {
       "role": "native_bridge",
       "path": "bridge/hooks.json",
-      "digest": "77aec3242b1f454c8f4c5ab5c84bf4c0dfd9184825fb2afed377f9514b67cb48",
-      "size_bytes": "1268"
+      "digest": "bbf177109cbca2bdcbf995fcf06f9cc434df898c86c0272461de0c10e5baf727",
+      "size_bytes": "1398"
     },
     {
       "role": "native_bridge",
@@ -79,26 +79,26 @@
     {
       "role": "native_bridge",
       "path": "bridge/plugin-manifest.json",
-      "digest": "156ca59cece7f1f314b7d3310d1263af7653808be6db66f66af62b9fb7739289",
-      "size_bytes": "299"
+      "digest": "1cb6238953bafc5e2872e8af3a430d94ca8452c11e51dc43946889f7268b126c",
+      "size_bytes": "326"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "18e7b81417ff29249add281b5abab043c44ee306edc359bb7654f7d478c410d5",
-      "size_bytes": "2833"
+      "digest": "e4c19308f6a23d685f05829c274c86b74f7a877af89e27d66138bef953c3924b",
+      "size_bytes": "2921"
     },
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "030c4f59c7604c0b2b1c0302ce2b01b8f75174edf28fe71ce467827fdcc594b7",
-      "size_bytes": "7452"
+      "digest": "2e2ed8d83cff4d4298a18b7af805d9e4f3497f8e7843e957a7d9fae5f28748df",
+      "size_bytes": "4473"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "bfd491bc39c898579f0367ad7dc495850f8c3916ba45d734cf5960d2d01ee096",
-      "size_bytes": "7811"
+      "digest": "bdab9b87f64eb8ea22f4c84fe95acccb810d907540e73b128c009fa4a1ec9420",
+      "size_bytes": "4011"
     }
   ],
   "capabilities": [
@@ -243,7 +243,7 @@
         "type": "install_file",
         "source": "bridge/plugin-manifest.json",
         "destination": "skills/kalareach-channels/.claude-plugin/plugin.json",
-        "digest": "156ca59cece7f1f314b7d3310d1263af7653808be6db66f66af62b9fb7739289"
+        "digest": "1cb6238953bafc5e2872e8af3a430d94ca8452c11e51dc43946889f7268b126c"
       },
       {
         "type": "install_file",
@@ -255,7 +255,7 @@
         "type": "install_file",
         "source": "bridge/hooks.json",
         "destination": "skills/kalareach-channels/hooks/hooks.json",
-        "digest": "77aec3242b1f454c8f4c5ab5c84bf4c0dfd9184825fb2afed377f9514b67cb48"
+        "digest": "bbf177109cbca2bdcbf995fcf06f9cc434df898c86c0272461de0c10e5baf727"
       },
       {
         "type": "add_configuration_key",
@@ -273,7 +273,7 @@
       {
         "type": "remove_file",
         "destination": "skills/kalareach-channels/hooks/hooks.json",
-        "digest": "77aec3242b1f454c8f4c5ab5c84bf4c0dfd9184825fb2afed377f9514b67cb48"
+        "digest": "bbf177109cbca2bdcbf995fcf06f9cc434df898c86c0272461de0c10e5baf727"
       },
       {
         "type": "remove_file",
@@ -283,9 +283,9 @@
       {
         "type": "remove_file",
         "destination": "skills/kalareach-channels/.claude-plugin/plugin.json",
-        "digest": "156ca59cece7f1f314b7d3310d1263af7653808be6db66f66af62b9fb7739289"
+        "digest": "1cb6238953bafc5e2872e8af3a430d94ca8452c11e51dc43946889f7268b126c"
       }
     ],
-    "grant_statement": "Installs three registration files under Claude Code's own directory and adds one settings key that enables them. Claude Code then starts the KalaReach forwarder itself, so the forwarder runs under Claude Code's own permissions and outside the KalaReach plugin sandbox, and it sees every lifecycle and tool event and every Channels tool approval this session produces. Removal takes the key back out and deletes exactly those three files, each only while it still holds the bytes that were installed."
+    "grant_statement": "Installs three registration files under Claude Code's own directory and adds one settings key that enables them. Claude Code then starts the KalaReach forwarder itself, so the forwarder runs under Claude Code's own permissions and outside the KalaReach plugin sandbox, outside Wasmtime, and it sees every lifecycle and tool event and every Channels tool approval this session produces. Removal takes the key back out and deletes exactly those three files, each only while it still holds the bytes that were installed."
   }
 }

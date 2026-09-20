@@ -14,6 +14,21 @@ Nothing here is recorded as verified unless it was actually checked. A claim nob
 written as unverified and says why, because an unverified claim marked verified is worse than no
 note at all.
 
+Three kinds of evidence appear below, and they are not equally strong. A **document check** reads
+what the vendor publishes. A **binary check** reads an identity or a name out of the installed
+program. **Exercised behaviour** means the thing was run and watched. Nothing in this file is
+exercised behaviour: no upstream was driven and no bridge was installed.
+
+The evidence itself is pinned by content, so a later reader can tell whether they are looking at the
+same bytes:
+
+| Evidence | SHA-256, first 16 hex characters |
+| --- | --- |
+| `codex` 0.155.1, the launcher npm installs at `@openai/codex/bin/codex.js` | `61b0194f3bb65344` |
+| Codex generated schema, `codex_app_server_protocol.schemas.json` | `f1f3591667d8dcf7` |
+| Codex generated schema, `codex_app_server_protocol.v2.schemas.json` | `f0402dc8ce8d2781` |
+| Claude Code 2.1.278 executable | `bd245662fb8a0e32` |
+
 ## kalareach/codex
 
 ### Identities
@@ -23,7 +38,7 @@ note at all.
 | Executable | `codex` | `codex --version` on the qualification machine, reporting `codex-cli 0.155.1` | 2026-09-20 | Verified against a live install |
 | Distribution | npm `@openai/codex` | `https://registry.npmjs.org/@openai/codex`, `dist-tags.latest` = `0.155.1` | 2026-09-20 | Verified against the registry |
 | Protocol | Codex App Server, `codex-app-server` | `https://learn.chatgpt.com/docs/app-server` | 2026-09-20 | Verified against the published documentation |
-| Protocol version tested | 0.155.1 | The JSON Schema written by `codex app-server generate-json-schema`, whose v2 document is titled `CodexAppServerProtocolV2` | 2026-09-20 | Verified against a live install |
+| Protocol version tested | 0.155.1 | The JSON Schema written by `codex app-server generate-json-schema`, whose v2 document is titled `CodexAppServerProtocolV2`; both schema files are pinned by digest above | 2026-09-20 | Binary check |
 | Qualified range | `=0.155.1` | This qualification | 2026-09-20 | The only release whose schema was read. The transport and the protocol are both documented as experimental, so the range admits nothing that was not tested |
 
 ### The declarative proxy contract
@@ -80,14 +95,17 @@ published documentation.
 Volatile forwarding is declared as untested, which is what `volatile_forwarding: false` means. Until
 it is tested, the unchanged terminal integration is the supported path when receipt storage fails.
 
-The classifications themselves are display and dispatch policy. The six behaviours the Codex row
-names, which are competing approvals, thread subscriptions, `turn/steer`'s `expectedTurnId`,
-`serverRequest/resolved`, reconnect and an uncertain `turn/start` result, each have a fixture case
-covering what a person sees in that situation. The protocol half of each, meaning frames,
-identifiers, transitions and dispatch, belongs to the gateway driver rather than to a catalogue
-package: the fixture format in this repository evaluates control predicates and reads no vendor
-frame. Status: the display half verified by the build on every run, the protocol half not covered
-here.
+The six behaviours the Codex row names, which are competing approvals, thread subscriptions,
+`turn/steer`'s `expectedTurnId`, `serverRequest/resolved`, reconnect and an uncertain `turn/start`
+result, are protocol behaviours. This repository's fixture format evaluates control predicates
+against facts the host supplies and reads no vendor frame, so it cannot express any of them. What
+the package contributes to each is stated in its README: a routing and a classification, or in two
+cases nothing at all. Exercising them needs a frame corpus and a driver, and both belong to the
+gateway. Status: not covered here, and the requirement row stays open for that half.
+
+Oversized frames and replay are in the same position. The table declares the bound; what the host
+does when a frame passes it, and that a connection is never reconnected and replayed around an
+unknown request, are the gateway's to establish. Status: not covered here.
 
 ## kalareach/claude-code
 
@@ -98,7 +116,7 @@ here.
 | Executable | `claude` | `claude --version` on the qualification machine, reporting `2.1.278 (Claude Code)` | 2026-09-20 | Verified against a live install |
 | Distribution | npm `@anthropic-ai/claude-code` | `https://registry.npmjs.org/@anthropic-ai/claude-code`, `dist-tags.latest` = `2.1.278` | 2026-09-20 | Verified against the registry |
 | Protocol | Claude Code Channels, `claude-code-channels` | `https://code.claude.com/docs/en/channels-reference` and `https://code.claude.com/docs/en/channels` | 2026-09-20 | Verified against the published documentation |
-| Protocol version tested | 2.1.278 | The three channel notification names are present in the installed 2.1.278 executable | 2026-09-20 | Verified against a live install |
+| Protocol version tested | 2.1.278 | The three channel notification names are present in the installed 2.1.278 executable, pinned by digest above | 2026-09-20 | Binary check |
 | Qualified range | `=2.1.278` | This qualification | 2026-09-20 | The only release checked. The documented behaviour floor is 2.1.234, the release that sends permission requests only to servers it registered as channels, treats an undeclared permission capability as undeclared, and masks credentials in the relayed fields; that floor is what the bridge recipe's `application_range` is written for, and it is not a claim that any release between it and 2.1.278 was tested |
 
 ### The declarative proxy contract
@@ -136,19 +154,29 @@ Three methods, all of them JSON-RPC notifications:
 - `notifications/claude/channel/permission` answers one, with `request_id` and `behavior`.
 
 All three names are present in the installed 2.1.278 executable, as is the `request_id` field and
-the five-letter identifier alphabet the documentation describes. Status: verified against a live
-install for the names, and against the published documentation for the field shapes.
+the five-letter identifier alphabet the documentation describes. Status: a binary check for the
+names, and a document check for the field shapes.
 
 Because all three are notifications, none of them carries a JSON-RPC `id`. The correlation
 identifier is `params.request_id`, which is where the table puts it. Status: verified against the
 published documentation.
 
 The answer action binds one parameter, the decision. It does not bind the identifier, because the
-identifier is the field the broker owns, so an answer always names the request that is actually
-pending. The vendor's own documented failure mode is the one this closes: a reply in the wrong
-format falls through to Claude as an ordinary message, and a reply naming an identifier nobody
-issued is dropped in silence. Inside KalaReach neither becomes a message, because the message path
-is a separate action with its own effect class.
+identifier is the field the broker owns. The vendor's own documented failure mode is the one this is
+meant to close: a reply in the wrong format falls through to Claude as an ordinary message, and a
+reply naming an identifier nobody issued is dropped in silence. Inside KalaReach neither becomes a
+message, because the message path is a separate action with its own effect class. Status: the
+notification shapes are a document check. Whether an answer reaches the request the person read is
+the host's dispatch path, and it is not verified here.
+
+The package draws no Allow and Deny control of its own. A control's visibility is a predicate over
+facts the host knows, and the only fact available is that some approval is pending, which does not
+name one. A control drawn on that fact could be answered against a request that became pending after
+the person read a different one. The package therefore registers the action and leaves the control to
+the host, beside the ledger resource that names the request. The SDK has no parameter kind or control
+field that names an approval resource, and a package document cannot carry an `approval_ref` because
+that node names a runtime resource. Status: an open interface question, recorded rather than worked
+around.
 
 ### Runtime installation gates
 
@@ -163,13 +191,18 @@ Registering the channel does not enable it. Every one of these is decided where 
    unavailable on Amazon Bedrock, Google Cloud's Agent Platform and Microsoft Foundry.
 5. The server declares `claude/channel`, and `claude/channel/permission` as well before any approval
    is relayed to it.
-6. The negotiated MCP protocol revision is one this version registers a channel over. The
-   documentation names revision 2026-07-28 as one that stops a channel registering under the v2
-   client runtime.
+6. The negotiated MCP protocol revision is one this version registers a channel over.
+   `https://code.claude.com/docs/en/channels` names revision 2026-07-28 as one that stops a channel
+   registering under the v2 MCP client runtime when `MCP_PROTOCOL_NEGOTIATION` is `auto`.
+7. The feature reaches this installation at all. The same page describes channels as a research
+   preview whose availability is rolling out gradually, and the installed executable refuses a
+   registration when the feature is not available to the session, independently of the settings
+   above.
 
 Sources: `https://code.claude.com/docs/en/channels` and
-`https://code.claude.com/docs/en/channels-reference`, read 2026-09-20. Status: verified against the
-published documentation. Whether any of them holds on a given machine is not something this package
+`https://code.claude.com/docs/en/channels-reference`, read 2026-09-20, for conditions 1 to 6;
+condition 7 is a binary check of the installed executable. Status: document checks and one binary
+check; none of them exercised. Whether any of them holds on a given machine is not something this package
 can claim, which is why the answer controls are hidden until the host has evidence for them.
 
 Claude Code applies whichever answer arrives first and drops the other. It sends the channel no
@@ -182,27 +215,49 @@ against the published documentation.
 
 The recipe installs three files into Claude Code's own directory and adds one settings key:
 
-| Installed | Documented location | Source | Status |
-| --- | --- | --- | --- |
-| Plugin manifest | `.claude-plugin/plugin.json` under a skills directory, loaded in place with no marketplace | `https://code.claude.com/docs/en/plugins-reference` | Verified against the published documentation |
-| Channel server | `.mcp.json` in the plugin root | `https://code.claude.com/docs/en/plugins-reference` | Verified against the published documentation |
-| Hooks | `hooks/hooks.json` in the plugin root | `https://code.claude.com/docs/en/plugins-reference` | Verified against the published documentation |
-| `enabledPlugins."kalareach-channels@skills-dir"` | `settings.json` under the user's Claude Code directory | `https://code.claude.com/docs/en/plugins-reference` and `https://code.claude.com/docs/en/hooks` | Verified against the published documentation |
+Every destination is relative to the user's own Claude Code directory, which is where
+`settings.json` lives and under which `skills/` sits.
+
+| Installed | Documented location | Source | Read | Status |
+| --- | --- | --- | --- | --- |
+| Plugin manifest | `.claude-plugin/plugin.json` under a skills directory, loaded in place with no marketplace | `https://code.claude.com/docs/en/plugins-reference` | 2026-09-20 | Document check |
+| Channel server | `.mcp.json` in the plugin root | `https://code.claude.com/docs/en/plugins-reference` | 2026-09-20 | Document check |
+| Hooks | `hooks/hooks.json` in the plugin root | `https://code.claude.com/docs/en/plugins-reference` | 2026-09-20 | Document check |
+| `enabledPlugins."kalareach-channels@skills-dir"` | `settings.json` under the user's Claude Code directory | `https://code.claude.com/docs/en/plugins-reference` and `https://code.claude.com/docs/en/hooks` | 2026-09-20 | Document check |
+
+A plugin in a skills directory loads as soon as it is there, and its default enablement is on unless
+the manifest says otherwise. The installed manifest sets `defaultEnabled` to `false`, so the
+settings key is what turns the registration on and removing that key is what turns it off. Source:
+`https://code.claude.com/docs/en/plugins-reference`, read 2026-09-20. Status: document check.
 
 Each of the three files uses its own documented location rather than the inline form the manifest
 also accepts, because the documentation does not fix the inline shape and a registration that loads
 is worth more than a shorter one.
 
 The five hook events are `SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolUseFailure` and
-`Notification`. The hooks reference lists, per event, whether a handler can block; none of those five
-can. Source: `https://code.claude.com/docs/en/hooks`, read 2026-09-20. Status: verified against the
-published documentation.
+`Notification`. The hooks reference lists, per event, what an exit code of 2 does, and for these five
+it refuses nothing: the action has already happened or the code is ignored. That is why they were
+chosen, and it is the whole of what the event list guarantees. It is not a guarantee that a hook
+cannot interfere: the same reference documents a common `continue` field, and a handler that answers
+`{"continue": false}` stops the session whatever the event. A hook here observes because the
+forwarder answers nothing, not because the event cannot carry an answer. Each registration also
+carries a `timeout`, one second for `SessionEnd` and five for the rest, against a documented command
+default of 600 seconds. Source: `https://code.claude.com/docs/en/hooks`, read 2026-09-20. Status:
+document check.
 
-Two things are unverified, and both are recorded rather than assumed:
+Three things are unverified, and all three are recorded rather than assumed:
 
 - The recipe was not installed into a live Claude Code and no session was started against it. Status:
   unverified. Installing it would change the qualification machine's own configuration, which a
-  packaging run does not do.
+  packaging run does not do. What removal does when a file's digest no longer matches, and whether
+  Claude Code picks the registration up without a restart, are unverified for the same reason.
 - The forwarder is named `kr-hook` and invoked as `kr-hook claude-code channel` and `kr-hook
-  claude-code hook`. That argument vector is this package's assumption about an interface the core
-  supplies. Status: unverified.
+  claude-code hook`. That argument vector is this package's assumption about an interface the host
+  supplies. Status: unverified, and the interface itself is unwritten: nothing yet fixes the
+  forwarder's argument handling, its MCP negotiation and capability declarations, the framing on the
+  private exchange, what it returns on a hook, or how it binds a registration to a launch. That
+  contract belongs to the host rather than to this package.
+- The package's own claim about registration authentication is a requirement, not an observation.
+  None of the three installed files carries a session identifier or a secret, which can be checked by
+  reading them. That the registration is bound to the launch KalaReach made and to the worker's
+  private exchange is what the forwarder has to do, and it is unverified until the forwarder exists.
