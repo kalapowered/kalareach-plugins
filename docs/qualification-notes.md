@@ -112,7 +112,9 @@ examples and completed against the generated schema's required members, and the 
 one of them through this package's own table: the method it finds, the route and class it reaches,
 the identifier it extracts with its JSON type, the members the situation is about, and that the
 correlation path finds the same identifier the request path does. That is a check of the table, and
-of nothing else. Status: verified by the build on every run.
+of nothing else. Status: asserted by `every_pinned_frame_is_read_the_way_the_table_says` in
+`pipeline/tests/packages.rs`, which runs under `cargo test`. It checks the table's reading of pinned
+frames and nothing about a host.
 
 What those frames do not establish is state. Two approval frames are two frames, not two requests
 pending at once; an initialize and an interrupt are two frames, not a reconciled reconnect; a
@@ -155,9 +157,8 @@ unverified against a live install, because it depends on the forwarder, which is
 The table routes and classifies. It carries no mapping from a relayed permission request's
 `tool_name`, `description` and `input_preview` onto an approval resource a person can read, because
 the connector manifest has no field for such a mapping, and this package ships no component and so
-no decoder. The package supplies the answer, and the resource it answers is the one the host already
-holds. A package's
-own document cannot carry an `approval_ref`, since that node names a runtime resource. Status: the
+no decoder. The package supplies no answer either. A package's own document cannot carry an
+`approval_ref`, since that node names a runtime resource. Status: the
 notification shapes are a document check; the resource mapping and the encoding are not this
 package's and are recorded rather than claimed.
 

@@ -11,9 +11,10 @@ it.
 
 Two surfaces reach the session, and they stay apart on purpose.
 
-The hooks only watch. The installed registration points Claude Code's lifecycle and tool events at
-the core forwarder, which carries them to the worker that owns the terminal. They report what
-happened. They never return a decision that would change what Claude Code permits.
+The hooks watch. The installed registration points Claude Code's lifecycle and tool events at the
+core forwarder, which carries them to the worker that owns the terminal. What the package asks of the
+forwarder is that it answer nothing: write the event to the worker and exit, so no hook changes what
+Claude Code permits.
 
 Channels carry messages in and the answer to a tool approval back. Claude Code spawns a channel as
 an MCP server of its own and talks to it over that process's standard streams, so the gateway has
@@ -28,18 +29,19 @@ a five-letter `request_id`, the tool's name, a description of the call and a pre
 arguments. The answer is `notifications/claude/channel/permission`, carrying that same `request_id`
 and `allow` or `deny`.
 
-`connector.json` states both of those, and it puts the correlation at `params.request_id`, so an
-identifier in an answer is the one the host is resolving rather than a value a caller supplies.
+`connector.json` routes both of those methods and classifies them, and it puts the correlation at
+`params.request_id`, so an identifier in an answer is the one the host is resolving rather than a
+value a caller supplies. It says nothing about `allow` and `deny`.
 
-It does not answer anything. A table routes messages and classifies them; it names no destination
-for a decision, and this package ships no component, so nothing here turns a relayed request into
-something a person can read or turns a person's decision into a frame. Both of those need a granted
-decoder and encoder, and this package has neither. Until it does, the approval is answered where
-Claude Code asks for it, in the terminal KalaReach already owns.
+That is the whole of what it does about an approval. A table routes and classifies; it names no
+destination for a decision, and this package ships no component, so nothing here turns a relayed
+request into something a person can read or turns a person's decision into a frame. Both need a
+granted decoder and encoder, which this package does not have. An approval is answered where Claude
+Code asks for it, in the terminal KalaReach already owns.
 
-What the package does carry is the message path, which is a separate action with its own effect
-class. Text that is not a decision for a pending request never becomes a message, and a message is
-never an answer.
+The message path is separate, and it is an action with its own effect class. It carries the text a
+person wrote into the session. It is not an approval path, and nothing in this package lets text
+reach one.
 
 Delivering a message is not steering and not an acknowledgement that anything was processed. Claude
 Code queues messages that arrive while a turn is running and delivers them together on the next

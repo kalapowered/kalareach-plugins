@@ -94,7 +94,10 @@ build reads every frame through this package's own table. A route, a classificat
 so that one of these frames is read differently fails there. The frames also pin the evidence they
 were written against, by digest.
 
-The frames cover starting and unsubscribing a thread, steering with an expected turn, a turn whose
-result may not arrive, two approval requests pending at once, a resolved server request, a reconnect,
-one method the table refuses outright, one it treats as carrying a credential, and one it does not
-list at all, which is read as a mutation because that is what an unlisted method is.
+The frames are drawn from the situations the integration has to handle: starting and unsubscribing a
+thread, steering with an expected turn, a turn start and the notification that would confirm it, two
+approval requests, a resolved server request, a connection opening again and a turn being
+interrupted, one method the table refuses outright, one it treats as carrying a credential, and one
+it does not list at all, which is read as a mutation because that is what an unlisted method is.
+Each is a frame, not a sequence: what a host does across two pending requests, or across a
+reconnection, is the gateway's and is not settled here.

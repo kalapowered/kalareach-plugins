@@ -30,7 +30,7 @@
         "params": {
           "thread": {
             "cliVersion": "0.155.1",
-            "createdAt": "2026-09-20T08:00:00Z",
+            "createdAt": 1760000000,
             "cwd": "/Users/me/project",
             "ephemeral": false,
             "id": "thr_123",
@@ -42,8 +42,8 @@
             "status": {
               "type": "idle"
             },
-            "turns": 1,
-            "updatedAt": "2026-09-20T08:00:05Z"
+            "turns": [],
+            "updatedAt": 1760000005
           }
         }
       },
@@ -81,7 +81,11 @@
         "method": "item.started",
         "direction": "upstream_to_host",
         "class": "observation",
-        "request_id": null
+        "request_id": null,
+        "members": {
+          "params.turnId": "turn_456",
+          "params.startedAtMs": 1760000000000
+        }
       }
     },
     {
@@ -195,7 +199,11 @@
         "method": "item.command-execution.request-approval",
         "direction": "upstream_to_host",
         "class": "mutation",
-        "request_id": "srv-1"
+        "request_id": "srv-1",
+        "members": {
+          "params.startedAtMs": 1760000000001,
+          "params.command": "rm -rf build"
+        }
       }
     },
     {
@@ -216,7 +224,10 @@
         "method": "item.file-change.request-approval",
         "direction": "upstream_to_host",
         "class": "mutation",
-        "request_id": "srv-2"
+        "request_id": "srv-2",
+        "members": {
+          "params.startedAtMs": 1760000000002
+        }
       }
     },
     {

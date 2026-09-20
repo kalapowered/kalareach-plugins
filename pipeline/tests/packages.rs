@@ -91,12 +91,31 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         registry: "npm",
         identifier: "@anthropic-ai/claude-code",
         file_stem: "claude",
-        situations: &[
-            "a message delivered into the session",
-            "a method the table does not list",
-            "a relayed tool approval",
-            "an answer naming a request nobody issued",
-            "the answer to that approval",
+        frames: &[
+            (
+                "a message delivered into the session",
+                "notifications/claude/channel",
+            ),
+            ("a method the table does not list", "tools/call"),
+            (
+                "a relayed tool approval",
+                "notifications/claude/channel/permission_request",
+            ),
+            (
+                "an answer naming a request nobody issued",
+                "notifications/claude/channel/permission",
+            ),
+            (
+                "the answer to that approval",
+                "notifications/claude/channel/permission",
+            ),
+        ],
+        required_members: &[
+            (
+                "notifications/claude/channel/permission_request",
+                "params.tool_name",
+            ),
+            ("notifications/claude/channel/permission", "params.behavior"),
         ],
     },
     BundledConnector {
@@ -105,15 +124,39 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         registry: "npm",
         identifier: "@openai/codex",
         file_stem: "codex",
-        situations: &[
-            "a method the table does not list",
-            "an uncertain turn/start result",
-            "competing approvals",
-            "methods this table refuses",
-            "reconnect",
-            "serverRequest/resolved",
-            "thread subscriptions",
-            "turn/steer and its expectedTurnId",
+        frames: &[
+            ("a method the table does not list", "thread/name/set"),
+            ("an uncertain turn/start result", "turn/start"),
+            ("an uncertain turn/start result", "turn/started"),
+            (
+                "competing approvals",
+                "item/commandExecution/requestApproval",
+            ),
+            ("competing approvals", "item/fileChange/requestApproval"),
+            (
+                "methods this table refuses",
+                "account/chatgptAuthTokens/refresh",
+            ),
+            ("methods this table refuses", "thread/shellCommand"),
+            ("reconnect", "initialize"),
+            ("reconnect", "turn/interrupt"),
+            ("serverRequest/resolved", "serverRequest/resolved"),
+            ("thread subscriptions", "item/started"),
+            ("thread subscriptions", "thread/start"),
+            ("thread subscriptions", "thread/started"),
+            ("thread subscriptions", "thread/unsubscribe"),
+            ("turn/steer and its expectedTurnId", "turn/steer"),
+        ],
+        required_members: &[
+            (
+                "item/commandExecution/requestApproval",
+                "params.startedAtMs",
+            ),
+            ("item/fileChange/requestApproval", "params.startedAtMs"),
+            ("item/started", "params.turnId"),
+            ("serverRequest/resolved", "params.requestId"),
+            ("turn/interrupt", "params.turnId"),
+            ("turn/steer", "params.expectedTurnId"),
         ],
     },
 ];
@@ -124,8 +167,12 @@ struct BundledConnector {
     registry: &'static str,
     identifier: &'static str,
     file_stem: &'static str,
-    /// The situations the frame corpus has to cover, in sorted order.
-    situations: &'static [&'static str],
+    /// Every frame the corpus has to carry, as a situation and a wire name, in sorted order.
+    frames: &'static [(&'static str, &'static str)],
+    /// Members a frame has to carry whatever the corpus says about itself, by wire name and
+    /// dotted path. A corpus that drops both a member and its own expectation of it would
+    /// otherwise stop checking the thing its situation is named after.
+    required_members: &'static [(&'static str, &'static str)],
 }
 
 #[test]
@@ -142,38 +189,24 @@ fn a_native_bridge_grant_states_where_the_code_runs() {
         // for two facts, and both have to be asserted rather than mentioned: "runs inside the
         // sandbox with its own permissions; nothing runs outside the sandbox" contains every word
         // and states the opposite. So the clause is read in order, from "runs under" onwards.
+        // The disclosure is pinned as one clause rather than a set of words in an order. "runs
+        // under Claude Code's own permissions inside the sandbox; it never runs outside
+        // Wasmtime's sandbox" uses every word and discloses the opposite.
         let statement = bridge.grant_statement.as_str();
-        let runs = statement.find("runs under").unwrap_or_else(|| {
-            panic!(
-                "{}: the grant does not say what the bridge runs under: {statement}",
-                package.relative
-            )
-        });
-        let clause = &statement[runs..];
-        let permissions = clause.find("own permissions").unwrap_or_else(|| {
-            panic!(
-                "{}: the grant does not say whose permissions it runs under: {clause}",
-                package.relative
-            )
-        });
-        let outside = clause[permissions..].find("outside").unwrap_or_else(|| {
-            panic!(
-                "{}: the grant does not say the bridge runs outside anything: {clause}",
-                package.relative
-            )
-        });
-        let scope: String = clause[permissions + outside..].chars().take(60).collect();
         assert!(
-            scope.contains("sandbox"),
-            "{}: the grant says something runs outside, but not outside the sandbox: {scope}",
+            statement.contains("runs under"),
+            "{}: the grant does not say what the bridge runs under: {statement}",
             package.relative
         );
-        // Section 11 names Wasmtime, and it has to be named as what the code runs outside of.
-        // "runs under Claude Code's own permissions inside Wasmtime; it never runs outside the
-        // sandbox" has every other word in every other order and discloses the opposite.
         assert!(
-            clause.contains("outside Wasmtime"),
-            "{}: the grant does not say the bridge runs outside Wasmtime: {clause}",
+            statement.contains("own permissions"),
+            "{}: the grant does not say whose permissions it runs under: {statement}",
+            package.relative
+        );
+        assert!(
+            statement.contains("outside the KalaReach plugin sandbox, outside Wasmtime"),
+            "{}: the grant does not disclose that the bridge runs outside the plugin sandbox and \
+             outside Wasmtime, which section 11 requires it to: {statement}",
             package.relative
         );
         assert!(
@@ -217,6 +250,13 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
             assert_eq!(
                 rule.executable.file_stem, entry.file_stem,
                 "{plugin}: the rule {} recognises another application's executable",
+                rule.id
+            );
+            // A bundled connector recognises its application wherever it was installed, so a
+            // directory requirement would make it miss ordinary installations.
+            assert!(
+                rule.executable.path_suffix.is_empty(),
+                "{plugin}: the rule {} only matches under a directory",
                 rule.id
             );
             match &rule.distribution.0 {
@@ -332,9 +372,17 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
             .iter()
             .find(|entry| entry.plugin == package.package.manifest.plugin_id().as_str())
             .unwrap_or_else(|| panic!("{} is not a listed bundled connector", package.relative));
-        let mut situations = BTreeSet::new();
+        assert!(
+            matches!(
+                connector.response_correlation,
+                ResponseCorrelation::MatchingId { .. }
+            ),
+            "{}: these connectors correlate a response by repeating the identifier",
+            package.relative
+        );
+        let mut carried: Vec<(String, String)> = Vec::new();
         for case in &corpus.frames {
-            situations.insert(case.situation.clone());
+            carried.push((case.situation.clone(), case.expect.wire_name.clone()));
             let where_ = format!("{} [{}]", package.relative, case.situation);
             checked += 1;
 
@@ -366,12 +414,24 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
 
             // A response is matched by repeating the identifier, so the correlation path has to
             // find the same value the request path does.
-            if let ResponseCorrelation::MatchingId { id_path } = &connector.response_correlation {
-                assert_eq!(
-                    at(&case.frame, id_path),
-                    case.expect.request_id.as_ref(),
-                    "{where_}: the correlation path finds a different identifier from the request path"
-                );
+            let ResponseCorrelation::MatchingId { id_path } = &connector.response_correlation
+            else {
+                unreachable!("the correlation mode was checked above")
+            };
+            assert_eq!(
+                at(&case.frame, id_path),
+                case.expect.request_id.as_ref(),
+                "{where_}: the correlation path finds a different identifier from the request path"
+            );
+
+            // Members this test requires, whatever the corpus says about itself.
+            for (wire_name, path) in entry.required_members {
+                if *wire_name == case.expect.wire_name {
+                    assert!(
+                        member(&case.frame, path).is_some(),
+                        "{where_}: the frame carries no {path}"
+                    );
+                }
             }
 
             match connector.route_for_wire_name(wire) {
@@ -404,10 +464,14 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
                 }
             }
         }
-        let declared: Vec<&str> = situations.iter().map(String::as_str).collect();
+        carried.sort();
+        let declared: Vec<(&str, &str)> = carried
+            .iter()
+            .map(|(situation, wire)| (situation.as_str(), wire.as_str()))
+            .collect();
         assert_eq!(
-            declared, entry.situations,
-            "{}: the corpus covers other situations than the ones it has to",
+            declared, entry.frames,
+            "{}: the corpus carries other frames than the ones it has to",
             package.relative
         );
     }
