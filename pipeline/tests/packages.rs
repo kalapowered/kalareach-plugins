@@ -1,8 +1,10 @@
 //! Every package in the repository validates, and a broken one does not.
 
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use kalareach_catalogue::{fixtures, packages, repository_root};
+use kr_plugin_sdk::matching::MatchConfidence;
 
 fn root() -> PathBuf {
     repository_root(Path::new(env!("CARGO_MANIFEST_DIR"))).expect("the repository root is above us")
@@ -74,6 +76,87 @@ fn the_bundled_connectors_claim_only_what_they_carry() {
             );
         }
     }
+}
+
+#[test]
+fn a_native_bridge_grant_discloses_what_the_bridge_runs_as() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let mut recipes = 0;
+    for package in &loaded.repository.packages {
+        let Some(bridge) = &package.package.manifest.native_bridge.0 else {
+            continue;
+        };
+        recipes += 1;
+        // The validator checks that a recipe is complete and removable. It cannot check that the
+        // grant a person reads before accepting it says what accepting it means, and bridge code
+        // runs under the application's own permissions rather than inside the plugin sandbox.
+        let statement = bridge.grant_statement.as_str();
+        assert!(
+            statement.contains("own permissions"),
+            "{}: the grant does not say whose permissions the bridge runs under: {statement}",
+            package.relative
+        );
+        assert!(
+            statement.contains("sandbox"),
+            "{}: the grant does not say the bridge runs outside the sandbox: {statement}",
+            package.relative
+        );
+        assert!(
+            statement.contains("Removal"),
+            "{}: the grant does not say what removal takes back out: {statement}",
+            package.relative
+        );
+    }
+    assert!(recipes > 0, "no package ships a native bridge");
+}
+
+#[test]
+fn connector_profiles_stay_separate_and_need_more_than_an_executable_name() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let mut protocols: BTreeMap<String, String> = BTreeMap::new();
+    let mut connectors = 0;
+    for package in &loaded.repository.packages {
+        let Some(connector) = &package.package.connector else {
+            continue;
+        };
+        connectors += 1;
+        // One protocol, one profile. Two packages pinned to the same protocol name would leave a
+        // host choosing between two qualifications of one upstream.
+        if let Some(first) =
+            protocols.insert(connector.protocol.name.clone(), package.relative.clone())
+        {
+            panic!(
+                "{} and {} both claim the protocol {}",
+                first, package.relative, connector.protocol.name
+            );
+        }
+        // A profile is not selected by a name on disk alone. A package that reads somebody's
+        // protocol carries at least one rule that identifies the application by something that
+        // cannot be coincidence, and an executable name on its own is always inferred.
+        assert!(
+            package
+                .package
+                .manifest
+                .match_rules
+                .iter()
+                .any(|rule| rule.confidence == MatchConfidence::Exact
+                    && rule.distribution.0.is_some()),
+            "{} recognises its application by name alone",
+            package.relative
+        );
+        for rule in &package.package.manifest.match_rules {
+            if rule.distribution.0.is_none() {
+                assert_eq!(
+                    rule.confidence,
+                    MatchConfidence::Inferred,
+                    "{}: the rule {} claims an exact match from an executable name",
+                    package.relative,
+                    rule.id
+                );
+            }
+        }
+    }
+    assert!(connectors > 0, "no package carries a connector table");
 }
 
 #[test]
