@@ -2,16 +2,29 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "codex",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "display_name": "Codex CLI",
-  "description": "Recognises Codex CLI and names the session after it. Terminal integration only.",
+  "description": "Recognises Codex CLI, reads its App Server through a declarative table and stops the turn it is running.",
   "sdk_range": ">=0.1.0, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "4f8c69e538b5e4b7b220305822f1f6f6ad212416"
+    "revision": "44084fc058106bca25bfb4f2118cc349187419df"
   },
   "match_rules": [
+    {
+      "id": "codex-npm",
+      "executable": {
+        "file_stem": "codex",
+        "path_suffix": [],
+        "version_range": null
+      },
+      "distribution": {
+        "registry": "npm",
+        "package": "@openai/codex"
+      },
+      "confidence": "exact"
+    },
     {
       "id": "codex-executable",
       "executable": {
@@ -48,27 +61,74 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "64201d1757cde96fc9dcd6e5ed171a238b814538dd914fe367aef21cfa7b9fdd",
-      "size_bytes": "1320"
+      "digest": "a6c69f11b27a59e6bca27a7f347719d6ee880566229231b14bf2e8e8f87f5cd1",
+      "size_bytes": "3466"
+    },
+    {
+      "role": "connector",
+      "path": "connector.json",
+      "digest": "7ef6776ee70ab8428d6526620bba71f34edc1361a30db2343a94d28722519574",
+      "size_bytes": "15418"
+    },
+    {
+      "role": "fixture",
+      "path": "fixtures/conformance.json",
+      "digest": "b356f11e641d96b0bf9592d2599523127717724649453dd29907f412a1cb9524",
+      "size_bytes": "5014"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "7e02a9616294bac3e203cbdfd4789261e0a438a200b4e30e4fb9470d88783e76",
-      "size_bytes": "460"
+      "digest": "c075243ee0ef458d446419ed7c992980a23b240e73a021453827ae20ba872c02",
+      "size_bytes": "3100"
     }
   ],
   "capabilities": [
     {
       "capability": "metadata.match",
-      "reason": "Recognise Codex CLI from its executable name"
+      "reason": "Recognise Codex CLI from its executable name and its published package"
     },
     {
       "capability": "presentation.declarative",
-      "reason": "Name the session after Codex CLI and describe it"
+      "reason": "Show the thread, the running turn and the controls for it"
+    },
+    {
+      "capability": "broker.semantic_events",
+      "reason": "Read turn and item events from the App Server the session is already bound to"
+    },
+    {
+      "capability": "upstream.action",
+      "reason": "Ask Codex to stop the turn it is running when you press Stop"
     }
   ],
-  "actions": [],
+  "actions": [
+    {
+      "id": "turn.cancel",
+      "label": "Stop the turn",
+      "effect": "upstream.cancel",
+      "implementation": {
+        "type": "upstream_cancel"
+      },
+      "parameters": {
+        "parameters": []
+      },
+      "description": "Cancel the turn the bound App Server is running, which ends it as interrupted",
+      "confirmation_required": false
+    },
+    {
+      "id": "thread.refresh",
+      "label": "Refresh",
+      "effect": "observe",
+      "implementation": {
+        "type": "presentation"
+      },
+      "parameters": {
+        "parameters": []
+      },
+      "description": "Read the bound thread's state again and redraw this package's document",
+      "confirmation_required": false
+    }
+  ],
   "attachments": null,
   "native_bridge": null
 }

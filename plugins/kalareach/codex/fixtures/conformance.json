@@ -1,0 +1,237 @@
+{
+  "fixture_version": 1,
+  "visibility": [
+    {
+      "name": "thread subscriptions: a subscribed idle thread has no turn to stop",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel"
+        ],
+        "binding_state": "bound",
+        "flags": [],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "refresh"
+      ]
+    },
+    {
+      "name": "turn/steer expectedTurnId: only a running turn is acted on",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel"
+        ],
+        "binding_state": "upstream_busy",
+        "flags": [],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "cancel",
+        "refresh"
+      ]
+    },
+    {
+      "name": "an uncertain turn/start result leaves the binding idle",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel"
+        ],
+        "binding_state": "bound",
+        "flags": [],
+        "capabilities": [
+          [
+            "upstream.action",
+            "temporarily_unavailable"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "refresh"
+      ]
+    },
+    {
+      "name": "competing approvals: this package offers no rich answer",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel",
+          "agent.approval.respond"
+        ],
+        "binding_state": "awaiting_person",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "refresh"
+      ]
+    },
+    {
+      "name": "serverRequest/resolved: a resolved request leaves nothing to answer",
+      "context": {
+        "rights": [
+          "session.view"
+        ],
+        "binding_state": "bound",
+        "flags": [],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "refresh"
+      ],
+      "enabled_controls": [
+        "refresh"
+      ]
+    },
+    {
+      "name": "reconnect: volatile-native operation suspends rich mutation",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel"
+        ],
+        "binding_state": "native_only_volatile",
+        "flags": [],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "refresh"
+      ]
+    },
+    {
+      "name": "an upload in progress does not stop a turn being cancelled",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel"
+        ],
+        "binding_state": "upstream_busy",
+        "flags": [
+          "transfer_in_progress"
+        ],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "cancel"
+      ]
+    },
+    {
+      "name": "repeated faults disable the binding",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel",
+          "agent.approval.respond"
+        ],
+        "binding_state": "disabled",
+        "flags": [],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "controls"
+        ]
+      },
+      "visible_controls": [],
+      "enabled_controls": []
+    }
+  ]
+}
