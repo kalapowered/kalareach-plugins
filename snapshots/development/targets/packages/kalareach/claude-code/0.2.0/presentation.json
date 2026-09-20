@@ -1,0 +1,290 @@
+{
+  "manifest_version": 1,
+  "base_revision": "1",
+  "nodes": [
+    {
+      "id": "overview",
+      "revision": "1",
+      "body": {
+        "kind": "markdown",
+        "source": "Claude Code keeps its own terminal. Lifecycle and tool hooks report what it is doing, and the Channels surface carries messages in and the answer to a tool approval back. Project trust and MCP consent are answered in the terminal, where Claude Code asks for them."
+      }
+    },
+    {
+      "id": "activity",
+      "revision": "1",
+      "body": {
+        "kind": "progress",
+        "label": "Waiting for Claude Code",
+        "state": {
+          "kind": "indeterminate"
+        }
+      }
+    },
+    {
+      "id": "compose",
+      "revision": "1",
+      "body": {
+        "kind": "form",
+        "title": "Message",
+        "fields": {
+          "parameters": [
+            {
+              "name": "text",
+              "kind": {
+                "type": "text",
+                "max_length": 8000,
+                "multiline": true
+              },
+              "label": "Message",
+              "required": true
+            }
+          ]
+        },
+        "submit": {
+          "id": "send",
+          "revision": "1",
+          "label": "Send",
+          "icon": "send",
+          "accessible_description": "Deliver this message into the Claude Code session",
+          "action_id": "prompt.send",
+          "parameters": {
+            "parameters": [
+              {
+                "name": "text",
+                "kind": {
+                  "type": "text",
+                  "max_length": 8000,
+                  "multiline": true
+                },
+                "label": "Message",
+                "required": true
+              }
+            ]
+          },
+          "priority": "primary",
+          "visible_when": {
+            "op": "all",
+            "terms": [
+              {
+                "op": "grant",
+                "right": "agent.prompt"
+              },
+              {
+                "op": "not",
+                "term": {
+                  "op": "binding",
+                  "state": "disabled"
+                }
+              }
+            ]
+          },
+          "enabled_when": {
+            "op": "all",
+            "terms": [
+              {
+                "op": "not",
+                "term": {
+                  "op": "binding",
+                  "state": "native_only_volatile"
+                }
+              },
+              {
+                "op": "capability",
+                "capability": "upstream.action",
+                "state": "qualified_available"
+              }
+            ]
+          },
+          "disabled_reason": "The channel is not carrying messages to this session"
+        }
+      }
+    },
+    {
+      "id": "approval",
+      "revision": "1",
+      "body": {
+        "kind": "action_group",
+        "label": "Approval",
+        "controls": [
+          {
+            "id": "approve",
+            "revision": "1",
+            "label": "Allow",
+            "icon": "check",
+            "accessible_description": "Allow the tool call Claude Code is waiting on",
+            "action_id": "approval.respond",
+            "parameters": {
+              "parameters": [
+                {
+                  "name": "decision",
+                  "kind": {
+                    "type": "choice",
+                    "choices": [
+                      {
+                        "id": "allow",
+                        "label": "Allow"
+                      }
+                    ]
+                  },
+                  "label": "Decision",
+                  "required": true
+                }
+              ]
+            },
+            "priority": "primary",
+            "visible_when": {
+              "op": "all",
+              "terms": [
+                {
+                  "op": "grant",
+                  "right": "agent.approval.respond"
+                },
+                {
+                  "op": "flag",
+                  "flag": "pending_approval"
+                },
+                {
+                  "op": "capability",
+                  "capability": "approval.respond",
+                  "state": "qualified_available"
+                },
+                {
+                  "op": "not",
+                  "term": {
+                    "op": "binding",
+                    "state": "native_only_volatile"
+                  }
+                },
+                {
+                  "op": "not",
+                  "term": {
+                    "op": "binding",
+                    "state": "disabled"
+                  }
+                }
+              ]
+            },
+            "enabled_when": {
+              "op": "always"
+            },
+            "disabled_reason": null
+          },
+          {
+            "id": "deny",
+            "revision": "1",
+            "label": "Deny",
+            "icon": "cross",
+            "accessible_description": "Refuse the tool call Claude Code is waiting on",
+            "action_id": "approval.respond",
+            "parameters": {
+              "parameters": [
+                {
+                  "name": "decision",
+                  "kind": {
+                    "type": "choice",
+                    "choices": [
+                      {
+                        "id": "deny",
+                        "label": "Deny"
+                      }
+                    ]
+                  },
+                  "label": "Decision",
+                  "required": true
+                }
+              ]
+            },
+            "priority": "secondary",
+            "visible_when": {
+              "op": "all",
+              "terms": [
+                {
+                  "op": "grant",
+                  "right": "agent.approval.respond"
+                },
+                {
+                  "op": "flag",
+                  "flag": "pending_approval"
+                },
+                {
+                  "op": "capability",
+                  "capability": "approval.respond",
+                  "state": "qualified_available"
+                },
+                {
+                  "op": "not",
+                  "term": {
+                    "op": "binding",
+                    "state": "native_only_volatile"
+                  }
+                },
+                {
+                  "op": "not",
+                  "term": {
+                    "op": "binding",
+                    "state": "disabled"
+                  }
+                }
+              ]
+            },
+            "enabled_when": {
+              "op": "always"
+            },
+            "disabled_reason": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "controls",
+      "revision": "1",
+      "body": {
+        "kind": "action_group",
+        "label": "Session",
+        "controls": [
+          {
+            "id": "refresh",
+            "revision": "1",
+            "label": "Refresh",
+            "icon": "retry",
+            "accessible_description": "Read the session's current state again and redraw it",
+            "action_id": "status.refresh",
+            "parameters": {
+              "parameters": []
+            },
+            "priority": "secondary",
+            "visible_when": {
+              "op": "not",
+              "term": {
+                "op": "binding",
+                "state": "disabled"
+              }
+            },
+            "enabled_when": {
+              "op": "not",
+              "term": {
+                "op": "flag",
+                "flag": "transfer_in_progress"
+              }
+            },
+            "disabled_reason": "An upload is in progress"
+          }
+        ]
+      }
+    }
+  ],
+  "voice": {
+    "status_nodes": [
+      "activity"
+    ],
+    "choice_controls": [
+      "approve",
+      "deny",
+      "send"
+    ],
+    "detail_nodes": [
+      "overview"
+    ]
+  }
+}

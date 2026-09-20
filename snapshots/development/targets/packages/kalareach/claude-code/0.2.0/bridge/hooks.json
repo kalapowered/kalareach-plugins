@@ -1,0 +1,74 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kr-hook",
+            "args": [
+              "claude-code",
+              "hook"
+            ]
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kr-hook",
+            "args": [
+              "claude-code",
+              "hook"
+            ]
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kr-hook",
+            "args": [
+              "claude-code",
+              "hook"
+            ]
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kr-hook",
+            "args": [
+              "claude-code",
+              "hook"
+            ]
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kr-hook",
+            "args": [
+              "claude-code",
+              "hook"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
