@@ -367,6 +367,65 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             ("tui.session.select", "data.sessionID"),
         ],
     },
+    BundledConnector {
+        plugin: "kalareach/qoder-cli",
+        protocol: "qoder-cli-acp",
+        identity: ApplicationIdentity::VendorInstaller {
+            path_suffix: &[".qoder", "entry"],
+        },
+        file_stems: &["qoder", "qodercli"],
+        provenance: &[
+            (
+                "a file read in the agent's own environment",
+                Provenance::Written,
+            ),
+            ("a method the table does not route", Provenance::Captured),
+            (
+                "a process started in the agent's own environment",
+                Provenance::Written,
+            ),
+            ("a tool call the agent is waiting on", Provenance::Written),
+            ("creating an execution", Provenance::Captured),
+            ("ending the turn in flight", Provenance::Written),
+            ("the agent's own update stream", Provenance::Written),
+            (
+                "the capability negotiation that opens a connection",
+                Provenance::Captured,
+            ),
+        ],
+        frames: &[
+            (
+                "a file read in the agent's own environment",
+                "fs/read_text_file",
+            ),
+            (
+                "a method the table does not route",
+                "kalareach/not-a-method",
+            ),
+            (
+                "a process started in the agent's own environment",
+                "terminal/create",
+            ),
+            (
+                "a tool call the agent is waiting on",
+                "session/request_permission",
+            ),
+            ("creating an execution", "session/new"),
+            ("ending the turn in flight", "session/cancel"),
+            ("the agent's own update stream", "session/update"),
+            (
+                "the capability negotiation that opens a connection",
+                "initialize",
+            ),
+        ],
+        required_members: &[
+            ("fs/read_text_file", "params.path"),
+            ("session/new", "params.cwd"),
+            ("session/request_permission", "params.toolCall.toolCallId"),
+            ("session/update", "params.update.sessionUpdate"),
+            ("terminal/create", "params.command"),
+        ],
+    },
 ];
 
 struct BundledConnector {
