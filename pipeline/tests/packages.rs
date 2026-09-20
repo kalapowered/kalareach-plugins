@@ -374,7 +374,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         identity: ApplicationIdentity::VendorInstaller {
             path_suffix: &[".qoder", "entry"],
         },
-        file_stems: &["qoder", "qodercli"],
+        file_stems: &["qoder", "qodercli", "qodercli-1.1.59"],
         provenance: &[
             (
                 "a file read in the agent's own environment",
@@ -434,7 +434,9 @@ struct BundledConnector {
     protocol: &'static str,
     /// What the package's match rules have to prove about the application they recognised.
     identity: ApplicationIdentity,
-    /// The executable names the package's rules may recognise, and no others.
+    /// The executable names the package's rules may recognise, and no others. A vendor that puts
+    /// the release number in the installed file name is recognised by that whole name, so a
+    /// version appears here for the release its package is qualified against.
     file_stems: &'static [&'static str],
     /// Every frame the corpus has to carry, as a situation and a wire name, in sorted order.
     frames: &'static [(&'static str, &'static str)],

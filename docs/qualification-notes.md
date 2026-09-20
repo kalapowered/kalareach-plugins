@@ -594,14 +594,19 @@ qualification, and `~/.kimi-code` was unchanged before and after.
 
 Nothing is published under `qoder`, `@qoder/cli`, `@qoder/qoder-cli` or `qoder-cli` in a registry
 this qualification could name, so no rule here claims an exact match. The rules name the two stable
-entry points and the installation directory, and every one of them is `inferred`.
+entry points wherever they are installed, the dispatcher inside the directory the vendor installs it
+into, and the versioned executable of the qualified release; every one of them is `inferred`.
 
 The executable itself carries its version in its file name, and `~/.local/bin/qodercli` is a link
-to it. A match rule compares a whole file name and removes only a `.exe` suffix, so no rule can
-recognise `qodercli-1.1.59` without pinning one release's spelling, which a package qualified
-against a version range must not do. A host that resolves a launch all the way to that file
-therefore matches none of these rules and recognises the application by the name a person invoked.
-Status: a limit of the rule vocabulary, recorded rather than worked around.
+to it. A match rule compares a whole file name and removes only a `.exe` suffix, so recognising
+`qodercli-1.1.59` means naming that spelling. This package is qualified against 1.1.59 alone, so it
+carries exactly that rule, narrowed to `~/.qoder/bin/qodercli`, beside the two rules for the stable
+entry points: a host that resolves a launch all the way to the versioned file recognises the release
+this package covers, and a host that stops at the dispatcher or the command name recognises the
+application by that name. A release this qualification does not cover matches the stable names only,
+which is what an `inferred` rule is for, and a package qualified against that release names its file
+in its own rules. Status: the rule vocabulary compares file names rather than version-stripped
+stems, recorded, and covered for the qualified release rather than worked around.
 
 ### The flag
 
