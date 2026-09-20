@@ -118,8 +118,10 @@ frames and nothing about a host.
 
 What those frames do not establish is state. Two approval frames are two frames, not two requests
 pending at once; an initialize and an interrupt are two frames, not a reconciled reconnect; a
-`turn/start` with no response beside it is a frame, not an uncertain result that was handled. Driving
-a connection through those transitions and checking what the host does belongs to the gateway.
+`turn/start` with no response beside it is a frame, not an uncertain result that was handled. The
+frame corpora stay frames; stateful sequence fixtures need pipeline/src/fixtures.rs, which the lead
+places as T-059's or T-012's (lead ruling D-122.4). Recorded, not built. Driving a connection
+through those transitions and checking what the host does belongs to the gateway.
 Status: not covered here, and the requirement row stays open for that half.
 
 Oversized frames and replay are in the same position. The table declares the bound; what the host
@@ -189,16 +191,14 @@ them the way the record says. Nothing here answers an approval: the path an answ
 this package's and is not verified.
 
 The package draws no answer control, registers no answer action and requests no approval capability.
-Three limits put it there, and all three are the SDK's rather than the vendor's. A control's
-visibility is a predicate over facts the host knows, and the only one available is that some approval
-is pending, which does not name one; a control drawn on that fact could be answered against a request
-that became pending after the person read a different one. The plugin-action invocation carries no
-reference to an approval resource, while the host's own approval method does. And a connector table
-names routes, classifications and identifier paths, with no field for where a decision goes, so the
-table cannot encode an answer whatever trust it is granted. A package document cannot carry an
-`approval_ref` either, because that node names a runtime resource. Status: an interface limit,
-recorded rather than worked around, and the rich approval half of this integration is not delivered
-here.
+Three limits put it there, and all three are the SDK's rather than the vendor's:
+1. a control predicate that can only test that some approval is pending;
+2. PluginActionInvokeParams without a resource reference;
+3. a connector table without a decision destination.
+These three SDK limits are an SDK change the lead places as T-011c (lead ruling D-122.2). T-033's
+departure stands for this branch: the objection is recorded and kept, and no workaround is encoded.
+Status: an interface limit, recorded rather than worked around, and the rich approval half of this
+integration is not delivered here.
 
 ### Runtime installation gates
 
@@ -282,12 +282,18 @@ Three things are unverified, and all three are recorded rather than assumed:
   packaging run does not do. What removal does when a file's digest no longer matches, and whether
   Claude Code picks the registration up without a restart, are unverified for the same reason.
 - The forwarder is named `kr-hook` and invoked as `kr-hook claude-code channel` and `kr-hook
-  claude-code hook`. Those argument vectors are what this package requires of a host interface, and
-  they were checked against no host. The same applies to everything else the registration depends on:
-  the framing on the private exchange, the MCP negotiation and capability declarations the channel
-  server makes, what the forwarder returns on a hook, and how it binds a registration to a launch.
-  Status: unverified, and a requirement this package states rather than a behaviour it observed.
+  claude-code hook`. The bridge's host contract (kr-hook's arguments, MCP negotiation, private
+  framing, hook return behaviour, launch authentication) is core's, not this package's: the lead
+  places it as a core task (T-033c, drafted from the task requirements list; lead ruling D-122.1).
+  In this branch, the package states its requirements here and in the connector record as "host
+  contract: pending T-033c", and the Claude Code package is marked not runnable until then. Status:
+  unverified; host contract: pending T-033c.
 - Registration authentication is a requirement here, not an observation. None of the three installed
   files carries a session identifier or a secret, which can be checked by reading them, and that much
   is verified. That the registration is bound to the launch KalaReach made and to the worker's
   private exchange is what the forwarder must do, and it was not observed.
+
+### Permitted-path exceptions
+
+`pipeline/tests/release.rs`: the edit deriving target paths dynamically was accepted as necessary
+due to the package version bump to 0.2.0 (lead ruling D-122.3).

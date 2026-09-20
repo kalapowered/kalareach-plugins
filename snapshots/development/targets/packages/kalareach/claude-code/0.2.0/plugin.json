@@ -85,8 +85,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "8a416981844a8cff010c3bc64b3aee9e6209d3f9704d95e5724a1080807e50fe",
-      "size_bytes": "3009"
+      "digest": "009f16ee60a7576c5290358931e7250e1d346c68ad97d5d7378793b948d0840d",
+      "size_bytes": "3073"
     },
     {
       "role": "fixture",
