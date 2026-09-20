@@ -2,7 +2,7 @@
   "corpus_version": 1,
   "protocol": "codex-app-server",
   "tested_version": "0.155.1",
-  "source": "Frames written from the published App Server documentation's own examples and the required members of the schema codex-cli 0.155.1 generates. They are not a capture of a live session.",
+  "source": "Frames written from the published App Server documentation's own examples, completed against the required members of the schema codex-cli 0.155.1 generates. They are not a capture of a live session.",
   "frames": [
     {
       "situation": "thread subscriptions",
@@ -29,7 +29,21 @@
         "method": "thread/started",
         "params": {
           "thread": {
-            "id": "thr_123"
+            "cliVersion": "0.155.1",
+            "createdAt": "2026-09-20T08:00:00Z",
+            "cwd": "/Users/me/project",
+            "ephemeral": false,
+            "id": "thr_123",
+            "modelProvider": "openai",
+            "preview": "Run tests",
+            "projectId": "prj_1",
+            "sessionId": "ses_1",
+            "source": "cli",
+            "status": {
+              "type": "idle"
+            },
+            "turns": 1,
+            "updatedAt": "2026-09-20T08:00:05Z"
           }
         }
       },
@@ -48,8 +62,17 @@
         "method": "item/started",
         "params": {
           "threadId": "thr_123",
+          "turnId": "turn_456",
+          "startedAtMs": 1760000000000,
           "item": {
-            "id": "item_1"
+            "type": "userMessage",
+            "id": "item_1",
+            "content": [
+              {
+                "type": "text",
+                "text": "Run tests"
+              }
+            ]
           }
         }
       },
@@ -101,7 +124,10 @@
         "method": "turn.steer",
         "direction": "host_to_upstream",
         "class": "mutation",
-        "request_id": 32
+        "request_id": 32,
+        "members": {
+          "params.expectedTurnId": "turn_456"
+        }
       }
     },
     {
@@ -134,8 +160,11 @@
       "frame": {
         "method": "turn/started",
         "params": {
+          "threadId": "thr_123",
           "turn": {
-            "id": "turn_456"
+            "id": "turn_456",
+            "items": [],
+            "status": "inProgress"
           }
         }
       },
@@ -157,11 +186,8 @@
           "itemId": "item_9",
           "threadId": "thr_123",
           "turnId": "turn_456",
-          "command": [
-            "rm",
-            "-rf",
-            "build"
-          ]
+          "startedAtMs": 1760000000001,
+          "command": "rm -rf build"
         }
       },
       "expect": {
@@ -181,7 +207,8 @@
         "params": {
           "itemId": "item_10",
           "threadId": "thr_123",
-          "turnId": "turn_456"
+          "turnId": "turn_456",
+          "startedAtMs": 1760000000002
         }
       },
       "expect": {
@@ -207,7 +234,10 @@
         "method": "server-request.resolved",
         "direction": "upstream_to_host",
         "class": "observation",
-        "request_id": null
+        "request_id": null,
+        "members": {
+          "params.requestId": "srv-1"
+        }
       }
     },
     {
@@ -248,7 +278,10 @@
         "method": "turn.interrupt",
         "direction": "host_to_upstream",
         "class": "mutation",
-        "request_id": 31
+        "request_id": 31,
+        "members": {
+          "params.turnId": "turn_456"
+        }
       }
     },
     {
@@ -276,14 +309,19 @@
       "frame": {
         "method": "account/chatgptAuthTokens/refresh",
         "id": "auth-1",
-        "params": {}
+        "params": {
+          "reason": "unauthorized"
+        }
       },
       "expect": {
         "wire_name": "account/chatgptAuthTokens/refresh",
         "method": "account.chatgpt-auth-tokens.refresh",
         "direction": "upstream_to_host",
         "class": "credential",
-        "request_id": "auth-1"
+        "request_id": "auth-1",
+        "members": {
+          "params.reason": "unauthorized"
+        }
       }
     },
     {
@@ -305,5 +343,23 @@
         "request_id": 50
       }
     }
-  ]
+  ],
+  "evidence": {
+    "executable": {
+      "path": "@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+      "platform": "macos-aarch64",
+      "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
+    },
+    "schemas": [
+      {
+        "name": "codex_app_server_protocol.schemas.json",
+        "sha256": "f1f3591667d8dcf77352c04be5d0667153e492d1a378e4205d69e9af6f31c0c3"
+      },
+      {
+        "name": "codex_app_server_protocol.v2.schemas.json",
+        "sha256": "f0402dc8ce8d278108f1e68e9d46ec7e59ddd9d153f5e70668d84d56f258dda3"
+      }
+    ],
+    "read_on": "2026-09-20"
+  }
 }

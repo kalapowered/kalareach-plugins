@@ -4,7 +4,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use kalareach_catalogue::{fixtures, packages, repository_root};
-use kr_plugin_sdk::connector::{FieldPath, FieldSegment, MethodClass};
+use kr_plugin_sdk::connector::{FieldPath, FieldSegment, MethodClass, ResponseCorrelation};
 use kr_plugin_sdk::matching::MatchConfidence;
 
 fn root() -> PathBuf {
@@ -84,20 +84,49 @@ fn the_bundled_connectors_claim_only_what_they_carry() {
 /// A generic check cannot tell whether two packages swapped their applications, because both
 /// arrangements are structurally sound. The repository knows its own packages, so the expected
 /// pairing is written here and a new connector has to be added deliberately.
-const BUNDLED_CONNECTORS: &[(&str, &str, &str, &str)] = &[
-    (
-        "kalareach/claude-code",
-        "claude-code-channels",
-        "npm",
-        "@anthropic-ai/claude-code",
-    ),
-    (
-        "kalareach/codex",
-        "codex-app-server",
-        "npm",
-        "@openai/codex",
-    ),
+const BUNDLED_CONNECTORS: &[BundledConnector] = &[
+    BundledConnector {
+        plugin: "kalareach/claude-code",
+        protocol: "claude-code-channels",
+        registry: "npm",
+        identifier: "@anthropic-ai/claude-code",
+        file_stem: "claude",
+        situations: &[
+            "a message delivered into the session",
+            "a method the table does not list",
+            "a relayed tool approval",
+            "an answer naming a request nobody issued",
+            "the answer to that approval",
+        ],
+    },
+    BundledConnector {
+        plugin: "kalareach/codex",
+        protocol: "codex-app-server",
+        registry: "npm",
+        identifier: "@openai/codex",
+        file_stem: "codex",
+        situations: &[
+            "a method the table does not list",
+            "an uncertain turn/start result",
+            "competing approvals",
+            "methods this table refuses",
+            "reconnect",
+            "serverRequest/resolved",
+            "thread subscriptions",
+            "turn/steer and its expectedTurnId",
+        ],
+    },
 ];
+
+struct BundledConnector {
+    plugin: &'static str,
+    protocol: &'static str,
+    registry: &'static str,
+    identifier: &'static str,
+    file_stem: &'static str,
+    /// The situations the frame corpus has to cover, in sorted order.
+    situations: &'static [&'static str],
+}
 
 #[test]
 fn a_native_bridge_grant_states_where_the_code_runs() {
@@ -139,9 +168,12 @@ fn a_native_bridge_grant_states_where_the_code_runs() {
             "{}: the grant says something runs outside, but not outside the sandbox: {scope}",
             package.relative
         );
+        // Section 11 names Wasmtime, and it has to be named as what the code runs outside of.
+        // "runs under Claude Code's own permissions inside Wasmtime; it never runs outside the
+        // sandbox" has every other word in every other order and discloses the opposite.
         assert!(
-            clause.contains("Wasmtime"),
-            "{}: the grant does not name Wasmtime, which section 11 requires it to: {clause}",
+            clause.contains("outside Wasmtime"),
+            "{}: the grant does not say the bridge runs outside Wasmtime: {clause}",
             package.relative
         );
         assert!(
@@ -156,11 +188,9 @@ fn a_native_bridge_grant_states_where_the_code_runs() {
 #[test]
 fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
     let loaded = packages::load(&root()).expect("the repository loads");
-    let expected: BTreeMap<&str, (&str, &str, &str)> = BUNDLED_CONNECTORS
+    let expected: BTreeMap<&str, &BundledConnector> = BUNDLED_CONNECTORS
         .iter()
-        .map(|(plugin, protocol, registry, identifier)| {
-            (*plugin, (*protocol, *registry, *identifier))
-        })
+        .map(|entry| (entry.plugin, entry))
         .collect();
     let mut seen = BTreeSet::new();
     for package in &loaded.repository.packages {
@@ -169,14 +199,14 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
         };
         let manifest = &package.package.manifest;
         let plugin = manifest.plugin_id().to_string();
-        let Some((protocol, registry, identifier)) = expected.get(plugin.as_str()) else {
+        let Some(entry) = expected.get(plugin.as_str()) else {
             panic!("{plugin} carries a connector table and is not a listed bundled connector");
         };
         seen.insert(plugin.clone());
         // One package, one protocol, and the protocol its own application speaks. Two packages
         // that swapped their applications would each still be internally consistent.
         assert_eq!(
-            &connector.protocol.name, protocol,
+            connector.protocol.name, entry.protocol,
             "{plugin} is pinned to the wrong protocol"
         );
         // A profile is not selected by a name on disk alone. A package that reads somebody's
@@ -184,6 +214,11 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
         // coincidence, and an executable name on its own is always inferred.
         let mut exact = 0;
         for rule in &manifest.match_rules {
+            assert_eq!(
+                rule.executable.file_stem, entry.file_stem,
+                "{plugin}: the rule {} recognises another application's executable",
+                rule.id
+            );
             match &rule.distribution.0 {
                 None => assert_eq!(
                     rule.confidence,
@@ -194,7 +229,7 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
                 Some(distribution) => {
                     assert_eq!(
                         (distribution.registry(), distribution.identifier()),
-                        (*registry, *identifier),
+                        (entry.registry, entry.identifier),
                         "{plugin}: the rule {} recognises another application's distribution",
                         rule.id
                     );
@@ -233,6 +268,10 @@ struct Expectation {
     class: String,
     /// The identifier the table's path finds, with its JSON type, or nothing when there is none.
     request_id: Option<serde_json::Value>,
+    /// Members the situation is about, by dotted path. A frame that loses one stops being an
+    /// example of its situation, so they are asserted rather than left to a reader.
+    #[serde(default)]
+    members: BTreeMap<String, serde_json::Value>,
 }
 
 #[derive(serde::Deserialize)]
@@ -253,6 +292,15 @@ fn at<'a>(value: &'a serde_json::Value, path: &FieldPath) -> Option<&'a serde_js
             FieldSegment::Member { name } => current.get(name)?,
             FieldSegment::Index { index } => current.get(*index as usize)?,
         };
+    }
+    Some(current)
+}
+
+/// Walks a dotted member path over a decoded frame.
+fn member<'a>(value: &'a serde_json::Value, path: &str) -> Option<&'a serde_json::Value> {
+    let mut current = value;
+    for name in path.split('.') {
+        current = current.get(name)?;
     }
     Some(current)
 }
@@ -280,6 +328,10 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
             "{}: the corpus was taken from another version",
             package.relative
         );
+        let entry = BUNDLED_CONNECTORS
+            .iter()
+            .find(|entry| entry.plugin == package.package.manifest.plugin_id().as_str())
+            .unwrap_or_else(|| panic!("{} is not a listed bundled connector", package.relative));
         let mut situations = BTreeSet::new();
         for case in &corpus.frames {
             situations.insert(case.situation.clone());
@@ -300,6 +352,27 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
                 case.expect.request_id.as_ref(),
                 "{where_}: the identifier at the table's path is not the one the corpus declares"
             );
+
+            // The members the situation is about. Dropping `expectedTurnId` from a steer frame
+            // leaves a frame that still routes and still carries an identifier, and stops being an
+            // example of the thing its situation names.
+            for (path, expected) in &case.expect.members {
+                assert_eq!(
+                    member(&case.frame, path),
+                    Some(expected),
+                    "{where_}: the frame's {path} is not what the corpus declares"
+                );
+            }
+
+            // A response is matched by repeating the identifier, so the correlation path has to
+            // find the same value the request path does.
+            if let ResponseCorrelation::MatchingId { id_path } = &connector.response_correlation {
+                assert_eq!(
+                    at(&case.frame, id_path),
+                    case.expect.request_id.as_ref(),
+                    "{where_}: the correlation path finds a different identifier from the request path"
+                );
+            }
 
             match connector.route_for_wire_name(wire) {
                 None => {
@@ -331,11 +404,11 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
                 }
             }
         }
-        assert!(
-            situations.len() >= 5,
-            "{}: the corpus covers {} situations",
-            package.relative,
-            situations.len()
+        let declared: Vec<&str> = situations.iter().map(String::as_str).collect();
+        assert_eq!(
+            declared, entry.situations,
+            "{}: the corpus covers other situations than the ones it has to",
+            package.relative
         );
     }
     assert!(checked > 0, "no package carries a frame corpus");

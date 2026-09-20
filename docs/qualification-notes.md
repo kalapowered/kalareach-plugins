@@ -26,12 +26,16 @@ same bytes:
 | --- | --- | --- |
 | Codex 0.155.1, the native executable at `@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex` | macOS, arm64 | `8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e` |
 | Codex 0.155.1, the launcher npm puts on the path at `@openai/codex/bin/codex.js` | any | `61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70` |
-| Codex generated schema, `codex_app_server_protocol.schemas.json` | | `f1f3591667d8dcf7` (first 16) |
-| Codex generated schema, `codex_app_server_protocol.v2.schemas.json` | | `f0402dc8ce8d2781` (first 16) |
-| Claude Code 2.1.278 executable | macOS, arm64 | `bd245662fb8a0e32` (first 16) |
+| Codex generated schema, `codex_app_server_protocol.schemas.json` | | `f1f3591667d8dcf77352c04be5d0667153e492d1a378e4205d69e9af6f31c0c3` |
+| Codex generated schema, `codex_app_server_protocol.v2.schemas.json` | | `f0402dc8ce8d278108f1e68e9d46ec7e59ddd9d153f5e70668d84d56f258dda3` |
+| Claude Code 2.1.278 executable | macOS, arm64 | `bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6` |
 
 The App Server is the native executable, which is what the schema above was generated from. The
 launcher is listed beside it because it is what npm puts on the path.
+
+Each package carries the same identities in its own `fixtures/frames.json`, which the manifest pins
+by digest, so an installed copy holds the evidence its table was qualified against rather than a
+reference to this file.
 
 ## kalareach/codex
 
@@ -101,11 +105,20 @@ it is tested, the unchanged terminal integration is the supported path when rece
 
 The six behaviours the Codex row names, which are competing approvals, thread subscriptions,
 `turn/steer`'s `expectedTurnId`, `serverRequest/resolved`, reconnect and an uncertain `turn/start`
-result, are protocol behaviours. This repository's fixture format evaluates control predicates
-against facts the host supplies and reads no vendor frame, so it cannot express any of them. What
-the package contributes to each is stated in its README: a routing and a classification, or in two
-cases nothing at all. Exercising them needs a frame corpus and a driver, and both belong to the
-gateway. Status: not covered here, and the requirement row stays open for that half.
+result, are protocol behaviours, and they are covered here only as far as a package can cover them.
+
+`fixtures/frames.json` pins fifteen frames across those situations, written from the documentation's
+examples and completed against the generated schema's required members, and the build reads every
+one of them through this package's own table: the method it finds, the route and class it reaches,
+the identifier it extracts with its JSON type, the members the situation is about, and that the
+correlation path finds the same identifier the request path does. That is a check of the table, and
+of nothing else. Status: verified by the build on every run.
+
+What those frames do not establish is state. Two approval frames are two frames, not two requests
+pending at once; an initialize and an interrupt are two frames, not a reconciled reconnect; a
+`turn/start` with no response beside it is a frame, not an uncertain result that was handled. Driving
+a connection through those transitions and checking what the host does belongs to the gateway.
+Status: not covered here, and the requirement row stays open for that half.
 
 Oversized frames and replay are in the same position. The table declares the bound; what the host
 does when a frame passes it, and that a connection is never reconnected and replayed around an
@@ -143,10 +156,10 @@ The table routes and classifies. It carries no mapping from a relayed permission
 `tool_name`, `description` and `input_preview` onto an approval resource a person can read, because
 the connector manifest has no field for such a mapping, and this package ships no component and so
 no decoder. The package supplies the answer, and the resource it answers is the one the host already
-holds: the approve and deny controls are gated on the ledger's pending-approval fact. A package's
+holds. A package's
 own document cannot carry an `approval_ref`, since that node names a runtime resource. Status: the
-answer path verified against the published documentation; the resource mapping is not this package's
-and is recorded as an open interface question rather than claimed.
+notification shapes are a document check; the resource mapping and the encoding are not this
+package's and are recorded rather than claimed.
 
 ### Method classification
 
@@ -170,18 +183,21 @@ identifier comes from the request being resolved rather than from a caller. The 
 meant to close: a reply in the wrong format falls through to Claude as an ordinary message, and a
 reply naming an identifier nobody issued is dropped in silence. Inside KalaReach neither becomes a
 message, because the message path is a separate action with its own effect class. Status: the
-notification shapes are a document check. The path an answer takes inside the host is not this
-package's and is not verified here.
+notification shapes are a document check, and `fixtures/frames.json` checks that the table reads
+them the way the record says. Nothing here answers an approval: the path an answer would take is not
+this package's and is not verified.
 
-The package draws no Allow and Deny control and registers no answer action. A control's visibility is
-a predicate over facts the host knows, and the only fact available is that some approval is pending,
-which does not name one; a control drawn on that fact could be answered against a request that became
-pending after the person read a different one. The SDK's plugin-action invocation carries no
-reference to an approval resource either, while the host's own approval method does. So this package
-supplies the table and asks for the trust to have an answer encoded through it, and the answer is
-dispatched by the path that names the resource. The SDK has no parameter kind or control field that
-names an approval resource, and a package document cannot carry an `approval_ref` because that node
-names a runtime resource. Status: an interface limit, recorded rather than worked around.
+The package draws no answer control, registers no answer action and requests no approval capability.
+Three limits put it there, and all three are the SDK's rather than the vendor's. A control's
+visibility is a predicate over facts the host knows, and the only one available is that some approval
+is pending, which does not name one; a control drawn on that fact could be answered against a request
+that became pending after the person read a different one. The plugin-action invocation carries no
+reference to an approval resource, while the host's own approval method does. And a connector table
+names routes, classifications and identifier paths, with no field for where a decision goes, so the
+table cannot encode an answer whatever trust it is granted. A package document cannot carry an
+`approval_ref` either, because that node names a runtime resource. Status: an interface limit,
+recorded rather than worked around, and the rich approval half of this integration is not delivered
+here.
 
 ### Runtime installation gates
 
@@ -213,7 +229,7 @@ Sources: `https://code.claude.com/docs/en/channels` and
 conditions 7 and 8 are binary checks of the installed executable. Status: document checks and two
 binary checks; none of them exercised. Whether a channel actually registered on a given machine is
 something only that machine can report. Whether any of them holds on a given machine is not something this package
-can claim, which is why the answer controls are hidden until the host has evidence for them.
+can claim.
 
 Claude Code applies whichever answer arrives first and drops the other. It sends the channel no
 notification of that outcome: the reference describes the local dialog closing and the pending
@@ -251,7 +267,8 @@ The five hook events are `SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolU
 it refuses nothing: the action has already happened or the code is ignored. That is why they were
 chosen, and it is the whole of what the event list guarantees. It is not a guarantee that a hook
 cannot interfere: the same reference documents a common `continue` field, and a handler that answers
-`{"continue": false}` stops the session whatever the event. A hook here observes because the
+`{"continue": false}` stops the session on the events that read a hook's JSON output, which is most
+of them; `SessionEnd` is one that discards it. A hook here observes because the
 forwarder answers nothing, not because the event cannot carry an answer. Each registration also
 carries a `timeout`, one second for `SessionEnd` and five for the rest, against a documented command
 default of 600 seconds. Source: `https://code.claude.com/docs/en/hooks`, read 2026-09-20. Status:

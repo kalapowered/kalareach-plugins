@@ -86,13 +86,15 @@ to the gateway that drives the connection rather than to a catalogue package:
 
 A predicate edit that changes what any of the eight cases says a person sees fails the build.
 
-`fixtures/frames.json` is the other half: fifteen pinned App Server frames, taken from the published
-documentation's own examples and the required members of the generated schema, each with the method
-the table should find, the route and class it should reach, and the identifier the table's path
-should extract, with its JSON type. The build reads every frame through this package's own table. A
-route, a classification or a path edited so that a real frame is read differently fails there.
+`fixtures/frames.json` is the other half: fifteen App Server frames, written from the published
+documentation's own examples and completed against the required members of the generated schema.
+Each carries the method the table should find, the route and class it should reach, the identifier
+the table's path should extract with its JSON type, and the members its own situation is about. The
+build reads every frame through this package's own table. A route, a classification or a path edited
+so that one of these frames is read differently fails there. The frames also pin the evidence they
+were written against, by digest.
 
 The frames cover starting and unsubscribing a thread, steering with an expected turn, a turn whose
 result may not arrive, two approval requests pending at once, a resolved server request, a reconnect,
-two methods the table refuses, and one the table does not list at all, which is read as a mutation
-because that is what an unlisted method is.
+one method the table refuses outright, one it treats as carrying a credential, and one it does not
+list at all, which is read as a mutation because that is what an unlisted method is.

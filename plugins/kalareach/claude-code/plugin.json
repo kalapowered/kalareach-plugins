@@ -4,7 +4,7 @@
   "plugin_name": "claude-code",
   "version": "0.2.0",
   "display_name": "Claude Code",
-  "description": "Recognises Claude Code, observes it through lifecycle and tool hooks, and answers a Channels tool approval.",
+  "description": "Recognises Claude Code, observes it through lifecycle and tool hooks, and carries a message into the session.",
   "sdk_range": ">=0.1.0, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "ce9f90a0608e0365b29d85e82f59e655c57ddf53367067bdeec747031d6c9d98",
-      "size_bytes": "9261"
+      "digest": "725353733926f6e51114610e761c45fc735f78cafc90718187faf9dea432f596",
+      "size_bytes": "8826"
     },
     {
       "role": "native_bridge",
@@ -85,26 +85,26 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "ef6b920d3a09dfba4c225930460ab6d985c836e1be022e7b7bcaeacfd3529d0d",
-      "size_bytes": "2968"
+      "digest": "8a416981844a8cff010c3bc64b3aee9e6209d3f9704d95e5724a1080807e50fe",
+      "size_bytes": "3009"
     },
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "2e2ed8d83cff4d4298a18b7af805d9e4f3497f8e7843e957a7d9fae5f28748df",
-      "size_bytes": "4473"
+      "digest": "b473d973624ae7e262e36a386921abd4acf07755fffa6e3aaf66ab69f7aa3fa0",
+      "size_bytes": "3747"
     },
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "f4fcb981d2c36a0d0a0bec5f7b67f6a608fd50d9f7d9355511b7d2bf4602d231",
-      "size_bytes": "3200"
+      "digest": "9c4247e5863ca03b98541119ca7d28cf271f84585d451b3bb88fa31f42732387",
+      "size_bytes": "3860"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "eac6ac927fead10e5f06e50237014af0d1a5051e5fab1dc923e9b0cfb8fb9ad3",
-      "size_bytes": "4052"
+      "digest": "731f814d451501b8c88a1fdbd74659c9835a31e9ddb01df836f783b2ab5e9210",
+      "size_bytes": "3911"
     }
   ],
   "capabilities": [
@@ -123,10 +123,6 @@
     {
       "capability": "upstream.action",
       "reason": "Deliver a message you wrote into the session, on its own path and never as an approval"
-    },
-    {
-      "capability": "approval.respond",
-      "reason": "Encode an answer to a pending Channels tool approval through this package's table, which is what says where the request identifier and the decision go"
     },
     {
       "capability": "native_bridge.install",

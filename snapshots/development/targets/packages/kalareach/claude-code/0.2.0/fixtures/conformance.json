@@ -6,16 +6,11 @@
       "context": {
         "rights": [
           "session.view",
-          "agent.prompt",
-          "agent.approval.respond"
+          "agent.prompt"
         ],
         "binding_state": "bound",
         "flags": [],
         "capabilities": [
-          [
-            "approval.respond",
-            "qualified_available"
-          ],
           [
             "upstream.action",
             "qualified_available"
@@ -47,10 +42,6 @@
         "flags": [],
         "capabilities": [
           [
-            "approval.respond",
-            "qualified_available"
-          ],
-          [
             "upstream.action",
             "qualified_available"
           ]
@@ -74,16 +65,11 @@
       "context": {
         "rights": [
           "session.view",
-          "agent.prompt",
-          "agent.approval.respond"
+          "agent.prompt"
         ],
         "binding_state": "native_only_volatile",
         "flags": [],
         "capabilities": [
-          [
-            "approval.respond",
-            "qualified_available"
-          ],
           [
             "upstream.action",
             "qualified_available"
@@ -109,16 +95,11 @@
       "context": {
         "rights": [
           "session.view",
-          "agent.prompt",
-          "agent.approval.respond"
+          "agent.prompt"
         ],
         "binding_state": "bound",
         "flags": [],
         "capabilities": [
-          [
-            "approval.respond",
-            "qualified_available"
-          ],
           [
             "upstream.action",
             "temporarily_unavailable"
@@ -144,18 +125,13 @@
       "context": {
         "rights": [
           "session.view",
-          "agent.prompt",
-          "agent.approval.respond"
+          "agent.prompt"
         ],
         "binding_state": "bound",
         "flags": [
           "transfer_in_progress"
         ],
         "capabilities": [
-          [
-            "approval.respond",
-            "qualified_available"
-          ],
           [
             "upstream.action",
             "qualified_available"
@@ -181,18 +157,13 @@
       "context": {
         "rights": [
           "session.view",
-          "agent.prompt",
-          "agent.approval.respond"
+          "agent.prompt"
         ],
         "binding_state": "disabled",
         "flags": [
           "pending_approval"
         ],
         "capabilities": [
-          [
-            "approval.respond",
-            "qualified_available"
-          ],
           [
             "upstream.action",
             "qualified_available"

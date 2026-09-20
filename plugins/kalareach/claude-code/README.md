@@ -1,12 +1,13 @@
 # kalareach/claude-code
 
-Recognises Claude Code, observes it through lifecycle and tool hooks, and answers the tool call it
-is waiting on.
+Recognises Claude Code, observes it through lifecycle and tool hooks, and carries a message into
+the session.
 
 ## What it does
 
 KalaReach matches the `claude` executable, labels the session, and keeps Claude Code in the terminal
-KalaReach already owns. Nothing here replaces that terminal or starts a second Claude Code beside it.
+KalaReach already owns. Nothing here replaces that terminal or starts a second Claude Code beside
+it.
 
 Two surfaces reach the session, and they stay apart on purpose.
 
@@ -19,37 +20,33 @@ an MCP server of its own and talks to it over that process's standard streams, s
 nowhere to sit between them. This package installs the registration that makes the core forwarder
 that channel, and `connector.json` states how the frames on the private exchange are read.
 
-## How an approval is answered
+## What the table says about an approval
 
-Claude Code relays a pending tool approval as `notifications/claude/channel/permission_request`, with
+Claude Code relays a pending tool approval as `notifications/claude/channel/permission_request`,
+with
 a five-letter `request_id`, the tool's name, a description of the call and a preview of its
 arguments. The answer is `notifications/claude/channel/permission`, carrying that same `request_id`
 and `allow` or `deny`.
 
-The broker owns the identifier. `connector.json` puts the correlation at `params.request_id`, so the
-identifier in an answer is the host's to fill from the request it is resolving, never a value a
-caller supplies. Text that is not a decision for a pending request is not an answer, and it does not
-become an ordinary message to Claude either: the message path is a separate action with its own
-effect class, and the two never fall through into one another.
+`connector.json` states both of those, and it puts the correlation at `params.request_id`, so an
+identifier in an answer is the one the host is resolving rather than a value a caller supplies.
 
-This package interprets nothing. It ships no decoder, and the table routes and classifies rather than
-reading a request's fields, so the approval a person answers is the one the host already holds in its
-ledger.
+It does not answer anything. A table routes messages and classifies them; it names no destination
+for a decision, and this package ships no component, so nothing here turns a relayed request into
+something a person can read or turns a person's decision into a frame. Both of those need a granted
+decoder and encoder, and this package has neither. Until it does, the approval is answered where
+Claude Code asks for it, in the terminal KalaReach already owns.
 
-That is also why this package registers no answer action and draws no Allow and Deny buttons of its
-own. A document it ships is written before any request exists, and the only fact a control could test
-is that some approval is pending, which does not name one. What the package supplies is the table: it
-says which method carries an answer, where the identifier goes and where the decision goes, and it
-asks for the trust to have an answer encoded through it. Dispatching one, against the resource that
-names the request, is the host's.
-
-Claude Code applies whichever answer reaches it first, the terminal's or this one, and drops the
-other. It does not tell the channel which happened, so a delivered answer is evidence that the
-answer was sent and nothing more.
+What the package does carry is the message path, which is a separate action with its own effect
+class. Text that is not a decision for a pending request never becomes a message, and a message is
+never an answer.
 
 Delivering a message is not steering and not an acknowledgement that anything was processed. Claude
-Code queues messages that arrive while a turn is running and delivers them together on the next turn,
-and the write to the transport is the only receipt there is.
+Code queues messages that arrive while a turn is running and delivers them together on the next
+turn,
+and the write to the transport is the only receipt there is. Claude Code applies whichever answer
+reaches it first, the terminal's or another channel's, and drops the other, without telling the
+channel which happened.
 
 ## What stays in the terminal
 
@@ -63,7 +60,8 @@ registers a channel only when every one of these holds where it runs:
 
 - The session names the server or its plugin at launch. A registration Claude Code can see is not a
   registration it uses.
-- The plugin is on the effective allowlist, which is the vendor's own unless an organisation replaces
+- The plugin is on the effective allowlist, which is the vendor's own unless an organisation
+replaces
   it, or the session was started with the development flag instead.
 - The organisation's channel setting permits channels at all.
 - The session authenticates in a way that supports channels, which rules out the third-party model
@@ -98,16 +96,19 @@ that one key and leaves every other setting where it was.
 The hooks are registered on `SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolUseFailure` and
 `Notification`. Those five were chosen because none of them refuses what Claude Code was about to do
 when a handler exits with a failure code. That narrows the ways a hook can interfere; it does not
-remove them, because a handler can answer with a stop decision on most events instead. What makes
-these hooks observers is that the forwarder answers nothing: it writes the event to the worker and
-exits. Each registration also carries its own timeout, one second for `SessionEnd` and five for the
-rest, so a forwarder that cannot reach the worker costs seconds rather than the ten minutes a command
+remove them, because a handler can answer with a stop decision on most events instead. What this
+package asks of the
+forwarder is that it answer nothing: write the event to the worker and exit. Each registration also
+carries its own timeout, one second for `SessionEnd` and five for the
+rest, so a forwarder that cannot reach the worker costs seconds rather than the ten minutes a
+command
 hook may otherwise take.
 
 The registration installs disabled. Claude Code loads a plugin from a skills directory as soon as it
 is there, so the manifest sets its default to off and the settings key is what turns it on. Removal
 takes that key out first and then deletes the three files in the reverse of the order it wrote them.
-Each file is checked against the digest it was installed with, and one that somebody has since edited
+Each file is checked against the digest it was installed with, and one that somebody has since
+edited
 is reported and left alone rather than deleted, which leaves a registration on disk that the key no
 longer enables. A session that is already running keeps what it loaded: Claude Code picks up a
 registration change when it reloads its plugins or starts again.
@@ -121,10 +122,10 @@ this package's.
 
 ## What it asks for
 
-Six capabilities. Matching, declarative presentation and broker semantic events are the reading
-half. The upstream action capability carries a message you wrote. The approval capability is the
-trust to have an answer encoded through this package's table. The bridge installation capability is
-declared with the recipe it installs and the grant that says what accepting it means.
+Five capabilities. Matching, declarative presentation and broker semantic events are the reading
+half. The upstream action capability carries a message you wrote. The bridge installation capability
+is declared with the recipe it installs and the grant that says what accepting it means. There is no
+approval capability, because nothing here would exercise one.
 
 ## Fixtures
 
