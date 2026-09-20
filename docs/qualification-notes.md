@@ -31,7 +31,9 @@ same bytes:
 | Claude Code 2.1.278 executable | macOS, arm64 | `bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6` |
 | OpenCode 1.18.31, the native executable npm installs at `opencode-darwin-arm64/bin/opencode` | macOS, arm64 | `16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198` |
 | OpenCode 1.18.31, the OpenAPI document that build serves at `/doc` | | `46db986090aae41846cd6dbe16225a1d883f0bbcb4c48814008d3f6ce140aa5c` |
-| Gemini CLI 0.60.0, the bundle npm puts on the path at `@google/gemini-cli/bundle/gemini.js` | any | `fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2` |
+| Gemini CLI 0.60.0, the entry script npm puts on the path at `@google/gemini-cli/bundle/gemini.js`. It imports the chunks this qualification also read, which the digest does not cover | any | `fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2` |
+| Kimi Code CLI 2.0.2 executable at `~/.kimi-code/bin/kimi` | macOS, arm64 | `c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11` |
+| Qoder CLI 1.1.59 executable at `~/.qoder/bin/qodercli/qodercli-1.1.59` | macOS, arm64 | `c1b372d07083b98a2708ff23d4d462389fbf2bccad0d1317bb2970685f47c103` |
 
 The App Server is the native executable, which is what the schema above was generated from. The
 launcher is listed beside it because it is what npm puts on the path.
@@ -308,7 +310,7 @@ due to the package version bump to 0.2.0 (lead ruling D-122.3).
 | What | Value | Source | Read | Status |
 | --- | --- | --- | --- | --- |
 | Executable | `opencode` | `opencode --version` on the qualification machine, reporting `1.18.31` | 2026-09-20 | Verified against a live install |
-| Distribution | npm `opencode-ai` | The 1.18.31 release of that package, installed into a directory owned by this qualification and nowhere else | 2026-09-20 | Verified against the registry |
+| Distribution | npm `opencode-ai` | `https://registry.npmjs.org/opencode-ai`, the 1.18.31 release, installed into a directory owned by this qualification and nowhere else | 2026-09-20 | Verified against the registry |
 | Protocol | The shared-server API family's durable event stream, `opencode-server-v2-events` | The OpenAPI document that build serves at `GET /doc`, pinned by digest above | 2026-09-20 | Binary check |
 | Protocol version tested | 1.18.31 | The same document | 2026-09-20 | Binary check |
 | Qualified range | `=1.18.31` | This qualification | 2026-09-20 | The only release whose schema was read. Both API families are served from one build and the earlier one is still there, so the range admits nothing that was not read |
@@ -318,10 +320,12 @@ due to the package version bump to 0.2.0 (lead ruling D-122.3).
 The event stream meets it, so the package ships no native bridge for that leg.
 
 `GET /api/event` is a server-sent event stream whose every message is one JSON document with `id`,
-`type` and `data`, and whose `id` matches `^evt_`. That gives the table a framing, a method name at
-`type`, an identifier at `id` and a correlation that finds the same identifier, which is every field
-the contract asks for. The durable envelope also carries `durable.aggregateID` and `durable.seq`,
-which is how the stream orders and resumes itself.
+`type` and `data`, and whose `id` matches `^evt_`. That gives the table a framing and a method name
+at `type`. The identifier at `id` is the durable event identifier the stream orders and resumes by,
+beside `durable.aggregateID` and `durable.seq`; nothing travels host to upstream on this leg, so
+there is no request here for a response to answer, and the correlation the manifest requires repeats
+the same path. That is the whole of what correlation means here, and it is not a claim that a
+request was matched to a reply.
 
 The request leg does not meet it. Asking that server to do something is an HTTP request, and its
 method is a verb and a path (`POST /api/session/{sessionID}/interrupt`, `v2.session.interrupt`)
@@ -341,15 +345,24 @@ One build answers both, and the qualification turns on telling them apart.
 | Envelope payload | `data` | `properties` |
 | Operation identifiers | prefixed `v2.` | unprefixed |
 | Answering a permission | `POST /api/session/{sessionID}/permission/{requestID}/reply` | `POST /session/{sessionID}/permissions/{permissionID}` |
-| Server-wide operations | `/global/health`, `/global/event`, `/global/config`, `/global/dispose` | none |
 
-The two unions share 88 event names. The earlier one carries one more, `server.instance.disposed`,
-where this one has `global.disposed`. So a name is not a discriminator and the payload member is:
-a table qualified against this family finds nothing at `data` in the other family's envelope.
+The server-wide routes under `/global/` are unprefixed, so they belong to neither family
+exclusively, and the table makes no claim about them.
+
+The `V2Event` union carries 88 names. The `Event` union carries the same 88 and one more,
+`server.instance.disposed`; `global.disposed` is in both. So a name is not a discriminator, and the
+payload member is the only thing that differs: this family puts it under `data` and the earlier one
+under `properties`. A table has no payload-shape field, so it cannot refuse a shared name by reading
+it. What it can do is name the one event the earlier family alone publishes and declare it
+`unsupported`, which is what this table does, so that seeing it is an answer rather than a default.
 `fixtures/frames.json` pins one envelope of each kind, and
-`a_second_family_frame_is_refused_rather_than_read` in `pipeline/tests/packages.rs` asserts that the
-payload member this table reads is absent from both and that the name only the other family
-publishes is not routed at all.
+`a_frame_from_the_other_api_family_is_unsupported_or_carries_no_payload` in
+`pipeline/tests/packages.rs` asserts the class the table gives each of them and that each frame's
+own expectation reads only the earlier family's payload member.
+
+Which family a connection belongs to is therefore settled before it opens, from the installed
+version and the served schema. A package states what it draws once the host reports that evidence;
+deriving the evidence is the host's, and nothing here tests it.
 
 Source: the OpenAPI document above, read 2026-09-20. Status: binary check.
 
@@ -359,17 +372,18 @@ unprefixed half.
 
 ### Method classification
 
-Eighty-eight event names, every one of them in that document's `V2Event` union, with nothing added
-and nothing left out. Eighty-four are observations: an event on this stream reports what the session
-already did.
+Eighty-nine event names: every one in that document's `V2Event` union, with nothing added and
+nothing left out, plus the one name the `Event` union carries and `V2Event` does not. Eighty-four
+are observations: an event on this stream reports what the session already did.
 
-Four are not reports, and they are the ones a gateway has to be careful with.
+Five are not observations, and four of them are the ones a gateway has to be careful with.
 `tui.session.select` moves the attached terminal to another conversation, which changes the
 execution owner a binding observes; `tui.toast.show` writes on that terminal's screen. Both are
 mutations. `tui.prompt.append` writes into the native composer, and `tui.command.execute` carries a
 command vocabulary that includes `prompt.submit` and `session.interrupt`. Both are declared
 unsupported, because forwarding either would be automatic composer insertion or a typed control
-surface over somebody's terminal, and this package qualified neither.
+surface over somebody's terminal, and this package qualified neither. `server.instance.disposed` is
+unsupported for the different reason above.
 
 No event on this stream carries a credential, so no entry is classified `credential`. Provider
 authentication happens on HTTP routes, which this table does not cover.
@@ -401,7 +415,7 @@ only to read the document it serves.
 | What | Value | Source | Read | Status |
 | --- | --- | --- | --- | --- |
 | Executable | `gemini` | `gemini --version` on the qualification machine, reporting `0.60.0` | 2026-09-20 | Verified against a live install |
-| Distribution | npm `@google/gemini-cli` | The 0.60.0 release of that package, installed into a directory owned by this qualification and nowhere else | 2026-09-20 | Verified against the registry |
+| Distribution | npm `@google/gemini-cli` | `https://registry.npmjs.org/@google/gemini-cli`, the 0.60.0 release, installed into a directory owned by this qualification and nowhere else | 2026-09-20 | Verified against the registry |
 | Protocol | The agent protocol over standard streams, `gemini-cli-acp` | The handshake that build answers | 2026-09-20 | Binary check |
 | Protocol version tested | 0.60.0 | `agentInfo` in that handshake: `{"name":"gemini-cli","title":"Gemini CLI","version":"0.60.0"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
 | Qualified range | `=0.60.0` | This qualification | 2026-09-20 | The only release probed |
@@ -492,7 +506,7 @@ No account was signed in to and no turn was started.
 | What | Value | Source | Read | Status |
 | --- | --- | --- | --- | --- |
 | Executable | `kimi` | `kimi --version` on the qualification machine, reporting `2.0.2` | 2026-09-20 | Verified against a live install |
-| Distribution | The kimi.com installer into `~/.kimi-code` | The installed tree, whose executable is `~/.kimi-code/bin/kimi` and whose `config.toml` names `api.kimi.ai` | 2026-09-20 | Verified against a live install |
+| Distribution | The kimi.com installer into `~/.kimi-code` | The installed tree, whose executable is `~/.kimi-code/bin/kimi` (sha256 `c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11`) and whose `config.toml` names `api.kimi.ai`; that build prints `https://moonshotai.github.io/kimi-code/` as its documentation | 2026-09-20 | Verified against a live install |
 | Protocol | The agent protocol over standard streams, `kimi-code-cli-acp` | The handshake that build answers under its `acp` subcommand | 2026-09-20 | Binary check |
 | Protocol version tested | 2.0.2 | `agentInfo` in that handshake: `{"name":"Kimi Code CLI","version":"2.0.2"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
 | Qualified range | `=2.0.2` | This qualification | 2026-09-20 | The only release probed |
@@ -573,15 +587,21 @@ qualification, and `~/.kimi-code` was unchanged before and after.
 | What | Value | Source | Read | Status |
 | --- | --- | --- | --- | --- |
 | Executable | `qoder`, dispatching to `qodercli` | `qoder --version` on the qualification machine, reporting `1.1.59` | 2026-09-20 | Verified against a live install |
-| Distribution | The qoder.com installer into `~/.qoder` | The installed tree: a dispatcher at `~/.qoder/entry/qoder`, the executable at `~/.qoder/bin/qodercli/qodercli-1.1.59` selected by a `version.txt` beside it, a `qodercli` link under `~/.local/bin`, and an install marker naming a shell installer | 2026-09-20 | Verified against a live install |
+| Distribution | The qoder.com installer into `~/.qoder` | The installed tree: a dispatcher at `~/.qoder/entry/qoder` naming `qoder.com`, the executable at `~/.qoder/bin/qodercli/qodercli-1.1.59` (sha256 `c1b372d07083b98a2708ff23d4d462389fbf2bccad0d1317bb2970685f47c103`) selected by a `version.txt` beside it, a `qodercli` link under `~/.local/bin`, and an install marker naming a shell installer | 2026-09-20 | Verified against a live install |
 | Protocol | The agent protocol over standard streams, `qoder-cli-acp` | The handshake that build answers under `--acp` | 2026-09-20 | Binary check |
 | Protocol version tested | 1.1.59 | `agentInfo` in that handshake: `{"name":"qoder-cli","title":"Qoder CLI","version":"1.1.59"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
 | Qualified range | `=1.1.59` | This qualification | 2026-09-20 | The only release probed |
 
 Nothing is published under `qoder`, `@qoder/cli`, `@qoder/qoder-cli` or `qoder-cli` in a registry
 this qualification could name, so no rule here claims an exact match. The rules name the two stable
-entry points and the installation directory, and every one of them is `inferred`. The executable
-itself carries its version in its file name, so it is not a stable name to recognise.
+entry points and the installation directory, and every one of them is `inferred`.
+
+The executable itself carries its version in its file name, and `~/.local/bin/qodercli` is a link
+to it. A match rule compares a whole file name and removes only a `.exe` suffix, so no rule can
+recognise `qodercli-1.1.59` without pinning one release's spelling, which a package qualified
+against a version range must not do. A host that resolves a launch all the way to that file
+therefore matches none of these rules and recognises the application by the name a person invoked.
+Status: a limit of the rule vocabulary, recorded rather than worked around.
 
 ### The flag
 

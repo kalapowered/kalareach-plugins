@@ -79,8 +79,8 @@
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "ff27c5a58289fa9ddb92320e7a1fea6d8a2cb8fdb09b490f59c08b5db960b3c8",
-      "size_bytes": "7832"
+      "digest": "5b84c1ba4d350f668338162f80d2376ef2efac41df99d931c62ba051bdc8beed",
+      "size_bytes": "8183"
     },
     {
       "role": "presentation",

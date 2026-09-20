@@ -6,9 +6,9 @@ running, with the terminal as the default route.
 ## What it does
 
 KalaReach matches Qoder CLI's own entry points, labels the session, and runs it through the ordinary
-terminal path. That terminal is the default and it stays exactly as Qoder CLI draws it. Hooks report
-what the session is doing, verified terminal operations carry the rest, and this package adds one
-control over the turn.
+terminal path. That terminal is the default and it stays exactly as Qoder CLI draws it, and it
+carries everything the upstream has no typed path for. What this package adds is a reading of the
+agent protocol the same build speaks, and one control over the turn.
 
 `connector.json` is the declarative native-proxy table for the agent protocol the same build speaks
 over its standard streams: one JSON document per line, identifiers at `id`, methods at `method`,
@@ -22,9 +22,11 @@ documentation establishes no way to attach to a terminal that is already running
 does not offer one, and selecting the mode never replaces the terminal route.
 
 The table is pinned to Qoder CLI 1.1.59 and qualified against that version alone. Qoder CLI installs
-itself under `~/.qoder`, keeps its executable under a version-specific name and selects it through
-a stable entry point, so the rules that recognise it name those entry points and report themselves
-as guesses rather than as proof.
+itself under `~/.qoder` and keeps its executable under a name that carries the version, selecting it
+through a stable dispatcher and a stable command name. The rules here recognise those two stable
+names, and report themselves as guesses rather than as proof. A host that resolves all the way to
+the versioned file recognises neither, because a match rule compares a whole file name and this
+package will not pin one release's spelling of it.
 
 ## What it classifies
 

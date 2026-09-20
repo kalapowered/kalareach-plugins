@@ -2,7 +2,7 @@
   "corpus_version": 1,
   "protocol": "gemini-cli-acp",
   "tested_version": "0.60.0",
-  "source": "Three frames are the exact requests sent to the installed Gemini CLI 0.60.0 over its standard streams with --acp; one is an update that build sent back, shown with its command list shortened. The rest are written from names present in that build and are marked as written, because observing them needs a live turn.",
+  "source": "Two frames are the exact requests sent to the installed Gemini CLI 0.60.0 over its standard streams with --acp, and one more is such a request with the working directory it named replaced; one is an update that build sent back, shown with its command list shortened. The rest are written from names present in that build and are marked as written, because observing them needs a live turn.",
   "frames": [
     {
       "situation": "the capability negotiation that opens a connection",
@@ -54,8 +54,8 @@
     },
     {
       "situation": "creating an execution",
-      "note": "This exact request was sent to the installed build. It answered with a session identifier, its approval modes and its model list.",
-      "provenance": "captured",
+      "note": "This exact request was sent to the installed build, with the working directory it named replaced by a neutral path so no machine's own layout is published here. It answered with a session identifier, its approval modes and its model list.",
+      "provenance": "abridged_capture",
       "frame": {
         "jsonrpc": "2.0",
         "id": 3,
@@ -230,7 +230,8 @@
       "platform": "any",
       "version": "0.60.0",
       "distribution": "npm @google/gemini-cli",
-      "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2"
+      "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+      "note": "The digest is of the entry script npm puts on the path. That script imports the chunks this qualification also read, which it does not cover."
     },
     "handshake": {
       "protocolVersion": 1,

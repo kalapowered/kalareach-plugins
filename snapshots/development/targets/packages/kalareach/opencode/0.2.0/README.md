@@ -28,20 +28,22 @@ OpenCode 1.18.31 and qualified against the OpenAPI document that build serves, s
 connection belongs to is settled from the installed version and the served schema before the
 connection is opened, never from the name of an executable.
 
-An event name will not settle it, and the table says so rather than pretending otherwise. The two
-families share 88 names; only `server.instance.disposed`, which the earlier family publishes and
-this one does not, is exclusive, and this table lists that one as unsupported so that seeing it says
-plainly which family the connection turned out to be. For a shared name, the frame routes and its
-payload is under the member this table does not read, so nothing comes out of it.
-`fixtures/frames.json` pins one envelope of each kind. When the host's evidence says the installed
-family is not this one, the capability is incompatible, every control this package draws
-disappears, and the terminal is what is left. A profile for the earlier family is a different
-package: one package carries one qualified table.
+An event name will not settle it, and the table says so rather than pretending otherwise. The
+earlier family publishes the same 88 names and one more, `server.instance.disposed`, which this one
+does not; that single exclusive name is what this table lists as unsupported, so that seeing it says
+plainly which family the connection turned out to be. A shared name it cannot refuse: the frame
+routes, and its payload sits under a member this table never reads, so the table extracts nothing
+from it. `fixtures/frames.json` pins one envelope of each kind.
+
+When the host's evidence says the installed family is not this one, the capability is incompatible,
+every control this package draws disappears, and the terminal is what is left. Reading that evidence
+is the host's; what this package settles is what it draws once the host has read it. A profile for
+the earlier family is a different package: one package carries one qualified table.
 
 ## What it classifies
 
 Eighty-nine event names, each with the evidence it was classified against: the eighty-eight this
-family publishes, and the one the earlier family publishes instead of `global.disposed`. An event
+family publishes, and the one only the earlier family publishes. An event
 that reports what the session did is an observation: turn steps, text and reasoning chunks, tool
 calls and their results, changed files, the sessions that are idle, and the permissions and
 questions the session is waiting on. None of them carries a credential.

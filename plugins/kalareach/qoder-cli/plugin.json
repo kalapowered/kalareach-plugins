@@ -71,8 +71,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "f68a1d24f972501b32fb53b544c47476152fc8435d733e44cd993ae56cc5d258",
-      "size_bytes": "5115"
+      "digest": "fa54bc4619b15b4d5113f9e6eaac1815469e84b1426b57e9d8b961cf083d7e6c",
+      "size_bytes": "5367"
     },
     {
       "role": "connector",
@@ -89,8 +89,8 @@
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "6ec321b956821102d7c7cc972e23a318db63890548222fc6904f893d46c6f2f7",
-      "size_bytes": "7511"
+      "digest": "973501047cb94056a09efe29d965cadd95e63c23f01b7c895a36c75de95a7f8b",
+      "size_bytes": "7787"
     },
     {
       "role": "presentation",

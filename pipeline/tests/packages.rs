@@ -200,7 +200,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
                 Provenance::Written,
             ),
             ("a tool call the agent is waiting on", Provenance::Written),
-            ("creating an execution", Provenance::Captured),
+            ("creating an execution", Provenance::AbridgedCapture),
             ("ending the turn in flight", Provenance::Written),
             ("the agent's own update stream", Provenance::AbridgedCapture),
             (
@@ -259,7 +259,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
                 Provenance::Written,
             ),
             ("a tool call the agent is waiting on", Provenance::Written),
-            ("creating an execution", Provenance::Captured),
+            ("creating an execution", Provenance::AbridgedCapture),
             ("ending the turn in flight", Provenance::Written),
             ("the agent's own update stream", Provenance::Written),
             (
@@ -386,7 +386,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
                 Provenance::Written,
             ),
             ("a tool call the agent is waiting on", Provenance::Written),
-            ("creating an execution", Provenance::Captured),
+            ("creating an execution", Provenance::AbridgedCapture),
             ("ending the turn in flight", Provenance::Written),
             ("the agent's own update stream", Provenance::Written),
             (
@@ -568,10 +568,19 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
             "{plugin}: every rule requires a directory, so an ordinary installation matches none"
         );
         match &entry.identity {
-            ApplicationIdentity::Distribution { .. } => assert!(
-                exact > 0,
-                "{plugin} recognises its application by name alone"
-            ),
+            ApplicationIdentity::Distribution { .. } => {
+                assert!(
+                    exact > 0,
+                    "{plugin} recognises its application by name alone"
+                );
+                // A published application is recognised wherever it was installed. A directory
+                // requirement on any rule would make that rule miss ordinary installations, and
+                // the exact one missing them is the whole of the package's proof gone.
+                assert_eq!(
+                    directories, 0,
+                    "{plugin} has a rule that only matches under a directory"
+                );
+            }
             ApplicationIdentity::VendorInstaller { path_suffix } => {
                 // A vendor installer has no registry identity to claim, so nothing here may be
                 // exact and the directory the vendor documents is the strongest rule available.
@@ -960,6 +969,11 @@ fn a_frame_from_the_other_api_family_is_unsupported_or_carries_no_payload() {
 }
 
 /// Every agent section 12 bundles, and the plugin that carries its adapter.
+///
+/// This reads manifests. It says that no adapter was dropped, that no two adapters claim one
+/// protocol, and that nothing a control invokes reaches past what that package's own qualified
+/// table routes. That a host actually launches the terminal route, and that an agent protocol is
+/// entered only when somebody selects it, are the host's and are not settled here.
 const BUNDLED_AGENTS: &[&str] = &[
     "kalareach/claude-code",
     "kalareach/codex",
@@ -970,7 +984,7 @@ const BUNDLED_AGENTS: &[&str] = &[
 ];
 
 #[test]
-fn every_bundled_agent_keeps_its_native_terminal_route() {
+fn every_bundled_adapter_is_present_and_declares_no_surface_of_its_own() {
     let loaded = packages::load(&root()).expect("the repository loads");
     let mut protocols: BTreeMap<String, &str> = BTreeMap::new();
     for agent in BUNDLED_AGENTS {
