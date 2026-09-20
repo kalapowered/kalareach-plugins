@@ -90,9 +90,9 @@ A predicate edit that changes what any of the eight cases says a person sees fai
 documentation's own examples and completed against the required members of the generated schema.
 Each carries the method the table should find, the route and class it should reach, the identifier
 the table's path should extract with its JSON type, and the members its own situation is about. The
-build reads every frame through this package's own table. A route, a classification or a path edited
-so that one of these frames is read differently fails there. The frames also pin the evidence they
-were written against, by digest.
+test `every_pinned_frame_is_read_the_way_the_table_says` under `cargo test` reads every frame through
+this package's own table. A route, a classification or a path edited so that one of these frames is
+read differently fails there. The frames also pin the evidence they were written against, by digest.
 
 The frames are drawn from the situations the integration has to handle: starting and unsubscribing a
 thread, steering with an expected turn, a turn start and the notification that would confirm it, two

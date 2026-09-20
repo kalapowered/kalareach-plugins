@@ -108,13 +108,13 @@ The six behaviours the Codex row names, which are competing approvals, thread su
 result, are protocol behaviours, and they are covered here only as far as a package can cover them.
 
 `fixtures/frames.json` pins fifteen frames across those situations, written from the documentation's
-examples and completed against the generated schema's required members, and the build reads every
-one of them through this package's own table: the method it finds, the route and class it reaches,
-the identifier it extracts with its JSON type, the members the situation is about, and that the
-correlation path finds the same identifier the request path does. That is a check of the table, and
-of nothing else. Status: asserted by `every_pinned_frame_is_read_the_way_the_table_says` in
-`pipeline/tests/packages.rs`, which runs under `cargo test`. It checks the table's reading of pinned
-frames and nothing about a host.
+examples and completed against the generated schema's required members, and the test
+`every_pinned_frame_is_read_the_way_the_table_says` under `cargo test` reads every one of them through
+this package's own table: the method it finds, the route and class it reaches, the identifier it
+extracts with its JSON type, the members the situation is about, and that the correlation path finds
+the same identifier the request path does. That is a check of the table, and of nothing else. Status:
+asserted by `every_pinned_frame_is_read_the_way_the_table_says` in `pipeline/tests/packages.rs`, which
+runs under `cargo test`. It checks the table's reading of pinned frames and nothing about a host.
 
 What those frames do not establish is state. Two approval frames are two frames, not two requests
 pending at once; an initialize and an interrupt are two frames, not a reconciled reconnect; a

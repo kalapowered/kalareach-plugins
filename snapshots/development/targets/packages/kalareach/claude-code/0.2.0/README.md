@@ -139,9 +139,10 @@ progress, and a binding disabled by repeated faults.
 `fixtures/frames.json` is the other half: five pinned Channels frames, taken from the published
 reference's own examples and the field names in the installed executable, each with the method the
 table should find, the route and class it should reach, and the identifier the table's path should
-extract. The build reads every frame through this package's own table, including an answer naming a
-request nobody issued, whose identifier has to come back verbatim so the host can refuse it, and an
-ordinary MCP tool call, which this table does not list and which is therefore a mutation.
+extract. The test `every_pinned_frame_is_read_the_way_the_table_says` under `cargo test` reads every
+frame through this package's own table, including an answer naming a request nobody issued, whose
+identifier has to come back verbatim so the host can refuse it, and an ordinary MCP tool call, which
+this table does not list and which is therefore a mutation.
 
 Some of what this package promises is structural rather than conditional, and a fixture cannot state
 it. There is no action for project trust or MCP consent, so no right produces a control for either.

@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "96c85f79d8e81a2a2d6d92a1a5bf30c68ea4af507368a12d26817a0c384f86a6",
-      "size_bytes": "8926"
+      "digest": "20cc8a00b46974d853b2422e835b0e3d1d32c952c69242a6be2995d286a2d9da",
+      "size_bytes": "8996"
     },
     {
       "role": "native_bridge",

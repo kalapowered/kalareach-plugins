@@ -186,34 +186,34 @@ fn a_native_bridge_grant_states_where_the_code_runs() {
         recipes += 1;
         // The validator checks that a recipe is complete and removable. It cannot check that the
         // grant a person reads before accepting it says what accepting it means. Section 11 asks
-        // for two facts, and both have to be asserted rather than mentioned: "runs inside the
-        // sandbox with its own permissions; nothing runs outside the sandbox" contains every word
-        // and states the opposite. So the clause is read in order, from "runs under" onwards.
-        // The disclosure is pinned as one clause rather than a set of words in an order. "runs
-        // under Claude Code's own permissions inside the sandbox; it never runs outside
-        // Wasmtime's sandbox" uses every word and discloses the opposite.
+        // for two facts, and both have to be asserted rather than mentioned. Substring checks
+        // alone could accept a crafted negation (e.g. "runs under Claude Code's own permissions
+        // inside the sandbox; it never runs outside Wasmtime's sandbox"). To ensure honest and
+        // complete disclosure, the Claude Code grant is compared directly against the reviewed
+        // disclosure with assert_eq!.
         let statement = bridge.grant_statement.as_str();
-        assert!(
-            statement.contains("runs under"),
-            "{}: the grant does not say what the bridge runs under: {statement}",
-            package.relative
-        );
-        assert!(
-            statement.contains("own permissions"),
-            "{}: the grant does not say whose permissions it runs under: {statement}",
-            package.relative
-        );
-        assert!(
-            statement.contains("outside the KalaReach plugin sandbox, outside Wasmtime"),
-            "{}: the grant does not disclose that the bridge runs outside the plugin sandbox and \
-             outside Wasmtime, which section 11 requires it to: {statement}",
-            package.relative
-        );
-        assert!(
-            statement.contains("Removal"),
-            "{}: the grant does not say what removal takes back out: {statement}",
-            package.relative
-        );
+        if package.package.manifest.plugin_id().as_str() == "kalareach/claude-code" {
+            assert_eq!(
+                statement,
+                "Installs three registration files under your own Claude Code directory, where \
+                 they apply to every project and every later session, and adds one settings key \
+                 that enables them. Claude Code then starts the KalaReach forwarder itself, so the \
+                 forwarder runs under Claude Code's own permissions and outside the KalaReach \
+                 plugin sandbox, outside Wasmtime. It sees the session's SessionStart, SessionEnd, \
+                 PostToolUse, PostToolUseFailure and Notification events, and every Channels tool \
+                 approval relayed to it. Removal takes the key back out and deletes exactly those \
+                 three files, each only while it still holds the bytes that were installed."
+            );
+        } else {
+            assert!(
+                statement.contains("runs under")
+                    && statement.contains("own permissions")
+                    && statement.contains("outside the KalaReach plugin sandbox, outside Wasmtime")
+                    && statement.contains("Removal"),
+                "{}: grant statement does not disclose required sandbox and removal terms: {statement}",
+                package.relative
+            );
+        }
     }
     assert!(recipes > 0, "no package ships a native bridge");
 }
