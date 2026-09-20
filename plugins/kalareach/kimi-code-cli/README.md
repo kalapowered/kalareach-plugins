@@ -26,9 +26,9 @@ The distribution and the execution owner are read before any protocol is chosen.
 names the installation directory is what identifies this one; a rule that recognises an executable
 called `kimi` by name alone is a guess, and it is reported as a guess. An executable with that name
 establishes nothing about which server contract is available, and a directory of saved sessions
-establishes nothing about which process owns the live one. When the installed distribution is not
-this one, the capability is incompatible, every control this package draws disappears, and the
-terminal is what is left.
+establishes nothing about which process owns the live one. When the installed evidence does not
+match the distribution this package pins, the capability is incompatible, every control this package
+draws disappears, and the terminal is what is left.
 
 The table is pinned to Kimi Code CLI 2.0.2 and qualified against that version alone.
 

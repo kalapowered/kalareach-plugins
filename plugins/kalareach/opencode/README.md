@@ -35,9 +35,10 @@ plainly which family the connection turned out to be. A shared name it cannot re
 routes, and its payload sits under a member this table never reads, so the table extracts nothing
 from it. `fixtures/frames.json` pins one envelope of each kind.
 
-When the host's evidence says the installed family is not this one, the capability is incompatible,
-every control this package draws disappears, and the terminal is what is left. Reading that evidence
-is the host's; what this package settles is what it draws once the host has read it. A profile for
+When the installed evidence does not match the version and the schema this package pins, the
+capability is incompatible, every control this package draws disappears, and the terminal is what is
+left. Reading that evidence is the host's; what this package settles is what it draws once the host
+has read it. A profile for
 the earlier family is a different package: one package carries one qualified table.
 
 ## What it classifies

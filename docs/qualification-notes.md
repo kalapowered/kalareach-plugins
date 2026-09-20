@@ -361,8 +361,13 @@ it. What it can do is name the one event the earlier family alone publishes and 
 own expectation reads only the earlier family's payload member.
 
 Which family a connection belongs to is therefore settled before it opens, from the installed
-version and the served schema. A package states what it draws once the host reports that evidence;
-deriving the evidence is the host's, and nothing here tests it.
+version and the served schema rather than from a name on disk. This package's record carries both
+pins, and a host whose evidence does not match them reports the capability as `incompatible`. The
+case in `fixtures/conformance.json` states what this package draws then: nothing, so the terminal
+path is what is left, and `kalareach-catalogue validate` evaluates that case against this package's
+own predicates on every run. Reading the installed evidence and comparing it against those pins is
+the host's half of that contract. This package neither performs it nor tests it, and nothing here
+records it as done.
 
 Source: the OpenAPI document above, read 2026-09-20. Status: binary check.
 
@@ -534,11 +539,13 @@ executable called `kimi` by its name alone is `inferred` and is presented as a g
 with that name establishes nothing about which server contract is available, and a directory of
 saved sessions establishes nothing about which process owns the live one.
 
-The refusal is declarative. When the host's evidence says the installed distribution is not this
-one, the capability is `incompatible`, and the case named in `fixtures/conformance.json` states that
-both controls then disappear, leaving the terminal path alone. `kalareach-catalogue validate`
-evaluates that case against this package's own predicates on every run. A frame-level discriminator
-would need the other distribution installed, and it is not here.
+The refusal is declarative. A host whose installation evidence does not match the pins in this
+package's record reports the capability as `incompatible`, and the case named in
+`fixtures/conformance.json` states that both controls then disappear, leaving the terminal path
+alone. `kalareach-catalogue validate` evaluates that case against this package's own predicates on
+every run. Reading that evidence and comparing it against those pins is the host's half of the
+contract; this package neither performs it nor tests it. A frame-level discriminator would need the
+other distribution installed, and it is not here.
 
 Native-TUI attachment to a server this package selected would need source or executable verification
 this qualification does not have. Status: not claimed, and not offered.

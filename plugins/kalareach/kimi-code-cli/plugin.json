@@ -61,14 +61,14 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "c19a92cadfecaec1fb09a4450270f95300ff481beec0ba4d2fe43944eb7f7259",
-      "size_bytes": "5757"
+      "digest": "80412ff6d31de5a5f4aac1618cad6b7ff97761acdfa0cc5b35ef20519cbb2228",
+      "size_bytes": "5787"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "3b4fa6bc228494a9c0db6aa6adb1e51a54daea50a29ca78c6a31dbdcc3b3d5c5",
-      "size_bytes": "8538"
+      "digest": "32cefb2bdd4aed5c16c93868dda8eae0ef4f59beb4ac117d02391fb391ef35f4",
+      "size_bytes": "8665"
     },
     {
       "role": "fixture",
