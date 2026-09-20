@@ -9,7 +9,7 @@
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "e7c41c03841e52a358f8873869787828adde06f2"
+    "revision": "d1030e67f3a7379f4fbef5bc342efd5bca5ea93e"
   },
   "match_rules": [
     {
