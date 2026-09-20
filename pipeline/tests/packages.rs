@@ -162,6 +162,50 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         ],
     },
     BundledConnector {
+        plugin: "kalareach/gemini-cli",
+        protocol: "gemini-cli-acp",
+        registry: "npm",
+        identifier: "@google/gemini-cli",
+        file_stems: &["gemini"],
+        captured_frames: &[
+            "a method the table does not route",
+            "creating an execution",
+            "the capability negotiation that opens a connection",
+        ],
+        frames: &[
+            (
+                "a file read in the agent's own environment",
+                "fs/read_text_file",
+            ),
+            (
+                "a method the table does not route",
+                "kalareach/not-a-method",
+            ),
+            (
+                "a process started in the agent's own environment",
+                "terminal/create",
+            ),
+            (
+                "a tool call the agent is waiting on",
+                "session/request_permission",
+            ),
+            ("creating an execution", "session/new"),
+            ("ending the turn in flight", "session/cancel"),
+            ("the agent's own update stream", "session/update"),
+            (
+                "the capability negotiation that opens a connection",
+                "initialize",
+            ),
+        ],
+        required_members: &[
+            ("fs/read_text_file", "params.path"),
+            ("session/new", "params.cwd"),
+            ("session/request_permission", "params.toolCall.toolCallId"),
+            ("session/update", "params.update.sessionUpdate"),
+            ("terminal/create", "params.command"),
+        ],
+    },
+    BundledConnector {
         plugin: "kalareach/opencode",
         protocol: "opencode-server-v2-events",
         registry: "npm",

@@ -2,9 +2,9 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "gemini-cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "display_name": "Gemini CLI",
-  "description": "Recognises Gemini CLI and names the session after it. Terminal integration only.",
+  "description": "Recognises Gemini CLI, reads its agent protocol through a declarative table and stops the turn it is running, with the stock terminal untouched.",
   "sdk_range": ">=0.1.0, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
@@ -12,6 +12,19 @@
     "revision": "4f8c69e538b5e4b7b220305822f1f6f6ad212416"
   },
   "match_rules": [
+    {
+      "id": "gemini-cli-npm",
+      "executable": {
+        "file_stem": "gemini",
+        "path_suffix": [],
+        "version_range": null
+      },
+      "distribution": {
+        "registry": "npm",
+        "package": "@google/gemini-cli"
+      },
+      "confidence": "exact"
+    },
     {
       "id": "gemini-cli-executable",
       "executable": {
@@ -48,27 +61,80 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "fde37bd4e247d93403374f157e6d11363920d119d01d1443af71c997229ad9e0",
-      "size_bytes": "1337"
+      "digest": "3e97c525b6d7705abd94075357754ba84000d7e265ee224f3c7afa9dc8190cb9",
+      "size_bytes": "4912"
+    },
+    {
+      "role": "connector",
+      "path": "connector.json",
+      "digest": "f715f1594e819ce8334e7c46a6acfacf88dac7dc1148ae6be097c10e29b5783a",
+      "size_bytes": "7172"
+    },
+    {
+      "role": "fixture",
+      "path": "fixtures/conformance.json",
+      "digest": "8240295fd5e8f51aac6091c00c5cf85a85d95689efd140facfd8c84db2538083",
+      "size_bytes": "4896"
+    },
+    {
+      "role": "asset",
+      "path": "fixtures/frames.json",
+      "digest": "a800f2e95d54e86d5c98d80328d266893e6721d0d80d2ebac5b4f7257b0b138b",
+      "size_bytes": "7748"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "abc2c016dddadff3ffb1088f32278bf87305339fd9f3311965e8c07c610eba6a",
-      "size_bytes": "461"
+      "digest": "e488724ad259c1e0074e87292a0eb1b2d37a9f35606421224766333b33d0f1a5",
+      "size_bytes": "4100"
     }
   ],
   "capabilities": [
     {
       "capability": "metadata.match",
-      "reason": "Recognise Gemini CLI from its executable name"
+      "reason": "Recognise Gemini CLI from its published package and its executable name"
     },
     {
       "capability": "presentation.declarative",
-      "reason": "Name the session after Gemini CLI and describe it"
+      "reason": "Show what the Gemini CLI session is doing and the controls for its turn"
+    },
+    {
+      "capability": "broker.semantic_events",
+      "reason": "Read the turn and tool updates the selected agent-protocol execution reports"
+    },
+    {
+      "capability": "upstream.action",
+      "reason": "Ask Gemini CLI to stop the turn it is running when you press Stop"
     }
   ],
-  "actions": [],
+  "actions": [
+    {
+      "id": "turn.cancel",
+      "label": "Stop the turn",
+      "effect": "upstream.cancel",
+      "implementation": {
+        "type": "upstream_cancel"
+      },
+      "parameters": {
+        "parameters": []
+      },
+      "description": "Cancel the turn the bound Gemini CLI execution is running, which ends it as interrupted",
+      "confirmation_required": false
+    },
+    {
+      "id": "session.refresh",
+      "label": "Refresh",
+      "effect": "observe",
+      "implementation": {
+        "type": "presentation"
+      },
+      "parameters": {
+        "parameters": []
+      },
+      "description": "Draw this package's document again from the session state the host already holds",
+      "confirmation_required": false
+    }
+  ],
   "attachments": null,
   "native_bridge": null
 }
