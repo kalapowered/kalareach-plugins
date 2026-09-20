@@ -3,156 +3,12 @@
     "_type": "targets",
     "spec_version": "1.0.0",
     "version": 1,
-    "expires": "2036-09-17T08:02:57.882063Z",
+    "expires": "2036-09-17T08:03:36.967177Z",
     "targets": {
-      "packages/kalareach/codex/0.2.0/plugin.json": {
-        "length": 3627,
-        "hashes": {
-          "sha256": "40fa0fd1af5a951117009764ae742f9fe2214e7b4be7fe46cbfcfe4c0426a1c5"
-        }
-      },
-      "packages/kalareach/codex/0.2.0/connector.json": {
-        "length": 16074,
-        "hashes": {
-          "sha256": "e7d2d60fc8820caff2e70674ed4fd8552e097cb72cdd8bb50f23aecd9417aba2"
-        }
-      },
-      "packages/kalareach/kimi-code-cli/0.1.0/plugin.json": {
-        "length": 1739,
-        "hashes": {
-          "sha256": "b89a8396106dec38cfa5622a0ceacff67e6741930261a216e729f935be47be48"
-        }
-      },
-      "packages/kalareach/opencode/0.1.0/presentation.json": {
-        "length": 459,
-        "hashes": {
-          "sha256": "8f7a943b3d8b08c2d064ab025302d80f5d6f1c2f6040caddb1b318f921dcd8b2"
-        }
-      },
-      "packages/kalareach/opencode/0.1.0/plugin.json": {
-        "length": 1713,
-        "hashes": {
-          "sha256": "b5b26fc5b2d41c716e2592f602b02cc9fad026c34a52a4b7817853547e72e137"
-        }
-      },
-      "packages/kalareach/opencode/0.1.0/README.md": {
-        "length": 1331,
-        "hashes": {
-          "sha256": "0ab58d24548200e9dc279716a20fa43539e9e9d260c37835a64f4d7f4cb7cd17"
-        }
-      },
-      "packages/kalareach/claude-code/0.2.0/plugin.json": {
-        "length": 7801,
-        "hashes": {
-          "sha256": "67f811d3b11daf4947dedd88ff0fbf472ac13d83110efbeb465bf4e9db6f864e"
-        }
-      },
-      "packages/kalareach/qoder-cli/0.1.0/README.md": {
-        "length": 1332,
-        "hashes": {
-          "sha256": "60a9169f7aa4d3ab78bf05de81bcd4b67f135b5ceb20a613fd35cba94835df56"
-        }
-      },
-      "packages/kalareach/claude-code/0.2.0/fixtures/conformance.json": {
-        "length": 4473,
-        "hashes": {
-          "sha256": "2e2ed8d83cff4d4298a18b7af805d9e4f3497f8e7843e957a7d9fae5f28748df"
-        }
-      },
-      "packages/kalareach/qoder-cli/0.1.0/presentation.json": {
-        "length": 460,
-        "hashes": {
-          "sha256": "a87408274d566f513f05f5b721e19f0b05cb701c41d2fc116661cb80e329d6ee"
-        }
-      },
-      "packages/kalareach/claude-code/0.2.0/connector.json": {
-        "length": 2968,
-        "hashes": {
-          "sha256": "ef6b920d3a09dfba4c225930460ab6d985c836e1be022e7b7bcaeacfd3529d0d"
-        }
-      },
-      "packages/kalareach/claude-code/0.2.0/fixtures/frames.json": {
-        "length": 3200,
-        "hashes": {
-          "sha256": "f4fcb981d2c36a0d0a0bec5f7b67f6a608fd50d9f7d9355511b7d2bf4602d231"
-        }
-      },
-      "packages/kalareach/claude-code/0.2.0/bridge/mcp-servers.json": {
-        "length": 167,
-        "hashes": {
-          "sha256": "13e39e82aee3be2710c49a6f38f5558e20d18416a0a18e07b72f5dff9de1c4ea"
-        }
-      },
-      "index.json": {
-        "length": 13260,
-        "hashes": {
-          "sha256": "c42efb1ed7e77f85c6d9052018347bb661e11f148648c0a765b84bd45237fdc4"
-        }
-      },
-      "packages/kalareach/example-declarative/0.1.0/fixtures/visibility.json": {
-        "length": 1301,
-        "hashes": {
-          "sha256": "4f5b9b87257fd2edb479b34640edfe14b81f826a980e4ad6a42e7ef426120935"
-        }
-      },
-      "packages/kalareach/example-declarative/0.1.0/plugin.json": {
-        "length": 2953,
-        "hashes": {
-          "sha256": "f8434aef081de78d9b63e34d1172b9a64399182a7420bb4f0b3352762a5aeccb"
-        }
-      },
-      "packages/kalareach/claude-code/0.2.0/bridge/plugin-manifest.json": {
-        "length": 326,
-        "hashes": {
-          "sha256": "1cb6238953bafc5e2872e8af3a430d94ca8452c11e51dc43946889f7268b126c"
-        }
-      },
-      "packages/kalareach/gemini-cli/0.1.0/README.md": {
-        "length": 1337,
-        "hashes": {
-          "sha256": "fde37bd4e247d93403374f157e6d11363920d119d01d1443af71c997229ad9e0"
-        }
-      },
-      "packages/kalareach/example-declarative/0.1.0/presentation.json": {
-        "length": 2523,
-        "hashes": {
-          "sha256": "7a73bc88d59a7343fcd910476055dff51a68263b618d97466addd0ff47a9903c"
-        }
-      },
-      "packages/kalareach/codex/0.2.0/presentation.json": {
-        "length": 3390,
-        "hashes": {
-          "sha256": "51c4a083904b315b7e3fd4839f3b7bde4d6e6f298f4fea0958e6fbf7e806ef12"
-        }
-      },
-      "packages/kalareach/kimi-code-cli/0.1.0/presentation.json": {
-        "length": 464,
-        "hashes": {
-          "sha256": "52ac809d7c03f49477d931392f600790d88831f926b9abb158a7cf958f1292a9"
-        }
-      },
       "packages/kalareach/claude-code/0.2.0/presentation.json": {
         "length": 4052,
         "hashes": {
           "sha256": "eac6ac927fead10e5f06e50237014af0d1a5051e5fab1dc923e9b0cfb8fb9ad3"
-        }
-      },
-      "packages/kalareach/codex/0.2.0/fixtures/frames.json": {
-        "length": 8408,
-        "hashes": {
-          "sha256": "98ffc875e1ec819c33ff87b064898e5e4f39c183b39eaa8142e5ab3d57f6c65c"
-        }
-      },
-      "packages/kalareach/kimi-code-cli/0.1.0/README.md": {
-        "length": 1347,
-        "hashes": {
-          "sha256": "acb194fcc130e3669c1cfd4b054dcd21ce5569b2b097c2bc2c7a60b8b2ce4799"
-        }
-      },
-      "packages/kalareach/gemini-cli/0.1.0/plugin.json": {
-        "length": 1723,
-        "hashes": {
-          "sha256": "3338638e5150e94c339a49a5f3b99aa4eaec4ef1f21d9599dd4f14ff2a628685"
         }
       },
       "packages/kalareach/qoder-cli/0.1.0/plugin.json": {
@@ -161,16 +17,40 @@
           "sha256": "a1fff9393848f12f1585f2b392b3359ad7de472dbe848b2e3f418eda3d2251e5"
         }
       },
-      "packages/kalareach/codex/0.2.0/fixtures/conformance.json": {
-        "length": 4961,
+      "packages/kalareach/claude-code/0.2.0/plugin.json": {
+        "length": 7801,
         "hashes": {
-          "sha256": "c3d63e248eb922313d6ea5366713ee95d095497122f59a0491d42b00c1ab4f3b"
+          "sha256": "c74d727114d60f4cac89e51a5716c8f1fa6c7dfcc36220d72246be790122d0d1"
         }
       },
-      "packages/kalareach/gemini-cli/0.1.0/presentation.json": {
-        "length": 461,
+      "packages/kalareach/qoder-cli/0.1.0/presentation.json": {
+        "length": 460,
         "hashes": {
-          "sha256": "abc2c016dddadff3ffb1088f32278bf87305339fd9f3311965e8c07c610eba6a"
+          "sha256": "a87408274d566f513f05f5b721e19f0b05cb701c41d2fc116661cb80e329d6ee"
+        }
+      },
+      "packages/kalareach/claude-code/0.2.0/bridge/mcp-servers.json": {
+        "length": 167,
+        "hashes": {
+          "sha256": "13e39e82aee3be2710c49a6f38f5558e20d18416a0a18e07b72f5dff9de1c4ea"
+        }
+      },
+      "packages/kalareach/opencode/0.1.0/presentation.json": {
+        "length": 459,
+        "hashes": {
+          "sha256": "8f7a943b3d8b08c2d064ab025302d80f5d6f1c2f6040caddb1b318f921dcd8b2"
+        }
+      },
+      "packages/kalareach/example-declarative/0.1.0/plugin.json": {
+        "length": 2953,
+        "hashes": {
+          "sha256": "f8434aef081de78d9b63e34d1172b9a64399182a7420bb4f0b3352762a5aeccb"
+        }
+      },
+      "packages/kalareach/codex/0.2.0/plugin.json": {
+        "length": 3627,
+        "hashes": {
+          "sha256": "0382373b8f1eec661c666391d2d7cdc773692726d1643576b2246e6818522b69"
         }
       },
       "packages/kalareach/codex/0.2.0/README.md": {
@@ -179,10 +59,94 @@
           "sha256": "2bae3f2b9568d44fb59773e08b3c8cd619665885415ad6490755c64720cb7406"
         }
       },
+      "packages/kalareach/kimi-code-cli/0.1.0/plugin.json": {
+        "length": 1739,
+        "hashes": {
+          "sha256": "b89a8396106dec38cfa5622a0ceacff67e6741930261a216e729f935be47be48"
+        }
+      },
+      "packages/kalareach/opencode/0.1.0/README.md": {
+        "length": 1331,
+        "hashes": {
+          "sha256": "0ab58d24548200e9dc279716a20fa43539e9e9d260c37835a64f4d7f4cb7cd17"
+        }
+      },
+      "packages/kalareach/gemini-cli/0.1.0/README.md": {
+        "length": 1337,
+        "hashes": {
+          "sha256": "fde37bd4e247d93403374f157e6d11363920d119d01d1443af71c997229ad9e0"
+        }
+      },
+      "packages/kalareach/codex/0.2.0/fixtures/conformance.json": {
+        "length": 4961,
+        "hashes": {
+          "sha256": "c3d63e248eb922313d6ea5366713ee95d095497122f59a0491d42b00c1ab4f3b"
+        }
+      },
+      "packages/kalareach/gemini-cli/0.1.0/plugin.json": {
+        "length": 1723,
+        "hashes": {
+          "sha256": "3338638e5150e94c339a49a5f3b99aa4eaec4ef1f21d9599dd4f14ff2a628685"
+        }
+      },
+      "packages/kalareach/example-declarative/0.1.0/fixtures/visibility.json": {
+        "length": 1301,
+        "hashes": {
+          "sha256": "4f5b9b87257fd2edb479b34640edfe14b81f826a980e4ad6a42e7ef426120935"
+        }
+      },
       "packages/kalareach/claude-code/0.2.0/README.md": {
         "length": 9261,
         "hashes": {
           "sha256": "ce9f90a0608e0365b29d85e82f59e655c57ddf53367067bdeec747031d6c9d98"
+        }
+      },
+      "packages/kalareach/example-declarative/0.1.0/presentation.json": {
+        "length": 2523,
+        "hashes": {
+          "sha256": "7a73bc88d59a7343fcd910476055dff51a68263b618d97466addd0ff47a9903c"
+        }
+      },
+      "packages/kalareach/gemini-cli/0.1.0/presentation.json": {
+        "length": 461,
+        "hashes": {
+          "sha256": "abc2c016dddadff3ffb1088f32278bf87305339fd9f3311965e8c07c610eba6a"
+        }
+      },
+      "packages/kalareach/claude-code/0.2.0/fixtures/frames.json": {
+        "length": 3200,
+        "hashes": {
+          "sha256": "f4fcb981d2c36a0d0a0bec5f7b67f6a608fd50d9f7d9355511b7d2bf4602d231"
+        }
+      },
+      "packages/kalareach/claude-code/0.2.0/bridge/hooks.json": {
+        "length": 1398,
+        "hashes": {
+          "sha256": "bbf177109cbca2bdcbf995fcf06f9cc434df898c86c0272461de0c10e5baf727"
+        }
+      },
+      "packages/kalareach/qoder-cli/0.1.0/README.md": {
+        "length": 1332,
+        "hashes": {
+          "sha256": "60a9169f7aa4d3ab78bf05de81bcd4b67f135b5ceb20a613fd35cba94835df56"
+        }
+      },
+      "packages/kalareach/codex/0.2.0/connector.json": {
+        "length": 16074,
+        "hashes": {
+          "sha256": "e7d2d60fc8820caff2e70674ed4fd8552e097cb72cdd8bb50f23aecd9417aba2"
+        }
+      },
+      "packages/kalareach/claude-code/0.2.0/connector.json": {
+        "length": 2968,
+        "hashes": {
+          "sha256": "ef6b920d3a09dfba4c225930460ab6d985c836e1be022e7b7bcaeacfd3529d0d"
+        }
+      },
+      "index.json": {
+        "length": 13260,
+        "hashes": {
+          "sha256": "ff47f6cdb363226ed8d79a14f560a2dc0d4ce276af732293d844ef9538f8d75d"
         }
       },
       "packages/kalareach/example-declarative/0.1.0/README.md": {
@@ -191,10 +155,46 @@
           "sha256": "8696fa4d9de1f26d0b021aff9a30545d086a30fff8f6298ba7d84f13dbbfec8e"
         }
       },
-      "packages/kalareach/claude-code/0.2.0/bridge/hooks.json": {
-        "length": 1398,
+      "packages/kalareach/kimi-code-cli/0.1.0/presentation.json": {
+        "length": 464,
         "hashes": {
-          "sha256": "bbf177109cbca2bdcbf995fcf06f9cc434df898c86c0272461de0c10e5baf727"
+          "sha256": "52ac809d7c03f49477d931392f600790d88831f926b9abb158a7cf958f1292a9"
+        }
+      },
+      "packages/kalareach/claude-code/0.2.0/fixtures/conformance.json": {
+        "length": 4473,
+        "hashes": {
+          "sha256": "2e2ed8d83cff4d4298a18b7af805d9e4f3497f8e7843e957a7d9fae5f28748df"
+        }
+      },
+      "packages/kalareach/codex/0.2.0/presentation.json": {
+        "length": 3390,
+        "hashes": {
+          "sha256": "51c4a083904b315b7e3fd4839f3b7bde4d6e6f298f4fea0958e6fbf7e806ef12"
+        }
+      },
+      "packages/kalareach/kimi-code-cli/0.1.0/README.md": {
+        "length": 1347,
+        "hashes": {
+          "sha256": "acb194fcc130e3669c1cfd4b054dcd21ce5569b2b097c2bc2c7a60b8b2ce4799"
+        }
+      },
+      "packages/kalareach/codex/0.2.0/fixtures/frames.json": {
+        "length": 8408,
+        "hashes": {
+          "sha256": "98ffc875e1ec819c33ff87b064898e5e4f39c183b39eaa8142e5ab3d57f6c65c"
+        }
+      },
+      "packages/kalareach/opencode/0.1.0/plugin.json": {
+        "length": 1713,
+        "hashes": {
+          "sha256": "b5b26fc5b2d41c716e2592f602b02cc9fad026c34a52a4b7817853547e72e137"
+        }
+      },
+      "packages/kalareach/claude-code/0.2.0/bridge/plugin-manifest.json": {
+        "length": 326,
+        "hashes": {
+          "sha256": "1cb6238953bafc5e2872e8af3a430d94ca8452c11e51dc43946889f7268b126c"
         }
       }
     },
@@ -206,7 +206,7 @@
   "signatures": [
     {
       "keyid": "2152ec4631301271a650a5bdd302e1d9301e1ee39e2c7d82c6541fed76a8e3d2",
-      "sig": "49a1b75c7bf6e24473bb9e0e97d281ca9d570c2c1a5c9d8ff2bf9bc38f28e62a258c1849d808ea757d8825326c31a4b4097ba2e52fa906e3c88c395a5e8b9619a3c6ed55f34e90d5c9c9a85b16ea139e21b32d6230fffa8b0787dd5590c5c099e53ecacf3ae97765ff5b6037c64bc84acc718e1f48c536721b551e96c6b48baf79b075b175d6ed5c5b815fa0a41f4c7e077a9e398d3e79cb948240d3ecd8bbd841b63f2f2a5287e415a965256c920f48da34417b412f2fcf0f4d1076895b14155e1e55199e2a54e39507cb9ba02166cad7922ef55aa1ae26ae92cbb04c307c57e0fa43867ab4c165c15262ded6ddd500eb1997f42c1b27bb0f69dbc69f85bf1f89ac9109563cca48e228da3a43c3e8c163f84206d472aa60992420b46f0a43a5f106de7a92077af3d283f43ac26415b2103b21465b73bec9ca9479235d7dbf3fd22d40c6012e2d9a5b970251f54323056836d85e7342971240c1fe7e05bca8e92d938cbd2db60836e4b67f8dfca8790ea6ee41a0b1055055223d5020ffbe5474"
+      "sig": "0097aefc3d4931fec5a51c9a2de61016d69759c78305a90244d28a98692e18ebe79762745cd6f2401fe6d4d974d5ff901f55dcb197f0824d584475e21161245d234de22d08b1e431d39b89ff96478a02505673ceb34e07d8ad77934a19e28989be47d8ba25e4f00720b071c40b18a2bffe81c897b8e8c3cebc7f0c5e3ffbb3023ebd91d36b91a2159ddd13da10d64ec9a1e78d3a5500cc611398043e73bfc9b5ebe1f6951903cf2e54e9e934d9ecb0717309517f82e6e36b9d1e062a7c2a4a1ede7228c16f228e977422df17303b7dc7f1f5d929ac700e651662d84e03bf7d05db68a689b71e91a598da9313a36347f82335732af568b5ecd208bfb2fce3913a9eb145cf16f4cead3051313ce1cb3262dd5ecb7190d74914ee93117629cb078f7fec3377b38c41d59aa3284f63a16bc45539d3c00e291b3f57aa8a22a0f7b6dd2729ecce77d57b01ad6bbb64d16533bd3a9bc9b04142c29da79e52bc227a73abd35f49fbd0d3fba212945793099889111d36e110ebab2ca26a57f3c4722dce0c"
     }
   ]
 }
