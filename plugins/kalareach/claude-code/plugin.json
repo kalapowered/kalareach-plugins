@@ -61,8 +61,26 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "6ce1b3080b90f7d2b0fc5b1ac38393ea839e6210e052657bfc281f0ca113c665",
-      "size_bytes": "4085"
+      "digest": "17f12e61f1b922f0fe178b7f343c428dca8fe373401cdc67b2ec4796f5976139",
+      "size_bytes": "6055"
+    },
+    {
+      "role": "native_bridge",
+      "path": "bridge/hooks.json",
+      "digest": "77aec3242b1f454c8f4c5ab5c84bf4c0dfd9184825fb2afed377f9514b67cb48",
+      "size_bytes": "1268"
+    },
+    {
+      "role": "native_bridge",
+      "path": "bridge/mcp-servers.json",
+      "digest": "13e39e82aee3be2710c49a6f38f5558e20d18416a0a18e07b72f5dff9de1c4ea",
+      "size_bytes": "167"
+    },
+    {
+      "role": "native_bridge",
+      "path": "bridge/plugin-manifest.json",
+      "digest": "156ca59cece7f1f314b7d3310d1263af7653808be6db66f66af62b9fb7739289",
+      "size_bytes": "299"
     },
     {
       "role": "connector",
@@ -103,6 +121,10 @@
     {
       "capability": "approval.respond",
       "reason": "Answer the exact tool call Claude Code is waiting on, with the decision you chose"
+    },
+    {
+      "capability": "native_bridge.install",
+      "reason": "Register the forwarder Claude Code starts for its channel and its lifecycle and tool hooks"
     }
   ],
   "actions": [
@@ -213,5 +235,57 @@
     }
   ],
   "attachments": null,
-  "native_bridge": null
+  "native_bridge": {
+    "application": "Claude Code",
+    "application_range": ">=2.1.234, <3.0.0",
+    "install": [
+      {
+        "type": "install_file",
+        "source": "bridge/plugin-manifest.json",
+        "destination": "skills/kalareach-channels/.claude-plugin/plugin.json",
+        "digest": "156ca59cece7f1f314b7d3310d1263af7653808be6db66f66af62b9fb7739289"
+      },
+      {
+        "type": "install_file",
+        "source": "bridge/mcp-servers.json",
+        "destination": "skills/kalareach-channels/.mcp.json",
+        "digest": "13e39e82aee3be2710c49a6f38f5558e20d18416a0a18e07b72f5dff9de1c4ea"
+      },
+      {
+        "type": "install_file",
+        "source": "bridge/hooks.json",
+        "destination": "skills/kalareach-channels/hooks/hooks.json",
+        "digest": "77aec3242b1f454c8f4c5ab5c84bf4c0dfd9184825fb2afed377f9514b67cb48"
+      },
+      {
+        "type": "add_configuration_key",
+        "file": "settings.json",
+        "key": "enabledPlugins.kalareach-channels@skills-dir",
+        "value": "true"
+      }
+    ],
+    "remove": [
+      {
+        "type": "remove_configuration_key",
+        "file": "settings.json",
+        "key": "enabledPlugins.kalareach-channels@skills-dir"
+      },
+      {
+        "type": "remove_file",
+        "destination": "skills/kalareach-channels/hooks/hooks.json",
+        "digest": "77aec3242b1f454c8f4c5ab5c84bf4c0dfd9184825fb2afed377f9514b67cb48"
+      },
+      {
+        "type": "remove_file",
+        "destination": "skills/kalareach-channels/.mcp.json",
+        "digest": "13e39e82aee3be2710c49a6f38f5558e20d18416a0a18e07b72f5dff9de1c4ea"
+      },
+      {
+        "type": "remove_file",
+        "destination": "skills/kalareach-channels/.claude-plugin/plugin.json",
+        "digest": "156ca59cece7f1f314b7d3310d1263af7653808be6db66f66af62b9fb7739289"
+      }
+    ],
+    "grant_statement": "Installs three registration files under Claude Code's own directory and adds one settings key that enables them. Claude Code then starts the KalaReach forwarder itself, so the forwarder runs under Claude Code's own permissions and outside the KalaReach plugin sandbox, and it sees every lifecycle and tool event and every Channels tool approval this session produces. Removal takes the key back out and deletes exactly those three files, each only while it still holds the bytes that were installed."
+  }
 }

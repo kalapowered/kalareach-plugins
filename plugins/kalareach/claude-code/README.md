@@ -52,6 +52,37 @@ allowlist, and when the organisation's channel setting permits channels at all. 
 decided where Claude Code runs, not here. Until all three hold, the answer controls stay hidden and
 the approval is answered in the terminal.
 
+## The registration it installs
+
+Claude Code reads its channels and its hooks from files in its own directory, so the bridge is three
+declarative files and one settings key. Nothing here is a program, and nothing here carries protocol
+logic: each file names the core forwarder and the surface it should carry.
+
+| Installed | What it is |
+| --- | --- |
+| `skills/kalareach-channels/.claude-plugin/plugin.json` | The plugin manifest, declaring one channel bound to the server below |
+| `skills/kalareach-channels/.mcp.json` | The channel server: the core forwarder, started over standard streams |
+| `skills/kalareach-channels/hooks/hooks.json` | Five hook registrations, all of them on events that cannot block |
+
+The settings key is `enabledPlugins."kalareach-channels@skills-dir"`, set to `true`. The recipe adds
+that one key and leaves every other setting where it was.
+
+The hooks are registered on `SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolUseFailure` and
+`Notification`. None of those five can stop what Claude Code was about to do, whatever a handler
+returns, which is what makes the observation half observation. The forwarder writes the event to the
+worker and returns, so no hook holds the session open waiting for anybody.
+
+Removal takes the settings key out first, so Claude Code stops loading the registration, and then
+deletes the three files in the reverse of the order it wrote them. Each file is checked against the
+digest it was installed with, and one that somebody has since edited is reported and left alone
+rather than deleted.
+
+The forwarder runs under Claude Code's own permissions, outside the KalaReach plugin sandbox, because
+Claude Code is the process that starts it. The installation grant says exactly that, and it says what
+the forwarder can see. It also authenticates: the registration is bound to the launch KalaReach made
+and to the private exchange the worker opened, not to a session identifier taken from the
+environment.
+
 ## What it asks for
 
 Five capabilities. Matching, declarative presentation and broker semantic events are the reading
