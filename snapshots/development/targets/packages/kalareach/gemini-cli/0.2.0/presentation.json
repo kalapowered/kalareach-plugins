@@ -7,7 +7,7 @@
       "revision": "1",
       "body": {
         "kind": "markdown",
-        "source": "Gemini CLI runs in its own terminal, and KalaReach keeps it there. Hooks report what the session is doing, and the terminal carries everything the upstream has no typed path for. The agent protocol is a mode you select, and selecting it starts a separate execution rather than taking over the one in the terminal."
+        "source": "Gemini CLI runs in its own terminal, and KalaReach keeps it there. The terminal carries everything the upstream has no typed path for. The agent protocol is a mode you select, and selecting it starts a separate execution rather than taking over the one in the terminal."
       }
     },
     {

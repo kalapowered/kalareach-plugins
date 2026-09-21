@@ -9,7 +9,7 @@
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "378c9e2178093e2b711d0197f2550c363b4cdb87"
+    "revision": "ecb62a456078d55433ae357b62c7445106632b1d"
   },
   "match_rules": [
     {
@@ -85,8 +85,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "aa892ec30162daffcf7b181adb83124e07c8cb5f18710deb2c6331f00107125e",
-      "size_bytes": "5632"
+      "digest": "20dc5321f120ea24d2a32bd2a4f83fb02dc79d7fe9a13e3a695dfec86319b60d",
+      "size_bytes": "5687"
     },
     {
       "role": "connector",

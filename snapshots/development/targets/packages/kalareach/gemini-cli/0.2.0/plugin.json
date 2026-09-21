@@ -9,7 +9,7 @@
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "149ff4f44b9704e2e4b6c8374a776436c3281f89"
+    "revision": "ecb62a456078d55433ae357b62c7445106632b1d"
   },
   "match_rules": [
     {
@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "87368337d2ee8737416a45faebd126070bb43c4e9b20084ee5cba01bc3e4dc29",
-      "size_bytes": "5129"
+      "digest": "3daece1926560cf71a8b219a8ab9ddeef26f57bc8b985ad9925db950c3391a98",
+      "size_bytes": "5219"
     },
     {
       "role": "connector",
@@ -79,14 +79,14 @@
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "5b84c1ba4d350f668338162f80d2376ef2efac41df99d931c62ba051bdc8beed",
-      "size_bytes": "8183"
+      "digest": "6a61124ffaa8c24d237e1d769c8682407c77ac5fa9375b59236eb7d154caff11",
+      "size_bytes": "9548"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "e488724ad259c1e0074e87292a0eb1b2d37a9f35606421224766333b33d0f1a5",
-      "size_bytes": "4100"
+      "digest": "f64bc2273fc628047e511f466d185f091a25855035ec38d60f60ba8cf54d67a6",
+      "size_bytes": "4056"
     }
   ],
   "capabilities": [

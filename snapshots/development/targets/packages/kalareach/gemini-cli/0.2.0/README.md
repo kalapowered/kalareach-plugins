@@ -71,10 +71,11 @@ this package's own predicates against each one. They are display conformance and
 runner reads no agent frame. One case is an installed version this table is not qualified against,
 where both controls disappear and the terminal path is what remains.
 
-`fixtures/frames.json` is the other half: eight frames, each marked with where it came from. Three
+`fixtures/frames.json` is the other half: eight frames, each marked with where it came from. Two
 are the exact requests that were sent to the pinned build over its standard streams and answered,
-one is an update that build sent back with its command list shortened, and four are written from
-names present in that build. Each carries the method the table should find, the route and class it
+two are captures with one detail replaced, the working directory in the request that creates an
+execution and the command list in the update that build sent back, and four are written from names
+present in that build. Each carries the method the table should find, the route and class it
 should reach, the identifier the table's path should extract with its JSON type, and the members its
 own situation is about. The test `every_pinned_frame_is_read_the_way_the_table_says` under
 `cargo test` reads every one of them through this package's own table.
