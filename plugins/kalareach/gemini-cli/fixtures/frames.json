@@ -231,7 +231,7 @@
       "version": "0.60.0",
       "distribution": "npm @google/gemini-cli",
       "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
-      "note": "The digest is of the entry script npm puts on the path. That script imports the chunks this qualification also read, which it does not cover."
+      "note": "The digest is of the entry script npm puts on the path. The chunks it imports, and the vendor documents beside them, are pinned under inspected."
     },
     "handshake": {
       "protocolVersion": 1,
@@ -247,6 +247,33 @@
       },
       "acp_flag": "--acp; --experimental-acp is accepted and the build marks it deprecated"
     },
-    "read_on": "2026-09-20"
+    "read_on": "2026-09-20",
+    "inspected": [
+      {
+        "path": "node_modules/@google/gemini-cli/bundle/gemini-7INSUCPB.js",
+        "sha256": "161262ce223dc85a784bba05cd618e9ad3ea7065da557f417110dbba98b37052",
+        "note": "One of the three bundle chunks that carry every reverse agent-protocol method name this table routes"
+      },
+      {
+        "path": "node_modules/@google/gemini-cli/bundle/gemini-LUNNHKPJ.js",
+        "sha256": "98beff1e92ab73a131632832e5785ef761e2dca9257cb5a0bc8d606cfcd11ab2",
+        "note": "The second of those three chunks"
+      },
+      {
+        "path": "node_modules/@google/gemini-cli/bundle/gemini-ZTU7EMI3.js",
+        "sha256": "b6498ba094610cdf303598bce0ed2c116aedcf0ab9d26d691be5dbb7cd8bf6ef",
+        "note": "The third of those three chunks"
+      },
+      {
+        "path": "node_modules/@google/gemini-cli/bundle/docs/hooks/reference.md",
+        "sha256": "103bab9f0f8fd7251b97d06c6b7c4e52752427bf23cbacd1379f2aecaaf26e4c",
+        "note": "The vendor hook reference shipped with this build, which names the hook events and the output members"
+      },
+      {
+        "path": "node_modules/@google/gemini-cli/bundle/docs/cli/acp-mode.md",
+        "sha256": "812af1001c110f474a624c3026c31e66519ca95c251d1f79679d8ebd56edd779",
+        "note": "The vendor document for the agent-protocol mode shipped with this build"
+      }
+    ]
   }
 }

@@ -31,7 +31,12 @@ same bytes:
 | Claude Code 2.1.278 executable | macOS, arm64 | `bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6` |
 | OpenCode 1.18.31, the native executable npm installs at `opencode-darwin-arm64/bin/opencode` | macOS, arm64 | `16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198` |
 | OpenCode 1.18.31, the OpenAPI document that build serves at `/doc` | | `46db986090aae41846cd6dbe16225a1d883f0bbcb4c48814008d3f6ce140aa5c` |
-| Gemini CLI 0.60.0, the entry script npm puts on the path at `@google/gemini-cli/bundle/gemini.js`. It imports the chunks this qualification also read, which the digest does not cover | any | `fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2` |
+| Gemini CLI 0.60.0, the entry script npm puts on the path at `@google/gemini-cli/bundle/gemini.js`. It imports the chunks pinned in the three rows below | any | `fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2` |
+| Gemini CLI 0.60.0, `bundle/gemini-7INSUCPB.js`, one of the three chunks that carry every reverse agent-protocol method name the table routes | any | `161262ce223dc85a784bba05cd618e9ad3ea7065da557f417110dbba98b37052` |
+| Gemini CLI 0.60.0, `bundle/gemini-LUNNHKPJ.js`, the second of those chunks | any | `98beff1e92ab73a131632832e5785ef761e2dca9257cb5a0bc8d606cfcd11ab2` |
+| Gemini CLI 0.60.0, `bundle/gemini-ZTU7EMI3.js`, the third of those chunks | any | `b6498ba094610cdf303598bce0ed2c116aedcf0ab9d26d691be5dbb7cd8bf6ef` |
+| Gemini CLI 0.60.0, `bundle/docs/hooks/reference.md`, the hook reference the vendor ships with that build | | `103bab9f0f8fd7251b97d06c6b7c4e52752427bf23cbacd1379f2aecaaf26e4c` |
+| Gemini CLI 0.60.0, `bundle/docs/cli/acp-mode.md`, the agent-protocol document the vendor ships with that build | | `812af1001c110f474a624c3026c31e66519ca95c251d1f79679d8ebd56edd779` |
 | Kimi Code CLI 2.0.2 executable at `~/.kimi-code/bin/kimi` | macOS, arm64 | `c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11` |
 | Qoder CLI 1.1.59 executable at `~/.qoder/bin/qodercli/qodercli-1.1.59` | macOS, arm64 | `c1b372d07083b98a2708ff23d4d462389fbf2bccad0d1317bb2970685f47c103` |
 
@@ -472,7 +477,10 @@ the method does, recorded as evidence in the table itself, and not exercised aga
 The pinned build's hook event names are `BeforeTool`, `AfterTool`, `BeforeAgent`, `AfterAgent`,
 `Notification`, `SessionStart`, `SessionEnd`, `PreCompress`, `BeforeModel`, `AfterModel` and
 `BeforeToolSelection`. They are configured under a `hooks` object in the settings file, keyed by
-event name, each value an array of hook definitions with a command. Status: binary check of 0.60.0.
+event name, each value an array of hook definitions with a command. Source: the hook reference the
+vendor ships with that build at `bundle/docs/hooks/reference.md`, pinned by digest above and read
+2026-09-20, beside the names in the build's own chunks. Status: binary check of 0.60.0 and a
+document check of the document that build carries.
 
 A hook's output is read. The build's own hook-output type carries `continue`, `stopReason`,
 `suppressOutput`, `systemMessage`, `decision`, `reason` and `hookSpecificOutput`, and it treats
@@ -492,8 +500,11 @@ Status: binary check.
 ### What is not qualified here
 
 Agent-protocol mode creates its own execution. Nothing here attaches it to a conversation already
-running in a terminal, and the published documentation establishes no way to do so. Status: the
-mode's own behaviour is a binary check; the absence of an attachment API is a document check.
+running in a terminal. The vendor document that build ships at `bundle/docs/cli/acp-mode.md` (pinned
+by digest above, read 2026-09-20) describes the mode as a client starting the agent over standard
+streams for programmatic control, and names no way to join a session already running in a terminal.
+Status: the mode's own behaviour is a binary check; the absence is a document check of that one
+document, which is weaker than a test, and nothing here tested it.
 
 Reverse filesystem and terminal requests must run in the selected host environment with resources
 the broker scopes. The names are a binary check; the behaviour needs a live turn and is not observed
@@ -656,8 +667,11 @@ written and none is declared.
 
 ### What is not qualified here
 
-Agent-protocol mode starts a subprocess with its own execution. The published documentation
-establishes no attachment API for a terminal that is already running, so this package offers none.
+Agent-protocol mode starts a subprocess with its own execution. Nothing in the installed build
+offered a way to join a terminal that is already running, and no vendor document was read for this
+package, so this package offers none. Status: the mode's own behaviour is a binary check; the
+absence of an attachment path is unverified and recorded as a boundary rather than as a document
+check.
 
 The vendor's remote-control feature runs through the vendor's own application and account. It is not
 evidence that KalaReach may reuse that service protocol, and nothing in this package depends on it.
