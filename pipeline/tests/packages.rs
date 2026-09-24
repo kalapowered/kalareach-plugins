@@ -1021,9 +1021,9 @@ struct OwnFamilyFrame {
 /// The names that tell two API families apart from the side of the family that publishes them.
 ///
 /// OpenCode's earlier family publishes one event name the shared-server family does not, and the
-/// shared-server family publishes none the earlier one lacks. So the earlier family's package has no
-/// name it could refuse, and what tells the families apart there is its own exclusive name: its table
-/// reads it as the event it is, and the shared-server package refuses the same name outright.
+/// shared-server family publishes none the earlier one lacks. So the earlier family's package has
+/// no name it could refuse, and what tells the families apart there is its own exclusive name: its
+/// table reads it as the event it is, and the shared-server package refuses the same name outright.
 const OWN_FAMILY_FRAMES: &[OwnFamilyFrame] = &[OwnFamilyFrame {
     plugin: "kalareach/opencode-attach",
     situation: "an event only this API family publishes",
@@ -1323,87 +1323,115 @@ fn the_kimi_distributions_share_an_agent_name_and_differ_in_what_their_handshake
     }
 }
 
-/// Every agent section 12 bundles, and the plugin that carries its adapter.
+/// Every agent section 12 bundles, and the plugins that carry its adapter, one for each profile.
 ///
 /// This reads manifests. It says that no adapter was dropped, that no two adapters claim one
-/// protocol, and that nothing a control invokes reaches past what that package's own qualified
-/// table routes. That a host actually launches the terminal route, and that an agent protocol is
-/// entered only when somebody selects it, are the host's and are not settled here.
-const BUNDLED_AGENTS: &[&str] = &[
-    "kalareach/claude-code",
-    "kalareach/codex",
-    "kalareach/gemini-cli",
-    "kalareach/kimi-code-cli",
-    "kalareach/opencode",
-    "kalareach/qoder-cli",
+/// protocol, that every connector package in the repository is the profile of one of these agents,
+/// and that nothing a control invokes reaches past what that package's own qualified table routes.
+/// An agent whose vendor ships two profiles that cannot share a table has a package for each, and
+/// neither is left out. That a host actually launches the terminal route, and that an agent
+/// protocol is entered only when somebody selects it, are the host's and are not settled here.
+const BUNDLED_AGENTS: &[(&str, &[&str])] = &[
+    ("Claude Code", &["kalareach/claude-code"]),
+    ("Codex", &["kalareach/codex"]),
+    ("Gemini CLI", &["kalareach/gemini-cli"]),
+    (
+        "Kimi Code CLI",
+        &["kalareach/kimi-code-cli", "kalareach/kimi-cli"],
+    ),
+    (
+        "OpenCode",
+        &["kalareach/opencode", "kalareach/opencode-attach"],
+    ),
+    ("Qoder CLI", &["kalareach/qoder-cli"]),
 ];
 
 #[test]
 fn every_bundled_adapter_is_present_and_declares_no_surface_of_its_own() {
     let loaded = packages::load(&root()).expect("the repository loads");
+
+    // A connector package that is no bundled agent's profile would pass every check below by
+    // never being read, so the list has to name all of them.
+    let profiles: BTreeSet<&str> = BUNDLED_AGENTS
+        .iter()
+        .flat_map(|(_, plugins)| plugins.iter().copied())
+        .collect();
+    for package in &loaded.repository.packages {
+        let plugin = package.package.manifest.plugin_id().to_string();
+        assert!(
+            package.package.connector.is_none() || profiles.contains(plugin.as_str()),
+            "{plugin} carries a connector table and is the profile of no bundled agent"
+        );
+    }
+
     let mut protocols: BTreeMap<String, &str> = BTreeMap::new();
-    for agent in BUNDLED_AGENTS {
-        // A missing upstream API is not a reason to drop an adapter, so every bundled agent has
-        // one in the repository whatever its protocol turned out to support.
-        let package = loaded
-            .repository
-            .packages
-            .iter()
-            .find(|package| package.package.manifest.plugin_id().as_str() == *agent)
-            .unwrap_or_else(|| panic!("{agent} has no package, so its adapter was dropped"));
-        let manifest = &package.package.manifest;
+    for (agent_name, plugins) in BUNDLED_AGENTS {
+        for agent in *plugins {
+            // A missing upstream API is not a reason to drop an adapter, so every profile of
+            // every bundled agent has a package in the repository whatever its protocol turned out
+            // to support.
+            let package = loaded
+                .repository
+                .packages
+                .iter()
+                .find(|package| package.package.manifest.plugin_id().as_str() == *agent)
+                .unwrap_or_else(|| {
+                    panic!("{agent} has no package, so an adapter for {agent_name} was dropped")
+                });
+            let manifest = &package.package.manifest;
 
-        // Each adapter reads one vendor's own protocol. Two adapters sharing a pin would be one
-        // control surface wearing two names, which is what a universal typed surface looks like
-        // from here.
-        if let Some(connector) = &package.package.connector {
-            let name = connector.protocol.name.clone();
-            if let Some(other) = protocols.insert(name.clone(), agent) {
-                panic!("{agent} and {other} both claim the protocol {name}");
+            // Each adapter reads one vendor's own protocol. Two adapters sharing a pin would be
+            // one control surface wearing two names, which is what a universal typed surface looks
+            // like from here.
+            if let Some(connector) = &package.package.connector {
+                let name = connector.protocol.name.clone();
+                if let Some(other) = protocols.insert(name.clone(), agent) {
+                    panic!("{agent} and {other} both claim the protocol {name}");
+                }
             }
-        }
 
-        // Automatic native-composer insertion needs the bridge that makes it safe. Without one, a
-        // package may declare a typed or a manual path, and not that one.
-        if let Some(attachments) = &manifest.attachments.0 {
-            assert!(
-                attachments.insertion != AttachmentInsertion::NativeComposer
-                    || manifest.native_bridge.0.is_some(),
-                "{agent} claims native-composer insertion without a bridge"
-            );
-        }
+            // Automatic native-composer insertion needs the bridge that makes it safe. Without
+            // one, a package may declare a typed or a manual path, and not that one.
+            if let Some(attachments) = &manifest.attachments.0 {
+                assert!(
+                    attachments.insertion != AttachmentInsertion::NativeComposer
+                        || manifest.native_bridge.0.is_some(),
+                    "{agent} claims native-composer insertion without a bridge"
+                );
+            }
 
-        for action in &manifest.actions {
-            // Nothing a control invokes writes into the terminal. The terminal stays the person's,
-            // operated through the input grant they already hold.
-            assert_ne!(
-                action.effect,
-                EffectClass::TerminalInput,
-                "{agent}: the action {} types into the native terminal",
-                action.id
-            );
-            match &action.implementation {
-                ActionImplementation::Presentation {} | ActionImplementation::UpstreamCancel {} => {
+            for action in &manifest.actions {
+                // Nothing a control invokes writes into the terminal. The terminal stays the
+                // person's, operated through the input grant they already hold.
+                assert_ne!(
+                    action.effect,
+                    EffectClass::TerminalInput,
+                    "{agent}: the action {} types into the native terminal",
+                    action.id
+                );
+                match &action.implementation {
+                    ActionImplementation::Presentation {}
+                    | ActionImplementation::UpstreamCancel {} => {}
+                    ActionImplementation::UpstreamMethod { method, .. } => {
+                        // An upstream method is one this package's own qualified table routes. A
+                        // method invented in a manifest would be a typed surface nobody qualified.
+                        let connector = package
+                            .package
+                            .connector
+                            .as_ref()
+                            .unwrap_or_else(|| panic!("{agent} sends {method} with no table"));
+                        assert!(
+                            connector.routes.iter().any(|route| &route.method == method),
+                            "{agent}: the action {} sends {method}, which its own table does not route",
+                            action.id
+                        );
+                    }
+                    other => panic!(
+                        "{agent}: the action {} is implemented as {}, which is not a declarative form this repository reviewed",
+                        action.id,
+                        other.kind()
+                    ),
                 }
-                ActionImplementation::UpstreamMethod { method, .. } => {
-                    // An upstream method is one this package's own qualified table routes. A
-                    // method invented in a manifest would be a typed surface nobody qualified.
-                    let connector = package
-                        .package
-                        .connector
-                        .as_ref()
-                        .unwrap_or_else(|| panic!("{agent} sends {method} with no table"));
-                    assert!(
-                        connector.routes.iter().any(|route| &route.method == method),
-                        "{agent}: the action {} sends {method}, which its own table does not route",
-                        action.id
-                    );
-                }
-                other => panic!(
-                    "{agent}: the action {} is implemented as {}, which is not a declarative form this repository reviewed",
-                    action.id,
-                    other.kind()
-                ),
             }
         }
     }
