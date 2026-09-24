@@ -111,6 +111,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             registries: &[("npm", "@anthropic-ai/claude-code")],
         },
         file_stems: &["claude"],
+        required_rules: &[],
         provenance: &[],
         frames: &[
             (
@@ -146,6 +147,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             registries: &[("npm", "@openai/codex")],
         },
         file_stems: &["codex"],
+        required_rules: &[],
         provenance: &[],
         frames: &[
             ("a method the table does not list", "thread/name/set"),
@@ -189,6 +191,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             registries: &[("npm", "@google/gemini-cli")],
         },
         file_stems: &["gemini"],
+        required_rules: &[],
         provenance: &[
             (
                 "a file read in the agent's own environment",
@@ -248,6 +251,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             registries: &[("py_pi", "kimi-cli")],
         },
         file_stems: &["kimi", "kimi-cli"],
+        required_rules: &[],
         provenance: &[
             (
                 "a file read in the agent's own environment",
@@ -322,6 +326,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             path_suffix: &[".kimi-code", "bin"],
         },
         file_stems: &["kimi"],
+        required_rules: &[],
         provenance: &[
             (
                 "a file read in the agent's own environment",
@@ -381,6 +386,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             registries: &[("npm", "opencode-ai")],
         },
         file_stems: &["opencode"],
+        required_rules: &[],
         provenance: &[
             (
                 "a permission the session is waiting on",
@@ -449,6 +455,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             registries: &[("npm", "opencode-ai")],
         },
         file_stems: &["opencode"],
+        required_rules: &[],
         provenance: &[],
         frames: &[
             ("a permission the session is waiting on", "permission.asked"),
@@ -493,6 +500,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             path_suffix: &[".qoder", "entry"],
         },
         file_stems: &["qoder", "qodercli", "qodercli-1.1.59"],
+        required_rules: &[("qodercli-1.1.59", &[".qoder", "bin", "qodercli"])],
         provenance: &[
             (
                 "a file read in the agent's own environment",
@@ -556,6 +564,10 @@ struct BundledConnector {
     /// the release number in the installed file name is recognised by that whole name, so a
     /// version appears here for the release its package is qualified against.
     file_stems: &'static [&'static str],
+    /// Rules the package has to carry, by file stem and path suffix, because its qualification
+    /// depends on them. `file_stems` bounds what a rule may recognise; this says which rules must
+    /// be there, so a package that lost one fails rather than passing on the rules that remain.
+    required_rules: &'static [(&'static str, &'static [&'static str])],
     /// Every frame the corpus has to carry, as a situation and a wire name, in sorted order.
     frames: &'static [(&'static str, &'static str)],
     /// Where each frame came from, as a situation and a provenance, in sorted order. Provenance
@@ -679,6 +691,16 @@ fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
                     exact += usize::from(rule.confidence == MatchConfidence::Exact);
                 }
             }
+        }
+        for (file_stem, path_suffix) in entry.required_rules {
+            assert!(
+                manifest.match_rules.iter().any(|rule| {
+                    rule.executable.file_stem == *file_stem
+                        && rule.executable.path_suffix == *path_suffix
+                }),
+                "{plugin} carries no rule for {file_stem} under {}",
+                path_suffix.join("/")
+            );
         }
         // Whatever else it carries, a bundled connector keeps one rule that recognises its
         // application wherever it was installed. A package whose every rule required a directory
