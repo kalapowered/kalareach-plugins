@@ -242,6 +242,80 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         ],
     },
     BundledConnector {
+        plugin: "kalareach/kimi-cli",
+        protocol: "kimi-cli-acp",
+        identity: ApplicationIdentity::Distribution {
+            registries: &[("py_pi", "kimi-cli")],
+        },
+        file_stems: &["kimi", "kimi-cli"],
+        provenance: &[
+            (
+                "a file read in the agent's own environment",
+                Provenance::Written,
+            ),
+            (
+                "a method only the other distribution implements",
+                Provenance::Captured,
+            ),
+            ("a method the table does not route", Provenance::Captured),
+            (
+                "a method this build does not implement",
+                Provenance::AbridgedCapture,
+            ),
+            (
+                "a process started in the agent's own environment",
+                Provenance::Written,
+            ),
+            ("a tool call the agent is waiting on", Provenance::Written),
+            ("creating an execution", Provenance::Captured),
+            ("ending the turn in flight", Provenance::Captured),
+            ("the agent's own update stream", Provenance::Written),
+            (
+                "the capability negotiation that opens a connection",
+                Provenance::Captured,
+            ),
+        ],
+        frames: &[
+            (
+                "a file read in the agent's own environment",
+                "fs/read_text_file",
+            ),
+            (
+                "a method only the other distribution implements",
+                "session/delete",
+            ),
+            (
+                "a method the table does not route",
+                "kalareach/not-a-method",
+            ),
+            ("a method this build does not implement", "session/fork"),
+            (
+                "a process started in the agent's own environment",
+                "terminal/create",
+            ),
+            (
+                "a tool call the agent is waiting on",
+                "session/request_permission",
+            ),
+            ("creating an execution", "session/new"),
+            ("ending the turn in flight", "session/cancel"),
+            ("the agent's own update stream", "session/update"),
+            (
+                "the capability negotiation that opens a connection",
+                "initialize",
+            ),
+        ],
+        required_members: &[
+            ("fs/read_text_file", "params.path"),
+            ("session/cancel", "params.sessionId"),
+            ("session/fork", "params.sessionId"),
+            ("session/new", "params.cwd"),
+            ("session/request_permission", "params.toolCall.toolCallId"),
+            ("session/update", "params.update.sessionUpdate"),
+            ("terminal/create", "params.command"),
+        ],
+    },
+    BundledConnector {
         plugin: "kalareach/kimi-code-cli",
         protocol: "kimi-code-cli-acp",
         identity: ApplicationIdentity::VendorInstaller {
@@ -1140,6 +1214,113 @@ fn a_name_only_one_api_family_publishes_is_read_by_its_own_table_and_refused_by_
         );
     }
     assert_eq!(checked, OWN_FAMILY_FRAMES.len());
+}
+
+/// The two Kimi distributions, each by the package that carries its profile.
+const KIMI_DISTRIBUTIONS: [&str; 2] = ["kalareach/kimi-cli", "kalareach/kimi-code-cli"];
+
+/// The session capabilities an agent-protocol handshake advertises that each name one method.
+///
+/// `additionalDirectories` is advertised too, and it widens what `session/new` accepts rather than
+/// naming a method of its own, so it is not here.
+const SESSION_OPERATIONS: &[(&str, &str)] = &[
+    ("close", "session/close"),
+    ("delete", "session/delete"),
+    ("fork", "session/fork"),
+    ("list", "session/list"),
+    ("resume", "session/resume"),
+];
+
+/// The handshake answer a package pins under `evidence.handshake` in its frame corpus.
+#[derive(serde::Deserialize)]
+struct PinnedHandshake {
+    #[serde(rename = "agentInfo")]
+    agent_info: PinnedAgent,
+    #[serde(rename = "sessionCapabilities")]
+    session_capabilities: BTreeSet<String>,
+}
+
+#[derive(serde::Deserialize)]
+struct PinnedAgent {
+    name: String,
+    version: String,
+}
+
+#[test]
+fn the_kimi_distributions_share_an_agent_name_and_differ_in_what_their_handshake_advertises() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let pinned: Vec<_> = KIMI_DISTRIBUTIONS
+        .iter()
+        .map(|plugin| {
+            let package = loaded
+                .repository
+                .packages
+                .iter()
+                .find(|package| package.package.manifest.plugin_id().as_str() == *plugin)
+                .unwrap_or_else(|| panic!("{plugin} is not in the repository"));
+            let connector = package
+                .package
+                .connector
+                .as_ref()
+                .unwrap_or_else(|| panic!("{plugin} carries no connector table"));
+            let corpus: serde_json::Value =
+                kalareach_catalogue::read_json(&package.directory.join("fixtures/frames.json"))
+                    .unwrap_or_else(|error| panic!("{plugin}: {error}"));
+            let handshake: PinnedHandshake =
+                serde_json::from_value(corpus["evidence"]["handshake"].clone())
+                    .unwrap_or_else(|error| panic!("{plugin} pins no handshake: {error}"));
+            (*plugin, connector, handshake)
+        })
+        .collect();
+    let [(one, _, first), (other, _, second)] = &pinned[..] else {
+        unreachable!("two distributions")
+    };
+
+    // Both builds call themselves the same agent, so a profile chosen by that name would be
+    // chosen for either of them. The name is pinned as equal so nobody starts relying on it.
+    assert_eq!(
+        first.agent_info.name, second.agent_info.name,
+        "{one} and {other} now report different agent names; the profiles can be told apart by name"
+    );
+    assert_ne!(
+        first.agent_info.version, second.agent_info.version,
+        "{one} and {other} pin the same version"
+    );
+    assert_ne!(
+        first.session_capabilities, second.session_capabilities,
+        "{one} and {other} advertise the same session operations"
+    );
+
+    for (plugin, connector, handshake) in &pinned {
+        // The handshake a package pins is the one from the build its table was tested against.
+        assert_eq!(
+            handshake.agent_info.version,
+            connector.protocol.tested_version.to_string(),
+            "{plugin}: the pinned handshake came from another version"
+        );
+        // A table routes the session operations its own build advertises, and no other, except
+        // to refuse one: a table that claimed an operation the build does not offer would be
+        // describing the other distribution.
+        for (capability, wire) in SESSION_OPERATIONS {
+            let class = connector.route_for_wire_name(wire).map(|route| {
+                serde_json::to_value(connector.classify(&route.method))
+                    .ok()
+                    .and_then(|value| value.as_str().map(str::to_owned))
+            });
+            if handshake.session_capabilities.contains(*capability) {
+                assert!(
+                    matches!(&class, Some(Some(class)) if class != "unsupported"),
+                    "{plugin}: the build advertises {capability} and the table does not route {wire}"
+                );
+            } else {
+                assert!(
+                    matches!(&class, None)
+                        || matches!(&class, Some(Some(class)) if class == "unsupported"),
+                    "{plugin}: the build does not advertise {capability} and the table routes {wire}"
+                );
+            }
+        }
+    }
 }
 
 /// Every agent section 12 bundles, and the plugin that carries its adapter.
