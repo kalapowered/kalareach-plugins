@@ -704,9 +704,11 @@ qualification, and `~/.qoder` was unchanged before and after.
 The event stream meets it, so the package ships no native bridge for that leg.
 
 `GET /event` is a server-sent event stream whose every message is one JSON document with exactly
-three members, `id`, `type` and `properties`, all of them required, and whose `id` matches `^evt_`.
-That gives the table a framing and a method name at `type`. The identifier at `id` is the durable
-event identifier the stream orders by; nothing travels host to upstream on this leg, so there is no
+three members, `id`, `type` and `properties`, all of them required. `id` is a string, and every
+variant but `server.instance.disposed` requires it to match `^evt_`; that one requires a string and
+nothing more, so an identifier without the prefix is still a valid event of this family. That gives
+the table a framing and a method name at `type`. The identifier at `id` is the durable event
+identifier the stream orders by; nothing travels host to upstream on this leg, so there is no
 request here for a response to answer, and the correlation the manifest requires repeats the same
 path. That is the whole of what correlation means here. The route also takes optional `directory`
 and `workspace` query parameters, which the document names without describing; choosing them is the
@@ -799,12 +801,14 @@ maintained and name the kimi.com distribution as its replacement. Source:
 `https://github.com/MoonshotAI/kimi-cli` and its changelog, read 2026-09-24. Status: document check.
 
 The final release, 1.52.0, carries no agent protocol. Started with no arguments, its entry point
-fetches the kimi.com install script, falls back to a copy it carries, and runs it without asking;
-given `--version` it prints the version and a deprecation notice; given anything else it prints the
-notice alone. That was read from the 1.52.0 wheel, pinned by digest above, which was not installed
-or run. Status: document check of the published wheel. The practical consequence is outside this
-package: a host that starts a 1.52.0 installation on the terminal route with no arguments runs the
-kimi.com installer, whatever profile it selected.
+takes an install command from the migration metadata it fetches from the vendor, from a cached copy
+of that metadata, or from a built-in default that downloads the kimi.com installer with `curl` and
+pipes it to a shell, and runs that command without asking; given `--version` it prints the version
+and a deprecation notice; given anything else it prints the notice alone. That was read from the
+1.52.0 wheel, pinned by digest above, which was not installed or run. Status: document check of the
+published wheel. The practical consequence is outside this package: a host that starts a 1.52.0
+installation on the terminal route with no arguments runs that install command, whatever profile it
+selected.
 
 1.51.0 is the newest release that runs the agent itself, so it is the one pinned. The Python sources
 of 1.50.0 differ from it only in the build identifier, which was read from both wheels; 1.50.0 was
@@ -854,8 +858,10 @@ The agent protocol meets it, so this package ships no native bridge: JSON-RPC 2.
 process's standard streams, one document per line, identifiers at `id`, methods at `method`,
 responses matched by repeating the `id`. Status: binary check by sending requests to that build.
 
-The `--acp` flag, which the build's own help marks deprecated, answers every request with invalid
-params and a message naming the `acp` subcommand in its place. Status: binary check.
+The `--acp` flag, which the build's own help marks deprecated, answered `initialize` with invalid
+params and a message naming the `acp` subcommand in its place, and a name nobody implements with
+method not found. Its source raises the same error from every agent-protocol method it has. Status:
+binary check of the two answers; the rest is read from the installed source.
 
 ### Method classification
 
