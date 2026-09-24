@@ -369,6 +369,50 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         ],
     },
     BundledConnector {
+        plugin: "kalareach/opencode-attach",
+        protocol: "opencode-server-events",
+        identity: ApplicationIdentity::Distribution {
+            registries: &[("npm", "opencode-ai")],
+        },
+        file_stems: &["opencode"],
+        provenance: &[],
+        frames: &[
+            ("a permission the session is waiting on", "permission.asked"),
+            ("a running turn's text", "message.part.delta"),
+            (
+                "a terminal command this connector refuses",
+                "tui.command.execute",
+            ),
+            (
+                "an envelope from the shared-server API family",
+                "permission.v2.asked",
+            ),
+            (
+                "an event only this API family publishes",
+                "server.instance.disposed",
+            ),
+            (
+                "composer insertion this connector refuses",
+                "tui.prompt.append",
+            ),
+            ("the answer that resolved it", "permission.replied"),
+            ("the server's global scope disposed", "global.disposed"),
+            (
+                "the terminal moving to another session",
+                "tui.session.select",
+            ),
+        ],
+        required_members: &[
+            ("message.part.delta", "properties.sessionID"),
+            ("permission.asked", "properties.id"),
+            ("permission.replied", "properties.requestID"),
+            ("server.instance.disposed", "properties.directory"),
+            ("tui.command.execute", "properties.command"),
+            ("tui.prompt.append", "properties.text"),
+            ("tui.session.select", "properties.sessionID"),
+        ],
+    },
+    BundledConnector {
         plugin: "kalareach/qoder-cli",
         protocol: "qoder-cli-acp",
         identity: ApplicationIdentity::VendorInstaller {
@@ -880,7 +924,38 @@ const SECOND_FAMILY_FRAMES: &[SecondFamilyFrame] = &[
         class: "unsupported",
         refused_by_name: true,
     },
+    SecondFamilyFrame {
+        plugin: "kalareach/opencode-attach",
+        situation: "an envelope from the shared-server API family",
+        absent_member: "properties",
+        payload_member: "data",
+        class: "observation",
+        refused_by_name: false,
+    },
 ];
+
+/// A name only one API family publishes, pinned in the corpus of the package for that family.
+struct OwnFamilyFrame {
+    plugin: &'static str,
+    situation: &'static str,
+    /// The member this family puts its payload under, which the frame has to carry.
+    payload_member: &'static str,
+    /// The package for the other family, whose table has to refuse this name.
+    other_plugin: &'static str,
+}
+
+/// The names that tell two API families apart from the side of the family that publishes them.
+///
+/// OpenCode's earlier family publishes one event name the shared-server family does not, and the
+/// shared-server family publishes none the earlier one lacks. So the earlier family's package has no
+/// name it could refuse, and what tells the families apart there is its own exclusive name: its table
+/// reads it as the event it is, and the shared-server package refuses the same name outright.
+const OWN_FAMILY_FRAMES: &[OwnFamilyFrame] = &[OwnFamilyFrame {
+    plugin: "kalareach/opencode-attach",
+    situation: "an event only this API family publishes",
+    payload_member: "properties",
+    other_plugin: "kalareach/opencode",
+}];
 
 #[test]
 fn a_frame_from_the_other_api_family_is_unsupported_or_carries_no_payload() {
@@ -959,15 +1034,112 @@ fn a_frame_from_the_other_api_family_is_unsupported_or_carries_no_payload() {
                     "{where_}: the expectation reads {path}, which is not where this frame's family puts its payload"
                 );
             }
+            // A shared name settles nothing, so the package also pins the name that does: the
+            // other family's, which its table refuses, or where the other family has none, its own.
             assert!(
                 SECOND_FAMILY_FRAMES
                     .iter()
-                    .any(|other| other.plugin == expected.plugin && other.refused_by_name),
-                "{where_}: a package that pins a shared name also pins the name it can refuse"
+                    .any(|other| other.plugin == expected.plugin && other.refused_by_name)
+                    || OWN_FAMILY_FRAMES
+                        .iter()
+                        .any(|own| own.plugin == expected.plugin),
+                "{where_}: a package that pins a shared name also pins the name that tells the families apart"
             );
         }
     }
     assert_eq!(checked, SECOND_FAMILY_FRAMES.len());
+}
+
+#[test]
+fn a_name_only_one_api_family_publishes_is_read_by_its_own_table_and_refused_by_the_other() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let connector_of = |plugin: &str| {
+        let package = loaded
+            .repository
+            .packages
+            .iter()
+            .find(|package| package.package.manifest.plugin_id().as_str() == plugin)
+            .unwrap_or_else(|| panic!("{plugin} is not in the repository"));
+        let connector = package
+            .package
+            .connector
+            .as_ref()
+            .unwrap_or_else(|| panic!("{plugin} carries no connector table"));
+        (package, connector)
+    };
+    let class_of = |connector: &kr_plugin_sdk::connector::ConnectorManifest, wire: &str| {
+        connector.route_for_wire_name(wire).map(|route| {
+            serde_json::to_value(connector.classify(&route.method))
+                .ok()
+                .and_then(|value| value.as_str().map(str::to_owned))
+        })
+    };
+    let mut checked = 0;
+    for expected in OWN_FAMILY_FRAMES {
+        let (package, connector) = connector_of(expected.plugin);
+        let corpus: FrameCorpus =
+            kalareach_catalogue::read_json(&package.directory.join("fixtures/frames.json"))
+                .unwrap_or_else(|error| panic!("{}: {error}", package.relative));
+        let case = corpus
+            .frames
+            .iter()
+            .find(|case| case.situation == expected.situation)
+            .unwrap_or_else(|| panic!("{}: no frame for {}", package.relative, expected.situation));
+        checked += 1;
+        let where_ = format!("{} [{}]", package.relative, expected.situation);
+
+        // The frame is this family's own shape, so its payload is where this table reads it.
+        assert!(
+            member(&case.frame, expected.payload_member).is_some(),
+            "{where_}: the frame carries no {}, so it is not this family's",
+            expected.payload_member
+        );
+        let wire = at(&case.frame, &connector.method_path)
+            .and_then(serde_json::Value::as_str)
+            .unwrap_or_else(|| panic!("{where_}: no method at the table's method path"));
+
+        // Its own table reads it as the event it is. Refusing a name its own family publishes
+        // would refuse the evidence that the connection is the family the table was qualified for.
+        let own = class_of(connector, wire)
+            .unwrap_or_else(|| panic!("{where_}: the table does not route its own family's name"));
+        assert_ne!(
+            own.as_deref(),
+            Some("unsupported"),
+            "{where_}: the table refuses a name its own family publishes"
+        );
+        assert!(
+            case.expect
+                .members
+                .keys()
+                .all(|path| path.starts_with(&format!("{}.", expected.payload_member))),
+            "{where_}: the expectation reads outside this family's payload"
+        );
+
+        // The other family's package refuses the same name outright, and pins that it does.
+        let (other_package, other_connector) = connector_of(expected.other_plugin);
+        assert_eq!(
+            class_of(other_connector, wire).flatten().as_deref(),
+            Some("unsupported"),
+            "{where_}: {} does not refuse {wire}",
+            other_package.relative
+        );
+        let other_corpus: FrameCorpus =
+            kalareach_catalogue::read_json(&other_package.directory.join("fixtures/frames.json"))
+                .unwrap_or_else(|error| panic!("{}: {error}", other_package.relative));
+        assert!(
+            SECOND_FAMILY_FRAMES.iter().any(|refused| {
+                refused.plugin == expected.other_plugin
+                    && refused.refused_by_name
+                    && other_corpus.frames.iter().any(|other_case| {
+                        other_case.situation == refused.situation
+                            && other_case.expect.wire_name == wire
+                    })
+            }),
+            "{where_}: {} pins no frame refusing {wire}",
+            other_package.relative
+        );
+    }
+    assert_eq!(checked, OWN_FAMILY_FRAMES.len());
 }
 
 /// Every agent section 12 bundles, and the plugin that carries its adapter.
