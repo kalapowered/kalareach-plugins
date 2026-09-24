@@ -39,6 +39,10 @@ same bytes:
 | Gemini CLI 0.60.0, `bundle/docs/cli/acp-mode.md`, the agent-protocol document the vendor ships with that build | | `812af1001c110f474a624c3026c31e66519ca95c251d1f79679d8ebd56edd779` |
 | Kimi Code CLI 2.0.2 executable at `~/.kimi-code/bin/kimi` | macOS, arm64 | `c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11` |
 | Qoder CLI 1.1.59 executable at `~/.qoder/bin/qodercli/qodercli-1.1.59` | macOS, arm64 | `c1b372d07083b98a2708ff23d4d462389fbf2bccad0d1317bb2970685f47c103` |
+| MoonshotAI kimi-cli 1.51.0, the wheel PyPI publishes as `kimi_cli-1.51.0-py3-none-any.whl`, installed for this qualification | any | `ffb9d0d4725844d36d6c78e8d3914a96b2d6a17678c217f3abe7336fb7e02d0e` |
+| agent-client-protocol 0.8.0, `agent_client_protocol-0.8.0-py3-none-any.whl`, the protocol library kimi-cli 1.51.0 installs | any | `2d5712b88b3249dbd6148b24d32c6eb8992e5663f224db6291524ac80cca8037` |
+| MoonshotAI kimi-cli 1.50.0, `kimi_cli-1.50.0-py3-none-any.whl`, read and not installed | any | `0341d283a3d5233128c1634c8201820a91cc09a1eaefc1d5075c481131b0b7e7` |
+| MoonshotAI kimi-cli 1.52.0, `kimi_cli-1.52.0-py3-none-any.whl`, read and not installed | any | `7becbb9081e0c1194b481fe06087ceceaf12bad9f3798fcefc1e3dd2e80b90b2` |
 
 The App Server is the native executable, which is what the schema above was generated from. The
 launcher is listed beside it because it is what npm puts on the path.
@@ -377,9 +381,9 @@ records it as done.
 
 Source: the OpenAPI document above, read 2026-09-20. Status: binary check.
 
-The earlier family is a separate profile, not an unsupported one. It needs its own package with its
-own immutable record, match rules and version line, qualified against the same document's
-unprefixed half.
+The earlier family is a separate profile, not an unsupported one. Its package is
+`kalareach/opencode-attach`, with its own immutable record, match rules and version line, qualified
+against the same document's unprefixed half.
 
 ### Method classification
 
@@ -543,8 +547,8 @@ protocol is chosen.
 The evidence that they are two: the installed build ships a `migrate` subcommand whose own help says
 it migrates "data from a legacy kimi-cli installation into kimi-code". `~/.kimi` does not exist on
 the qualification machine, so the other distribution is not installed and nothing here is a claim
-about its wire format. Status: binary check for this distribution; the other is named, not
-qualified.
+about its wire format. Status: binary check for this distribution; the other is a separate profile,
+qualified in its own package, `kalareach/kimi-cli`.
 
 The match rule that names `~/.kimi-code/bin` is what identifies this one. A rule that recognises an
 executable called `kimi` by its name alone is `inferred` and is presented as a guess: an executable
@@ -681,3 +685,229 @@ Status: out of scope, deliberately.
 `max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. No account was
 signed in to and no turn was started; the probes ran with a home directory belonging to this
 qualification, and `~/.qoder` was unchanged before and after.
+
+## kalareach/opencode-attach
+
+### Identities
+
+| What | Value | Source | Read | Status |
+| --- | --- | --- | --- | --- |
+| Executable | `opencode` | `opencode --version` on the qualification machine, reporting `1.18.31`; the native executable is the one pinned by digest above | 2026-09-24 | Binary check |
+| Distribution | npm `opencode-ai` | `https://registry.npmjs.org/opencode-ai`, the 1.18.31 release, installed into a directory owned by this qualification and nowhere else | 2026-09-24 | Binary check of the installed release |
+| Protocol | The earlier API family's event stream, `opencode-server-events` | The OpenAPI document that build serves at `GET /doc`, fetched again for this qualification and byte for byte the document pinned above | 2026-09-24 | Binary check |
+| Protocol version tested | 1.18.31 | The same document | 2026-09-24 | Binary check |
+| Qualified range | `=1.18.31` | This qualification | 2026-09-24 | The only release whose schema was read |
+| Terminal route | `opencode serve`, then `opencode attach <url>` | That build's own help, which lists both: one starts a headless server and the other attaches the terminal to a running one | 2026-09-24 | Binary check |
+
+### The declarative proxy contract
+
+The event stream meets it, so the package ships no native bridge for that leg.
+
+`GET /event` is a server-sent event stream whose every message is one JSON document with exactly
+three members, `id`, `type` and `properties`, all of them required, and whose `id` matches `^evt_`.
+That gives the table a framing and a method name at `type`. The identifier at `id` is the durable
+event identifier the stream orders by; nothing travels host to upstream on this leg, so there is no
+request here for a response to answer, and the correlation the manifest requires repeats the same
+path. That is the whole of what correlation means here. The route also takes optional `directory`
+and `workspace` query parameters, which the document names without describing; choosing them is the
+host's.
+
+The request leg does not meet it, for the reason recorded for `kalareach/opencode`: asking the
+server to do something is an HTTP request whose method is a verb and a path, such as
+`POST /session/{sessionID}/permissions/{permissionID}`, and `Framing` has no HTTP member. Status:
+named here as outside the table. Interrupting a turn goes through the broker's own cancellation
+against the bound execution.
+
+### The two API families
+
+This is the other side of the comparison in the `kalareach/opencode` section, read from the same
+document.
+
+| | This package's profile | The other profile |
+| --- | --- | --- |
+| Event stream | `GET /event`, schema `Event` | `GET /api/event`, schema `V2Event` |
+| Envelope | `id`, `type` and `properties`, and nothing else | `id`, `type` and `data`, and optionally `durable`, `location` and `metadata` |
+| Operation identifiers | unprefixed | prefixed `v2.` |
+| Answering a permission | `POST /session/{sessionID}/permissions/{permissionID}` or `POST /permission/{requestID}/reply` | `POST /api/session/{sessionID}/permission/{requestID}/reply` |
+
+The `Event` union carries 89 names. The `V2Event` union carries 88 of them and nothing else, so no
+name belongs to the shared-server family alone, and this table has none it could refuse by name.
+What it has instead is the one name only its own family publishes, `server.instance.disposed`, which
+it reads as the observation it is while the `kalareach/opencode` table refuses the same name. A
+frame from the shared-server family routes by its shared name here and carries nothing under
+`properties`, so the table extracts nothing from it. `fixtures/frames.json` pins one envelope of
+each kind; `a_frame_from_the_other_api_family_is_unsupported_or_carries_no_payload` in
+`pipeline/tests/packages.rs` asserts that the shared-server envelope carries no payload this table
+reads, and `a_name_only_one_api_family_publishes_is_read_by_its_own_table_and_refused_by_the_other`
+asserts both tables' answers for the exclusive name.
+
+Which family a connection belongs to is settled before it opens, from the installed version and the
+served schema, and a host whose evidence does not match this package's pins reports the capability
+as `incompatible`. The case in `fixtures/conformance.json` states what this package draws then:
+nothing, so the terminal path is what is left. Reading the installed evidence and comparing it
+against those pins is the host's half of that contract. This package neither performs it nor tests
+it, and nothing here records it as done.
+
+Every pinned frame was checked against the document's own unions with a JSON Schema 2020-12
+validator, by a script kept outside the repository: the eight frames of this family validate against
+`Event` and not against `V2Event`, and the shared-server envelope validates against `V2Event` and
+not against `Event`. Status: binary check.
+
+### Method classification
+
+Eighty-nine event names: every name in that document's `Event` union, with nothing added and nothing
+left out. The eighty-eight names both families publish carry the classes of the `kalareach/opencode`
+table, and the evidence beside each changes only where it named a family. `server.instance.disposed`
+reports that the server instance for a directory was disposed, and it is an observation here.
+
+Four are not observations, for the reasons recorded for `kalareach/opencode`: `tui.session.select`
+and `tui.toast.show` are mutations, and `tui.prompt.append` and `tui.command.execute` are declared
+unsupported, because forwarding either would be automatic composer insertion or a typed control
+surface over somebody's terminal. No event on this stream carries a credential.
+
+Status: the names and their payload shapes are a binary check of the served document. The class
+beside each name is a judgement argued from the documented payload and recorded as evidence in the
+table itself; no classification was exercised against a running turn, because that needs a vendor
+account.
+
+### What is not qualified here
+
+`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested.
+
+Nothing was driven: no turn was started, no permission was answered, no terminal was attached, and
+no account was signed in to. The server was started once, on loopback, with a home directory and a
+working directory belonging to this qualification, only to read the document it serves, and it was
+stopped by the process identifier recorded when it started.
+
+## kalareach/kimi-cli
+
+### Identities
+
+| What | Value | Source | Read | Status |
+| --- | --- | --- | --- | --- |
+| Executable | `kimi`, and `kimi-cli` beside it | `kimi --version` on the qualification machine, reporting `kimi, version 1.51.0`; the installed package's entry points name both as console scripts for the same function | 2026-09-24 | Binary check |
+| Distribution | PyPI `kimi-cli`, MoonshotAI's own | The index entry at `https://pypi.org/pypi/kimi-cli/json` names `https://github.com/MoonshotAI/kimi-cli` as its source, and that repository names `kimi-cli` on PyPI as its package. The 1.51.0 wheel, pinned by digest above, was installed into an environment owned by this qualification | 2026-09-24 | Document check of the identity; binary check of the installed wheel |
+| Home | `~/.kimi` | The installed package's own share directory, which a `KIMI_SHARE_DIR` variable can move | 2026-09-24 | Binary check |
+| Protocol | The agent protocol over standard streams, `kimi-cli-acp` | The handshake that build answers under its `acp` subcommand | 2026-09-24 | Binary check |
+| Protocol version tested | 1.51.0 | `agentInfo` in that handshake: `{"name":"Kimi Code CLI","version":"1.51.0"}`, and `protocolVersion` 1. The protocol library it installs is agent-client-protocol 0.8.0, pinned by digest above | 2026-09-24 | Binary check |
+| Qualified range | `=1.51.0` | This qualification | 2026-09-24 | The only release probed |
+
+### Which release
+
+MoonshotAI has archived kimi-cli. The repository and the index entry both say it is no longer
+maintained and name the kimi.com distribution as its replacement. Source:
+`https://github.com/MoonshotAI/kimi-cli` and its changelog, read 2026-09-24. Status: document check.
+
+The final release, 1.52.0, carries no agent protocol. Started with no arguments, its entry point
+fetches the kimi.com install script, falls back to a copy it carries, and runs it without asking;
+given `--version` it prints the version and a deprecation notice; given anything else it prints the
+notice alone. That was read from the 1.52.0 wheel, pinned by digest above, which was not installed
+or run. Status: document check of the published wheel. The practical consequence is outside this
+package: a host that starts a 1.52.0 installation on the terminal route with no arguments runs the
+kimi.com installer, whatever profile it selected.
+
+1.51.0 is the newest release that runs the agent itself, so it is the one pinned. The Python sources
+of 1.50.0 differ from it only in the build identifier, which was read from both wheels; 1.50.0 was
+not probed, and the qualified range does not admit it.
+
+### The two distributions
+
+Two products share the executable name `kimi`, and the qualification turns on telling them apart
+before any protocol is chosen.
+
+| | This package's profile | The other profile |
+| --- | --- | --- |
+| Home | `~/.kimi` | `~/.kimi-code` |
+| Installed by | PyPI `kimi-cli` | the kimi.com installer |
+| Executables | `kimi` and `kimi-cli` | `kimi` |
+| `agentInfo` in the handshake | `Kimi Code CLI`, 1.51.0 | `Kimi Code CLI`, 2.0.2 |
+| Session capabilities advertised | list, resume | list, resume, close, delete, fork, additional directories |
+| Other surfaces | `kimi --wire`, the Wire protocol; `kimi web` | `kimi web`, a local REST and WebSocket server, and the vendor's remote control |
+
+The other profile's column is the `kalareach/kimi-code-cli` section's evidence, read 2026-09-20 from
+the installed kimi.com build; this column was read from 1.51.0.
+
+Both builds answer the handshake with the same agent name, so the name tells nobody which one
+answered, and no method name does either: both speak the standard agent-protocol method set. What
+does tell them apart is in the same answer: the version, and the session operations each advertises.
+Each package pins its own build's answer, and
+`the_kimi_distributions_share_an_agent_name_and_differ_in_what_their_handshake_advertises` in
+`pipeline/tests/packages.rs` asserts that the names are equal, that the versions and the advertised
+operations differ, and that each table routes exactly the session operations its own build
+advertises, refusing or leaving unrouted the rest. Status: binary check on both sides.
+
+The rules that name the PyPI project identify this distribution. A rule that recognises an
+executable called `kimi` or `kimi-cli` by name alone is `inferred` and is presented as a guess: the
+name `kimi` is shared with the kimi.com build, and neither name establishes which server contract is
+available. The refusal is declarative, as it is for `kalareach/kimi-code-cli`: a host whose
+installation evidence does not match the pins in this package's record reports the capability as
+`incompatible`, and the case in `fixtures/conformance.json` states that both controls then
+disappear. Comparing that evidence, including the handshake above, against the pins is the host's
+half of the contract; this package neither performs it nor tests it.
+
+Native-TUI attachment to a server this package selected would need source or executable verification
+this qualification does not have. Status: not claimed, and not offered.
+
+### The declarative proxy contract
+
+The agent protocol meets it, so this package ships no native bridge: JSON-RPC 2.0 over the started
+process's standard streams, one document per line, identifiers at `id`, methods at `method`,
+responses matched by repeating the `id`. Status: binary check by sending requests to that build.
+
+The `--acp` flag, which the build's own help marks deprecated, answers every request with invalid
+params and a message naming the `acp` subcommand in its place. Status: binary check.
+
+### Method classification
+
+Twenty methods. Each host-to-upstream name was sent to the pinned build once, and each
+upstream-to-host name is one the installed package calls, through the method table of the protocol
+library it installs.
+
+| Sent | What 1.51.0 answered |
+| --- | --- |
+| `initialize` | A result: protocol version 1, `agentInfo`, prompt capabilities for image and embedded context, session capabilities for list and resume, MCP over HTTP and not over server-sent events, and one terminal login method |
+| `session/list` | A result, with no sessions |
+| `session/load`, `session/prompt`, `session/set_mode`, `session/set_model`, `session/resume` | An error about the request's own parameters, which is the method answering |
+| `session/new` | Authentication required, so the request reached the method and created nothing |
+| `authenticate` | Nothing. The build's log records that the handler ran, found no login, and failed to encode its own error, so no answer was sent |
+| `session/fork` | An error about the parameters of an empty request, and an internal error for a well-formed one, because its handler is not implemented |
+| `session/cancel` | Method not found as a request. Sent as a notification it drew no answer, as a notification should, and the log records that the handler received it |
+| `session/close`, `session/delete`, `session/set_config_option` | Method not found |
+| A name nobody implements | Method not found |
+
+A method the build answered method not found is not routed, so `session/close` and `session/delete`,
+which the kimi.com build implements, fall to the mutation default here. `session/fork` is routed and
+declared `unsupported`: the build accepts the name and cannot carry it out, and its handshake does
+not advertise forking. `session/set_model` is a mutation that also saves the chosen model as the
+default in the agent's own configuration file, which was read from the installed source rather than
+exercised. `authenticate` sending no answer is recorded so that nobody builds a host that waits for
+one.
+
+The nine upstream-to-host names are the requests the agent makes of its client, so probing them from
+the client side reports method not found, which is the correct answer rather than evidence of
+absence.
+
+Status: a binary check for every name. The class beside each name is a judgement recorded as
+evidence in the table itself and not exercised against a live turn.
+
+### The Wire surface
+
+`kimi --wire` is a second protocol on the same streams, marked experimental in the build's own help.
+Sent read-only requests, 1.51.0 answered `initialize` with Wire protocol 1.10, the server name and
+version above, its slash commands and the hook events it supports; answered `replay` with no events;
+answered an unknown name with method not found; and answered an agent-protocol `initialize` with
+invalid params. One package carries one table, and this package's table is the agent protocol's, so
+nothing here depends on the Wire surface. Source: those requests, and the vendor's Wire document at
+`https://moonshotai.github.io/kimi-cli/en/customization/wire-mode.html`, read 2026-09-24. Status:
+binary check, and not covered by the table.
+
+### What is not qualified here
+
+Nothing in this package depends on `kimi web`, `kimi term` or the Wire surface.
+
+`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. No account was
+signed in to and no turn was started. Every probe ran with a home directory and a working directory
+belonging to this qualification, telemetry switched off, the keyring backend disabled, and HTTP
+proxies pointed at a closed loopback port, and the build answered every request above that way.
+`~/.kimi` did not exist before or after, and a listing of `~/.kimi-code` with every entry's
+modification time and size hashed to the same value before and after.
