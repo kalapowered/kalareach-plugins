@@ -31,7 +31,7 @@ same bytes:
 | Claude Code 2.1.278 executable | macOS, arm64 | `bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6` |
 | OpenCode 1.18.31, the native executable npm installs at `opencode-darwin-arm64/bin/opencode` | macOS, arm64 | `16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198` |
 | OpenCode 1.18.31, the OpenAPI document that build serves at `/doc` | | `46db986090aae41846cd6dbe16225a1d883f0bbcb4c48814008d3f6ce140aa5c` |
-| Gemini CLI 0.60.0, the entry script npm puts on the path at `@google/gemini-cli/bundle/gemini.js`. It imports the chunks pinned in the three rows below | any | `fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2` |
+| Gemini CLI 0.60.0, the entry script npm puts on the path at `@google/gemini-cli/bundle/gemini.js`. The three rows below pin the inspected bundle chunks beside it | any | `fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2` |
 | Gemini CLI 0.60.0, `bundle/gemini-7INSUCPB.js`, one of the three chunks that carry every reverse agent-protocol method name the table routes | any | `161262ce223dc85a784bba05cd618e9ad3ea7065da557f417110dbba98b37052` |
 | Gemini CLI 0.60.0, `bundle/gemini-LUNNHKPJ.js`, the second of those chunks | any | `98beff1e92ab73a131632832e5785ef761e2dca9257cb5a0bc8d606cfcd11ab2` |
 | Gemini CLI 0.60.0, `bundle/gemini-ZTU7EMI3.js`, the third of those chunks | any | `b6498ba094610cdf303598bce0ed2c116aedcf0ab9d26d691be5dbb7cd8bf6ef` |

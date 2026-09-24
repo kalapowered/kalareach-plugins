@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "gemini-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "display_name": "Gemini CLI",
   "description": "Recognises Gemini CLI, reads its agent protocol through a declarative table and stops the turn it is running, with the stock terminal untouched.",
   "sdk_range": ">=0.1.0, <0.2.0",
@@ -79,8 +79,8 @@
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "6a61124ffaa8c24d237e1d769c8682407c77ac5fa9375b59236eb7d154caff11",
-      "size_bytes": "9548"
+      "digest": "f9c7c197726962a80f3e65e6afa77b172b4b909ae3b9fa819f15ab94f2125262",
+      "size_bytes": "9554"
     },
     {
       "role": "presentation",
