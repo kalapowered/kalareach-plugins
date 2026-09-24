@@ -1314,7 +1314,7 @@ fn the_kimi_distributions_share_an_agent_name_and_differ_in_what_their_handshake
                 );
             } else {
                 assert!(
-                    matches!(&class, None)
+                    class.is_none()
                         || matches!(&class, Some(Some(class)) if class == "unsupported"),
                     "{plugin}: the build does not advertise {capability} and the table routes {wire}"
                 );
