@@ -27,26 +27,26 @@ settles nothing. What tells them apart is the published package the executable c
 version, and what the handshake advertises: this build offers listing and resuming sessions and
 nothing more, where the kimi.com build also offers closing, deleting and forking them. The rule that
 names the PyPI project is what identifies this one; a rule that recognises an executable called
-`kimi` or `kimi-cli` by name alone is a guess, and it is reported as a guess. An executable with that
-name establishes nothing about which server contract is available, and a directory of saved sessions
-establishes nothing about which process owns the live one. When the installed evidence does not
-match the distribution and the version this package pins, the capability is incompatible, every
+`kimi` or `kimi-cli` by name alone is a guess, and it is reported as a guess. An executable with
+that name establishes nothing about which server contract is available, and a directory of saved
+sessions establishes nothing about which process owns the live one. When the installed evidence does
+not match the distribution and the version this package pins, the capability is incompatible, every
 control this package draws disappears, and the terminal is what is left.
 
 The table is pinned to kimi-cli 1.51.0 and qualified against that version alone. MoonshotAI has
 archived kimi-cli and names the kimi.com distribution as its replacement. Its final release, 1.52.0,
-carries no agent protocol: run with no arguments it downloads and runs the kimi.com installer, and
-run with any other it prints a deprecation notice. 1.51.0 is the last release that runs the agent
-itself.
+carries no agent protocol: run with no arguments it runs an install command for the kimi.com
+distribution without asking, and run with any other it prints a deprecation notice. 1.51.0 is the
+last release that runs the agent itself.
 
 ## The agent protocol is a mode you choose
 
 `kimi acp` starts the agent-protocol mode, which creates its own execution over standard streams. It
 is not a second engine attached to the conversation already running in a terminal, and nothing here
-replaces the terminal route with it. The older `--acp` flag answers every request with an error that
-names the subcommand instead. Attaching a terminal to a server this package selected would need
-source or executable verification that this qualification does not have, so the package neither
-claims it nor offers it.
+replaces the terminal route with it. The older `--acp` flag answers `initialize` with an error that
+names the subcommand instead, and a name it does not implement with method not found. Attaching a
+terminal to a server this package selected would need source or executable verification that this
+qualification does not have, so the package neither claims it nor offers it.
 
 The same build has an experimental Wire mode, `kimi --wire`, which speaks a different protocol over
 the same streams. This table does not cover it, and no control here uses it.
@@ -57,17 +57,17 @@ Twenty methods, each with the evidence it was classified against.
 
 Eleven travel from the host to the agent. `initialize` negotiates what the connection may afterwards
 be asked to do; `session/new`, `session/load`, `session/prompt` and `session/resume` change what
-exists or what the agent is doing; `session/set_mode` changes the session's mode, of which this build
-offers one; and `session/set_model` changes the model and saves it as the default in the agent's own
-configuration. `session/list` reads the stored sessions without loading one, which makes it an
-observation. `authenticate` is a credential method, because it concerns the vendor's own login and
-the broker never passes a credential to a component; without a usable login this build sends no
+exists or what the agent is doing; `session/set_mode` changes the session's mode, of which this
+build offers one; and `session/set_model` changes the model and saves it as the default in the
+agent's own configuration. `session/list` reads the stored sessions without loading one, which makes
+it an observation. `authenticate` is a credential method, because it concerns the vendor's own login
+and the broker never passes a credential to a component; without a usable login this build sends no
 answer to it at all. `session/cancel` ends the turn in flight. `session/fork` is a name this build
 accepts and cannot carry out, so the table declares it unsupported.
 
 Two methods the kimi.com build implements, `session/close` and `session/delete`, are not routed:
-this build answered method not found to both, so a message that uses either is treated as a mutation,
-like any other name the table does not list.
+this build answered method not found to both, so a message that uses either is treated as a
+mutation, like any other name the table does not list.
 
 Nine travel the other way, because the agent asks the host for things. `session/update` carries the
 turn's own stream and is an observation. `session/request_permission` is a reverse request naming a
