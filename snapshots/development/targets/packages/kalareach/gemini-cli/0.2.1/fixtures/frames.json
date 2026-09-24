@@ -231,7 +231,7 @@
       "version": "0.60.0",
       "distribution": "npm @google/gemini-cli",
       "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
-      "note": "The digest is of the entry script npm puts on the path. The chunks it imports, and the vendor documents beside them, are pinned under inspected."
+      "note": "The digest is of the entry script npm puts on the path. The inspected bundle chunks, and the vendor documents beside them, are pinned under inspected."
     },
     "handshake": {
       "protocolVersion": 1,
