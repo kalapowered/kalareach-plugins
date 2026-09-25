@@ -1,0 +1,657 @@
+{
+  "schema": "kalareach.conformance/1",
+  "extension": "kalareach.agent-qualification/1",
+  "repository": "kalareach-plugins",
+  "run": {
+    "started": "2026-09-25T21:38:12Z",
+    "finished": "2026-09-25T21:49:17Z",
+    "platform": "macos",
+    "system": {
+      "os": "macos",
+      "release": "26.6.2, Darwin 25.6.0",
+      "arch": "aarch64",
+      "target": "aarch64-apple-darwin"
+    },
+    "commit": {
+      "id": "c9b844ccd413bb50b687e4bd7688d1acd355fdf0",
+      "modified": false
+    },
+    "host": {
+      "repository": "kalareach",
+      "commit": {
+        "id": "3843befef8811bd57c3cf44c8dfada9c7f4defb3",
+        "modified": false
+      }
+    },
+    "toolchain": {
+      "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+      "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)"
+    },
+    "packages": [
+      {
+        "name": "kalareach/opencode-attach",
+        "version": "0.1.1",
+        "manifest_digest": "760387f5424be7e0c21426fed971be1b25c5cdf88213e99e5801b754982f7fc4",
+        "generation": "snapshots/development"
+      }
+    ],
+    "applications": [
+      {
+        "id": "opencode-attach",
+        "version": "1.18.31",
+        "status": "installed",
+        "url": "https://registry.npmjs.org/opencode-ai/-/opencode-ai-1.18.31.tgz",
+        "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+        "build": "darwin-arm64",
+        "reason": "the build the table is pinned to"
+      }
+    ],
+    "selection": [
+      "2b",
+      "5a",
+      "6a",
+      "8a",
+      "14.03a"
+    ],
+    "all_terminals": false,
+    "evidence_directory": "/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T//kalareach-agents-9epiZ2"
+  },
+  "steps": [
+    {
+      "number": 1,
+      "group": "agents",
+      "what": "part 2b",
+      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 2b",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 16,
+      "log": "opencode-attach/2b.log",
+      "error": null
+    },
+    {
+      "number": 2,
+      "group": "agents",
+      "what": "part 5a",
+      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 5a",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 17,
+      "log": "opencode-attach/5a.log",
+      "error": null
+    },
+    {
+      "number": 3,
+      "group": "agents",
+      "what": "part 6a",
+      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 6a",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 10,
+      "log": "opencode-attach/6a.log",
+      "error": null
+    },
+    {
+      "number": 4,
+      "group": "agents",
+      "what": "part 8a",
+      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 8a",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 21,
+      "log": "opencode-attach/8a.log",
+      "error": null
+    },
+    {
+      "number": 5,
+      "group": "agents",
+      "what": "part 14.03a",
+      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 14.03a",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 16,
+      "log": "opencode-attach/14.03a.log",
+      "error": null
+    }
+  ],
+  "identifiers": {
+    "KR-REQ-12.32": {
+      "family": "requirement",
+      "verdict": "passed",
+      "counts": {
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "not_run": 10,
+        "not_built": 0,
+        "known_difference": 0
+      },
+      "tests": [
+        {
+          "test": "part 1",
+          "part": "1",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "needs a vendor account and a spending bound, then the typed or bridge route (an account from the user)",
+          "needs": [
+            "vendor account"
+          ]
+        },
+        {
+          "test": "part 2a",
+          "part": "2a",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "needs a live conversation, which needs a vendor account (an account from the user)",
+          "needs": [
+            "vendor account"
+          ]
+        },
+        {
+          "test": "kr-e2e-agents --test cases an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused",
+          "part": "2b",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 1,
+              "outcome": "passed"
+            }
+          ],
+          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 2b",
+          "evidence": {
+            "announced_after": {
+              "instances": [],
+              "more_resources": false,
+              "resources": []
+            },
+            "announced_before": {
+              "instances": [],
+              "more_resources": false,
+              "resources": []
+            },
+            "answers": [
+              {
+                "call": "agent.prompt.submit",
+                "detail": "STALE_SESSION: no application instance 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.prompt.queue",
+                "detail": "STALE_SESSION: no application instance 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.turn.steer",
+                "detail": "STALE_SESSION: no application instance 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.turn.cancel",
+                "detail": "STALE_SESSION: no application instance 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.approval.respond",
+                "detail": "STALE_SESSION: no pending resource f7c20dab-cabc-4a23-98b8-54f2ffc385f3",
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "plugin.action.invoke turn.cancel",
+                "detail": "STALE_SESSION: kalareach/opencode-attach is not bound to 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "plugin.action.invoke session.refresh",
+                "detail": "STALE_SESSION: kalareach/opencode-attach is not bound to 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.capabilities",
+                "detail": "INVALID_ARGUMENT: agent.capabilities is not a read this host serves",
+                "refused": "INVALID_ARGUMENT"
+              },
+              {
+                "call": "agent.commands",
+                "detail": "INVALID_ARGUMENT: agent.commands is not a read this host serves",
+                "refused": "INVALID_ARGUMENT"
+              }
+            ],
+            "capability_states": [
+              [
+                "plugin.metadata.match/1",
+                "not_tested"
+              ],
+              [
+                "plugin.presentation.declarative/1",
+                "not_tested"
+              ],
+              [
+                "plugin.broker.semantic_events/1",
+                "not_tested"
+              ],
+              [
+                "plugin.upstream.action/1",
+                "not_tested"
+              ]
+            ],
+            "control": {
+              "result": {
+                "forwarded_bytes": 11,
+                "input_bytes": 11,
+                "keyboard": "ghostty",
+                "screen_shows": "kr-harmless"
+              },
+              "what": "terminal input under the lease from the same device"
+            },
+            "live_bindings": 0,
+            "provenance": {
+              "executed": [
+                {
+                  "command": "opencode serve --hostname 127.0.0.1 --port 57569",
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "pid": 90184,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2e290d8/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2e290d8/agent/runtime:/usr/bin:/bin"
+            }
+          }
+        },
+        {
+          "test": "part 2c",
+          "part": "2c",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "needs a binding, and the host hands no installed connector to a worker (the connector hand-over to workers)",
+          "needs": [
+            "connector binding"
+          ]
+        },
+        {
+          "test": "part 3",
+          "part": "3",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "needs a vendor account and an approval a binding serves (an account from the user; the connector hand-over to workers)",
+          "needs": [
+            "vendor account"
+          ]
+        },
+        {
+          "test": "part 4",
+          "part": "4",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "needs a vendor account and a typed route (an account from the user; the connector hand-over to workers)",
+          "needs": [
+            "vendor account"
+          ]
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running",
+          "part": "5a",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 2,
+              "outcome": "passed"
+            }
+          ],
+          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 5a",
+          "evidence": {
+            "agent_processes": [
+              "opencode attach http://127.0.0.1:57621",
+              "opencode serve --hostname 127.0.0.1 --port 57621"
+            ],
+            "control": {
+              "check": "these have ended: process 91896 (opencode attach http://127.0.0.1:57621), process 91759 (opencode serve --hostname 127.0.0.1 --port 57621)",
+              "what": "the agent ended with a second daemon kill"
+            },
+            "killed_daemon": 91585,
+            "local_terminal_input": "kr-harmless",
+            "provenance": {
+              "executed": [
+                {
+                  "command": "opencode serve --hostname 127.0.0.1 --port 57621",
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "pid": 91759,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-b0aec22a/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-b0aec22a/agent/runtime:/usr/bin:/bin"
+            },
+            "restarted_daemon": 92126
+          }
+        },
+        {
+          "test": "part 5b",
+          "part": "5b",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "the terminal route has no gateway, so it holds no gateway request state (the connector hand-over to workers)",
+          "needs": [
+            "connector binding"
+          ]
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route",
+          "part": "6a",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "not_run",
+          "reason": "the build list names no newer build of this agent (the build list)",
+          "runs": [
+            {
+              "step": 3,
+              "outcome": "not_run"
+            }
+          ],
+          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 6a",
+          "evidence": {
+            "provenance": {
+              "executed": [],
+              "session_path": null
+            }
+          }
+        },
+        {
+          "test": "part 6b",
+          "part": "6b",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "needs a binding, to show each process bound to its own adapter and schema (the connector hand-over to workers)",
+          "needs": [
+            "connector binding"
+          ]
+        },
+        {
+          "test": "part 7",
+          "part": "7",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "needs a vendor account, since a saved conversation needs a turn (an account from the user)",
+          "needs": [
+            "vendor account"
+          ]
+        },
+        {
+          "test": "kr-e2e-agents --test cases forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged",
+          "part": "8a",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 4,
+              "outcome": "passed"
+            }
+          ],
+          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 8a",
+          "evidence": {
+            "control": {
+              "owner": {
+                "forwarded_bytes": 11,
+                "input_bytes": 11,
+                "keyboard": "ghostty",
+                "screen_shows": "kr-harmless"
+              },
+              "viewer": "PERMISSION_DENIED: this grant does not carry terminal.input",
+              "what": "a view-only device's input refused where the owner device's is admitted"
+            },
+            "provenance": {
+              "executed": [
+                {
+                  "command": "opencode serve --hostname 127.0.0.1 --port 57674",
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "pid": 97062,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/agent/runtime:/usr/bin:/bin"
+            },
+            "steps": [
+              {
+                "forgery": "titles",
+                "title": "kalareach session b7ca2f69-a982-4c38-a6b4-a5ea0e790fb4 approval allow"
+              },
+              {
+                "forgery": "transcript",
+                "path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/h/.local/share/opencode/storage/session/b7ca2f69-a982-4c38-a6b4-a5ea0e790fb4.json"
+              },
+              {
+                "forgery": "registrations and hook input, through Claude Code's forwarder",
+                "probes": [
+                  {
+                    "elapsed_ms": 5,
+                    "exit": 0,
+                    "probe": "hook-none-session-start",
+                    "stderr_first_line": "",
+                    "stdout": "{}\n",
+                    "surface": "hook"
+                  },
+                  {
+                    "elapsed_ms": 4,
+                    "exit": 0,
+                    "probe": "hook-none-permission",
+                    "stderr_first_line": "",
+                    "stdout": "{}\n",
+                    "surface": "hook"
+                  },
+                  {
+                    "elapsed_ms": 4,
+                    "exit": 0,
+                    "probe": "hook-none-tool",
+                    "stderr_first_line": "",
+                    "stdout": "{}\n",
+                    "surface": "hook"
+                  },
+                  {
+                    "elapsed_ms": 5,
+                    "exit": 0,
+                    "probe": "channel-none",
+                    "stderr_first_line": "",
+                    "stdout": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{},\"serverInfo\":{\"name\":\"kalareach\",\"version\":\"0.1.0\"}}}\n",
+                    "surface": "channel"
+                  },
+                  {
+                    "elapsed_ms": 4,
+                    "exit": 0,
+                    "probe": "hook-absent-session-start",
+                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stdout": "{}\n",
+                    "surface": "hook"
+                  },
+                  {
+                    "elapsed_ms": 4,
+                    "exit": 0,
+                    "probe": "hook-absent-permission",
+                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stdout": "{}\n",
+                    "surface": "hook"
+                  },
+                  {
+                    "elapsed_ms": 4,
+                    "exit": 0,
+                    "probe": "hook-absent-tool",
+                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stdout": "{}\n",
+                    "surface": "hook"
+                  },
+                  {
+                    "elapsed_ms": 4,
+                    "exit": 1,
+                    "probe": "channel-absent",
+                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stdout": "",
+                    "surface": "channel"
+                  },
+                  {
+                    "elapsed_ms": 8,
+                    "exit": 0,
+                    "probe": "hook-worker-session-start",
+                    "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
+                    "stdout": "{}\n",
+                    "surface": "hook"
+                  },
+                  {
+                    "elapsed_ms": 8,
+                    "exit": 0,
+                    "probe": "hook-worker-permission",
+                    "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
+                    "stdout": "{}\n",
+                    "surface": "hook"
+                  },
+                  {
+                    "elapsed_ms": 7,
+                    "exit": 0,
+                    "probe": "hook-worker-tool",
+                    "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
+                    "stdout": "{}\n",
+                    "surface": "hook"
+                  },
+                  {
+                    "elapsed_ms": 7,
+                    "exit": 1,
+                    "probe": "channel-worker",
+                    "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
+                    "stdout": "",
+                    "surface": "channel"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "test": "part 8b",
+          "part": "8b",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "needs a registration the host issued, to fail a forgery at the endpoint a legitimate one passes (the command integration)",
+          "needs": [
+            "launch registration"
+          ]
+        }
+      ]
+    },
+    "KR-REQ-14.03": {
+      "family": "requirement",
+      "verdict": "passed",
+      "counts": {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "not_run": 1,
+        "not_built": 0,
+        "known_difference": 0
+      },
+      "tests": [
+        {
+          "test": "kr-e2e-agents --test cases a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer",
+          "part": "14.03a",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 5,
+              "outcome": "passed"
+            }
+          ],
+          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 14.03a",
+          "evidence": {
+            "announced": {
+              "instances": [],
+              "more_resources": false,
+              "resources": []
+            },
+            "composer_row": "             ┃  w/kalareach-shot.png",
+            "control": {
+              "refused": "input.write: LEASE_LOST: the input lease has moved on",
+              "what": "the same input without the lease"
+            },
+            "forwarded_bytes": 90,
+            "provenance": {
+              "executed": [
+                {
+                  "command": "opencode serve --hostname 127.0.0.1 --port 57708",
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "pid": 2181,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2221ead/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2221ead/agent/runtime:/usr/bin:/bin"
+            },
+            "typed": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2221ead/w/kalareach-shot.png"
+          }
+        },
+        {
+          "test": "part 14.03b",
+          "part": "14.03b",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "no method reads a draft's attachment state, and no adapter reports that an agent accepted one (device reads of drafts; the connector hand-over to workers)",
+          "needs": [
+            "draft reads"
+          ]
+        }
+      ]
+    }
+  },
+  "attachment_paths": [
+    {
+      "operation": "terminal",
+      "declared": null,
+      "source": "plugin.json",
+      "package_digest": "760387f5424be7e0c21426fed971be1b25c5cdf88213e99e5801b754982f7fc4"
+    }
+  ],
+  "failures_outside_identifiers": [],
+  "known_differences": [],
+  "problems": [],
+  "warnings": [],
+  "summary": {
+    "identifiers": 2,
+    "passed": 2,
+    "failed": 0,
+    "known_difference": 0,
+    "not_run": 0,
+    "known_differences": 0,
+    "tests": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "not_run": 11,
+      "not_built": 0,
+      "known_difference": 0
+    },
+    "failed_steps": []
+  }
+}
