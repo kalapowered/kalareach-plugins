@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-25T21:38:12Z",
-    "finished": "2026-09-25T21:49:17Z",
+    "started": "2026-09-25T22:36:06Z",
+    "finished": "2026-09-25T22:48:08Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,19 +13,23 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "c9b844ccd413bb50b687e4bd7688d1acd355fdf0",
+      "id": "7443f0432c71f3cb1aafdcde61eb0ae3f523bd7c",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "3843befef8811bd57c3cf44c8dfada9c7f4defb3",
+        "id": "a1666539057e960fd7e21a3926328a20fa35e741",
         "modified": false
       }
     },
     "toolchain": {
       "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
       "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)"
+    },
+    "terminal_profile": {
+      "profile": "kr-vt/1",
+      "term": "ghostty"
     },
     "packages": [
       {
@@ -54,71 +58,90 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T//kalareach-agents-9epiZ2"
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-Z5tkJL",
+    "own_home": {
+      "bound_to_a_desktop": true,
+      "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
+      "home": "~",
+      "worker_profile": "desktop_bound"
+    }
   },
   "steps": [
     {
       "number": 1,
-      "group": "agents",
-      "what": "part 2b",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 2b",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 16,
-      "log": "opencode-attach/2b.log",
-      "error": null
-    },
-    {
-      "number": 2,
-      "group": "agents",
-      "what": "part 5a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 5a",
+      "group": "own-home",
+      "what": "a session started with the person's own home names their login keychain",
+      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
       "seconds": 17,
-      "log": "opencode-attach/5a.log",
+      "log": "own-home.log",
+      "error": null
+    },
+    {
+      "number": 2,
+      "group": "agents",
+      "what": "part 2b",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 20,
+      "log": "opencode-attach/2b.log",
       "error": null
     },
     {
       "number": 3,
       "group": "agents",
-      "what": "part 6a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 6a",
+      "what": "part 5a",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 10,
-      "log": "opencode-attach/6a.log",
+      "seconds": 20,
+      "log": "opencode-attach/5a.log",
       "error": null
     },
     {
       "number": 4,
       "group": "agents",
-      "what": "part 8a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 8a",
+      "what": "part 6a",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 21,
-      "log": "opencode-attach/8a.log",
+      "seconds": 13,
+      "log": "opencode-attach/6a.log",
       "error": null
     },
     {
       "number": 5,
       "group": "agents",
-      "what": "part 14.03a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 14.03a",
+      "what": "part 8a",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 16,
+      "seconds": 25,
+      "log": "opencode-attach/8a.log",
+      "error": null
+    },
+    {
+      "number": 6,
+      "group": "agents",
+      "what": "part 14.03a",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 20,
       "log": "opencode-attach/14.03a.log",
       "error": null
     }
@@ -166,11 +189,11 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 1,
+              "step": 2,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 2b",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
             "announced_after": {
               "instances": [],
@@ -185,37 +208,42 @@
             "answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "detail": "STALE_SESSION: no application instance 0afe159b-cb64-4424-abf6-19c5637a74e1",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "detail": "STALE_SESSION: no application instance 0afe159b-cb64-4424-abf6-19c5637a74e1",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "detail": "STALE_SESSION: no application instance 0afe159b-cb64-4424-abf6-19c5637a74e1",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "detail": "STALE_SESSION: no application instance 0afe159b-cb64-4424-abf6-19c5637a74e1",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource f7c20dab-cabc-4a23-98b8-54f2ffc385f3",
+                "detail": "STALE_SESSION: no pending resource 1141ff3b-9cc8-463c-9d83-b5f407f5ebb9",
                 "refused": "STALE_SESSION"
               },
               {
+                "call": "agent.draft.add_attachment",
+                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                "refused": "INVALID_ARGUMENT"
+              },
+              {
                 "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/opencode-attach is not bound to 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "detail": "STALE_SESSION: kalareach/opencode-attach is not bound to 0afe159b-cb64-4424-abf6-19c5637a74e1",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/opencode-attach is not bound to 2e4b3801-400d-441e-a33d-7ce8ad8fe1a6",
+                "detail": "STALE_SESSION: kalareach/opencode-attach is not bound to 0afe159b-cb64-4424-abf6-19c5637a74e1",
                 "refused": "STALE_SESSION"
               },
               {
@@ -229,6 +257,7 @@
                 "refused": "INVALID_ARGUMENT"
               }
             ],
+            "attachment_request": "refused before any instance is looked at: agent.draft.add_attachment names an application instance in its selectors and carries none in its parameters, so this refusal says nothing about the terminal route",
             "capability_states": [
               [
                 "plugin.metadata.match/1",
@@ -248,26 +277,68 @@
               ]
             ],
             "control": {
+              "breaks_property": false,
               "result": {
                 "forwarded_bytes": 11,
                 "input_bytes": 11,
                 "keyboard": "ghostty",
                 "screen_shows": "kr-harmless"
               },
-              "what": "terminal input under the lease from the same device"
+              "what": "terminal input under the lease from the same device and connection, which the host accepts where it refuses the typed actions",
+              "why_not": "only a bound connector can advertise a typed capability or accept a typed action, and this host binds none"
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "760387f5424be7e0c21426fed971be1b25c5cdf88213e99e5801b754982f7fc4",
+              "plugin_id": "kalareach/opencode-attach",
+              "version": "0.1.1"
             },
             "live_bindings": 0,
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
-                  "command": "opencode serve --hostname 127.0.0.1 --port 57569",
+                  "command": "opencode serve --hostname 127.0.0.1 --port 50400",
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                  "pid": 90184,
+                  "inode": 69650336,
+                  "pid": 78413,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2e290d8/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2e290d8/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "opencode serve --hostname 127.0.0.1 --port 50400",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 78413,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode serve --hostname 127.0.0.1 --port 50400"
+                },
+                {
+                  "agent_process": {
+                    "command": "opencode attach http://127.0.0.1:50400",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 78573,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode attach http://127.0.0.1:50400"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 10,
+              "session_path": "<tmp>/krm-9c5d58cc/agent/current/bin:<tmp>/krm-9c5d58cc/agent/runtime:/usr/bin:/bin"
             }
           }
         },
@@ -312,35 +383,76 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 2,
+              "step": 3,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 5a",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "agent_processes": [
-              "opencode attach http://127.0.0.1:57621",
-              "opencode serve --hostname 127.0.0.1 --port 57621"
+              "opencode attach http://127.0.0.1:50492",
+              "opencode serve --hostname 127.0.0.1 --port 50492"
             ],
             "control": {
-              "check": "these have ended: process 91896 (opencode attach http://127.0.0.1:57621), process 91759 (opencode serve --hostname 127.0.0.1 --port 57621)",
+              "breaks_property": true,
+              "check": "these have ended: process 80406 (opencode attach http://127.0.0.1:50492), process 80260 (opencode serve --hostname 127.0.0.1 --port 50492)",
               "what": "the agent ended with a second daemon kill"
             },
-            "killed_daemon": 91585,
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "760387f5424be7e0c21426fed971be1b25c5cdf88213e99e5801b754982f7fc4",
+              "plugin_id": "kalareach/opencode-attach",
+              "version": "0.1.1"
+            },
+            "killed_daemon": 80138,
             "local_terminal_input": "kr-harmless",
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
-                  "command": "opencode serve --hostname 127.0.0.1 --port 57621",
+                  "command": "opencode serve --hostname 127.0.0.1 --port 50492",
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                  "pid": 91759,
+                  "inode": 69650336,
+                  "pid": 80260,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-b0aec22a/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-b0aec22a/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "opencode serve --hostname 127.0.0.1 --port 50492",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 80260,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode serve --hostname 127.0.0.1 --port 50492"
+                },
+                {
+                  "agent_process": {
+                    "command": "opencode attach http://127.0.0.1:50492",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 80406,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode attach http://127.0.0.1:50492"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 14,
+              "session_path": "<tmp>/krm-e73fc6b6/agent/current/bin:<tmp>/krm-e73fc6b6/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 92126
+            "restarted_daemon": 80671
           }
         },
         {
@@ -363,14 +475,26 @@
           "reason": "the build list names no newer build of this agent (the build list)",
           "runs": [
             {
-              "step": 3,
+              "step": 4,
               "outcome": "not_run"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 6a",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "760387f5424be7e0c21426fed971be1b25c5cdf88213e99e5801b754982f7fc4",
+              "plugin_id": "kalareach/opencode-attach",
+              "version": "0.1.1"
+            },
             "provenance": {
+              "ended_before_read": [],
               "executed": [],
+              "launches": [],
+              "sample_interval_ms": 250,
+              "samples": 0,
               "session_path": null
             }
           }
@@ -405,13 +529,14 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 4,
+              "step": 5,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 8a",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
             "control": {
+              "breaks_property": false,
               "owner": {
                 "forwarded_bytes": 11,
                 "input_bytes": 11,
@@ -419,28 +544,69 @@
                 "screen_shows": "kr-harmless"
               },
               "viewer": "PERMISSION_DENIED: this grant does not carry terminal.input",
-              "what": "a view-only device's input refused where the owner device's is admitted"
+              "what": "a view-only device's input refused as not permitted where the owner device's is admitted",
+              "why_not": "a forgery that changes the host's state needs a registration the host issued, which this host issues to no connector"
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "760387f5424be7e0c21426fed971be1b25c5cdf88213e99e5801b754982f7fc4",
+              "plugin_id": "kalareach/opencode-attach",
+              "version": "0.1.1"
             },
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
-                  "command": "opencode serve --hostname 127.0.0.1 --port 57674",
+                  "command": "opencode serve --hostname 127.0.0.1 --port 50597",
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                  "pid": 97062,
+                  "inode": 69650336,
+                  "pid": 88876,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "opencode serve --hostname 127.0.0.1 --port 50597",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 88876,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode serve --hostname 127.0.0.1 --port 50597"
+                },
+                {
+                  "agent_process": {
+                    "command": "opencode attach http://127.0.0.1:50597",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 89015,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode attach http://127.0.0.1:50597"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 30,
+              "session_path": "<tmp>/krm-a55eb014/agent/current/bin:<tmp>/krm-a55eb014/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session b7ca2f69-a982-4c38-a6b4-a5ea0e790fb4 approval allow"
+                "title": "kalareach session 692e05ee-b1ba-4874-a622-8e3d7231d110 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/h/.local/share/opencode/storage/session/b7ca2f69-a982-4c38-a6b4-a5ea0e790fb4.json"
+                "path": "<tmp>/krm-a55eb014/h/.local/share/opencode/storage/session/692e05ee-b1ba-4874-a622-8e3d7231d110.json"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
@@ -462,7 +628,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 3,
                     "exit": 0,
                     "probe": "hook-none-tool",
                     "stderr_first_line": "",
@@ -481,7 +647,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a55eb014/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -489,7 +655,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a55eb014/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -497,7 +663,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a55eb014/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -505,12 +671,12 @@
                     "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-530b37eb/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a55eb014/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -518,7 +684,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-permission",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -579,11 +745,11 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 5,
+              "step": 6,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/opencode-attach --case 14.03a",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode-attach/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode-attach/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "announced": {
               "instances": [],
@@ -592,23 +758,64 @@
             },
             "composer_row": "             ┃  w/kalareach-shot.png",
             "control": {
+              "breaks_property": true,
               "refused": "input.write: LEASE_LOST: the input lease has moved on",
               "what": "the same input without the lease"
             },
             "forwarded_bytes": 90,
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "760387f5424be7e0c21426fed971be1b25c5cdf88213e99e5801b754982f7fc4",
+              "plugin_id": "kalareach/opencode-attach",
+              "version": "0.1.1"
+            },
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
-                  "command": "opencode serve --hostname 127.0.0.1 --port 57708",
+                  "command": "opencode serve --hostname 127.0.0.1 --port 50676",
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                  "pid": 2181,
+                  "inode": 69650336,
+                  "pid": 91262,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2221ead/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2221ead/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "opencode serve --hostname 127.0.0.1 --port 50676",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 91262,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode serve --hostname 127.0.0.1 --port 50676"
+                },
+                {
+                  "agent_process": {
+                    "command": "opencode attach http://127.0.0.1:50676",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 91407,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode attach http://127.0.0.1:50676"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 9,
+              "session_path": "<tmp>/krm-25ee7c5d/agent/current/bin:<tmp>/krm-25ee7c5d/agent/runtime:/usr/bin:/bin"
             },
-            "typed": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-a2221ead/w/kalareach-shot.png"
+            "typed": "<tmp>/krm-25ee7c5d/w/kalareach-shot.png"
           }
         },
         {

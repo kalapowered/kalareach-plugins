@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-25T21:38:12Z",
-    "finished": "2026-09-25T21:42:09Z",
+    "started": "2026-09-25T22:36:06Z",
+    "finished": "2026-09-25T22:39:58Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,19 +13,23 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "c9b844ccd413bb50b687e4bd7688d1acd355fdf0",
+      "id": "7443f0432c71f3cb1aafdcde61eb0ae3f523bd7c",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "3843befef8811bd57c3cf44c8dfada9c7f4defb3",
+        "id": "a1666539057e960fd7e21a3926328a20fa35e741",
         "modified": false
       }
     },
     "toolchain": {
       "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
       "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)"
+    },
+    "terminal_profile": {
+      "profile": "kr-vt/1",
+      "term": "ghostty"
     },
     "packages": [
       {
@@ -63,71 +67,90 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T//kalareach-agents-9epiZ2"
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-Z5tkJL",
+    "own_home": {
+      "bound_to_a_desktop": true,
+      "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
+      "home": "~",
+      "worker_profile": "desktop_bound"
+    }
   },
   "steps": [
     {
       "number": 1,
-      "group": "agents",
-      "what": "part 2b",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 2b",
+      "group": "own-home",
+      "what": "a session started with the person's own home names their login keychain",
+      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 23,
-      "log": "codex/2b.log",
+      "seconds": 17,
+      "log": "own-home.log",
       "error": null
     },
     {
       "number": 2,
       "group": "agents",
-      "what": "part 5a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 5a",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 16,
-      "log": "codex/5a.log",
-      "error": null
-    },
-    {
-      "number": 3,
-      "group": "agents",
-      "what": "part 6a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 6a",
+      "what": "part 2b",
+      "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
       "seconds": 18,
-      "log": "codex/6a.log",
+      "log": "codex/2b.log",
+      "error": null
+    },
+    {
+      "number": 3,
+      "group": "agents",
+      "what": "part 5a",
+      "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 19,
+      "log": "codex/5a.log",
       "error": null
     },
     {
       "number": 4,
       "group": "agents",
-      "what": "part 8a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 8a",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 28,
-      "log": "codex/8a.log",
-      "error": null
-    },
-    {
-      "number": 5,
-      "group": "agents",
-      "what": "part 14.03a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 14.03a",
+      "what": "part 6a",
+      "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
       "seconds": 21,
+      "log": "codex/6a.log",
+      "error": null
+    },
+    {
+      "number": 5,
+      "group": "agents",
+      "what": "part 8a",
+      "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 23,
+      "log": "codex/8a.log",
+      "error": null
+    },
+    {
+      "number": 6,
+      "group": "agents",
+      "what": "part 14.03a",
+      "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 14,
       "log": "codex/14.03a.log",
       "error": null
     }
@@ -175,11 +198,11 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 1,
+              "step": 2,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 2b",
+          "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
             "announced_after": {
               "instances": [],
@@ -194,37 +217,42 @@
             "answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance f77a7668-4360-48af-858a-c6c0e1c7aba8",
+                "detail": "STALE_SESSION: no application instance a1069325-1ebf-4784-bff5-91040f563cb8",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance f77a7668-4360-48af-858a-c6c0e1c7aba8",
+                "detail": "STALE_SESSION: no application instance a1069325-1ebf-4784-bff5-91040f563cb8",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance f77a7668-4360-48af-858a-c6c0e1c7aba8",
+                "detail": "STALE_SESSION: no application instance a1069325-1ebf-4784-bff5-91040f563cb8",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance f77a7668-4360-48af-858a-c6c0e1c7aba8",
+                "detail": "STALE_SESSION: no application instance a1069325-1ebf-4784-bff5-91040f563cb8",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 9e7a2842-9aa1-45a4-9a8c-f32ee24412bb",
+                "detail": "STALE_SESSION: no pending resource d523a966-fd1d-4fd3-acaa-92bbfe202b2d",
                 "refused": "STALE_SESSION"
               },
               {
+                "call": "agent.draft.add_attachment",
+                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                "refused": "INVALID_ARGUMENT"
+              },
+              {
                 "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/codex is not bound to f77a7668-4360-48af-858a-c6c0e1c7aba8",
+                "detail": "STALE_SESSION: kalareach/codex is not bound to a1069325-1ebf-4784-bff5-91040f563cb8",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke thread.refresh",
-                "detail": "STALE_SESSION: kalareach/codex is not bound to f77a7668-4360-48af-858a-c6c0e1c7aba8",
+                "detail": "STALE_SESSION: kalareach/codex is not bound to a1069325-1ebf-4784-bff5-91040f563cb8",
                 "refused": "STALE_SESSION"
               },
               {
@@ -238,6 +266,7 @@
                 "refused": "INVALID_ARGUMENT"
               }
             ],
+            "attachment_request": "refused before any instance is looked at: agent.draft.add_attachment names an application instance in its selectors and carries none in its parameters, so this refusal says nothing about the terminal route",
             "capability_states": [
               [
                 "plugin.metadata.match/1",
@@ -257,33 +286,63 @@
               ]
             ],
             "control": {
+              "breaks_property": false,
               "result": {
                 "forwarded_bytes": 3,
                 "input_bytes": 3,
                 "keyboard": "ghostty",
                 "screen_shows": "> 2. Sign in with Device Code"
               },
-              "what": "terminal input under the lease from the same device"
+              "what": "terminal input under the lease from the same device and connection, which the host accepts where it refuses the typed actions",
+              "why_not": "only a bound connector can advertise a typed capability or accept a typed action, and this host binds none"
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "plugin_id": "kalareach/codex",
+              "version": "0.2.1"
             },
             "live_bindings": 0,
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
                   "command": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
                   "from": "build",
                   "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "pid": 33785,
+                  "inode": 69650492,
+                  "pid": 98531,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 },
                 {
-                  "command": "node /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f3a80c93/agent/current/bin/codex",
+                  "command": "node <tmp>/krm-c7e41d4a/agent/current/bin/codex",
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "pid": 33779,
+                  "inode": 54188627,
+                  "pid": 98526,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f3a80c93/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f3a80c93/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-c7e41d4a/agent/current/bin/codex",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 98526,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "reached": "process 98531 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex) maps it",
+                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
+                  "what": "codex"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 1,
+              "session_path": "<tmp>/krm-c7e41d4a/agent/current/bin:<tmp>/krm-c7e41d4a/agent/runtime:/usr/bin:/bin"
             }
           }
         },
@@ -328,42 +387,71 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 2,
+              "step": 3,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 5a",
+          "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "agent_processes": [
-              "node /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-73a9e0ca/agent/current/bin/codex",
+              "node <tmp>/krm-fb411086/agent/current/bin/codex",
               "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex"
             ],
             "control": {
-              "check": "these have ended: process 35540 (node /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-73a9e0ca/agent/current/bin/codex), process 35547 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex)",
+              "breaks_property": true,
+              "check": "these have ended: process 920 (node <tmp>/krm-fb411086/agent/current/bin/codex), process 928 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex)",
               "what": "the agent ended with a second daemon kill"
             },
-            "killed_daemon": 35403,
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "plugin_id": "kalareach/codex",
+              "version": "0.2.1"
+            },
+            "killed_daemon": 780,
             "local_terminal_input": "> 2. Sign in with Device Code",
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
                   "command": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
                   "from": "build",
                   "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "pid": 35547,
+                  "inode": 69650492,
+                  "pid": 928,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 },
                 {
-                  "command": "node /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-73a9e0ca/agent/current/bin/codex",
+                  "command": "node <tmp>/krm-fb411086/agent/current/bin/codex",
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "pid": 35540,
+                  "inode": 54188627,
+                  "pid": 920,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-73a9e0ca/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-73a9e0ca/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-fb411086/agent/current/bin/codex",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 920,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "reached": "process 928 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex) maps it",
+                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
+                  "what": "codex"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 4,
+              "session_path": "<tmp>/krm-fb411086/agent/current/bin:<tmp>/krm-fb411086/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 35691
+            "restarted_daemon": 1140
           }
         },
         {
@@ -385,18 +473,31 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 3,
+              "step": 4,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 6a",
+          "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
             "control": {
-              "check": "process 37149 is no longer running",
-              "relaunched_runs_newer": false,
-              "what": "the agent relaunched after the upgrade"
+              "breaks_property": true,
+              "check": "process 3093 runs <tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex (inode 69650625), not <tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex (inode 69650492)",
+              "relaunched_process": 3093,
+              "relaunched_runs": {
+                "file": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                "inode": 69650625
+              },
+              "what": "the agent relaunched in the first session after the upgrade"
             },
-            "first_agent_process": 37149,
+            "first_agent_process": 2785,
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "plugin_id": "kalareach/codex",
+              "version": "0.2.1"
+            },
             "newer": {
               "file": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
               "inode": 69650625,
@@ -407,56 +508,108 @@
               "inode": 69650492
             },
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
                   "command": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
                   "from": "build",
                   "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "pid": 37149,
+                  "inode": 69650492,
+                  "pid": 2785,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 },
                 {
                   "command": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
                   "from": "newer build",
                   "image": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "pid": 37301,
+                  "inode": 69650625,
+                  "pid": 2945,
                   "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a"
                 },
                 {
-                  "command": "node /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-447df928/agent/current/bin/codex",
+                  "command": "node <tmp>/krm-9ab90089/agent/current/bin/codex",
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "pid": 37141,
+                  "inode": 54188627,
+                  "pid": 2777,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-447df928/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-447df928/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-9ab90089/agent/current/bin/codex",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 2777,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "reached": "process 2785 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex) maps it",
+                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
+                  "what": "codex"
+                },
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-9ab90089/agent/current/bin/codex",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 2938,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "reached": "process 2945 (<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex) maps it",
+                  "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a",
+                  "what": "codex"
+                },
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-9ab90089/agent/current/bin/codex",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 3087,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "reached": "process 3093 (<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex) maps it",
+                  "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a",
+                  "what": "codex"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 9,
+              "session_path": "<tmp>/krm-9ab90089/agent/current/bin:<tmp>/krm-9ab90089/agent/runtime:/usr/bin:/bin"
             },
             "second_session_answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 54c7e8c5-796e-424c-874e-299016f01bc1",
+                "detail": "STALE_SESSION: no application instance a6c9803d-89f3-451c-961f-4d166fb55f17",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 54c7e8c5-796e-424c-874e-299016f01bc1",
+                "detail": "STALE_SESSION: no application instance a6c9803d-89f3-451c-961f-4d166fb55f17",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 54c7e8c5-796e-424c-874e-299016f01bc1",
+                "detail": "STALE_SESSION: no application instance a6c9803d-89f3-451c-961f-4d166fb55f17",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 54c7e8c5-796e-424c-874e-299016f01bc1",
+                "detail": "STALE_SESSION: no application instance a6c9803d-89f3-451c-961f-4d166fb55f17",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource a01b0896-2a0b-49eb-88b3-e794534d25d0",
+                "detail": "STALE_SESSION: no pending resource cb3cfb32-2579-49a1-8989-d268f4fd962d",
                 "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.draft.add_attachment",
+                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                "refused": "INVALID_ARGUMENT"
               },
               {
                 "call": "agent.capabilities",
@@ -501,13 +654,14 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 4,
+              "step": 5,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 8a",
+          "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
             "control": {
+              "breaks_property": false,
               "owner": {
                 "forwarded_bytes": 3,
                 "input_bytes": 3,
@@ -515,41 +669,70 @@
                 "screen_shows": "> 2. Sign in with Device Code"
               },
               "viewer": "PERMISSION_DENIED: this grant does not carry terminal.input",
-              "what": "a view-only device's input refused where the owner device's is admitted"
+              "what": "a view-only device's input refused as not permitted where the owner device's is admitted",
+              "why_not": "a forgery that changes the host's state needs a registration the host issued, which this host issues to no connector"
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "plugin_id": "kalareach/codex",
+              "version": "0.2.1"
             },
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
                   "command": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
                   "from": "build",
                   "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "pid": 39528,
+                  "inode": 69650492,
+                  "pid": 4709,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 },
                 {
-                  "command": "node /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f86c6578/agent/current/bin/codex",
+                  "command": "node <tmp>/krm-6b0986af/agent/current/bin/codex",
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "pid": 39523,
+                  "inode": 54188627,
+                  "pid": 4702,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f86c6578/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f86c6578/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-6b0986af/agent/current/bin/codex",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 4702,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "reached": "process 4709 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex) maps it",
+                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
+                  "what": "codex"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 20,
+              "session_path": "<tmp>/krm-6b0986af/agent/current/bin:<tmp>/krm-6b0986af/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session e2c395ae-0701-478e-93ac-38e5da1580ac approval allow"
+                "title": "kalareach session e65421f4-6c0b-43ac-b6a3-19ab7c21cc96 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f86c6578/h/.codex/sessions/rollout-e2c395ae-0701-478e-93ac-38e5da1580ac.jsonl"
+                "path": "<tmp>/krm-6b0986af/h/.codex/sessions/rollout-e65421f4-6c0b-43ac-b6a3-19ab7c21cc96.jsonl"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
                 "probes": [
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-none-session-start",
                     "stderr_first_line": "",
@@ -584,7 +767,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f86c6578/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-6b0986af/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -592,7 +775,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f86c6578/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-6b0986af/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -600,7 +783,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f86c6578/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-6b0986af/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -608,7 +791,7 @@
                     "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-f86c6578/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-6b0986af/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
@@ -629,7 +812,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-tool",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -683,14 +866,26 @@
           "reason": "the build shows no composer without an account (an account from the user)",
           "runs": [
             {
-              "step": 5,
+              "step": 6,
               "outcome": "not_run"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/codex --case 14.03a",
+          "command": "KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "plugin_id": "kalareach/codex",
+              "version": "0.2.1"
+            },
             "provenance": {
+              "ended_before_read": [],
               "executed": [],
+              "launches": [],
+              "sample_interval_ms": 250,
+              "samples": 0,
               "session_path": null
             }
           }

@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-25T21:38:12Z",
-    "finished": "2026-09-25T21:40:17Z",
+    "started": "2026-09-25T22:36:06Z",
+    "finished": "2026-09-25T22:38:18Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,19 +13,23 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "c9b844ccd413bb50b687e4bd7688d1acd355fdf0",
+      "id": "7443f0432c71f3cb1aafdcde61eb0ae3f523bd7c",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "3843befef8811bd57c3cf44c8dfada9c7f4defb3",
+        "id": "a1666539057e960fd7e21a3926328a20fa35e741",
         "modified": false
       }
     },
     "toolchain": {
       "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
       "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)"
+    },
+    "terminal_profile": {
+      "profile": "kr-vt/1",
+      "term": "ghostty"
     },
     "packages": [
       {
@@ -63,71 +67,90 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T//kalareach-agents-9epiZ2"
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-Z5tkJL",
+    "own_home": {
+      "bound_to_a_desktop": true,
+      "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
+      "home": "~",
+      "worker_profile": "desktop_bound"
+    }
   },
   "steps": [
     {
       "number": 1,
-      "group": "agents",
-      "what": "part 2b",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 2b",
+      "group": "own-home",
+      "what": "a session started with the person's own home names their login keychain",
+      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 28,
-      "log": "claude-code/2b.log",
+      "seconds": 17,
+      "log": "own-home.log",
       "error": null
     },
     {
       "number": 2,
       "group": "agents",
-      "what": "part 5a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 5a",
+      "what": "part 2b",
+      "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 22,
-      "log": "claude-code/5a.log",
+      "seconds": 18,
+      "log": "claude-code/2b.log",
       "error": null
     },
     {
       "number": 3,
       "group": "agents",
-      "what": "part 6a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 6a",
+      "what": "part 5a",
+      "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 16,
-      "log": "claude-code/6a.log",
+      "seconds": 18,
+      "log": "claude-code/5a.log",
       "error": null
     },
     {
       "number": 4,
       "group": "agents",
-      "what": "part 8a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 8a",
+      "what": "part 6a",
+      "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
       "seconds": 20,
-      "log": "claude-code/8a.log",
+      "log": "claude-code/6a.log",
       "error": null
     },
     {
       "number": 5,
       "group": "agents",
-      "what": "part 14.03a",
-      "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 14.03a",
+      "what": "part 8a",
+      "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 19,
+      "seconds": 23,
+      "log": "claude-code/8a.log",
+      "error": null
+    },
+    {
+      "number": 6,
+      "group": "agents",
+      "what": "part 14.03a",
+      "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 23,
       "log": "claude-code/14.03a.log",
       "error": null
     }
@@ -175,11 +198,11 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 1,
+              "step": 2,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 2b",
+          "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
             "announced_after": {
               "instances": [],
@@ -194,42 +217,47 @@
             "answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 0bad57d5-346b-4805-8235-4a2b7093cfa9",
+                "detail": "STALE_SESSION: no application instance 5656131d-f90c-4dfe-8cb4-3fc997eda4fa",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 0bad57d5-346b-4805-8235-4a2b7093cfa9",
+                "detail": "STALE_SESSION: no application instance 5656131d-f90c-4dfe-8cb4-3fc997eda4fa",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 0bad57d5-346b-4805-8235-4a2b7093cfa9",
+                "detail": "STALE_SESSION: no application instance 5656131d-f90c-4dfe-8cb4-3fc997eda4fa",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 0bad57d5-346b-4805-8235-4a2b7093cfa9",
+                "detail": "STALE_SESSION: no application instance 5656131d-f90c-4dfe-8cb4-3fc997eda4fa",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 77d35d55-b12f-4454-b93e-d0a7fb6fa01f",
+                "detail": "STALE_SESSION: no pending resource 89a5a601-3f1a-4e76-a8d6-a92eec5c8ab7",
                 "refused": "STALE_SESSION"
               },
               {
+                "call": "agent.draft.add_attachment",
+                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                "refused": "INVALID_ARGUMENT"
+              },
+              {
                 "call": "plugin.action.invoke prompt.send",
-                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 0bad57d5-346b-4805-8235-4a2b7093cfa9",
+                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 5656131d-f90c-4dfe-8cb4-3fc997eda4fa",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke status.refresh",
-                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 0bad57d5-346b-4805-8235-4a2b7093cfa9",
+                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 5656131d-f90c-4dfe-8cb4-3fc997eda4fa",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke approval.answer",
-                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 0bad57d5-346b-4805-8235-4a2b7093cfa9",
+                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 5656131d-f90c-4dfe-8cb4-3fc997eda4fa",
                 "refused": "STALE_SESSION"
               },
               {
@@ -243,6 +271,7 @@
                 "refused": "INVALID_ARGUMENT"
               }
             ],
+            "attachment_request": "refused before any instance is looked at: agent.draft.add_attachment names an application instance in its selectors and carries none in its parameters, so this refusal says nothing about the terminal route",
             "capability_states": [
               [
                 "plugin.metadata.match/1",
@@ -274,26 +303,58 @@
               ]
             ],
             "control": {
+              "breaks_property": false,
               "result": {
                 "forwarded_bytes": 3,
                 "input_bytes": 3,
                 "keyboard": "ghostty",
                 "screen_shows": "❯ Yes, I trust this folder"
               },
-              "what": "terminal input under the lease from the same device"
+              "what": "terminal input under the lease from the same device and connection, which the host accepts where it refuses the typed actions",
+              "why_not": "only a bound connector can advertise a typed capability or accept a typed action, and this host binds none"
+            },
+            "installed": {
+              "grant": [
+                "approval.decode",
+                "approval.respond",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "55e892cd041e1d34e7ccdf95afd4c0d64d893a4bd1630f248b1d540e6488bcf5",
+              "plugin_id": "kalareach/claude-code",
+              "version": "0.3.0"
             },
             "live_bindings": 0,
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
                   "command": "claude",
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
-                  "pid": 21328,
+                  "inode": 69649374,
+                  "pid": 89105,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-203b3444/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-203b3444/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "claude",
+                    "from": "build",
+                    "image": "<tools>/claude-code/2.1.278/bin/claude",
+                    "pid": 89105,
+                    "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
+                  },
+                  "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
+                  "what": "claude"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 1,
+              "session_path": "<tmp>/krm-9459fd93/agent/current/bin:<tmp>/krm-9459fd93/agent/runtime:/usr/bin:/bin"
             }
           }
         },
@@ -338,34 +399,65 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 2,
+              "step": 3,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 5a",
+          "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "agent_processes": [
               "claude"
             ],
             "control": {
-              "check": "these have ended: process 23607 (claude)",
+              "breaks_property": true,
+              "check": "these have ended: process 90694 (claude)",
               "what": "the agent ended with a second daemon kill"
             },
-            "killed_daemon": 23482,
+            "installed": {
+              "grant": [
+                "approval.decode",
+                "approval.respond",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "55e892cd041e1d34e7ccdf95afd4c0d64d893a4bd1630f248b1d540e6488bcf5",
+              "plugin_id": "kalareach/claude-code",
+              "version": "0.3.0"
+            },
+            "killed_daemon": 90564,
             "local_terminal_input": "❯ Yes, I trust this folder",
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
                   "command": "claude",
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
-                  "pid": 23607,
+                  "inode": 69649374,
+                  "pid": 90694,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-7c04516d/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-7c04516d/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "claude",
+                    "from": "build",
+                    "image": "<tools>/claude-code/2.1.278/bin/claude",
+                    "pid": 90694,
+                    "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
+                  },
+                  "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
+                  "what": "claude"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 5,
+              "session_path": "<tmp>/krm-37bb2780/agent/current/bin:<tmp>/krm-37bb2780/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 23826
+            "restarted_daemon": 90868
           }
         },
         {
@@ -387,18 +479,34 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 3,
+              "step": 4,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 6a",
+          "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
             "control": {
-              "check": "process 27737 is no longer running",
-              "relaunched_runs_newer": true,
-              "what": "the agent relaunched after the upgrade"
+              "breaks_property": true,
+              "check": "process 92635 runs <tools>/claude-code/2.1.281/bin/claude (inode 69651059), not <tools>/claude-code/2.1.278/bin/claude (inode 69649374)",
+              "relaunched_process": 92635,
+              "relaunched_runs": {
+                "file": "<tools>/claude-code/2.1.281/bin/claude",
+                "inode": 69651059
+              },
+              "what": "the agent relaunched in the first session after the upgrade"
             },
-            "first_agent_process": 27737,
+            "first_agent_process": 92376,
+            "installed": {
+              "grant": [
+                "approval.decode",
+                "approval.respond",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "55e892cd041e1d34e7ccdf95afd4c0d64d893a4bd1630f248b1d540e6488bcf5",
+              "plugin_id": "kalareach/claude-code",
+              "version": "0.3.0"
+            },
             "newer": {
               "file": "<tools>/claude-code/2.1.281/bin/claude",
               "inode": 69651059,
@@ -409,49 +517,100 @@
               "inode": 69649374
             },
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
                   "command": "claude",
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
-                  "pid": 27737,
+                  "inode": 69649374,
+                  "pid": 92376,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
                   "command": "claude",
                   "from": "newer build",
                   "image": "<tools>/claude-code/2.1.281/bin/claude",
-                  "pid": 27887,
+                  "inode": 69651059,
+                  "pid": 92512,
                   "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-e77ad6bb/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-e77ad6bb/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "claude",
+                    "from": "build",
+                    "image": "<tools>/claude-code/2.1.278/bin/claude",
+                    "pid": 92376,
+                    "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
+                  },
+                  "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
+                  "what": "claude"
+                },
+                {
+                  "agent_process": {
+                    "command": "claude",
+                    "from": "newer build",
+                    "image": "<tools>/claude-code/2.1.281/bin/claude",
+                    "pid": 92512,
+                    "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626"
+                  },
+                  "file": "<tools>/claude-code/2.1.281/bin/claude",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626",
+                  "what": "claude"
+                },
+                {
+                  "agent_process": {
+                    "command": "claude",
+                    "from": "newer build",
+                    "image": "<tools>/claude-code/2.1.281/bin/claude",
+                    "pid": 92635,
+                    "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626"
+                  },
+                  "file": "<tools>/claude-code/2.1.281/bin/claude",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626",
+                  "what": "claude"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 8,
+              "session_path": "<tmp>/krm-d05f7b6b/agent/current/bin:<tmp>/krm-d05f7b6b/agent/runtime:/usr/bin:/bin"
             },
             "second_session_answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance ef254ffb-8cff-4d8e-81ad-bc523518bc05",
+                "detail": "STALE_SESSION: no application instance 45ee9971-6923-4f57-8579-21a5f72fc348",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance ef254ffb-8cff-4d8e-81ad-bc523518bc05",
+                "detail": "STALE_SESSION: no application instance 45ee9971-6923-4f57-8579-21a5f72fc348",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance ef254ffb-8cff-4d8e-81ad-bc523518bc05",
+                "detail": "STALE_SESSION: no application instance 45ee9971-6923-4f57-8579-21a5f72fc348",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance ef254ffb-8cff-4d8e-81ad-bc523518bc05",
+                "detail": "STALE_SESSION: no application instance 45ee9971-6923-4f57-8579-21a5f72fc348",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 381e5c3d-d709-44d1-b012-b85c29d04d89",
+                "detail": "STALE_SESSION: no pending resource ea8bf16c-1d19-40b4-a436-51210a509de0",
                 "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.draft.add_attachment",
+                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                "refused": "INVALID_ARGUMENT"
               },
               {
                 "call": "agent.capabilities",
@@ -496,13 +655,14 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 4,
+              "step": 5,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 8a",
+          "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
             "control": {
+              "breaks_property": false,
               "owner": {
                 "forwarded_bytes": 3,
                 "input_bytes": 3,
@@ -510,28 +670,59 @@
                 "screen_shows": "❯ Yes, I trust this folder"
               },
               "viewer": "PERMISSION_DENIED: this grant does not carry terminal.input",
-              "what": "a view-only device's input refused where the owner device's is admitted"
+              "what": "a view-only device's input refused as not permitted where the owner device's is admitted",
+              "why_not": "a forgery that changes the host's state needs a registration the host issued, which this host issues to no connector"
+            },
+            "installed": {
+              "grant": [
+                "approval.decode",
+                "approval.respond",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "55e892cd041e1d34e7ccdf95afd4c0d64d893a4bd1630f248b1d540e6488bcf5",
+              "plugin_id": "kalareach/claude-code",
+              "version": "0.3.0"
             },
             "provenance": {
+              "ended_before_read": [],
               "executed": [
                 {
                   "command": "claude",
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
-                  "pid": 29241,
+                  "inode": 69649374,
+                  "pid": 94181,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-d409584d/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-d409584d/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "claude",
+                    "from": "build",
+                    "image": "<tools>/claude-code/2.1.278/bin/claude",
+                    "pid": 94181,
+                    "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
+                  },
+                  "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
+                  "what": "claude"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 22,
+              "session_path": "<tmp>/krm-74a77fec/agent/current/bin:<tmp>/krm-74a77fec/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 68a96204-7ee4-49fc-9c40-7ad481a85d53 approval allow"
+                "title": "kalareach session d01b35fc-8a57-4519-b6e7-e687f63c60e3 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-d409584d/h/.claude/projects/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-d409584d-w/68a96204-7ee4-49fc-9c40-7ad481a85d53.jsonl"
+                "path": "<tmp>/krm-74a77fec/h/.claude/projects/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-74a77fec-w/d01b35fc-8a57-4519-b6e7-e687f63c60e3.jsonl"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
@@ -572,7 +763,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-d409584d/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-74a77fec/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -580,7 +771,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-d409584d/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-74a77fec/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -588,15 +779,15 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-d409584d/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-74a77fec/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 3,
+                    "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-d409584d/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-74a77fec/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
@@ -625,7 +816,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 6,
                     "exit": 1,
                     "probe": "channel-worker",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -670,36 +861,85 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 5,
+              "step": 6,
               "outcome": "passed"
             }
           ],
-          "command": "scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent kalareach/claude-code --case 14.03a",
+          "command": "KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "announced": {
               "instances": [],
               "more_resources": false,
               "resources": []
             },
-            "composer_row": "❯ /private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-52509e62/w/kalareach-shot.png",
+            "composer_row": "❯ <tmp>/krm-f530bf31/w/kalareach-shot.png",
             "control": {
+              "breaks_property": true,
               "refused": "input.write: LEASE_LOST: the input lease has moved on",
               "what": "the same input without the lease"
             },
             "forwarded_bytes": 90,
+            "installed": {
+              "grant": [
+                "approval.decode",
+                "approval.respond",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "55e892cd041e1d34e7ccdf95afd4c0d64d893a4bd1630f248b1d540e6488bcf5",
+              "plugin_id": "kalareach/claude-code",
+              "version": "0.3.0"
+            },
             "provenance": {
+              "ended_before_read": [
+                "/bin/sh -c ps aux | grep -E \"Visual Studio Code|Code Helper|Cursor Helper|Windsurf Helper|Devin Helper|Devin.app|IntelliJ IDEA|PyCharm|WebStorm|PhpStorm|RubyMine|CLion|GoLand|Rider|DataGrip|AppCode|DataSpell|Aqua|Gateway|Fleet|Android Studio\" | grep -v grep"
+              ],
               "executed": [
+                {
+                  "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c gc.auto=0 -c maintenance.auto=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never clone --depth 1 --recurse-submodules --shallow-submodules -- git@github.com:anthropics/claude-plugins-official.git <tmp>/krm-f530bf31/h/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone",
+                  "from": "system",
+                  "image": "/Applications/Xcode.app/Contents/Developer/usr/bin/git",
+                  "inode": 12560984,
+                  "pid": 96614,
+                  "sha256": "10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
+                },
                 {
                   "command": "claude",
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
-                  "pid": 31098,
+                  "inode": 69649374,
+                  "pid": 96297,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
+                },
+                {
+                  "command": "ssh -T -o BatchMode=yes -o ConnectTimeout=2 -o StrictHostKeyChecking=yes git@github.com",
+                  "from": "system",
+                  "image": "/usr/bin/ssh",
+                  "inode": 1152921500312572825,
+                  "pid": 96424,
+                  "sha256": "17542914a3fb55e7efeb35a90d594a21c84bf6a4cfe1fc8ddff5606dc2658fc3"
                 }
               ],
-              "session_path": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-52509e62/agent/current/bin:/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-52509e62/agent/runtime:/usr/bin:/bin"
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "claude",
+                    "from": "build",
+                    "image": "<tools>/claude-code/2.1.278/bin/claude",
+                    "pid": 96297,
+                    "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
+                  },
+                  "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
+                  "what": "claude"
+                }
+              ],
+              "sample_interval_ms": 250,
+              "samples": 20,
+              "session_path": "<tmp>/krm-f530bf31/agent/current/bin:<tmp>/krm-f530bf31/agent/runtime:/usr/bin:/bin"
             },
-            "typed": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/krm-52509e62/w/kalareach-shot.png"
+            "typed": "<tmp>/krm-f530bf31/w/kalareach-shot.png"
           }
         },
         {
