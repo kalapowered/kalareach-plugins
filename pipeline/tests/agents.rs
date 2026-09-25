@@ -240,8 +240,138 @@ fn check_record(record: &Value, package: &LoadedPackage, tested: &str, problems:
             problems.push(format!("{list} is not a list"));
         }
     }
-    if !record["summary"].is_object() {
-        problems.push("summary is missing".to_owned());
+    if run["terminal_profile"]["profile"]
+        .as_str()
+        .is_none_or(str::is_empty)
+        || run["terminal_profile"]["term"]
+            .as_str()
+            .is_none_or(str::is_empty)
+    {
+        problems.push("run.terminal_profile names no profile and terminal".to_owned());
+    }
+    check_steps(record, problems);
+    check_summary(record, problems);
+}
+
+/// Checks the steps: each one the run ran, with its command as run, its exit status and its log;
+/// the own-home check first, and a failure outside the identifiers exactly when it failed; and
+/// every test that ran naming a part's step, with that step's command and outcome.
+fn check_steps(record: &Value, problems: &mut Vec<String>) {
+    let steps = entries(&record["steps"]);
+    let mut numbers = BTreeSet::new();
+    for step in &steps {
+        let number = step["number"].as_u64();
+        if !number.is_some_and(|number| numbers.insert(number))
+            || step["command"].as_str().is_none_or(str::is_empty)
+            || step["what"].as_str().is_none_or(str::is_empty)
+            || step["log"].as_str().is_none_or(str::is_empty)
+            || !step["exit"].is_i64()
+            || !step["seconds"].is_u64()
+            || !step["needs"].is_array()
+            || !(step["error"].is_null() || step["error"].is_string())
+        {
+            problems.push(format!(
+                "step {} names no distinct number, command, log, exit status, time, needs and error",
+                step["number"]
+            ));
+        }
+    }
+    let own_home: Vec<&&Value> = steps
+        .iter()
+        .filter(|step| step["group"] == "own-home")
+        .collect();
+    match own_home.as_slice() {
+        [step] => {
+            let failed = step["exit"] != 0;
+            if failed == entries(&record["failures_outside_identifiers"]).is_empty() {
+                problems.push(
+                    "failures_outside_identifiers names the own-home check exactly when it failed"
+                        .to_owned(),
+                );
+            }
+            if !failed
+                && record["run"]["own_home"]["default_keychain"]
+                    .as_str()
+                    .is_none()
+            {
+                problems.push("run.own_home names no default keychain".to_owned());
+            }
+        }
+        _ => problems.push(format!(
+            "the steps hold one own-home check, and they hold {}",
+            own_home.len()
+        )),
+    }
+    for test in record["identifiers"]
+        .as_object()
+        .into_iter()
+        .flat_map(|map| map.values())
+        .flat_map(|identifier| entries(&identifier["tests"]))
+    {
+        for run in entries(&test["runs"]) {
+            let step = steps.iter().find(|step| step["number"] == run["step"]);
+            match step {
+                Some(step)
+                    if step["group"] == "agents"
+                        && run["outcome"] == test["outcome"]
+                        && test["command"] == step["command"] => {}
+                _ => problems.push(format!(
+                    "{}: its run names step {}, which is not a part's step with its command and \
+                     outcome",
+                    test["test"], run["step"]
+                )),
+            }
+        }
+    }
+}
+
+/// Checks that the summary is what the identifiers and the steps make it.
+fn check_summary(record: &Value, problems: &mut Vec<String>) {
+    let summary = &record["summary"];
+    let identifiers: Vec<&Value> = record["identifiers"]
+        .as_object()
+        .map(|map| map.values().collect())
+        .unwrap_or_default();
+    let verdicts = |verdict: &str| {
+        identifiers
+            .iter()
+            .filter(|identifier| identifier["verdict"] == verdict)
+            .count()
+    };
+    let mut wanted = json!({
+        "identifiers": identifiers.len(),
+        "passed": verdicts("passed"),
+        "failed": verdicts("failed"),
+        "known_difference": verdicts("known_difference"),
+        "not_run": verdicts("not_run"),
+        "known_differences": entries(&record["known_differences"]).len(),
+    });
+    let mut tests = serde_json::Map::new();
+    for outcome in [
+        "passed",
+        "failed",
+        "ignored",
+        "not_run",
+        "not_built",
+        "known_difference",
+    ] {
+        let total: u64 = identifiers
+            .iter()
+            .map(|identifier| identifier["counts"][outcome].as_u64().unwrap_or(0))
+            .sum();
+        tests.insert(outcome.to_owned(), json!(total));
+    }
+    wanted["tests"] = Value::Object(tests);
+    let failed_steps: Vec<Value> = entries(&record["steps"])
+        .into_iter()
+        .filter(|step| step["exit"] != 0)
+        .map(|step| step["number"].clone())
+        .collect();
+    wanted["failed_steps"] = Value::Array(failed_steps);
+    if *summary != wanted {
+        problems.push(format!(
+            "summary is {summary}, and the identifiers and steps make it {wanted}"
+        ));
     }
 }
 
