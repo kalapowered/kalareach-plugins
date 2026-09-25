@@ -1,0 +1,263 @@
+{
+  "list_version": 1,
+  "platform": "macos-aarch64",
+  "builds": [
+    {
+      "package": "kalareach/claude-code",
+      "application": "claude-code",
+      "version": "2.1.278",
+      "distribution": "npm @anthropic-ai/claude-code-darwin-arm64",
+      "source": "https://registry.npmjs.org/@anthropic-ai/claude-code-darwin-arm64/-/claude-code-darwin-arm64-2.1.278.tgz",
+      "prefix": "claude-code/2.1.278",
+      "pinned": "bin/claude",
+      "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
+      "command": "claude",
+      "arguments": [],
+      "runtime": [],
+      "environment": {
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+        "DISABLE_AUTOUPDATER": "1",
+        "DISABLE_TELEMETRY": "1"
+      },
+      "home": {
+        ".claude.json": "{\"hasCompletedOnboarding\":true,\"theme\":\"dark\"}\n"
+      },
+      "ready": "Quick safety check",
+      "harmless": {
+        "input": "\u001b[B",
+        "shows": "❯ Yes, I trust this folder"
+      },
+      "composer": {
+        "prepare": [
+          {
+            "input": "\u001b[B",
+            "shows": "❯ Yes, I trust this folder"
+          },
+          {
+            "input": "\r",
+            "shows": "? for shortcuts"
+          }
+        ]
+      },
+      "server": null,
+      "transcript": ".claude/projects/{cwd_slug}/{session}.jsonl",
+      "newer": {
+        "version": "2.1.281",
+        "distribution": "npm @anthropic-ai/claude-code-darwin-arm64",
+        "source": "https://registry.npmjs.org/@anthropic-ai/claude-code-darwin-arm64/-/claude-code-darwin-arm64-2.1.281.tgz",
+        "prefix": "claude-code/2.1.281",
+        "pinned": "bin/claude",
+        "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626",
+        "ready": "Quick safety check"
+      }
+    },
+    {
+      "package": "kalareach/codex",
+      "application": "codex",
+      "version": "0.155.1",
+      "distribution": "npm @openai/codex",
+      "source": "https://registry.npmjs.org/@openai/codex/-/codex-0.155.1.tgz",
+      "prefix": "codex/0.155.1",
+      "pinned": "lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+      "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
+      "command": "codex",
+      "arguments": [],
+      "runtime": [
+        "node"
+      ],
+      "environment": {},
+      "home": {},
+      "ready": "Welcome to Codex",
+      "harmless": {
+        "input": "\u001b[B",
+        "shows": "> 2. Sign in with Device Code"
+      },
+      "composer": null,
+      "server": null,
+      "transcript": ".codex/sessions/rollout-{session}.jsonl",
+      "newer": {
+        "version": "0.156.1",
+        "distribution": "npm @openai/codex",
+        "source": "https://registry.npmjs.org/@openai/codex/-/codex-0.156.1.tgz",
+        "prefix": "codex/0.156.1",
+        "pinned": "lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+        "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a",
+        "ready": "Welcome to Codex"
+      }
+    },
+    {
+      "package": "kalareach/gemini-cli",
+      "application": "gemini-cli",
+      "version": "0.60.0",
+      "distribution": "npm @google/gemini-cli",
+      "source": "https://registry.npmjs.org/@google/gemini-cli/-/gemini-cli-0.60.0.tgz",
+      "prefix": "gemini-cli/0.60.0",
+      "pinned": "lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+      "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+      "command": "gemini",
+      "arguments": [],
+      "runtime": [
+        "node"
+      ],
+      "environment": {},
+      "home": {},
+      "ready": "Do you trust the files in this folder?",
+      "harmless": {
+        "input": "\u001b[B",
+        "shows": "● 2. Trust parent folder"
+      },
+      "composer": null,
+      "server": null,
+      "transcript": ".gemini/tmp/{cwd_slug}/chats/session-{session}.json",
+      "newer": null
+    },
+    {
+      "package": "kalareach/kimi-cli",
+      "application": "kimi-cli",
+      "version": "1.51.0",
+      "distribution": "PyPI kimi-cli",
+      "source": "https://files.pythonhosted.org/packages/5e/28/22019f7d6c3400ab5de8d2dd00cf160235e6ae111faf984730bd6dc2c991/kimi_cli-1.51.0-py3-none-any.whl",
+      "prefix": "kimi-cli/1.51.0",
+      "pinned": "wheel/kimi_cli-1.51.0-py3-none-any.whl",
+      "sha256": "ffb9d0d4725844d36d6c78e8d3914a96b2d6a17678c217f3abe7336fb7e02d0e",
+      "command": "kimi",
+      "arguments": [],
+      "runtime": [],
+      "environment": {
+        "KIMI_DISABLE_TELEMETRY": "1",
+        "PYTHON_KEYRING_BACKEND": "keyring.backends.null.Keyring"
+      },
+      "home": {},
+      "ready": "Welcome to Kimi Code CLI!",
+      "harmless": {
+        "input": "kr-harmless",
+        "shows": "kr-harmless"
+      },
+      "composer": {
+        "prepare": []
+      },
+      "server": null,
+      "transcript": ".kimi/sessions/{cwd_slug}/{session}.jsonl",
+      "newer": null
+    },
+    {
+      "package": "kalareach/kimi-code-cli",
+      "application": "kimi-code-cli",
+      "version": "2.0.2",
+      "distribution": "the kimi.com binary release",
+      "source": "https://code.kimi.com/kimi-code/binaries/2.0.2/kimi-code-darwin-arm64",
+      "prefix": "kimi-code-cli/2.0.2",
+      "pinned": "bin/kimi",
+      "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11",
+      "command": "kimi",
+      "arguments": [],
+      "runtime": [],
+      "environment": {},
+      "home": {},
+      "ready": "Trust this folder?",
+      "harmless": {
+        "input": "\u001b[B",
+        "shows": "❯ Don't trust"
+      },
+      "composer": {
+        "prepare": [
+          {
+            "input": "\r",
+            "shows": "Welcome to Kimi Code!"
+          }
+        ]
+      },
+      "server": null,
+      "transcript": ".kimi-code/sessions/{cwd_slug}/{session}.jsonl",
+      "newer": null
+    },
+    {
+      "package": "kalareach/opencode",
+      "application": "opencode",
+      "version": "1.18.31",
+      "distribution": "npm opencode-ai",
+      "source": "https://registry.npmjs.org/opencode-ai/-/opencode-ai-1.18.31.tgz",
+      "prefix": "opencode/1.18.31",
+      "pinned": "lib/node_modules/opencode-ai/bin/opencode.exe",
+      "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+      "command": "opencode",
+      "arguments": [],
+      "runtime": [],
+      "environment": {},
+      "home": {},
+      "ready": "Ask anything",
+      "harmless": {
+        "input": "kr-harmless",
+        "shows": "kr-harmless"
+      },
+      "composer": {
+        "prepare": []
+      },
+      "server": null,
+      "transcript": ".local/share/opencode/storage/session/{session}.json",
+      "newer": null
+    },
+    {
+      "package": "kalareach/opencode-attach",
+      "application": "opencode-attach",
+      "version": "1.18.31",
+      "distribution": "npm opencode-ai",
+      "source": "https://registry.npmjs.org/opencode-ai/-/opencode-ai-1.18.31.tgz",
+      "prefix": "opencode/1.18.31",
+      "pinned": "lib/node_modules/opencode-ai/bin/opencode.exe",
+      "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+      "command": "opencode",
+      "arguments": [
+        "attach",
+        "http://127.0.0.1:{port}"
+      ],
+      "runtime": [],
+      "environment": {},
+      "home": {},
+      "ready": "Ask anything",
+      "harmless": {
+        "input": "kr-harmless",
+        "shows": "kr-harmless"
+      },
+      "composer": {
+        "prepare": []
+      },
+      "server": {
+        "arguments": [
+          "serve",
+          "--hostname",
+          "127.0.0.1",
+          "--port",
+          "{port}"
+        ],
+        "ready": "opencode server listening"
+      },
+      "transcript": ".local/share/opencode/storage/session/{session}.json",
+      "newer": null
+    },
+    {
+      "package": "kalareach/qoder-cli",
+      "application": "qoder-cli",
+      "version": "1.1.59",
+      "distribution": "the qoder.com release archive",
+      "source": "https://qoder-ide.oss-accelerate.aliyuncs.com/qodercli/releases/1.1.59/qodercli-darwin-arm64.tar.gz",
+      "prefix": "qoder-cli/1.1.59",
+      "pinned": "bin/qodercli",
+      "sha256": "c1b372d07083b98a2708ff23d4d462389fbf2bccad0d1317bb2970685f47c103",
+      "command": "qodercli",
+      "arguments": [],
+      "runtime": [],
+      "environment": {},
+      "home": {},
+      "ready": "Do you trust the files in this folder?",
+      "harmless": {
+        "input": "\u001b[B",
+        "shows": "❯ 2. Don't trust and exit"
+      },
+      "composer": null,
+      "server": null,
+      "transcript": ".qoder/projects/{cwd_slug}/{session}.jsonl",
+      "newer": null
+    }
+  ]
+}
