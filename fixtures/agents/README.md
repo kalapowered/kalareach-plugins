@@ -38,9 +38,13 @@ record names each part on its own. The case numbers are the specification's.
 | 14.03a | A path typed at the agent's prompt is terminal input, and reaches the agent's own composer |
 | 14.03b | The host never reports a typed path as an attachment the agent accepted |
 
-Each part the driver runs has a control that breaks the part's property on purpose, and the part
-passes only when its check fails under the control. Each part it does not run is recorded as not
-run, with the reason and what would change it.
+Each part the driver runs has a control, and its evidence says whether the control breaks the
+part's property (`breaks_property`). For 5a, 6a and 14.03a it does: the part passes only when its
+check fails under the control. For 2b and 8a it cannot on a host that binds no connector, since only
+a binding advertises or accepts a typed action and only a registration the host issued can change
+its state; their controls show instead that the same connection's accepted path works, and the
+evidence says why no breaking control ran. Those properties get breaking controls in 2c and 8b.
+Each part the driver does not run is recorded as not run, with the reason and what would change it.
 
 ## The record
 
@@ -56,18 +60,24 @@ common form:
 | Member | Meaning |
 | --- | --- |
 | `run.host` | `{repository, commit: {id, modified}}`: the core repository and commit the host and the driver were built from, as `run.commit` names the commit of this repository the harness ran from |
+| `run.own_home` | What the check before the first agent read: the default keychain a session started with the person's own home and no agent names, and the execution context the host gave that session (`worker_profile`, and `bound_to_a_desktop`). The check is the first step of every record, group `own-home`; when it fails, `failures_outside_identifiers` names it |
 | `run.packages[]` | The package the parts ran against: `name`, `version`, `manifest_digest` (the SHA-256 of its `plugin.json`) and the `generation` it was installed from. The check requires the version and digest of the package in this tree, so a package released again needs its parts run again |
 | `run.applications[]` | The pinned build, and a newer build where the upgrade part uses one: `version`, `url` it came from, `sha256` of its pinned file, `status` and `reason` |
 | `tests[].part` | The part the test is, from the table above |
 | `tests[].source` | Where the test is, prefixed by its repository: `kalareach:` for the driver's tests, `kalareach-plugins:` for a part recorded from the table above |
 | `tests[].needs` | For a part not run, what it needs: a vendor account, a connector binding, a launch registration or draft reads |
-| `tests[].evidence` | What a part that ran observed, its control included, and under `provenance` the PATH its session's shell searched and every executable image a process beneath its sessions ran, with the file's SHA-256 and where it lies: `build`, `newer build`, `runtime`, `run`, `shell` or `system` |
+| `tests[].evidence` | What a part observed, its control included; under `installed`, the package the host installed, which must be the one in `run.packages`; and under `provenance`, the PATH the session's shell searched, what each launch ran and how it reached the pinned file, and each executable image seen beneath the agent's sessions, with the SHA-256 of the file whose inode the process maps and where it lies (`build`, `newer build`, `runtime`, `run`, `shell` or `system`), from looks every `sample_interval_ms` from the first launch to the end of the part. A process that started and ended between two looks is not there, and one that ended before its image was read is named under `ended_before_read` |
 | `tests[].condition` | On a part a vendor gate held: `{gate, observed, fallback}`, where `observed` is `untested` or `unavailable` and `fallback` names the test of the same record that ran the path used instead. The gated part stays `not_run`; the fallback carries its own outcome |
 | `attachment_paths[]` | The attachment path each operation declares: every action whose effect carries a prompt or an attachment, then the terminal route; `declared` is `typed_submission`, `verified_composer_insertion`, `terminal_draft_path`, or `null` for nothing declared, and `package_digest` is the manifest digest the declaration was read from |
 
-A path the run observed under the tools directory is written `<tools>/...`, and one under the home
-directory of whoever ran it `~/...`, so a record names no machine's layout beyond its evidence
-directory.
+`run.terminal_profile` is `{profile: "kr-vt/1", term: "ghostty"}`: the windows are read through the
+product's own terminal engine, and they name themselves `ghostty`, a terminal that supplies both
+enhanced keyboard protocols. Each step's `command` is the driver's command as the harness ran it,
+and a test's `command` is its step's. A path in the evidence directory is written `<evidence>/...`,
+one in the temporary directory, where each run's own directory is, `<tmp>/...`, one in the tools
+directory `<tools>/...` and one in the home directory of whoever ran it `~/...`; the evidence
+directory itself is named as it is, and so is a system or runtime executable, since which one ran is
+the evidence.
 
 ## The build list
 
@@ -80,7 +90,8 @@ in its home, the text its first screen shows, one harmless input with the text i
 reaches its composer where it has one without an account, the server its terminal route starts
 first where it has one, where its vendor keeps a conversation, and the newer build the upgrade part
 moves to where one is named. The harness checks each build's digest before it runs anything with
-it.
+it, and for a build installed from a wheel, every file digest the wheel's `RECORD` lists against the
+installed code.
 
 ## Running it
 
@@ -90,14 +101,17 @@ KR_SHELL_PACKAGES=<managed shell prefix> \
 ```
 
 The managed shell is built in the core checkout with `scripts/build-shells.sh --zsh`. No agent signs
-in or starts a turn: each runs with its home inside the run's own directory on the internal disk,
-every proxy variable at a loopback port nothing listens on, and a keychain of the run's own as that
-home's default, so a secret an agent writes when it starts stays in the run and the system never
-asks anyone to create a keychain. The session's shell searches only the run's link to the build,
-the run's links to its runtimes and the system's directories. A part whose session searched or ran
-anything else did not test the pinned build, and is recorded as not run, naming what ran.
+in or starts a turn: each runs with its home and its temporary directory inside the run's own
+directory on the internal disk, every proxy variable at a loopback port nothing listens on, and a
+keychain of the run's own as that home's default, so a secret an agent writes when it starts stays
+in the run and the system never asks anyone to create a keychain. The session's shell searches only
+the run's link to the build, the run's links to its runtimes and the system's directories. A part
+whose session searched or ran anything else, or whose launch did not run the pinned file, did not
+test the pinned build, and is recorded as not run, naming what ran.
 
-Before the first agent, the harness starts one session the way a person does, with their own home
-and no agent, and checks that it names their login keychain as its default. After that check and
-after each part it reads what SecurityAgent, which shows the system's keychain and authorisation
-dialogs, logged meanwhile, and says that nothing was, or stops at once with exit status 3.
+Before the first agent, the harness starts one session the way a person does, `kr new` with their
+own home, no agent and no choice of execution context, and checks that it names their login
+keychain as its default. After that check and after each part it reads everything SecurityAgent,
+which shows the system's keychain and authorisation dialogs, logged since a minute before its
+previous look, and at the end the whole run, and says that nothing was, or stops at once with exit
+status 3, as it does when the log cannot be read.

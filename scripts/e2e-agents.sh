@@ -10,17 +10,21 @@
 #   1. It builds the host (kr, kr-attach-guard, kr-controller, kr-worker, kr-hook) and the driver in
 #      the core checkout --core names, or finds them already built there, and names the commit.
 #   2. It checks each agent build in the tools directory against the SHA-256 fixtures/agents/
-#      builds.json pins. A build that is missing or different runs nothing, and says so.
-#   3. Once, with no agent, it checks that a session a person starts with their own home names their
-#      login keychain as its default.
+#      builds.json pins, and a build installed from a wheel against every file digest the wheel's
+#      RECORD lists. A build that is missing or different runs nothing, and says so.
+#   3. Once, with no agent, it checks that a session a person starts with their own home, in the
+#      execution context the host gives it, names their login keychain as its default.
 #   4. For each package, and each selected part the driver has a test for, the driver starts a host
 #      from those binaries on the internal disk, pairs an owner device, installs the package from a
 #      copy of snapshots/development on that device's confirmation, starts the agent by typing its
 #      command at the prompt of a managed shell, and checks the part and its control. A part whose
 #      session searched or ran anything but the pinned build, its runtime, the run's own and the
-#      system's did not test the build, and is recorded as not run, naming what ran.
-#   5. After that check and after each part it reads what SecurityAgent, which shows the system's
-#      keychain and authorisation dialogs, logged meanwhile: nothing, which it says, or it stops.
+#      system's did not test the build, and is recorded as not run, naming what ran. A part whose
+#      host installed anything but this tree's package failed.
+#   5. After that check and after each part it reads everything SecurityAgent, which shows the
+#      system's keychain and authorisation dialogs, logged since a minute before its previous look,
+#      and at the end the whole run: nothing, which it says, or it stops, as it does when the log
+#      cannot be read.
 #   6. It prints one line per part: passed, failed, or not run with the reason and who can change it.
 #   7. It assembles each package's record, and writes it into fixtures/agents with --write.
 #
@@ -41,8 +45,8 @@
 #   --write           write the records into fixtures/agents
 #
 # It exits 0 when every part it ran passed, 1 when one failed or the host did not build, 2 when it
-# was refused before running anything, and 3 when SecurityAgent logged anything during the run, at
-# once: look at the screen, and answer no dialog there.
+# was refused before running anything, and 3 when SecurityAgent logged anything during the run, or
+# its log could not be read, at once: look at the screen, and answer no dialog there.
 set -euo pipefail
 
 # Every comparison here is of ASCII identifiers and digests.
@@ -74,7 +78,7 @@ parts=(
 )
 
 usage() {
-  sed -n '25,36p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
+  sed -n '36,49p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
   exit 2
 }
 
@@ -170,9 +174,15 @@ selected_agent() {
   return 1
 }
 
-# Every artefact of this run goes into a new directory on the internal disk.
-evidence="$(mktemp -d "${TMPDIR:-/tmp}/kalareach-agents-XXXXXX")"
+# Every artefact of this run goes into a new directory on the internal disk, named with its links
+# resolved, as the processes that write into it name it.
+evidence="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/kalareach-agents-XXXXXX")" && pwd -P)"
+temporary="${TMPDIR:-/tmp}"
+temporary="${temporary%/}"
+temporary_real="$(cd "$temporary" && pwd -P)"
 started="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+# When the run began, as `log show` reads a time.
+run_began="$(date '+%Y-%m-%d %H:%M:%S')"
 
 commit_of() {
   local id modified=false
@@ -226,24 +236,67 @@ runtime_files() {
   printf '%s' "$files"
 }
 
-# Whether SecurityAgent, which shows the system's keychain and authorisation dialogs, logged
-# anything since $1: it runs only to show one. Prints what it logged.
+# What SecurityAgent, which shows the system's keychain and authorisation dialogs and runs only to
+# show one, logged since $1, at every level. A `log show` that fails has said nothing, and what it
+# printed is returned as an entry would be, so the run stops rather than reading its silence as none.
 security_agent_since() {
-  /usr/bin/log show --style compact --start "$1" --predicate 'process == "SecurityAgent"' 2>/dev/null |
-    grep 'SecurityAgent\[' || true
+  local out
+  if ! out="$(/usr/bin/log show --style compact --info --debug --start "$1" \
+    --predicate 'process == "SecurityAgent"' 2>&1)"; then
+    printf 'the system log could not be read: %s\n' "$out"
+    return 0
+  fi
+  printf '%s\n' "$out" | grep 'SecurityAgent\[' || true
 }
 
 # Stops the run when SecurityAgent logged anything since $1, so a dialog one of its programs caused
 # is never followed by another; otherwise says in the log that none opened. $2 names what ran.
 no_dialog_since() {
-  local since="$1" what="$2" logged
+  local since="$1" what="$2" logged now
+  now="$(date '+%Y-%m-%d %H:%M:%S')"
   logged="$(security_agent_since "$since")"
   if [ -n "$logged" ]; then
-    echo "$what: SecurityAgent logged this since $since, so a system dialog may have opened; stopping" >&2
+    echo "$what: SecurityAgent's log from $since has entries, so a system dialog may have opened; stopping" >&2
     printf '%s\n' "$logged" | sed 's/^/  /' >&2
     exit 3
   fi
-  echo "$what: SecurityAgent logged nothing from $since to $(date '+%Y-%m-%d %H:%M:%S'), so no dialog opened"
+  echo "$what: SecurityAgent logged nothing from $since to $now, so no dialog opened"
+}
+
+# Each look at SecurityAgent's log starts a minute before the previous look began, so the looks
+# overlap and none of the run falls between them; the last covers the whole run.
+last_look="$run_began"
+look_again() {
+  local began
+  began="$(date '+%Y-%m-%d %H:%M:%S')"
+  no_dialog_since "$last_look" "$1"
+  last_look="$(date -j -v-60S -f '%Y-%m-%d %H:%M:%S' "$began" '+%Y-%m-%d %H:%M:%S')"
+}
+
+# Compares the code a wheel installed under $1 with the wheel $2: every file the wheel's RECORD
+# lists with a SHA-256 must be in the installation's site-packages with that digest. Prints how
+# many files were compared, or what did not match.
+verify_wheel() {
+  local prefix="$1" wheel="$2" site list count others
+  site="$(find "$prefix/lib" -maxdepth 2 -type d -name site-packages | head -1)"
+  [ -n "$site" ] || {
+    echo "no site-packages under $prefix"
+    return 1
+  }
+  list="$(mktemp "$evidence/record-XXXXXX")"
+  unzip -p "$wheel" '*.dist-info/RECORD' |
+    awk -F, '{ h = $2; sub(/^sha256=/, "", h) } $2 ~ /^sha256=/ && length(h) == 64 && h ~ /^[0-9a-f]+$/ { print h "  " $1 }' >"$list"
+  others="$(unzip -p "$wheel" '*.dist-info/RECORD' | awk -F, '$2 != "" && $2 !~ /^sha256=[0-9a-f]+$/' | wc -l | tr -d ' ')"
+  count="$(wc -l <"$list" | tr -d ' ')"
+  if [ "$others" -ne 0 ] || [ "$count" -eq 0 ]; then
+    echo "the wheel's RECORD lists $others digests in a form this harness does not compare"
+    return 1
+  fi
+  if ! (cd "$site" && shasum -a 256 -c --quiet "$list") >"$list.out" 2>&1; then
+    head -3 "$list.out" | tr '\n' ';'
+    return 1
+  fi
+  echo "$count"
 }
 
 # A file's SHA-256, or nothing when it is not there.
@@ -257,19 +310,34 @@ ran=0
 passed_count=0
 
 # Once per run, before any agent: a session a person starts with their own home, and no agent,
-# names their login keychain as its default.
+# names their login keychain as its default. It is the first step of every record.
 own_home_test="a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default"
-since="$(date '+%Y-%m-%d %H:%M:%S')"
+own_home_command="KR_AGENTS_RESULT=$evidence/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 $driver --exact $own_home_test --nocapture --test-threads=1"
+began="$(date +%s)"
+own_home_exit=0
 KR_AGENTS_RESULT="$evidence/own-home.jsonl" KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 \
-  "$driver" --exact "$own_home_test" --nocapture --test-threads=1 >"$evidence/own-home.log" 2>&1 || true
-if named="$(jq -er 'select(.part == "own-home" and .outcome == "passed") | .evidence.default_keychain' \
-  "$evidence/own-home.jsonl" 2>/dev/null)"; then
-  echo "own home: a session started with the person's own home and no agent names $named as its default keychain"
+  "$driver" --exact "$own_home_test" --nocapture --test-threads=1 >"$evidence/own-home.log" 2>&1 ||
+  own_home_exit=$?
+own_home_seconds=$(($(date +%s) - began))
+look_again "own home"
+own_home_error=""
+own_home="{}"
+if [ "$own_home_exit" -eq 0 ] &&
+  own_home="$(jq -ec 'select(.part == "own-home" and .outcome == "passed") | .evidence' \
+    "$evidence/own-home.jsonl" 2>/dev/null)"; then
+  echo "own home: a session started with the person's own home and no agent names $(printf '%s' "$own_home" | jq -r '.default_keychain') as its default keychain, in the $(printf '%s' "$own_home" | jq -r '.worker_profile') context"
 else
-  echo "own home: failed ($(grep -m 1 -A 1 'panicked at' "$evidence/own-home.log" | tail -1))"
+  own_home="{}"
+  own_home_error="$(grep -m 1 -A 1 'panicked at' "$evidence/own-home.log" | tail -1 || true)"
+  [ -n "$own_home_error" ] || own_home_error="the check exited $own_home_exit and wrote no outcome"
+  echo "own home: failed ($own_home_error)"
   failed=1
 fi
-no_dialog_since "$since" "own home"
+own_home_step="$(jq -cn --arg command "$own_home_command" --argjson exit "$own_home_exit" \
+  --argjson seconds "$own_home_seconds" --arg error "$own_home_error" \
+  '{number: 1, group: "own-home", what: "a session started with the person'"'"'s own home names their login keychain",
+    command: $command, needs: ["KR_SHELL_PACKAGES"], exit: $exit, seconds: $seconds, log: "own-home.log",
+    error: (if $error == "" then null else $error end)}')"
 echo
 
 while IFS= read -r package; do
@@ -311,6 +379,17 @@ while IFS= read -r package; do
   if [ -z "$blocked" ] && ! files="$(runtime_files "$runtimes")"; then
     blocked="the build runs on $runtimes, which is not on this machine's PATH (the machine)"
   fi
+  # A build installed from a wheel runs the code the wheel installed, which is compared with it.
+  payload=""
+  if [ -z "$blocked" ] && [ "${pinned_file##*.}" = "whl" ]; then
+    if compared="$(verify_wheel "$tools/$(printf '%s' "$entry" | jq -r '.prefix')" "$pinned_file")"; then
+      payload="; its installed code matches the $compared files the wheel's RECORD lists"
+    else
+      blocked="the code installed from $pinned_file differs from it: $compared (the tools directory)"
+    fi
+  fi
+  manifest_version="$(jq -r '.version' "$manifest")"
+  manifest_digest="$(digest_of "$manifest")"
 
   # The build as the driver reads it: paths made absolute, runtimes found, the package's actions.
   actions="$(jq '[.actions[].id]' "$manifest")"
@@ -325,7 +404,8 @@ while IFS= read -r package; do
          sha256: .newer.sha256, ready: .newer.ready} end)
     }' >"$directory/build.json"
 
-  number=0
+  steps="[$own_home_step]"
+  number=1
   for spec in "${parts[@]}"; do
     part="${spec%%|*}"
     rest="${spec#*|}"
@@ -340,14 +420,13 @@ while IFS= read -r package; do
     fi
     log="$directory/$part.log"
     began="$(date +%s)"
-    since="$(date '+%Y-%m-%d %H:%M:%S')"
     rc=0
     KR_AGENTS_BUILD="$directory/build.json" KR_AGENTS_GENERATION="$generation" \
       KR_AGENTS_RESULT="$results" KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 \
       "$driver" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 || rc=$?
     seconds=$(($(date +%s) - began))
-    no_dialog_since "$since" "$package $version part $part"
-    command_run="scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent $package --case $part"
+    look_again "$package $version part $part"
+    command_run="KR_AGENTS_BUILD=$directory/build.json KR_AGENTS_GENERATION=$generation KR_AGENTS_RESULT=$results KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 $driver --exact $test_name --nocapture --test-threads=1"
     steps="$(printf '%s' "$steps" | jq --argjson number "$number" --arg part "$part" \
       --arg command "$command_run" --argjson exit "$rc" --argjson seconds "$seconds" \
       --arg log "$plugin/$part.log" \
@@ -374,6 +453,16 @@ while IFS= read -r package; do
       jq -cn --arg part "$part" --arg test "$test_name" --argjson exit "$rc" \
         '{part: $part, test: $test, outcome: "failed", reason: ("the part exited " + ($exit | tostring) + " after writing its outcome"), evidence: {exit: $exit}}' \
         >>"$results"
+    else
+      # What the host installed is what the part ran against, and it has to be this tree's package.
+      installed="$(jq -c --arg part "$part" 'select(.part == $part) | .evidence.installed // null' "$results" | tail -1)"
+      if [ "$(printf '%s' "$installed" | jq -r '.version // ""')" != "$manifest_version" ] ||
+        [ "$(printf '%s' "$installed" | jq -r '.manifest_digest // ""')" != "$manifest_digest" ]; then
+        jq -cn --arg part "$part" --arg test "$test_name" --arg version "$manifest_version" \
+          --arg digest "$manifest_digest" --argjson installed "$installed" \
+          '{part: $part, test: $test, outcome: "failed", reason: ("the host installed " + ($installed | tojson) + ", not this tree'"'"'s package " + $version + " with manifest " + $digest), evidence: {installed: $installed}}' \
+          >>"$results"
+      fi
     fi
   done
 
@@ -396,8 +485,10 @@ while IFS= read -r package; do
     --argjson plugins_commit "$plugins_commit" --argjson core_commit "$core_commit" \
     --argjson toolchain "$toolchain" --argjson entry "$entry" --argjson steps "$steps" \
     --argjson parts "$parts_json" --argjson selection "$selection" \
-    --arg manifest_version "$(jq -r '.version' "$manifest")" \
-    --arg manifest_digest "$(digest_of "$manifest")" \
+    --arg manifest_version "$manifest_version" \
+    --arg manifest_digest "$manifest_digest" \
+    --arg payload "$payload" --argjson own_home "$own_home" --arg own_home_error "$own_home_error" \
+    --arg evidence_real "$evidence" --arg temporary "$temporary" --arg temporary_real "$temporary_real" \
     --argjson manifest "$(cat "$manifest")" \
     --arg pinned_status "$([ -z "$blocked" ] && echo installed || echo not_installed)" \
     --arg blocked "$blocked" --argjson newer_status "$newer_status" \
@@ -405,11 +496,14 @@ while IFS= read -r package; do
     --slurpfile results "$results" '
     def counts($tests): reduce ("passed", "failed", "ignored", "not_run", "not_built", "known_difference") as $o
       ({}; . + {($o): ([$tests[] | select(.outcome == $o)] | length)});
-    # A path under the tools directory or the home directory of whoever ran this is written
-    # relative to it, so a record names no machine beyond its evidence directory.
+    # A path in the evidence directory, the temporary directory, the tools directory or the home
+    # directory of whoever ran this is written relative to it; a system or runtime executable is
+    # named as it is, since which one ran is the evidence.
     def local_paths: if type == "string" then
-        (split($tools) | join("<tools>")) | (split($tools_real) | join("<tools>"))
-        | (if $home == "" then . else split($home + "/") | join("~/") end)
+        (split($evidence_real) | join("<evidence>"))
+        | (split($temporary_real) | join("<tmp>")) | (split($temporary) | join("<tmp>"))
+        | (split($tools_real) | join("<tools>")) | (split($tools) | join("<tools>"))
+        | (if $home == "" then . elif . == $home then "~" else split($home + "/") | join("~/") end)
       else . end;
     def verdict($tests): if any($tests[]; .outcome == "failed") then "failed"
       elif any($tests[]; .outcome == "passed") then "passed" else "not_run" end;
@@ -418,7 +512,8 @@ while IFS= read -r package; do
       elif $a.insertion == "upstream_upload" then "typed_submission"
       elif $a.insertion == "native_composer" then "verified_composer_insertion"
       else $a.insertion end;
-    ($steps | map({key: (.what | ltrimstr("part ")), value: .number}) | from_entries) as $step_of |
+    ($steps | map(select(.group == "agents")) | map({key: (.what | ltrimstr("part ")), value: .number}) | from_entries) as $step_of |
+    ($steps | map(select(.group == "agents")) | map({key: (.what | ltrimstr("part ")), value: .command}) | from_entries) as $command_of |
     [ $parts[] | . as $p |
       ([$results[] | select(.part == $p.part)] | last) as $r |
       if $p.test == "" then
@@ -435,9 +530,9 @@ while IFS= read -r package; do
          source: "kalareach:tests/e2e/agents/tests/cases.rs", keyed_by: "attached_comment",
          outcome: $r.outcome}
         + (if $r.reason != null then {reason: $r.reason} else {} end)
-        + (if $r.outcome != "not_run" or $step_of[$p.part] != null then
+        + (if $step_of[$p.part] != null then
              {runs: [{step: $step_of[$p.part], outcome: $r.outcome}],
-              command: ("scripts/e2e-agents.sh --core <core checkout> --tools <tools> --agent " + $package + " --case " + $p.part)}
+              command: $command_of[$p.part]}
            else {} end)
         + {evidence: $r.evidence}
       end
@@ -454,11 +549,12 @@ while IFS= read -r package; do
         commit: $plugins_commit,
         host: {repository: "kalareach", commit: $core_commit},
         toolchain: $toolchain,
+        terminal_profile: {profile: "kr-vt/1", term: "ghostty"},
         packages: [{name: $package, version: $manifest_version, manifest_digest: $manifest_digest,
                     generation: "snapshots/development"}],
         applications: ([{id: $application, version: $version, status: $pinned_status,
                          url: $entry.source, sha256: $entry.sha256, build: "darwin-arm64",
-                         reason: (if $blocked == "" then "the build the table is pinned to" else $blocked end)}]
+                         reason: (if $blocked == "" then "the build the table is pinned to" + $payload else $blocked end)}]
           + (if $entry.newer == null then [] else
               [{id: $application, version: $entry.newer.version,
                 status: (if $newer_status == true then "installed" else "not_installed" end),
@@ -466,7 +562,8 @@ while IFS= read -r package; do
                 reason: "the newer build the upgrade part moves to"}] end)),
         selection: $selection,
         all_terminals: false,
-        evidence_directory: $evidence
+        evidence_directory: $evidence,
+        own_home: $own_home
       },
       steps: $steps,
       identifiers: {
@@ -479,7 +576,9 @@ while IFS= read -r package; do
         [$manifest.actions[] | select(.effect == "upstream.prompt" or .effect == "upstream.attachment") |
           {operation: .id, declared: declared, source: "plugin.json", package_digest: $manifest_digest}]
         + [{operation: "terminal", declared: null, source: "plugin.json", package_digest: $manifest_digest}]),
-      failures_outside_identifiers: [],
+      failures_outside_identifiers: (if $own_home_error == "" then [] else
+        [{test: "kr-e2e-agents --test cases a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default",
+          source: "kalareach:tests/e2e/agents/tests/cases.rs", step: 1, reason: $own_home_error}] end),
       known_differences: [],
       problems: [],
       warnings: [],
@@ -493,7 +592,7 @@ while IFS= read -r package; do
         tests: counts($tests),
         failed_steps: [$steps[] | select(.exit != 0) | .number]
       }
-    } | walk(local_paths)' >"$directory/record.json"
+    } | walk(local_paths) | .run.evidence_directory = $evidence' >"$directory/record.json"
 
   # One line per part, in the record's order.
   while IFS= read -r line; do
@@ -518,5 +617,6 @@ while IFS= read -r package; do
 done <<<"$packages"
 
 echo
+no_dialog_since "$run_began" "the whole run"
 echo "$passed_count of $ran parts that ran passed; evidence in $evidence"
 exit "$failed"
