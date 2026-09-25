@@ -2,10 +2,10 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "kimi-code-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "display_name": "Kimi Code CLI",
   "description": "Recognises the kimi.com Kimi Code CLI distribution, reads its agent protocol through a declarative table and stops the turn it is running.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
@@ -67,8 +67,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "32cefb2bdd4aed5c16c93868dda8eae0ef4f59beb4ac117d02391fb391ef35f4",
-      "size_bytes": "8665"
+      "digest": "5f98316a33332a62c3358fe534801bc83e9e81d641c4fa9b4b81e5f82bdbd391",
+      "size_bytes": "8697"
     },
     {
       "role": "fixture",

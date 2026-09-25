@@ -932,6 +932,7 @@
       "evidence": "Reports that a worktree finished preparing"
     }
   ],
+  "decision_destination": null,
   "volatile_forwarding": false,
   "qualification_note": "Qualified against OpenCode 1.18.31 (npm opencode-ai), executable sha256 16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198, from the OpenAPI document that build serves at /doc (sha256 46db986090aae41846cd6dbe16225a1d883f0bbcb4c48814008d3f6ce140aa5c), read 2026-09-20. It covers the shared-server family's event stream at GET /api/event, whose envelope carries type, id and data. The earlier family publishes 88 of these names at GET /event with the payload under properties, so a name identifies no family; this table applies where the installed version and schema match these pins, and otherwise the capability is incompatible and the terminal remains. Nothing travels host to upstream: id is the durable event identifier, and the correlation repeats it because this leg answers no request. The request leg is HTTP, whose method is a verb and a path rather than a member of a document, so no table can name it. max_message_bytes is this host's bound. Volatile forwarding is untested."
 }

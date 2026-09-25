@@ -212,6 +212,7 @@
       "evidence": "Releases a terminal and the resources the broker scoped to it"
     }
   ],
+  "decision_destination": null,
   "volatile_forwarding": false,
   "qualification_note": "Qualified against Gemini CLI 0.60.0 (npm @google/gemini-cli) on 2026-09-20 by starting that build with --acp and reading what it answered over its standard streams: ACP protocol version 1, agentInfo gemini-cli 0.60.0, and prompt capabilities for image, audio and embedded context. Each host-to-upstream method here was sent to that build and answered; each upstream-to-host method is a name present in that build's own files. ACP is an explicitly selected mode that creates its own execution: it is not the stock terminal, and nothing here attaches it to a live terminal conversation. max_message_bytes is this host's bound, not a vendor limit. Volatile forwarding is untested. fixtures/frames.json pins the evidence and docs/qualification-notes.md records what each claim was checked against."
 }

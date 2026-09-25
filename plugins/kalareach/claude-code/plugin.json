@@ -2,10 +2,10 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "claude-code",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "display_name": "Claude Code",
   "description": "Recognises Claude Code, observes it through lifecycle and tool hooks, and carries a message into the session.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
@@ -85,8 +85,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "1eb684cd8456b0704f10792a968ad44c7438706fed03f3d9b03b1e5133e081cb",
-      "size_bytes": "3134"
+      "digest": "f3ddcc1b913948b39bc98ebb37961be12aa6b5fdb4f9e5e136ce2941368d071c",
+      "size_bytes": "3166"
     },
     {
       "role": "fixture",

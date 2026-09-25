@@ -120,6 +120,9 @@ fn check_file(name: &str, path: &Path, controls: &[&Control]) -> Result<usize> {
             binding_state: case.context.binding_state,
             present_nodes: &case.context.present_nodes,
             flags: &case.context.flags,
+            // A package's own document is written before any request exists, so a fixture names
+            // no upstream request and a term that tests one particular request is false here.
+            pending_approvals: &[],
         };
         let visible: BTreeSet<String> = controls
             .iter()

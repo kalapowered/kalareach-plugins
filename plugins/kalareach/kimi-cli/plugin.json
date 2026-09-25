@@ -2,10 +2,10 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "kimi-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "display_name": "Kimi CLI",
   "description": "Recognises MoonshotAI's kimi-cli, the Kimi distribution published on PyPI, reads its agent protocol through a declarative table and stops the turn it is running.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
@@ -90,8 +90,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "91af7bee10779652efcdc2412d4702bccc9816c08ab665babde5b54b5911211a",
-      "size_bytes": "8542"
+      "digest": "445678f98596349fd8712ea85d4bdacb100e9d03ac0bc35c2ddb8740783adae9",
+      "size_bytes": "8574"
     },
     {
       "role": "fixture",

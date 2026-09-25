@@ -262,6 +262,7 @@
       "evidence": "Releases a terminal and the resources the broker scoped to it"
     }
   ],
+  "decision_destination": null,
   "volatile_forwarding": false,
   "qualification_note": "Qualified against Kimi Code CLI 2.0.2, the kimi.com distribution installed under ~/.kimi-code, on 2026-09-20 by starting that build with the acp subcommand and reading what it answered over its standard streams: ACP protocol version 1, agentInfo Kimi Code CLI 2.0.2, and prompt capabilities for image and embedded context. Each host-to-upstream method here was sent to that build and answered; each upstream-to-host method is a name present in that build's own executable. The MoonshotAI kimi-cli distribution is a separate profile with its own home directory and server contract, and this record does not cover it; where the installed evidence does not match the pins here, the capability is incompatible and the terminal path is what remains. max_message_bytes is this host's bound, not a vendor limit. Volatile forwarding is untested. fixtures/frames.json pins the evidence and docs/qualification-notes.md records what each claim was checked against."
 }

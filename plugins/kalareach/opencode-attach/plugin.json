@@ -2,10 +2,10 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "opencode-attach",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "display_name": "OpenCode (serve and attach)",
   "description": "Recognises OpenCode, reads the event stream of a server started with opencode serve and attached to with opencode attach through a declarative table, and stops the turn it is running.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
@@ -67,8 +67,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "5c2198567a7cc59feab47f507ff9f4d4abc3a12f2617ea871105bd4bf94d2c64",
-      "size_bytes": "29123"
+      "digest": "ebf3106d9c5326f2f7b0c069350e5084ecd555b7116b87035dafec5d7704e3ce",
+      "size_bytes": "29155"
     },
     {
       "role": "fixture",

@@ -242,6 +242,7 @@
       "evidence": "Releases a terminal and the resources the broker scoped to it"
     }
   ],
+  "decision_destination": null,
   "volatile_forwarding": false,
   "qualification_note": "Qualified against MoonshotAI's kimi-cli 1.51.0 (PyPI kimi-cli, wheel sha256 ffb9d0d4725844d36d6c78e8d3914a96b2d6a17678c217f3abe7336fb7e02d0e), installed into an environment of its own on 2026-09-24 and started with the acp subcommand under a home directory of its own: ACP protocol version 1, agentInfo Kimi Code CLI 1.51.0, session capabilities list and resume. Each host-to-upstream method here was sent to that build and answered, or reached a handler its log records; one answered method not found is not routed; each upstream-to-host method is one the installed package calls. The kimi.com distribution reports the same agent name, so a name identifies no distribution: this table applies where the installed version and evidence match these pins, and otherwise the capability is incompatible and the terminal path is what remains. Release 1.52.0 carries no agent protocol. max_message_bytes is this host's bound. Volatile forwarding is untested."
 }

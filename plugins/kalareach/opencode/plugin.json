@@ -2,10 +2,10 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "opencode",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "display_name": "OpenCode",
   "description": "Recognises OpenCode, reads its shared server's event stream through a declarative table and stops the turn it is running.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
@@ -67,8 +67,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "fabe593eb3cc93c03eea1e16e76ed462a3f9a74b3a30e96bec46d1502c124174",
-      "size_bytes": "29177"
+      "digest": "e158152f6dac24ae864fe99acd8764b04f6ed155d0325bade8dd76c0631c76dc",
+      "size_bytes": "29209"
     },
     {
       "role": "fixture",

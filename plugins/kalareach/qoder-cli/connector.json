@@ -262,6 +262,7 @@
       "evidence": "Releases a terminal and the resources the broker scoped to it"
     }
   ],
+  "decision_destination": null,
   "volatile_forwarding": false,
   "qualification_note": "Qualified against Qoder CLI 1.1.59, the vendor installation under ~/.qoder, on 2026-09-20 by starting that build with --acp and reading what it answered over its standard streams: ACP protocol version 1, agentInfo qoder-cli 1.1.59, and prompt capabilities for image and embedded context. Each host-to-upstream method here was sent to that build and answered; each upstream-to-host method is a name present in that build's own executable. ACP starts a subprocess and is available only when it is explicitly selected; the vendor remote-control feature uses the vendor's own service and nothing here depends on it. max_message_bytes is this host's bound. Volatile forwarding is untested. fixtures/frames.json pins the evidence."
 }
