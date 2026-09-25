@@ -168,15 +168,20 @@ Status: verified against the published documentation.
 
 What the table then describes is the private exchange between the forwarder and the worker, not the
 MCP handshake. The forwarder terminates MCP; only the channel frames cross to the broker. Status:
-unverified against a live install, because it depends on the forwarder, which is core's.
+core's forwarder does this at core `e2f867b3` (`crates/kr-hook/src/claude_code/channel.rs`), and
+core's tests check it against a stand-in application; it was not observed against a live Claude
+Code.
 
-The table routes and classifies. It carries no mapping from a relayed permission request's
-`tool_name`, `description` and `input_preview` onto an approval resource a person can read, because
-the connector manifest has no field for such a mapping, and this package ships no component and so
-no decoder. The package supplies no answer either. A package's own document cannot carry an
-`approval_ref`, since that node names a runtime resource. Status: the
-notification shapes are a document check; the resource mapping and the encoding are not this
-package's and are recorded rather than claimed.
+The table routes, classifies and says how a relayed approval is answered. Its decision destination
+names `channel.permission-request` as the request it answers, so a message of that method is a
+pending approval and no other message is. It names `channel.permission` as the answer, which repeats
+the request's own `params.request_id` and carries a `params.behavior` of `allow` or `deny`, the only
+two decisions it maps. That declaration is the whole interpretation: this package ships no
+component, so nothing rewrites the relayed `tool_name`, `description` and `input_preview`. A
+package's own document cannot carry an `approval_ref`, since that node names a runtime resource.
+Status: the notification shapes are a document check. A test in `pipeline/tests/packages.rs` writes
+the answer for the pinned request from the table and gets the pinned answer in
+`fixtures/frames.json`, with that request's identifier, and no other pinned message gets an answer.
 
 ### Method classification
 
@@ -195,26 +200,38 @@ Because all three are notifications, none of them carries a JSON-RPC `id`. The c
 identifier is `params.request_id`, which is where the table puts it. Status: verified against the
 published documentation.
 
-The package registers no answer action. The identifier is the field the broker owns, so an answer's
-identifier comes from the request being resolved rather than from a caller. The vendor's own documented failure mode is the one this is
-meant to close: a reply in the wrong format falls through to Claude as an ordinary message, and a
-reply naming an identifier nobody issued is dropped in silence. Inside KalaReach neither becomes a
-message, because the message path is a separate action with its own effect class. Status: the
-notification shapes are a document check, and `fixtures/frames.json` checks that the table reads
-them the way the record says. Nothing here answers an approval: the path an answer would take is not
-this package's and is not verified.
+The package registers one answering action, `approval.answer`, with the effect `approval.respond`,
+and it answers through the table's decision destination. A call names the pending request it
+answers, and the package contract refuses a call that names none. The identifier in the answer is
+the one that request carried, never a value a caller supplies, and the value comes from the table's
+mapping. The vendor's own documented failure mode is the one this is meant to close: a reply in the
+wrong format falls through to Claude as an ordinary message, and a reply naming an identifier nobody
+issued is dropped in silence. Inside KalaReach neither becomes a message, because the message path
+is a separate action with its own effect class, and an answer carries only a mapped decision for the
+request it names. Status: the notification shapes are a document check, and `fixtures/frames.json`
+checks that the table reads them the way the record says. `pipeline/tests/packages.rs` checks, under
+the package contract at core `e2f867b3`, that a call naming no request is refused and that every
+decision the action offers has a mapped value.
 
-The package draws no answer control, registers no answer action and requests no approval capability.
-Three limits put it there, and all three are the SDK's rather than the vendor's:
-1. a control predicate that can only test that some approval is pending;
-2. PluginActionInvokeParams without a resource reference;
-3. a connector table without a decision destination.
-Closing all three needs an SDK change: a control predicate that can name the approval it tests,
-PluginActionInvokeParams with a resource reference, and a connector table with a decision
-destination. Until the SDK carries them the limit is recorded and kept, and no workaround is
-encoded.
-Status: an interface limit, recorded rather than worked around, and the rich approval half of this
-integration is not delivered here.
+The package requests `approval.decode` and `approval.respond`, because interpreting a native request
+and answering one are separate grants. Its document draws Allow and Deny for an actor who holds
+`agent.approval.respond` while an approval is pending. The document is written before any request
+exists, so the controls test that some approval is pending rather than naming one. The request a
+press answers is the one the call names: a client that draws the controls beside a request binds the
+press to that request, and the host checks the named request again when the call arrives. The
+controls are enabled only while the host reports `approval.respond` as qualified and available on
+the binding, and never during volatile-native operation. Status: the declarations validate under the
+package contract at core `e2f867b3`, and `fixtures/conformance.json` states who sees the controls
+and who can use them. No live Claude Code was answered through them, and no running host carried an
+answer: at that core revision the host checks the named request and then refuses to transmit a
+plugin action's effect, so the request stays pending and is answered in the terminal, where Claude
+Code also asks (`docs/plugins/sdk.md` at core `e2f867b3`).
+
+Approval authority comes only from the native request. A pending approval is a relayed
+`channel.permission-request` and nothing else, so text that reads like a permission prompt, on the
+terminal or in a `Notification` hook's report, makes none, and the controls stay hidden while a
+session waits on such a prompt. Status: a fixture check. In `fixtures/conformance.json`, a session
+that waits for a person with no pending approval shows no approval control.
 
 ### Runtime installation gates
 
@@ -286,32 +303,76 @@ chosen, and it is the whole of what the event list guarantees. It is not a guara
 cannot interfere: the same reference documents a common `continue` field, and a handler that answers
 `{"continue": false}` stops the session on the events that read a hook's JSON output, which is most
 of them; `SessionEnd` is one that discards it. A hook here observes because the
-forwarder answers nothing, not because the event cannot carry an answer. Each registration also
+forwarder answers `{}`, an object that sets nothing, and exits 0, not because the event cannot carry
+an answer. Each registration also
 carries a `timeout`, one second for `SessionEnd` and five for the rest, against a documented command
 default of 600 seconds. Source: `https://code.claude.com/docs/en/hooks`, read 2026-09-20. Status:
 document check.
 
-Three things are unverified, and all three are recorded rather than assumed:
+What core provides, and what is unverified about it:
 
 - The recipe was not installed into a live Claude Code and no session was started against it. Status:
   unverified. Installing it would change the qualification machine's own configuration, which a
   packaging run does not do. What removal does when a file's digest no longer matches, and whether
   Claude Code picks the registration up without a restart, are unverified for the same reason.
-- The forwarder is named `kr-hook` and invoked as `kr-hook claude-code channel` and `kr-hook
-  claude-code hook`. The bridge's host contract (kr-hook's arguments, MCP negotiation, private
-  framing, hook return behaviour, launch authentication) is the host's to provide, not this
-  package's, and no host provides it yet. The package states what it needs here and in its
-  connector record, and the Claude Code package is marked not runnable until a host carries it.
-  Status: unverified; the host contract is pending.
-- Registration authentication is a requirement here, not an observation. None of the three installed
-  files carries a session identifier or a secret, which can be checked by reading them, and that much
-  is verified. That the registration is bound to the launch KalaReach made and to the worker's
-  private exchange is what the forwarder must do, and it was not observed.
+- The host contract is core's `kr-hook` forwarder and the worker's gateway, at core `e2f867b3`
+  (`crates/kr-hook` and `docs/bridges/claude-code/README.md`):
+  - The forwarder accepts `kr-hook claude-code channel` and `kr-hook claude-code hook`, the two
+    invocations the recipe registers. It refuses any other on standard error with exit code 64,
+    before it reads or connects anything, because Claude Code reads a hook's exit code 2 as a
+    request to block (`crates/kr-hook/src/cli.rs`).
+  - The launch's environment names the registration file in `KR_REGISTRATION` and the owner-only
+    credential file in `KR_CREDENTIAL`. Both are paths. The forwarder reads both, and a registration
+    named without a credential is an error (`crates/kr-hook/src/registration.rs`).
+  - The worker admits a forwarder only when the kernel names the connecting process, its parent
+    chain leads to the Claude Code process the worker launched with every link checked by start
+    identity, it presents the launch credential, and the installation record names its application
+    (`claude-code`), the surface it declares (`hook` or `channel`) and the forwarder executable it
+    runs (`docs/bridges/claude-code/README.md`, "Admission").
+  - Every hook writes exactly `{}` to standard output and exits 0 within 500 milliseconds, and never
+    waits for a person (`crates/kr-hook/src/claude_code/hook.rs`). The hook registrations stay in
+    exec form, a `command` with an `args` list and no shell between Claude Code and the forwarder,
+    because only a hook Claude Code started itself selects the worker's thread
+    (`docs/bridges/claude-code/README.md`, "Hooks"). `crates/kr-hook/tests/fixtures.rs` checks that
+    form and pins the recipe's three files by their digests.
+  - The channel declares `claude/channel` and `claude/channel/permission` only once the worker has
+    admitted it, and nothing outside a launch. It negotiates MCP revision 2025-11-25 at the newest.
+    It relays a `permission_request` with its four fields, `request_id`, `tool_name`, `description`
+    and `input_preview`, and nothing else, and it forwards to Claude Code only the `channel` and
+    `permission` frames it has checked: a verdict only for a request it relayed and has not answered
+    (`crates/kr-hook/src/claude_code/channel.rs`).
+
+  Status: verified by core's tests against a stand-in application, not against a live Claude Code.
+- Two bounds hold at that core revision. The host admits no bridge on Windows: it publishes the
+  launch credential as a file only on Unix (`crates/kr-worker/src/broker/process.rs:277`), and a
+  launch that cannot publish it starts nothing (`crates/kr-worker/src/broker/attach.rs:774`). Only
+  core's tests call the gateway's `accept_bridge` and `observe_hook`
+  (`crates/kr-worker/src/broker/attach.rs:981` and `:1048`), so no running host serves this bridge at
+  that revision.
+- Claude Code documents `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` as a setting that strips every variable
+  it recognises as a credential from the hooks and MCP stdio servers it starts. Source:
+  `https://code.claude.com/docs/en/env-vars`, read 2026-09-25. Status: document check. Whether it
+  strips `KR_CREDENTIAL` and keeps `KR_REGISTRATION` was not checked here. Where it strips
+  `KR_CREDENTIAL`, the forwarder at that core revision cannot present the launch credential: its
+  hooks still answer `{}` and report nothing, and the channel exits 1 before its handshake, which
+  Claude Code shows as a failed server.
+- The forwarder finds its launch only through the environment Claude Code gives the processes it
+  starts. Core's bridge page cites the hooks reference for a hook inheriting Claude Code's
+  environment, and relies on Claude Code passing the same variables to the MCP servers it starts.
+  Status: unverified against a live install.
+- None of the three installed files carries a session identifier or a secret, which can be checked by
+  reading them, and that much is verified. Binding the registration to the launch KalaReach made and
+  to the worker's private exchange is the admission above, and it was not observed against a live
+  install.
 
 ### Pipeline changes this package required
 
 `pipeline/tests/release.rs`: target paths are derived rather than written out, because this
 package's version moved to 0.2.0.
+
+`pipeline/tests/packages.rs`: the declarative action forms this repository has reviewed include the
+decision destination, which this package is the first to use. An answer goes through a destination
+the package's own table declares, for a method and a request the table routes.
 
 ## kalareach/opencode
 
