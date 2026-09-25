@@ -122,7 +122,7 @@
       "sha256": "ffb9d0d4725844d36d6c78e8d3914a96b2d6a17678c217f3abe7336fb7e02d0e",
       "command": "kimi",
       "arguments": [],
-      "runtime": [],
+      "runtime": ["python3.12"],
       "environment": {
         "KIMI_DISABLE_TELEMETRY": "1",
         "PYTHON_KEYRING_BACKEND": "keyring.backends.null.Keyring"

@@ -61,20 +61,26 @@ common form:
 | `tests[].part` | The part the test is, from the table above |
 | `tests[].source` | Where the test is, prefixed by its repository: `kalareach:` for the driver's tests, `kalareach-plugins:` for a part recorded from the table above |
 | `tests[].needs` | For a part not run, what it needs: a vendor account, a connector binding, a launch registration or draft reads |
-| `tests[].evidence` | What a part that ran observed, its control included |
+| `tests[].evidence` | What a part that ran observed, its control included, and under `provenance` the PATH its session's shell searched and every executable image a process beneath its sessions ran, with the file's SHA-256 and where it lies: `build`, `newer build`, `runtime`, `run`, `shell` or `system` |
 | `tests[].condition` | On a part a vendor gate held: `{gate, observed, fallback}`, where `observed` is `untested` or `unavailable` and `fallback` names the test of the same record that ran the path used instead. The gated part stays `not_run`; the fallback carries its own outcome |
 | `attachment_paths[]` | The attachment path each operation declares: every action whose effect carries a prompt or an attachment, then the terminal route; `declared` is `typed_submission`, `verified_composer_insertion`, `terminal_draft_path`, or `null` for nothing declared, and `package_digest` is the manifest digest the declaration was read from |
+
+A path the run observed under the tools directory is written `<tools>/...`, and one under the home
+directory of whoever ran it `~/...`, so a record names no machine's layout beyond its evidence
+directory.
 
 ## The build list
 
 `builds.json` pins each connector package's build for this platform: where it comes from, where it
 is installed under the tools directory (`prefix`), the file whose SHA-256 names it (`pinned`), the
-command a person types, the runtimes it needs on PATH, the variables that switch its updater and
-telemetry off, files its vendor's own first-run steps leave in its home, the text its first screen
-shows, one harmless input with the text it shows, how it reaches its composer where it has one
-without an account, the server its terminal route starts first where it has one, where its vendor
-keeps a conversation, and the newer build the upgrade part moves to where one is named. The harness
-checks each build's digest before it runs anything with it.
+command a person types, the runtimes it needs (each linked by its own name into a directory of the
+run's own, which the session searches after the build's `bin` and before the system's), the
+variables that switch its updater and telemetry off, files its vendor's own first-run steps leave
+in its home, the text its first screen shows, one harmless input with the text it shows, how it
+reaches its composer where it has one without an account, the server its terminal route starts
+first where it has one, where its vendor keeps a conversation, and the newer build the upgrade part
+moves to where one is named. The harness checks each build's digest before it runs anything with
+it.
 
 ## Running it
 
@@ -84,5 +90,14 @@ KR_SHELL_PACKAGES=<managed shell prefix> \
 ```
 
 The managed shell is built in the core checkout with `scripts/build-shells.sh --zsh`. No agent signs
-in or starts a turn: each runs with its home inside the run's own directory on the internal disk and
-every proxy variable at a loopback port nothing listens on.
+in or starts a turn: each runs with its home inside the run's own directory on the internal disk,
+every proxy variable at a loopback port nothing listens on, and a keychain of the run's own as that
+home's default, so a secret an agent writes when it starts stays in the run and the system never
+asks anyone to create a keychain. The session's shell searches only the run's link to the build,
+the run's links to its runtimes and the system's directories. A part whose session searched or ran
+anything else did not test the pinned build, and is recorded as not run, naming what ran.
+
+Before the first agent, the harness starts one session the way a person does, with their own home
+and no agent, and checks that it names their login keychain as its default. After that check and
+after each part it reads what SecurityAgent, which shows the system's keychain and authorisation
+dialogs, logged meanwhile, and says that nothing was, or stops at once with exit status 3.
