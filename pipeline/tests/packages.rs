@@ -4,15 +4,18 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use kalareach_catalogue::{fixtures, packages, repository_root};
+use kr_plugin_sdk::capability::PluginCapability;
 use kr_plugin_sdk::connector::{
     AnswerError, FieldPath, FieldSegment, MethodClass, ResponseCorrelation,
 };
 use kr_plugin_sdk::effect::{
-    ActionImplementation, ActionInvocation, AttachmentInsertion, EffectClass, InvocationError,
-    ParameterKind,
+    ActionImplementation, ActionInvocation, ActionRight, AttachmentInsertion, EffectClass,
+    InvocationError, ParameterKind,
 };
 use kr_plugin_sdk::ids::ParameterName;
 use kr_plugin_sdk::matching::MatchConfidence;
+use kr_plugin_sdk::predicate::{BindingState, Predicate, PresentationFlag};
+use kr_plugin_sdk::presentation::Control;
 
 fn root() -> PathBuf {
     repository_root(Path::new(env!("CARGO_MANIFEST_DIR"))).expect("the repository root is above us")
@@ -781,6 +784,171 @@ fn every_claude_code_hook_starts_the_forwarder_in_exec_form() {
                 "{event}: a registration moved to {shell_form} is accepted"
             );
         }
+    }
+}
+
+/// Whether a visibility predicate is false whenever no approval is pending.
+///
+/// The `pending_approval` flag holds exactly when the host holds a pending approval resource, and
+/// only a native request makes one; a term that names one request holds only while that request
+/// is pending. `all` needs one such term and `any` needs every term to be one. A term under `not`
+/// proves nothing, so it is not counted.
+fn requires_pending_approval(predicate: &Predicate) -> bool {
+    match predicate {
+        Predicate::Flag {
+            flag: PresentationFlag::PendingApproval,
+        }
+        | Predicate::PendingApprovalFor { .. } => true,
+        Predicate::All { terms } => terms.iter().any(requires_pending_approval),
+        Predicate::Any { terms } => {
+            !terms.is_empty() && terms.iter().all(requires_pending_approval)
+        }
+        _ => false,
+    }
+}
+
+/// Why a control that answers an approval can be used with no native request pending, or nothing
+/// when it cannot. A control is usable only while both of its predicates hold, so one of them has
+/// to require a pending approval.
+fn approval_control_refusal(control: &Control) -> Option<String> {
+    (!requires_pending_approval(&control.visible_when)
+        && !requires_pending_approval(&control.enabled_when))
+    .then(|| {
+        format!(
+            "the control {} answers an approval and can be used with none pending",
+            control.id
+        )
+    })
+}
+
+/// Every bundled adapter says what it observes and what it controls, and a control that answers an
+/// approval is usable only while a native request is pending.
+///
+/// Section 1: an adapter describes what it can observe and what it can control, and a convincing
+/// reconstruction of terminal text does not establish authority to approve an operation. Each
+/// profile of each bundled agent asks to read the broker's semantic events, requests the
+/// capability behind every action it declares, and gives every method its table routes a class.
+/// Its controls that answer an approval depend on the host's pending-approval fact, which only a
+/// native request sets, so nothing a screen shows can make one usable. The check refuses a control
+/// that shows while a person is awaited, on a negated flag, on the flag as one choice of two, or
+/// always.
+#[test]
+fn every_bundled_adapter_declares_what_it_observes_and_controls_and_answers_only_a_native_request()
+{
+    let loaded = packages::load(&root()).expect("the repository loads");
+    assert_eq!(BUNDLED_AGENTS.len(), 6, "section 12 bundles six agents");
+    let mut approval_controls = 0;
+    for (agent, plugins) in BUNDLED_AGENTS {
+        for plugin in *plugins {
+            let package = package_named(&loaded, plugin);
+            let manifest = &package.package.manifest;
+            let requested: Vec<PluginCapability> = manifest
+                .capabilities
+                .iter()
+                .map(|request| request.capability)
+                .collect();
+            assert!(
+                requested.contains(&PluginCapability::BrokerSemanticEvents),
+                "{agent} ({plugin}) declares nothing it observes"
+            );
+            for action in &manifest.actions {
+                let needed = action.effect.required_capability();
+                assert!(
+                    requested.contains(&needed),
+                    "{plugin}: the action {} needs {needed}, which the package does not request",
+                    action.id
+                );
+            }
+            if let Some(connector) = &package.package.connector {
+                for route in &connector.routes {
+                    assert!(
+                        connector
+                            .methods
+                            .iter()
+                            .any(|entry| entry.method == route.method),
+                        "{plugin}: {} is routed and has no class",
+                        route.method
+                    );
+                }
+            }
+            let answering: Vec<_> = manifest
+                .actions
+                .iter()
+                .filter(|action| action.effect == EffectClass::ApprovalRespond)
+                .map(|action| &action.id)
+                .collect();
+            for control in package
+                .package
+                .presentation
+                .nodes
+                .iter()
+                .flat_map(|node| node.body.controls())
+                .filter(|control| answering.contains(&&control.action_id))
+            {
+                approval_controls += 1;
+                if let Some(refusal) = approval_control_refusal(control) {
+                    panic!("{plugin}: {refusal}");
+                }
+            }
+        }
+    }
+    assert!(
+        approval_controls > 0,
+        "no bundled adapter draws a control that answers an approval"
+    );
+
+    let claude = package_named(&loaded, "kalareach/claude-code");
+    let allow = claude
+        .package
+        .presentation
+        .nodes
+        .iter()
+        .flat_map(|node| node.body.controls())
+        .find(|control| control.id.as_str() == "allow")
+        .expect("the Claude Code document draws Allow");
+    let grant = Predicate::Grant {
+        right: ActionRight::AgentApprovalRespond,
+    };
+    let flag = Predicate::Flag {
+        flag: PresentationFlag::PendingApproval,
+    };
+    for (when, visible) in [
+        (
+            "a person is awaited",
+            Predicate::All {
+                terms: vec![
+                    grant.clone(),
+                    Predicate::Binding {
+                        state: BindingState::AwaitingPerson,
+                    },
+                ],
+            },
+        ),
+        (
+            "the flag is negated",
+            Predicate::All {
+                terms: vec![
+                    grant.clone(),
+                    Predicate::Not {
+                        term: Box::new(flag.clone()),
+                    },
+                ],
+            },
+        ),
+        (
+            "the flag is one choice of two",
+            Predicate::Any {
+                terms: vec![grant.clone(), flag.clone()],
+            },
+        ),
+        ("always", Predicate::Always {}),
+    ] {
+        let mut control = allow.clone();
+        control.visible_when = visible;
+        assert!(
+            approval_control_refusal(&control).is_some(),
+            "a control that answers an approval and shows when {when} is accepted"
+        );
     }
 }
 
