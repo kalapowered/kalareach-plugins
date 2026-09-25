@@ -600,16 +600,31 @@ struct BundledConnector {
 /// grant can carry every phrase a disclosure needs and deny each fact. So a reviewer reads each
 /// statement, it is written here, and the package has to carry exactly that statement. A new bridge
 /// package, or a changed statement, fails until its statement is reviewed and written here.
-const REVIEWED_GRANTS: &[(&str, &str)] = &[(
-    "kalareach/claude-code",
-    "Installs three registration files under your own Claude Code directory, where they apply to \
-     every project and every later session, and adds one settings key that enables them. Claude \
-     Code then starts the KalaReach forwarder itself, so the forwarder runs under Claude Code's own \
-     permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees the session's \
-     SessionStart, SessionEnd, PostToolUse, PostToolUseFailure and Notification events, and every \
-     Channels tool approval relayed to it. Removal takes the key back out and deletes exactly those \
-     three files, each only while it still holds the bytes that were installed.",
-)];
+const REVIEWED_GRANTS: &[(&str, &str)] = &[
+    (
+        "kalareach/claude-code",
+        "Installs three registration files under your own Claude Code directory, where they apply \
+         to every project and every later session, and adds one settings key that enables them. \
+         Claude Code then starts the KalaReach forwarder itself, so the forwarder runs under Claude \
+         Code's own permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees \
+         the session's SessionStart, SessionEnd, PostToolUse, PostToolUseFailure and Notification \
+         events, and every Channels tool approval relayed to it. Removal takes the key back out and \
+         deletes exactly those three files, each only while it still holds the bytes that were \
+         installed.",
+    ),
+    (
+        "kalareach/gemini-cli",
+        "Installs two files under your own Gemini CLI directory: an extension named kalareach, \
+         which Gemini CLI loads for every project and every later session, whether or not you trust \
+         the folder, beside your own hooks. Gemini CLI then starts the KalaReach forwarder itself, \
+         through bash, so the forwarder runs under Gemini CLI's own permissions and outside the \
+         KalaReach plugin sandbox, outside Wasmtime. It sees each session's SessionStart, SessionEnd \
+         and Notification events and no tool events, because Gemini CLI reads a failing hook's \
+         error text as a refusal of a finished tool's result, so a forwarder that is missing or out \
+         of date could change what the model reads. Removal deletes exactly those two files, each \
+         only while it still holds the bytes that were installed.",
+    ),
+];
 
 /// Why a bridge package's installation grant is refused, or nothing when it is the reviewed one.
 fn grant_refusal(plugin: &str, statement: &str) -> Option<String> {
@@ -785,6 +800,209 @@ fn every_claude_code_hook_starts_the_forwarder_in_exec_form() {
             );
         }
     }
+}
+
+/// The events the Gemini CLI extension registers, each with its timeout in milliseconds.
+///
+/// Gemini CLI ignores a refusal on these three, and on nothing else it runs a hook for: it reads a
+/// hook's standard error as its answer when standard output is empty and turns plain text with an
+/// exit code other than 0 and 1 into a refusal, which on a finished tool replaces the result the
+/// model reads. So the extension registers these and no tool event.
+const GEMINI_CLI_HOOKS: &[(&str, u64)] = &[
+    ("Notification", 5000),
+    ("SessionEnd", 1000),
+    ("SessionStart", 5000),
+];
+
+/// Why one Gemini CLI hook registration is not the forwarder as a command of plain words, or
+/// nothing when it is.
+///
+/// Gemini CLI runs a hook's command with `bash -c`. A command of plain words is one bash runs in its
+/// own process, so the forwarder is Gemini CLI's own child with no shell left between them; any
+/// shell syntax keeps a shell there, and could change what the hook prints. A member this check does
+/// not know could change how the hook runs, its environment for one, so a registration carries only
+/// its type, its name, its command and a timeout.
+fn gemini_hook_registration_refusal(handler: &serde_json::Value) -> Option<String> {
+    let Some(members) = handler.as_object() else {
+        return Some("the registration is not an object".to_owned());
+    };
+    if let Some(other) = members
+        .keys()
+        .find(|name| !matches!(name.as_str(), "type" | "name" | "command" | "timeout"))
+    {
+        return Some(format!("the registration carries {other}"));
+    }
+    if handler.get("type") != Some(&serde_json::json!("command")) {
+        return Some("the registration is not a command".to_owned());
+    }
+    if handler.get("name") != Some(&serde_json::json!("kalareach")) {
+        return Some("the registration is not named kalareach".to_owned());
+    }
+    let Some(command) = handler.get("command").and_then(serde_json::Value::as_str) else {
+        return Some("the registration names no command".to_owned());
+    };
+    let plain = command.split(' ').all(|word| {
+        !word.is_empty()
+            && word
+                .chars()
+                .all(|character| character.is_ascii_alphanumeric() || character == '-')
+    });
+    if !plain {
+        return Some(format!("the command {command:?} is not plain words"));
+    }
+    if command != "kr-hook gemini-cli hook" {
+        return Some(format!(
+            "the registration starts {command:?}, not the forwarder's hook"
+        ));
+    }
+    if handler
+        .get("timeout")
+        .and_then(serde_json::Value::as_u64)
+        .is_none()
+    {
+        return Some("the registration has no timeout in milliseconds".to_owned());
+    }
+    None
+}
+
+/// Why a Gemini CLI hooks file registers anything but the forwarder's hook for its three events.
+fn gemini_hooks_file_refusal(file: &serde_json::Value) -> Option<String> {
+    let Some(file_members) = file.as_object() else {
+        return Some("the file is not an object".to_owned());
+    };
+    if file_members.len() != 1 {
+        return Some("the file carries more than its hooks".to_owned());
+    }
+    let Some(events) = file.get("hooks").and_then(serde_json::Value::as_object) else {
+        return Some("the file registers no hooks by event".to_owned());
+    };
+    let mut registered: Vec<&str> = events.keys().map(String::as_str).collect();
+    registered.sort_unstable();
+    let expected: Vec<&str> = GEMINI_CLI_HOOKS.iter().map(|(event, _)| *event).collect();
+    if registered != expected {
+        return Some(format!(
+            "the file registers {registered:?}, not {expected:?}"
+        ));
+    }
+    for (event, timeout) in GEMINI_CLI_HOOKS {
+        let Some(groups) = events[*event].as_array() else {
+            return Some(format!("{event}: no list of groups"));
+        };
+        let [group] = groups.as_slice() else {
+            return Some(format!("{event}: one group, not {}", groups.len()));
+        };
+        if group.as_object().map(serde_json::Map::len) != Some(1) {
+            return Some(format!(
+                "{event}: the group carries more than its hooks, a matcher or an order"
+            ));
+        }
+        let Some(handlers) = group.get("hooks").and_then(serde_json::Value::as_array) else {
+            return Some(format!("{event}: the group lists no hooks"));
+        };
+        let [handler] = handlers.as_slice() else {
+            return Some(format!("{event}: one hook, not {}", handlers.len()));
+        };
+        if let Some(refusal) = gemini_hook_registration_refusal(handler) {
+            return Some(format!("{event}: {refusal}"));
+        }
+        if handler.get("timeout") != Some(&serde_json::json!(timeout)) {
+            return Some(format!(
+                "{event}: the timeout is not {timeout} milliseconds"
+            ));
+        }
+    }
+    None
+}
+
+/// Every hook the Gemini CLI extension registers starts the forwarder as a command of plain words,
+/// for exactly the three events whose refusals Gemini CLI ignores, and the same check refuses the
+/// file once any registration in it gains shell syntax, another program, another member or a
+/// matcher, or once a tool event is added. The extension's manifest names the directory the recipe
+/// installs both files into, and nothing else it could load.
+#[test]
+fn every_gemini_cli_hook_starts_the_forwarder_as_plain_words() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let package = package_named(&loaded, "kalareach/gemini-cli");
+    let file: serde_json::Value =
+        kalareach_catalogue::read_json(&package.directory.join("bridge/hooks.json"))
+            .expect("the hooks file reads");
+    assert_eq!(gemini_hooks_file_refusal(&file), None);
+
+    let shell_forms = [
+        serde_json::json!("kr-hook gemini-cli hook; true"),
+        serde_json::json!("kr-hook gemini-cli hook 2>/dev/null"),
+        serde_json::json!("kr-hook gemini-cli hook || echo {}"),
+        serde_json::json!("$HOME/bin/kr-hook gemini-cli hook"),
+        serde_json::json!("sh -c 'kr-hook gemini-cli hook'"),
+        serde_json::json!("kr-hook  gemini-cli hook"),
+        serde_json::json!("kr-hook claude-code hook"),
+    ];
+    for (event, _) in GEMINI_CLI_HOOKS {
+        for shell_form in &shell_forms {
+            let mut copy = file.clone();
+            copy["hooks"][*event][0]["hooks"][0]["command"] = shell_form.clone();
+            assert!(
+                gemini_hooks_file_refusal(&copy).is_some(),
+                "{event}: a registration moved to {shell_form} is accepted"
+            );
+        }
+        for (member, value) in [
+            ("env", serde_json::json!({"KR_REGISTRATION": "/tmp/r"})),
+            ("description", serde_json::json!("more")),
+        ] {
+            let mut copy = file.clone();
+            copy["hooks"][*event][0]["hooks"][0][member] = value;
+            assert!(
+                gemini_hooks_file_refusal(&copy).is_some(),
+                "{event}: a registration carrying {member} is accepted"
+            );
+        }
+        let mut matched = file.clone();
+        matched["hooks"][*event][0]["matcher"] = serde_json::json!("startup");
+        assert!(
+            gemini_hooks_file_refusal(&matched).is_some(),
+            "{event}: a matcher is accepted"
+        );
+    }
+    let mut tool = file.clone();
+    tool["hooks"]["AfterTool"] = file["hooks"]["SessionStart"].clone();
+    assert!(
+        gemini_hooks_file_refusal(&tool).is_some(),
+        "a tool event is accepted"
+    );
+
+    let manifest: serde_json::Value =
+        kalareach_catalogue::read_json(&package.directory.join("bridge/gemini-extension.json"))
+            .expect("the extension manifest reads");
+    let mut members: Vec<&str> = manifest
+        .as_object()
+        .expect("the manifest is an object")
+        .keys()
+        .map(String::as_str)
+        .collect();
+    members.sort_unstable();
+    assert_eq!(members, ["description", "name", "version"]);
+    let name = manifest["name"].as_str().expect("the extension's name");
+    let bridge = package
+        .package
+        .manifest
+        .native_bridge
+        .0
+        .as_ref()
+        .expect("the package declares its bridge");
+    let destinations: Vec<String> = bridge
+        .install
+        .iter()
+        .map(|step| step.writes().0.as_str().to_owned())
+        .collect();
+    assert_eq!(
+        destinations,
+        [
+            format!("extensions/{name}/gemini-extension.json"),
+            format!("extensions/{name}/hooks/hooks.json"),
+        ],
+        "Gemini CLI loads an extension from the directory its manifest names"
+    );
 }
 
 /// Whether a visibility predicate is false whenever no approval is pending.

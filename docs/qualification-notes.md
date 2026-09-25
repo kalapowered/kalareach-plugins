@@ -37,6 +37,13 @@ same bytes:
 | Gemini CLI 0.60.0, `bundle/gemini-ZTU7EMI3.js`, the third of those chunks | any | `b6498ba094610cdf303598bce0ed2c116aedcf0ab9d26d691be5dbb7cd8bf6ef` |
 | Gemini CLI 0.60.0, `bundle/docs/hooks/reference.md`, the hook reference the vendor ships with that build | | `103bab9f0f8fd7251b97d06c6b7c4e52752427bf23cbacd1379f2aecaaf26e4c` |
 | Gemini CLI 0.60.0, `bundle/docs/cli/acp-mode.md`, the agent-protocol document the vendor ships with that build | | `812af1001c110f474a624c3026c31e66519ca95c251d1f79679d8ebd56edd779` |
+| Gemini CLI 0.60.0, `bundle/docs/extensions/reference.md`, the extension reference the vendor ships with that build | | `cf42a742ae7476faaf96a79fbcf462d86c1845fa6a2c0f39930d96559e284d34` |
+| Gemini CLI 0.60.0, `bundle/chunk-M6NSK26M.js`, the core chunk the entry script loads: the hook registry, runner, aggregator and event handler | any | `5259439bfda18186b46bccf03916944c32c9dbfb532e01ff8b794e2e8e0afea3` |
+| Gemini CLI 0.60.0, `bundle/chunk-GNCCSIBA.js`, the chunk that loads extensions and runs `/clear` | any | `cba32e6789d80b21e4dd96d8b147ceacdeee0fa99e3cb836cfc1e3a299531a56` |
+| Gemini CLI 0.60.0, `bundle/chunk-GFHSA4BE.js`, the exit cleanup | any | `c140f38e2cff787fc7cb4282d31875d6e47d3ce6098a48e01b64d81aaf584d99` |
+| Gemini CLI 0.60.0, `bundle/chunk-PJREBWY3.js`, the relaunch's spawn configuration | any | `12c9bcda4b9ddd42d92fbeb775d21ee63358c6f0d75f563eb083e7779989fe0f` |
+| Gemini CLI 0.60.0, `bundle/chunk-OCLZG6C5.js`, the settings schema | any | `53bcd8f3b6fd478719bc31fec74a3ea61a8302b14ccf81f04a7be01a252331bd` |
+| Gemini CLI 0.60.0, `bundle/interactiveCli-COQJBPC2.js`, the interactive session's start and end | any | `ba2e935e6bdb85f27816f883156309c012b838f56ff8ac5d959b9b6c7a08b6dd` |
 | Kimi Code CLI 2.0.2 executable at `~/.kimi-code/bin/kimi` | macOS, arm64 | `c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11` |
 | Qoder CLI 1.1.59 executable at `~/.qoder/bin/qodercli/qodercli-1.1.59` | macOS, arm64 | `c1b372d07083b98a2708ff23d4d462389fbf2bccad0d1317bb2970685f47c103` |
 | MoonshotAI kimi-cli 1.51.0, the wheel PyPI publishes as `kimi_cli-1.51.0-py3-none-any.whl`, installed for this qualification | any | `ffb9d0d4725844d36d6c78e8d3914a96b2d6a17678c217f3abe7336fb7e02d0e` |
@@ -518,6 +525,7 @@ only to read the document it serves.
 | Protocol | The agent protocol over standard streams, `gemini-cli-acp` | The handshake that build answers | 2026-09-20 | Binary check |
 | Protocol version tested | 0.60.0 | `agentInfo` in that handshake: `{"name":"gemini-cli","title":"Gemini CLI","version":"0.60.0"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
 | Qualified range | `=0.60.0` | This qualification | 2026-09-20 | The only release probed |
+| Bridge range | `=0.60.0` | This qualification: every hook fact below was read from that release | 2026-09-25 | The only release checked |
 
 ### The flag
 
@@ -530,7 +538,7 @@ Source: `gemini --help` on 0.60.0. Status: binary check, performed.
 
 ### The declarative proxy contract
 
-The agent protocol meets it, so this package ships no native bridge.
+The agent protocol meets it, so no bridge carries it; the bridge below is for hooks.
 
 It is JSON-RPC 2.0 over the started process's standard streams, one document per line. A request
 carries `method`, `params` and `id`; a response echoes the `id`; a notification omits it. That gives
@@ -561,30 +569,66 @@ absence.
 Status: a binary check for every name. The class beside each name is a judgement argued from what
 the method does, recorded as evidence in the table itself, and not exercised against a live turn.
 
-### Hooks, and what this package does not install
+### The hooks bridge
 
-The pinned build's hook event names are `BeforeTool`, `AfterTool`, `BeforeAgent`, `AfterAgent`,
-`Notification`, `SessionStart`, `SessionEnd`, `PreCompress`, `BeforeModel`, `AfterModel` and
-`BeforeToolSelection`. They are configured under a `hooks` object in the settings file, keyed by
-event name, each value an array of hook definitions with a command. Source: the hook reference the
-vendor ships with that build at `bundle/docs/hooks/reference.md`, pinned by digest above and read
-2026-09-20, beside the names in the build's own chunks. Status: binary check of 0.60.0 and a
-document check of the document that build carries.
+The package installs an extension, `kalareach`, and nothing else: `bridge/gemini-extension.json`
+at `extensions/kalareach/gemini-extension.json` and `bridge/hooks.json` at
+`extensions/kalareach/hooks/hooks.json`, both under the user's own Gemini CLI directory. The hooks
+file registers `kr-hook gemini-cli hook` for `SessionStart` and `Notification` with a timeout of
+5000 milliseconds and for `SessionEnd` with 1000. Everything below was read from 0.60.0 on
+2026-09-25. A binary check here is either the installed bundle read (the chunks pinned by digest
+above) or the build started with a home directory and a working directory belonging to this
+qualification, the network denied, no account and no model turn, and what its hooks recorded read
+back. The runs are in the qualification's own log, which also holds every probe script. The
+build's hook events are `BeforeTool`, `AfterTool`, `BeforeAgent`, `AfterAgent`, `Notification`,
+`SessionStart`, `SessionEnd`, `PreCompress`, `BeforeModel`, `AfterModel` and
+`BeforeToolSelection`, from the hook reference it ships and the names in its chunks.
 
-A hook's output is read. The build's own hook-output type carries `continue`, `stopReason`,
-`suppressOutput`, `systemMessage`, `decision`, `reason` and `hookSpecificOutput`, and it treats
-`decision` values of `block` and `deny` as refusals, `ask` as a prompt and `continue: false` as a
-stop. An observation hook that answered any of those would change upstream permission behaviour,
-which the specification forbids. The neutral answer is therefore an empty JSON object and exit 0,
-and nothing else.
+| Fact | Source | Status |
+| --- | --- | --- |
+| Gemini CLI loads every directory under `extensions/` in its own directory (`~/.gemini`, or `$GEMINI_CLI_HOME/.gemini`) that holds a `gemini-extension.json` with a `name` and a `version`, with no install record unless the `security.allowedExtensions` setting is set, and enables it unless `extensions/extension-enablement.json` or the `--extensions` flag says otherwise | The extension manager in `chunk-GNCCSIBA.js`; runs with the package's own two files in place | Binary check, read and run |
+| An extension's `hooks/hooks.json` is loaded while `hooksConfig.enabled` holds, which it does by default, and its hooks run beside the hooks in the settings files, never in place of them | `loadExtensionHooks` in `chunk-GNCCSIBA.js`, the hook registry in `chunk-M6NSK26M.js`, the settings schema in `chunk-OCLZG6C5.js`; a run in which the extension's `SessionStart` hook and one in the user's `settings.json` both ran | Binary check, read and run |
+| Every hook in a settings file, the user's own included, counts as a project hook and does not run in a folder the person has not trusted; an extension's hook runs there | The hook registry and runner in `chunk-M6NSK26M.js`; an interactive run answered "Don't trust", in which the extension's `SessionStart` hook ran and the user's did not | Binary check, read and run |
+| Headless mode refuses a folder the person has not trusted and exits 55 | A run in a fresh folder | Binary check, run |
+| A hooks key in the user's `settings.json` holds the person's own hooks for that event, so adding KalaReach's there replaces theirs | The hook reference the build ships, `bundle/docs/hooks/reference.md` | Document check |
+| A hook's command runs as `bash -c "<command>"`, bash found on the path, with no shell of Gemini CLI's own | `getShellConfiguration` and the command runner in `chunk-M6NSK26M.js` | Binary check, read |
+| Bash runs a command of plain words in its own process, so the hook's parent is Gemini CLI's node process | Runs through Homebrew's bash 5.3 and through `/bin/bash` 3.2, each recording its parent from the kernel | Binary check, run |
+| The hook's environment is Gemini CLI's own, with `GEMINI_SESSION_ID`, `GEMINI_PROJECT_DIR`, `GEMINI_CWD` and `CLAUDE_PROJECT_DIR` added: `KR_REGISTRATION` and `KR_SESSION` arrived | A run; `sanitizeEnvironment` in `chunk-M6NSK26M.js` | Binary check, run |
+| Redaction is off unless `security.environmentVariableRedaction.enabled` is set; then no redacted name pattern matches `KR_REGISTRATION`. Where `GITHUB_SHA` is set or `SURFACE` is `Github`, every variable not on an allow list is removed, `KR_REGISTRATION` with them, and the forwarder then answers `{}` and reports nothing | `sanitizeEnvironment` and `shouldRedactEnvironmentVariable` in `chunk-M6NSK26M.js` | Binary check, read |
+| `SessionStart` carries `source` (`startup`, `resume` or `clear`), `SessionEnd` carries `reason` (`exit`, `clear`, `logout`, `prompt_input_exit` or `other`), and each carries `session_id` | The hook reference; the payloads of a run's `SessionStart` and `SessionEnd` | Binary check, run, and document check |
+| `Notification` fires with `notification_type` `ToolPermission`, a `message` and `details` when a tool asks for permission, and the prompt waits for the hooks to finish | The hook reference; `resolveConfirmation` and `fireToolNotificationEvent` in `chunk-M6NSK26M.js` | Document check and binary check, read; not observed, because it needs a model turn |
+| On `SessionStart`, `SessionEnd` and `Notification` the build ignores `decision` and `continue`; it reads `systemMessage` on all three and `hookSpecificOutput.additionalContext` on `SessionStart` | The hook reference; the event handler and `HookSystem` in `chunk-M6NSK26M.js` | Document check and binary check, read |
+| When a hook's standard output is empty its standard error is parsed as its answer, and plain text with an exit code other than 0 and 1 becomes `{"decision":"deny"}`. A failed hook's answer is still merged, and on `AfterTool` a refusal replaces the tool's result with "Tool result blocked" and its reason | `executeCommandHook` and `convertPlainTextToHookOutput`, `HookAggregator`, and `executeToolWithHooks` in `chunk-M6NSK26M.js` | Binary check, read |
+| `{}` with exit 0 is parsed as an object that sets nothing, is merged with any other hook's answer without changing it, and prints nothing | The runner and aggregator in `chunk-M6NSK26M.js`; runs with a recording hook and with the forwarder, which printed nothing and warned of nothing | Binary check, read and run |
+| A timeout is in milliseconds, 60000 by default. At it the hook gets SIGTERM, the event counts it failed, and Gemini CLI shows "Hook(s) [kalareach] failed for event SessionStart. Press F12 to see the debug drawer for more details." The event ends only when the hook's standard streams close, so a child that keeps them open holds it | The runner in `chunk-M6NSK26M.js`; a hook that slept past a 1000 millisecond timeout: 1,116 milliseconds without a child and 12,253 with a background child still holding the streams | Binary check, read and run |
+| The CLI waits for `SessionEnd` hooks at exit and on `/clear`, and an interactive exit runs them twice, with the same session and reason; at that exit it prints three of its own lines about the hooks it ran | `runExitCleanup` in `chunk-GFHSA4BE.js`, the clear command in `chunk-GNCCSIBA.js`, the app container in `interactiveCli-COQJBPC2.js`; an interactive run | Binary check, read and run |
+| Unless `GEMINI_CLI_NO_RELAUNCH` or `SANDBOX` is set, the process that was started spawns a second node process that runs the session, and every hook's parent is that second process. The first one sizes the heap, adding `--max-old-space-size` at half the machine's memory where that is more than V8's limit and `advanced.autoConfigureMemory` is not false, starts the session again when it exits with code 199, as it does after an update or a restart it asks for, and relays administrator settings between the two | `bundle/gemini.js` and `getSpawnConfig` in `chunk-PJREBWY3.js`; runs recording each hook's parent and grandparent, with and without `GEMINI_CLI_NO_RELAUNCH=true` | Binary check, read and run |
+| A directory under `extensions/` with no manifest in it is skipped, with a warning printed at every start | A run with an empty `extensions/kalareach/` | Binary check, run |
 
-This package installs no hook registration, so none of that is a claim about a running session.
-Status: recorded as a requirement, not as observed behaviour.
+The package's own two files, the forwarder built from core and a stand-in worker listening where a
+registration named it ran end to end: Gemini CLI ran the forwarder for `SessionStart` and
+`SessionEnd`, the forwarder declared itself `{"application":"gemini-cli","surface":"hook"}` and
+reported `thread_started` with detail `startup` and `thread_ended` with detail `exit` for Gemini
+CLI's own session identifier, and Gemini CLI printed nothing about either hook. Status: binary
+check, run.
 
-Two runtime gates were observed rather than documented: starting the pinned build in an untrusted
-folder wrote "Project hooks disabled because the folder is not trusted" and "Skipping project agents
-due to untrusted folder" to its error stream. Project-scoped hooks therefore depend on folder trust.
-Status: binary check.
+Why an extension and why these three events. An extension is the one place Gemini CLI takes hooks
+from without sharing a key with the person's own, and its hooks run whether or not the folder is
+trusted. `AfterTool` is left out because of the refusal the parsed standard error becomes: a
+forwarder that is missing (bash exits 127 with "command not found") or too old to know this
+invocation (it exits 64 with its usage) would replace every tool result the model reads. On the
+three events registered, the worst such a failure can do is the warning above.
+
+Limits, in the order they matter. Gemini CLI's relaunch means the process KalaReach launches never
+starts a hook itself, so the worker records these observations and none of them selects the
+session's thread; `GEMINI_CLI_NO_RELAUNCH=true` in the launch's environment would make the launched
+process start them, and would also switch off the heap sizing and the restart after code 199, which
+is the trade a command integration that sets it has to make. The recipe's removal deletes the two
+files and leaves the directories they were in; Gemini CLI then warns at every start, so whatever
+applies the recipe has to remove the directories it created once they are empty. The bridge range is
+`=0.60.0`, the only release checked. Not verified: a `Notification` event and its payload on the
+binary, which need a tool that asks for permission and so a model turn, and a session launched by a
+running KalaReach worker.
 
 ### What is not qualified here
 

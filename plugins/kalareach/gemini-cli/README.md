@@ -1,14 +1,15 @@
 # kalareach/gemini-cli
 
-Recognises Gemini CLI, reads its agent protocol through a declarative table, and stops the turn it
-is running, with the stock terminal untouched.
+Recognises Gemini CLI, observes its sessions through hooks, reads its agent protocol through a
+declarative table, and stops the turn it is running, with the stock terminal untouched.
 
 ## What it does
 
 KalaReach matches the `gemini` executable, labels the session, and runs Gemini CLI through its
 ordinary terminal path. That terminal is the default and it stays exactly as Gemini CLI draws it. It
-carries everything the upstream has no typed path for, and this package adds a reading of the agent
-protocol the same build speaks, plus one control over the turn.
+carries everything the upstream has no typed path for. This package adds hooks that report the
+session's start, end and tool permission notifications, a reading of the agent protocol the same
+build speaks, and one control over the turn.
 
 `connector.json` is the declarative native-proxy table for the agent protocol Gemini CLI speaks over
 its standard streams: one JSON document per line, identifiers at `id`, methods at `method`,
@@ -60,13 +61,41 @@ No attachment contribution. The default route is the terminal, where the compose
 what inserts a file, and this package qualifies no composer syntax and claims no automatic
 insertion.
 
-No hook registration. Nothing here writes into Gemini CLI's settings, so the observations a hook
-would add are not among the ones this package claims, and neither this document nor the session view
-it draws suggests otherwise.
+No hook for a tool. The hooks below report nothing about tool calls or their results, and this
+package claims no tool observation.
+
+## The hooks it registers
+
+The native bridge installs an extension, `kalareach`, into your own Gemini CLI directory: its
+manifest at `extensions/kalareach/gemini-extension.json` and its hooks at
+`extensions/kalareach/hooks/hooks.json`. Gemini CLI loads an extension's hooks for every project and
+every later session, beside any hooks of your own, and runs them whether or not you trust the
+folder. Nothing in your `settings.json` changes, and removing the bridge deletes exactly those two
+files, each only while it still holds the bytes that were installed.
+
+The hooks start `kr-hook gemini-cli hook`, the KalaReach forwarder, for three events:
+`SessionStart` and `Notification` with a five-second timeout, and `SessionEnd` with one second.
+Gemini CLI runs a hook's command through `bash -c`, and bash runs a command of plain words like
+this one in its own process, so the forwarder is Gemini CLI's own child. It runs under Gemini CLI's
+permissions, outside the KalaReach plugin sandbox and outside Wasmtime. It answers every event
+with `{}` and exit 0 within half a second, reports the event to the KalaReach worker that launched
+the session, and never waits for a person. Outside a KalaReach launch it answers the same way and
+reports nothing.
+
+Those three are events whose refusals Gemini CLI ignores, and that is why there are no others.
+Gemini CLI reads a hook's standard error as its answer when standard output is empty, and turns
+plain text with an exit code other than 0 and 1 into a refusal. On a finished tool, a refusal
+replaces the result the model reads. A forwarder that is missing, or too old to know this
+invocation, prints exactly that kind of text, so a hook on tool events could change what the model
+reads; on these three, the most it can do is a warning.
+
+Gemini CLI starts a copy of itself as a child process and runs the session there, unless
+`GEMINI_CLI_NO_RELAUNCH` is set. The hooks are that child's, not the process KalaReach launched, so
+the worker records what they report and none of them selects the session's thread.
 
 ## Fixtures
 
-`fixtures/conformance.json` states what a person sees in eight situations, and the build evaluates
+`fixtures/conformance.json` states what a person sees in nine situations, and the build evaluates
 this package's own predicates against each one. They are display conformance and only that: the
 runner reads no agent frame. One case is an installed version this table is not qualified against,
 where both controls disappear and the terminal path is what remains.
