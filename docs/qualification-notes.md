@@ -823,16 +823,24 @@ this qualification, the network denied and no account:
 | Source | What it would take | Status |
 | --- | --- | --- |
 | `~/.qoder/settings.json` | A hooks key per event, which holds the person's own hooks for that event too: adding KalaReach's replaces theirs, and removing the key removes whatever they added to it later. There is one user-level settings file; the others are a project's, a project's local one and policy | Document check, and binary check of the settings sources the executable watches |
-| A plugin | Qoder CLI loads an installed plugin only from its install record in `~/.qoder/plugins/installed_plugins_v2.json`, which names the plugin's absolute path. `qodercli plugins install <dir>` wrote that record and `enabledPlugins`; the plugin's hooks ran with that absolute path and did not load with the same path written from `~/`. A marketplace likewise needs an absolute location. A recipe of fixed bytes cannot write a person's absolute path | Binary check, run |
+| An installed plugin | Qoder CLI loads an installed plugin from its install record in `~/.qoder/plugins/installed_plugins_v2.json`, which names the plugin's absolute path. `qodercli plugins install <dir>` wrote that record and `enabledPlugins`; the plugin's hooks ran with that absolute path and did not load with the same path written from `~/`. A recipe of fixed bytes cannot write a person's absolute path there | Binary check, run |
+| A local marketplace | Two keys the settings file does not otherwise hold: `extraKnownMarketplaces.kalareach`, a directory source whose path is written with `${HOME}`, which the settings reader expands, and `enabledPlugins.kalareach-hooks@kalareach`; and three files, the marketplace's manifest and a plugin with its `hooks/hooks.json`. At the first start after the keys appear, Qoder CLI copies the marketplace into its own plugin state (`plugins/marketplaces/kalareach`, recorded in `plugins/known_marketplaces.json`) and runs none of its hooks; from the next start the plugin's hooks run beside the person's own, with no install record | Binary check, run over two sessions |
 | The launch | `--settings` with inline JSON adds a settings source whose hooks run beside the person's own, and `--plugin-dir` loads a plugin directory for that run alone; both ran | Binary check, run |
 
-So KalaReach's hooks reach Qoder CLI on the launch, as `--settings` and inline JSON, and nothing is
-written into the person's Qoder CLI directory. The core repository defines those two elements
-(`fixtures/bridges/qoder-cli/flags.json`, sha256
-`d867f03b41f63a11688ee1c6e0a79455ffbaca09d2c38150b6f8d4b4c269261f`) and the forwarder they start,
-`kr-hook qoder-cli hook`, registered in exec form for the five events above with a timeout of one
-second for `SessionEnd` and five for the rest. A package cannot declare a command integration's
-flags yet, so this package declares no native bridge and claims none of those hooks' observations.
+So two sources add hooks without replacing the person's own: the launch, and a local marketplace.
+KalaReach's hooks reach Qoder CLI on the launch, as `--settings` and inline JSON. Either way a
+session gets its registration only when KalaReach launches it through a command integration, which
+no package can declare yet, and a hook without one answers `{}` and reports nothing. The launch
+writes nothing into the person's Qoder CLI directory; the marketplace would cost two keys in the
+person's `settings.json`, Qoder CLI's own copy and record of the marketplace left behind after
+removal, and no hooks in the first session after installation. The marketplace is the route to take
+if a later Qoder CLI stops reading `--settings`.
+
+The core repository defines the launch's two elements (`fixtures/bridges/qoder-cli/flags.json`,
+sha256 `d867f03b41f63a11688ee1c6e0a79455ffbaca09d2c38150b6f8d4b4c269261f`) and the forwarder they
+start, `kr-hook qoder-cli hook`, registered in exec form for the five events above with a timeout of
+one second for `SessionEnd` and five for the rest. This package declares no native bridge and claims
+none of those hooks' observations.
 
 What the build did with them, each run with no account:
 
