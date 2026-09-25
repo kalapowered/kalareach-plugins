@@ -869,8 +869,8 @@ What the build did with them, each run with no account:
   that start is blocked. Status: binary check, run.
 - Headless print mode checks the account before it starts a session: with none, it fired only
   `SessionEnd`. Status: binary check, run.
-- A hook that reaches its timeout is killed at once and logged as failed. Status: binary check of
-  the executable's own code; not run.
+- A hook that reaches its timeout is killed at once, with SIGKILL to its process group, and settled
+  as timed out. Status: binary check of the executable's own code; not run.
 
 Not verified: `PostToolUse`, `PostToolUseFailure` and `Notification` on the binary, which need a
 model turn, and a session launched by a running KalaReach worker.
@@ -889,8 +889,10 @@ Status: out of scope, deliberately.
 
 `max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. No account was
 signed in to and no turn was started. The 1.1.63 probes ran a copy in a directory of this
-qualification's own, with a home directory of its own, and nothing under `~/.qoder` changed while
-they ran.
+qualification's own, with a home directory of its own. Files under `~/.qoder` did change while they
+ran, and each belongs to one of three runs no probe started, which Qoder CLI recorded in its own run
+manifests: the installed `qodercli` run as `--version`, `update` and `--version` from the home
+directory, the same three this machine runs about every six hours.
 
 ## kalareach/opencode-attach
 
