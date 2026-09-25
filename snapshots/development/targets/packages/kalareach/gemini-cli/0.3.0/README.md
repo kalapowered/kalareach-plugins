@@ -67,11 +67,20 @@ package claims no tool observation.
 ## The hooks it registers
 
 The native bridge installs an extension, `kalareach`, into your own Gemini CLI directory: its
-manifest at `extensions/kalareach/gemini-extension.json` and its hooks at
-`extensions/kalareach/hooks/hooks.json`. Gemini CLI loads an extension's hooks for every project and
-every later session, beside any hooks of your own, and runs them whether or not you trust the
-folder. Nothing in your `settings.json` changes, and removing the bridge deletes exactly those two
-files, each only while it still holds the bytes that were installed.
+manifest at `extensions/kalareach/gemini-extension.json`, its hooks at
+`extensions/kalareach/hooks/hooks.json`, and at `extensions/kalareach/.gemini-extension-install.json`
+the record Gemini CLI keeps of where an extension came from, which names
+`~/.gemini/extensions/kalareach` as a local source. Gemini CLI loads an extension's hooks for every
+project and every later session, beside any hooks of your own, and runs them whether or not you
+trust the folder. Nothing in your `settings.json` changes, and removing the bridge deletes exactly
+those three files, each only while it still holds the bytes that were installed.
+
+Where your settings list allowed extensions in `security.allowedExtensions`, Gemini CLI refuses to
+start at all while any extension lacks that record, and it loads one that has it only when a
+pattern in the list matches the source the record names. It does not expand the `~`, so it tests
+the patterns against that path taken from the session's working directory: a pattern that matches
+its end, such as `/\.gemini/extensions/kalareach$`, allows this extension. Without such a pattern,
+Gemini CLI skips the extension with a warning, and the session runs without these hooks.
 
 The hooks start `kr-hook gemini-cli hook`, the KalaReach forwarder, for three events:
 `SessionStart` and `Notification` with a five-second timeout, and `SessionEnd` with one second.
