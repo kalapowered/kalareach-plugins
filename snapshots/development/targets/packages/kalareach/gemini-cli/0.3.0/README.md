@@ -88,8 +88,11 @@ a warning and the session runs without these hooks.
 Removing the bridge deletes those three files, each only while it still holds the bytes that were
 installed, and the record last, only once nothing else is left beside it. Where something else has
 to stay in `extensions/kalareach/`, a file of yours or one that changed since it was installed, the
-record stays with it, so Gemini CLI skips that directory with a warning rather than refusing to
-start. Whatever removes the bridge also removes the directories the installation created once they
+record stays with it, so Gemini CLI does not refuse to start. What it does instead depends on what
+stayed: with no manifest left it skips the directory with a warning, but a manifest that changed
+and stayed still loads, with the hooks of a hooks file that changed and stayed beside it, so a
+changed extension can remain active, under an allow list wherever a pattern allows the record's
+source. Whatever removes the bridge also removes the directories the installation created once they
 are empty, because an empty `extensions/kalareach/` is a directory with no record too.
 
 The hooks start `kr-hook gemini-cli hook`, the KalaReach forwarder, for three events:
