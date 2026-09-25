@@ -46,6 +46,10 @@ same bytes:
 | Gemini CLI 0.60.0, `bundle/interactiveCli-COQJBPC2.js`, the interactive session's start and end | any | `ba2e935e6bdb85f27816f883156309c012b838f56ff8ac5d959b9b6c7a08b6dd` |
 | Kimi Code CLI 2.0.2 executable at `~/.kimi-code/bin/kimi` | macOS, arm64 | `c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11` |
 | Qoder CLI 1.1.59 executable at `~/.qoder/bin/qodercli/qodercli-1.1.59` | macOS, arm64 | `c1b372d07083b98a2708ff23d4d462389fbf2bccad0d1317bb2970685f47c103` |
+| Qoder CLI 1.1.63 executable, `qodercli` in the vendor's archive for that release, the same bytes as `~/.qoder/bin/qodercli/qodercli-1.1.63` | macOS, arm64 | `f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0` |
+| Qoder CLI 1.1.63, the vendor's archive `qodercli/releases/1.1.63/qodercli-darwin-arm64.tar.gz` | macOS, arm64 | `c9e6ca9248ec187b48df204bd68c987fbb59d0ea95e13ce44f380b4d8bd4a394` |
+| Qoder CLI release manifest `qodercli/channels/manifest.json`, as fetched 2026-09-25, naming 1.1.63 | | `af4f0f5766a47b50c6aa2c4c410bcb3fee43bed296f38f403c73fcd8b4fb7bb0` |
+| Qoder CLI installer at `https://qoder.com/install`, as fetched 2026-09-25, read and not run | | `1e850fa3375bdccd179215f91638f4065d912c5dbddbd346d0ba352bad8ca9be` |
 | MoonshotAI kimi-cli 1.51.0, the wheel PyPI publishes as `kimi_cli-1.51.0-py3-none-any.whl`, installed for this qualification | any | `ffb9d0d4725844d36d6c78e8d3914a96b2d6a17678c217f3abe7336fb7e02d0e` |
 | agent-client-protocol 0.8.0, `agent_client_protocol-0.8.0-py3-none-any.whl`, the protocol library kimi-cli 1.51.0 installs | any | `2d5712b88b3249dbd6148b24d32c6eb8992e5663f224db6291524ac80cca8037` |
 | MoonshotAI kimi-cli 1.50.0, `kimi_cli-1.50.0-py3-none-any.whl`, read and not installed | any | `0341d283a3d5233128c1634c8201820a91cc09a1eaefc1d5075c481131b0b7e7` |
@@ -737,20 +741,23 @@ qualification, and `~/.kimi-code` was unchanged before and after.
 
 | What | Value | Source | Read | Status |
 | --- | --- | --- | --- | --- |
-| Executable | `qoder`, dispatching to `qodercli` | `qoder --version` on the qualification machine, reporting `1.1.59` | 2026-09-20 | Verified against a live install |
-| Distribution | The qoder.com installer into `~/.qoder` | The installed tree: a dispatcher at `~/.qoder/entry/qoder` naming `qoder.com`, the executable at `~/.qoder/bin/qodercli/qodercli-1.1.59` (sha256 `c1b372d07083b98a2708ff23d4d462389fbf2bccad0d1317bb2970685f47c103`) selected by a `version.txt` beside it, a `qodercli` link under `~/.local/bin`, and an install marker naming a shell installer | 2026-09-20 | Verified against a live install |
-| Protocol | The agent protocol over standard streams, `qoder-cli-acp` | The handshake that build answers under `--acp` | 2026-09-20 | Binary check |
-| Protocol version tested | 1.1.59 | `agentInfo` in that handshake: `{"name":"qoder-cli","title":"Qoder CLI","version":"1.1.59"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
-| Qualified range | `=1.1.59` | This qualification | 2026-09-20 | The only release probed |
+| Executable | `qoder`, dispatching to `qodercli` | `qodercli --version` of the build below, reporting `1.1.63`, run with a home directory belonging to this qualification | 2026-09-25 | Binary check |
+| Distribution | The qoder.com installer into `~/.qoder` | The installer at `https://qoder.com/install`, read and not run, fetches the release manifest at `https://qoder-ide.oss-accelerate.aliyuncs.com/qodercli/channels/manifest.json`, downloads the archive the manifest names for the platform, checks it against the manifest's SHA-256, extracts `qodercli` and hands over to that executable's `install` subcommand, which places it under `~/.qoder`. The manifest named `1.1.63`, published 2026-09-24T10:02:00Z. This qualification took the first three steps into a directory of its own and ran no `install`: the darwin-arm64 archive matched the manifest, and the executable in it is byte-identical to the `~/.qoder/bin/qodercli/qodercli-1.1.63` the vendor's installer had put on this machine | 2026-09-25 | Verified against the vendor's release manifest |
+| Protocol | The agent protocol over standard streams, `qoder-cli-acp` | The handshake that build answers under `--acp` | 2026-09-25 | Binary check |
+| Protocol version tested | 1.1.63 | `agentInfo` in that handshake: `{"name":"qoder-cli","title":"Qoder CLI","version":"1.1.63"}`, and `protocolVersion` 1 | 2026-09-25 | Binary check |
+| Qualified range | `=1.1.63` | This qualification | 2026-09-25 | The only release probed. Version 0.2 of this package, qualified against 1.1.59 on 2026-09-20, stays published as it was |
 
-Nothing is published under `qoder`, `@qoder/cli`, `@qoder/qoder-cli` or `qoder-cli` in a registry
-this qualification could name, so no rule here claims an exact match. The rules name the two stable
-entry points wherever they are installed, the dispatcher inside the directory the vendor installs it
-into, and the versioned executable of the qualified release; every one of them is `inferred`.
+The vendor's installer also names an npm package, `@qoder-ai/qodercli`, for Windows, and the npm
+registry publishes it, `latest` 1.1.63, with `qoder` and `qodercli` as its commands. Source:
+`https://registry.npmjs.org/@qoder-ai/qodercli`, read 2026-09-25. Status: verified against the
+registry. This qualification did not install or probe that distribution, so no rule here claims it
+exactly: the rules name the two stable entry points wherever they are installed, the dispatcher
+inside the directory the vendor installs it into, and the versioned executable of the qualified
+release, and every one of them is `inferred`.
 
-The executable itself carries its version in its file name, and `~/.local/bin/qodercli` is a link
-to it. A match rule compares a whole file name and removes only a `.exe` suffix, so recognising
-`qodercli-1.1.59` means naming that spelling. This package is qualified against 1.1.59 alone, so it
+The executable carries its version in its file name, and `~/.local/bin/qodercli` is a link to it. A
+match rule compares a whole file name and removes only a `.exe` suffix, so recognising
+`qodercli-1.1.63` means naming that spelling. This package is qualified against 1.1.63 alone, so it
 carries exactly that rule, narrowed to `~/.qoder/bin/qodercli`, beside the two rules for the stable
 entry points: a host that resolves a launch all the way to the versioned file recognises the release
 this package covers, and a host that stops at the dispatcher or the command name recognises the
@@ -761,42 +768,90 @@ stems, recorded, and covered for the qualified release rather than worked around
 
 ### The flag
 
-`--acp` is not in that build's `--help`. It works: the build answered an initialize sent over its
-standard streams with it. Status: binary check, and the gap between the help text and the behaviour
-is recorded rather than smoothed over.
+`--acp` is not in 1.1.63's `--help`, as it was not in 1.1.59's. It works: the build answered an
+initialize sent over its standard streams with it. Status: binary check, and the gap between the
+help text and the behaviour is recorded rather than smoothed over.
 
 ### The declarative proxy contract
 
-The agent protocol meets it, so this package ships no native bridge: JSON-RPC 2.0 over the started
-process's standard streams, one document per line, identifiers at `id`, methods at `method`,
-responses matched by repeating the `id`. Status: verified by sending requests to that build.
+The agent protocol meets it: JSON-RPC 2.0 over the started process's standard streams, one document
+per line, identifiers at `id`, methods at `method`, responses matched by repeating the `id`. Status:
+verified by sending requests to that build.
 
 ### Method classification
 
-Twenty-two methods. Each host-to-upstream name was sent to the pinned build, and each
-upstream-to-host name is present in that build's own executable.
+Twenty-two methods, the same table as for 1.1.59, probed again on 1.1.63. Each host-to-upstream
+name was sent to that build, and each upstream-to-host name is present in its own executable. Every
+answer was the one 1.1.59 gave, and the three requests `fixtures/frames.json` pins as captured were
+sent again, the working directory in the one that creates an execution aside, and answered the
+same way.
 
-| Sent | What 1.1.59 answered |
+| Sent | What 1.1.63 answered |
 | --- | --- |
-| `initialize` | A result: protocol version 1, `agentInfo`, prompt capabilities for image and embedded context, session capabilities for list, resume, close, delete, fork and additional directories, one login method, and a vendor extension declaring prompt queueing |
+| `initialize` | A result: protocol version 1, `agentInfo`, prompt capabilities for image and embedded context, session capabilities for list, resume, close, delete, fork and additional directories, MCP capabilities for HTTP and SSE, one login method, and a vendor extension declaring prompt queueing |
 | `authenticate`, `session/load`, `session/prompt`, `session/set_mode`, `session/set_model`, `session/resume`, `session/close`, `session/delete`, `session/fork` | An error about the request's own parameters, which is the method answering |
 | `session/new`, `session/list` | Authentication required, so the request reached the method and created nothing |
 | `session/cancel` | Method not found as a request, which is what a notification-only handler does; not exercised as a notification |
 | A name nobody implements | Method not found |
 
-The nine upstream-to-host names are present in the installed executable, and probing them from the
-client side reports method not found, which is the correct answer rather than evidence of absence.
+The nine upstream-to-host names are present in the executable, and probing them from the client
+side reports method not found, which is the correct answer rather than evidence of absence.
 
 Status: a binary check for every name. The class beside each name is a judgement recorded as
 evidence in the table itself and not exercised against a live turn.
 
-### Hooks, and what this package does not install
+### Hooks, and why this package installs none
 
-The installed build has a `hooks` subcommand whose only operation migrates hooks from another
-agent's format, and a `plugins` subcommand with its own marketplace, install, enable and disable
-operations. This package installs neither a hook nor a plugin, so the observations a hook would add
-are not among the ones it claims. Status: binary check of the subcommands; no registration was
-written and none is declared.
+Qoder CLI's hooks follow Claude Code's shape: a `hooks` object keyed by event, each value a list of
+groups, each group a list of hooks, where a `command` hook with an `args` list runs in exec form, as
+its own process with no shell, and one without runs through `bash -c`. A timeout is in seconds, 600
+by default. On `SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolUseFailure` and `Notification`
+only exit code 2 refuses anything, the build reads standard output only from a hook that exits 0,
+and it treats any other exit code as a failure it logs. Sources: the hooks reference at
+`https://docs.qoder.com/cli/hooks` and the plugins reference at `https://docs.qoder.com/cli/plugins`,
+read 2026-09-25, and the hook runner in the 1.1.63 executable. Status: document check and binary
+check of the executable's own code.
+
+Where a recipe could put KalaReach's hooks, each checked on 1.1.63 with a home directory belonging to
+this qualification, the network denied and no account:
+
+| Source | What it would take | Status |
+| --- | --- | --- |
+| `~/.qoder/settings.json` | A hooks key per event, which holds the person's own hooks for that event too: adding KalaReach's replaces theirs, and removing the key removes whatever they added to it later. There is one user-level settings file; the others are a project's, a project's local one and policy | Document check, and binary check of the settings sources the executable watches |
+| A plugin | Qoder CLI loads an installed plugin only from its install record in `~/.qoder/plugins/installed_plugins_v2.json`, which names the plugin's absolute path. `qodercli plugins install <dir>` wrote that record and `enabledPlugins`; the plugin's hooks ran with that absolute path and did not load with the same path written from `~/`. A marketplace likewise needs an absolute location. A recipe of fixed bytes cannot write a person's absolute path | Binary check, run |
+| The launch | `--settings` with inline JSON adds a settings source whose hooks run beside the person's own, and `--plugin-dir` loads a plugin directory for that run alone; both ran | Binary check, run |
+
+So KalaReach's hooks reach Qoder CLI on the launch, as `--settings` and inline JSON, and nothing is
+written into the person's Qoder CLI directory. The core repository defines those two elements
+(`fixtures/bridges/qoder-cli/flags.json`, sha256
+`d867f03b41f63a11688ee1c6e0a79455ffbaca09d2c38150b6f8d4b4c269261f`) and the forwarder they start,
+`kr-hook qoder-cli hook`, registered in exec form for the five events above with a timeout of one
+second for `SessionEnd` and five for the rest. A package cannot declare a command integration's
+flags yet, so this package declares no native bridge and claims none of those hooks' observations.
+
+What the build did with them, each run with no account:
+
+- In a folder already trusted, the interactive terminal fired `SessionStart` and `SessionEnd`, and
+  ran the hooks from `--settings` and from the user's settings file beside each other. Each hook's
+  parent was `qodercli` itself, the process that was started. The `qoder` dispatcher execs
+  `qodercli` in place (read from `~/.qoder/entry/qoder`, sha256
+  `07def4d998e91995000266cecabdedde71113307f122f9655a568c61369baf42`). Status: binary check, run.
+- The core fixture's two elements, with the forwarder built from core and a stand-in worker, ran end
+  to end: Qoder CLI ran `kr-hook qoder-cli hook` for `SessionStart` and `SessionEnd`, logged each as
+  succeeding with exit code 0 in 33 milliseconds, and the forwarder declared itself
+  `{"application":"qoder-cli","surface":"hook"}` and reported `thread_started` with detail `startup`
+  and `thread_ended` with detail `other` for Qoder CLI's own session identifier. Status: binary
+  check, run.
+- Qoder CLI runs no hook from any source, the launch's included, in a folder the person has not
+  trusted, and it fires a session's `SessionStart` before the person answers its trust question, so
+  that start is blocked. Status: binary check, run.
+- Headless print mode checks the account before it starts a session: with none, it fired only
+  `SessionEnd`. Status: binary check, run.
+- A hook that reaches its timeout is killed at once and logged as failed. Status: binary check of
+  the executable's own code; not run.
+
+Not verified: `PostToolUse`, `PostToolUseFailure` and `Notification` on the binary, which need a
+model turn, and a session launched by a running KalaReach worker.
 
 ### What is not qualified here
 
@@ -811,8 +866,9 @@ evidence that KalaReach may reuse that service protocol, and nothing in this pac
 Status: out of scope, deliberately.
 
 `max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. No account was
-signed in to and no turn was started; the probes ran with a home directory belonging to this
-qualification, and `~/.qoder` was unchanged before and after.
+signed in to and no turn was started. The 1.1.63 probes ran a copy in a directory of this
+qualification's own, with a home directory of its own, and nothing under `~/.qoder` changed while
+they ran.
 
 ## kalareach/opencode-attach
 

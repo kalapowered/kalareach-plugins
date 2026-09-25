@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "qoder-cli",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "display_name": "Qoder CLI",
   "description": "Recognises Qoder CLI, reads its agent protocol through a declarative table and stops the turn it is running, with the terminal as the default route.",
   "sdk_range": ">=0.1.1, <0.2.0",
@@ -48,7 +48,7 @@
     {
       "id": "qoder-cli-qualified-release",
       "executable": {
-        "file_stem": "qodercli-1.1.59",
+        "file_stem": "qodercli-1.1.63",
         "path_suffix": [
           ".qoder",
           "bin",
@@ -85,14 +85,14 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "20dc5321f120ea24d2a32bd2a4f83fb02dc79d7fe9a13e3a695dfec86319b60d",
-      "size_bytes": "5687"
+      "digest": "ecb5bfb2ac7b0265303018c57c225524948da44b51c76ae5eacd62a0a8781694",
+      "size_bytes": "6350"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "e8e953a9d841999a12e689b5df870c61abc2310c668352b05317696444c0c5a4",
-      "size_bytes": "8462"
+      "digest": "327094ff38d8c62bb93010eaf7dfc6255c915b84e570a8bfa586d0ad27b0cbbe",
+      "size_bytes": "8672"
     },
     {
       "role": "fixture",
@@ -103,8 +103,8 @@
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "973501047cb94056a09efe29d965cadd95e63c23f01b7c895a36c75de95a7f8b",
-      "size_bytes": "7787"
+      "digest": "8d62c2877ee81d152b2390845aca2a46041c36f9b1de9c6268cbdaca30b8ea36",
+      "size_bytes": "7883"
     },
     {
       "role": "presentation",

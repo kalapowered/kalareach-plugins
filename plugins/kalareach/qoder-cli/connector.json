@@ -3,8 +3,8 @@
   "plugin_id": "kalareach/qoder-cli",
   "protocol": {
     "name": "qoder-cli-acp",
-    "qualified_range": "=1.1.59",
-    "tested_version": "1.1.59"
+    "qualified_range": "=1.1.63",
+    "tested_version": "1.1.63"
   },
   "transport": "stdio",
   "framing": {
@@ -264,5 +264,5 @@
   ],
   "decision_destination": null,
   "volatile_forwarding": false,
-  "qualification_note": "Qualified against Qoder CLI 1.1.59, the vendor installation under ~/.qoder, on 2026-09-20 by starting that build with --acp and reading what it answered over its standard streams: ACP protocol version 1, agentInfo qoder-cli 1.1.59, and prompt capabilities for image and embedded context. Each host-to-upstream method here was sent to that build and answered; each upstream-to-host method is a name present in that build's own executable. ACP starts a subprocess and is available only when it is explicitly selected; the vendor remote-control feature uses the vendor's own service and nothing here depends on it. max_message_bytes is this host's bound. Volatile forwarding is untested. fixtures/frames.json pins the evidence."
+  "qualification_note": "Qualified against Qoder CLI 1.1.63, the release the vendor's installer served on 2026-09-25, read from the vendor's own darwin-arm64 archive for that release, checked against the vendor's release manifest and byte-identical to the executable the vendor's installer puts under ~/.qoder, on 2026-09-25 by starting that build with --acp and reading what it answered over its standard streams: ACP protocol version 1, agentInfo qoder-cli 1.1.63, and prompt capabilities for image and embedded context. Each host-to-upstream method here was sent to that build and answered; each upstream-to-host method is a name present in that build's own executable. ACP starts a subprocess and is available only when it is explicitly selected; the vendor remote-control feature uses the vendor's own service and nothing here depends on it. max_message_bytes is this host's bound. Volatile forwarding is untested. fixtures/frames.json pins the evidence."
 }

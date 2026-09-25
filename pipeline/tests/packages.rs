@@ -508,8 +508,8 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         identity: ApplicationIdentity::VendorInstaller {
             path_suffix: &[".qoder", "entry"],
         },
-        file_stems: &["qoder", "qodercli", "qodercli-1.1.59"],
-        required_rules: &[("qodercli-1.1.59", &[".qoder", "bin", "qodercli"])],
+        file_stems: &["qoder", "qodercli", "qodercli-1.1.63"],
+        required_rules: &[("qodercli-1.1.63", &[".qoder", "bin", "qodercli"])],
         provenance: &[
             (
                 "a file read in the agent's own environment",
