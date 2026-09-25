@@ -4,8 +4,14 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use kalareach_catalogue::{fixtures, packages, repository_root};
-use kr_plugin_sdk::connector::{FieldPath, FieldSegment, MethodClass, ResponseCorrelation};
-use kr_plugin_sdk::effect::{ActionImplementation, AttachmentInsertion, EffectClass};
+use kr_plugin_sdk::connector::{
+    AnswerError, FieldPath, FieldSegment, MethodClass, ResponseCorrelation,
+};
+use kr_plugin_sdk::effect::{
+    ActionImplementation, ActionInvocation, AttachmentInsertion, EffectClass, InvocationError,
+    ParameterKind,
+};
+use kr_plugin_sdk::ids::ParameterName;
 use kr_plugin_sdk::matching::MatchConfidence;
 
 fn root() -> PathBuf {
@@ -977,6 +983,199 @@ fn every_pinned_frame_is_read_the_way_the_table_says() {
         );
     }
     assert!(checked > 0, "no package carries a frame corpus");
+}
+
+/// The package the repository publishes under one identifier.
+fn package_named<'a>(loaded: &'a packages::Loaded, plugin: &str) -> &'a packages::LoadedPackage {
+    loaded
+        .repository
+        .packages
+        .iter()
+        .find(|package| package.package.manifest.plugin_id().as_str() == plugin)
+        .unwrap_or_else(|| panic!("{plugin} is published by this repository"))
+}
+
+/// The frame a corpus pins for one situation.
+fn frame_in<'a>(corpus: &'a FrameCorpus, situation: &str) -> &'a serde_json::Value {
+    let mut found = corpus
+        .frames
+        .iter()
+        .filter(|case| case.situation == situation);
+    let frame = found
+        .next()
+        .unwrap_or_else(|| panic!("the corpus pins no frame for {situation}"));
+    assert!(
+        found.next().is_none(),
+        "the corpus pins two frames for {situation}"
+    );
+    &frame.frame
+}
+
+fn decision(name: &str) -> ParameterName {
+    ParameterName::new(name).expect("a valid decision name")
+}
+
+/// A relayed Claude Code approval is answered from the table, for the request it relayed and for
+/// nothing else.
+///
+/// The table names the request it answers, the method that carries the answer and the value each
+/// decision becomes. What it writes for the pinned request has to be the pinned answer exactly:
+/// that request's own identifier, never another's, and the vendor's own value. No other message on
+/// this surface is a request it answers, including an answer and a message into the session, so none
+/// of them gets an answer however its text reads.
+#[test]
+fn a_relayed_claude_code_approval_is_answered_with_its_own_identifier_and_nothing_else_is() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let package = package_named(&loaded, "kalareach/claude-code");
+    let connector = package
+        .package
+        .connector
+        .as_ref()
+        .expect("the package carries a connector table");
+    let corpus: FrameCorpus =
+        kalareach_catalogue::read_json(&package.directory.join("fixtures/frames.json"))
+            .expect("the corpus reads");
+
+    let request = frame_in(&corpus, "a relayed tool approval");
+    let method = at(request, &connector.method_path)
+        .and_then(serde_json::Value::as_str)
+        .expect("the request names its method");
+    let identifier =
+        at(request, &connector.request_id_path).expect("the request carries its identifier");
+
+    let allowed = connector
+        .answer(method, identifier, &decision("allow"))
+        .expect("the table answers the request it relays");
+    assert_eq!(
+        &allowed,
+        frame_in(&corpus, "the answer to that approval"),
+        "the table does not write the pinned answer for the pinned request"
+    );
+    assert_eq!(at(&allowed, &connector.request_id_path), Some(identifier));
+    assert_ne!(
+        &allowed,
+        frame_in(&corpus, "an answer naming a request nobody issued"),
+        "an answer names a request other than the one it answers"
+    );
+
+    let denied = connector
+        .answer(method, identifier, &decision("deny"))
+        .expect("the table answers with a refusal too");
+    assert_eq!(
+        member(&denied, "params.behavior"),
+        Some(&serde_json::json!("deny"))
+    );
+    assert_eq!(at(&denied, &connector.request_id_path), Some(identifier));
+
+    // A decision the table does not map is refused rather than sent under some nearby value.
+    assert!(matches!(
+        connector.answer(method, identifier, &decision("always")),
+        Err(AnswerError::UnknownDecision { .. })
+    ));
+
+    // Every other message the corpus pins is one the table does not answer.
+    let mut others = 0;
+    for case in &corpus.frames {
+        let wire = at(&case.frame, &connector.method_path)
+            .and_then(serde_json::Value::as_str)
+            .expect("every pinned frame names its method");
+        if wire == method {
+            continue;
+        }
+        others += 1;
+        assert!(
+            matches!(
+                connector.answer(wire, identifier, &decision("allow")),
+                Err(AnswerError::NotAnswered { .. })
+            ),
+            "[{}]: the table answers a message that is not the request it relays",
+            case.situation
+        );
+    }
+    assert!(others > 0, "the corpus pins no message but the request");
+}
+
+/// An answer to a Claude Code approval names the pending request it answers.
+///
+/// The request a person answers is the one the call names, and the host checks that name again
+/// when the call arrives. A call that names none is refused, so nothing answers whichever request
+/// happens to be waiting. Every decision the action offers is one the table maps.
+#[test]
+fn an_answer_to_a_claude_code_approval_names_the_pending_request_it_answers() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let package = package_named(&loaded, "kalareach/claude-code");
+    let manifest = &package.package.manifest;
+    let destination = package
+        .package
+        .connector
+        .as_ref()
+        .and_then(|connector| connector.decision_destination.as_ref())
+        .expect("the table declares where an answer goes");
+
+    let answering: Vec<_> = manifest
+        .actions
+        .iter()
+        .filter(|action| action.effect == EffectClass::ApprovalRespond)
+        .collect();
+    let [action] = answering.as_slice() else {
+        panic!(
+            "the package declares {} answering actions, not one",
+            answering.len()
+        );
+    };
+    let ActionImplementation::DecisionDestination {
+        decision: parameter,
+    } = &action.implementation
+    else {
+        panic!(
+            "{} answers some other way than through the table",
+            action.id
+        );
+    };
+    let offered: Vec<&ParameterName> = action
+        .parameters
+        .parameters
+        .iter()
+        .filter(|declared| &declared.name == parameter)
+        .flat_map(|declared| match &declared.kind {
+            ParameterKind::Choice { choices } => choices.iter().map(|choice| &choice.id).collect(),
+            _ => Vec::new(),
+        })
+        .collect();
+    assert!(!offered.is_empty(), "{} offers no decision", action.id);
+
+    let call = |resource: serde_json::Value, choice: &str| -> ActionInvocation {
+        serde_json::from_value(serde_json::json!({
+            "action_id": action.id,
+            "resource_id": resource,
+            "arguments": [
+                { "name": parameter, "value": { "type": "choice", "choice_id": choice } }
+            ],
+        }))
+        .expect("a well-formed invocation")
+    };
+    let pending = serde_json::json!("5f8e2c1a-4b3d-4e6f-8a9b-0c1d2e3f4a5b");
+
+    for choice in &offered {
+        assert!(
+            matches!(
+                action.check(&call(serde_json::Value::Null, choice.as_str())),
+                Err(InvocationError::ResourceMissing { .. })
+            ),
+            "an answer that names no pending request is not refused"
+        );
+        let named = call(pending.clone(), choice.as_str());
+        assert_eq!(action.check(&named), Ok(()));
+        assert_eq!(action.decision(&named), Some(*choice));
+        assert!(
+            destination.value_for(choice).is_some(),
+            "the table maps no value for {choice}"
+        );
+    }
+    assert!(matches!(
+        action.check(&call(pending, "always")),
+        Err(InvocationError::Arguments(_))
+    ));
 }
 
 /// One frame from an API family a table is not qualified for, and what the table makes of it.

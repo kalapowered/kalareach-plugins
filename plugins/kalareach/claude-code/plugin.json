@@ -91,8 +91,8 @@
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "b473d973624ae7e262e36a386921abd4acf07755fffa6e3aaf66ab69f7aa3fa0",
-      "size_bytes": "3747"
+      "digest": "56bbd8764904a0943768e6b8ecebb49b2c23dbed7874442d47bbeab0e16e20a5",
+      "size_bytes": "8929"
     },
     {
       "role": "asset",
