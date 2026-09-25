@@ -614,15 +614,17 @@ const REVIEWED_GRANTS: &[(&str, &str)] = &[
     ),
     (
         "kalareach/gemini-cli",
-        "Installs two files under your own Gemini CLI directory: an extension named kalareach, \
-         which Gemini CLI loads for every project and every later session, whether or not you trust \
-         the folder, beside your own hooks. Gemini CLI then starts the KalaReach forwarder itself, \
-         through bash, so the forwarder runs under Gemini CLI's own permissions and outside the \
-         KalaReach plugin sandbox, outside Wasmtime. It sees each session's SessionStart, SessionEnd \
-         and Notification events and no tool events, because Gemini CLI reads a failing hook's \
-         error text as a refusal of a finished tool's result, so a forwarder that is missing or out \
-         of date could change what the model reads. Removal deletes exactly those two files, each \
-         only while it still holds the bytes that were installed.",
+        "Installs three files under your own Gemini CLI directory: the manifest of an extension \
+         named kalareach, its hooks, and the record of where it is installed. Gemini CLI loads the \
+         extension for every project and every later session, whether or not you trust the folder, \
+         beside your own hooks; where your settings allow only listed extensions, it loads it only \
+         when one of your patterns matches the source that record names. Gemini CLI then starts the \
+         KalaReach forwarder itself, through bash, so the forwarder runs under Gemini CLI's own \
+         permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees each \
+         session's SessionStart, SessionEnd and Notification events and no tool events, because \
+         Gemini CLI reads a failing hook's error text as a refusal of a finished tool's result, so a \
+         forwarder that is missing or out of date could change what the model reads. Removal deletes \
+         exactly those three files, each only while it still holds the bytes that were installed.",
     ),
 ];
 
@@ -918,7 +920,13 @@ fn gemini_hooks_file_refusal(file: &serde_json::Value) -> Option<String> {
 /// for exactly the three events whose refusals Gemini CLI ignores, and the same check refuses the
 /// file once any registration in it gains shell syntax, another program, another member or a
 /// matcher, or once a tool event is added. The extension's manifest names the directory the recipe
-/// installs both files into, and nothing else it could load.
+/// installs all three files into, and nothing else it could load.
+///
+/// The third file is Gemini CLI's install record, and it names that directory as a local source and
+/// nothing else. Where a person's settings list allowed extensions, Gemini CLI refuses to start while
+/// any extension lacks a record, and loads one only when a listed pattern matches the source its
+/// record names. So the record is installed first and removed last: a recipe stopped part way never
+/// leaves the manifest without it.
 #[test]
 fn every_gemini_cli_hook_starts_the_forwarder_as_plain_words() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -998,10 +1006,36 @@ fn every_gemini_cli_hook_starts_the_forwarder_as_plain_words() {
     assert_eq!(
         destinations,
         [
+            format!("extensions/{name}/.gemini-extension-install.json"),
             format!("extensions/{name}/gemini-extension.json"),
             format!("extensions/{name}/hooks/hooks.json"),
         ],
-        "Gemini CLI loads an extension from the directory its manifest names"
+        "Gemini CLI loads an extension and its install record from the directory its manifest names"
+    );
+    let mut removals: Vec<String> = bridge
+        .remove
+        .iter()
+        .map(|step| step.undoes().0.as_str().to_owned())
+        .collect();
+    removals.reverse();
+    assert_eq!(
+        removals, destinations,
+        "removal undoes the installation in reverse, so the record goes last"
+    );
+
+    let record: serde_json::Value = kalareach_catalogue::read_json(
+        &package
+            .directory
+            .join("bridge/gemini-extension-install.json"),
+    )
+    .expect("the install record reads");
+    assert_eq!(
+        record,
+        serde_json::json!({
+            "source": format!("~/.gemini/extensions/{name}"),
+            "type": "local",
+        }),
+        "the install record names the extension's own directory as a local source"
     );
 }
 
