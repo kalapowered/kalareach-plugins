@@ -56,7 +56,7 @@ common form:
 | Member | Meaning |
 | --- | --- |
 | `run.host` | `{repository, commit: {id, modified}}`: the core repository and commit the host and the driver were built from, as `run.commit` names the commit of this repository the harness ran from |
-| `run.packages[]` | The package under qualification: `name`, `version`, `manifest_digest` (the SHA-256 of its `plugin.json`) and the `generation` it was installed from |
+| `run.packages[]` | The package the parts ran against: `name`, `version`, `manifest_digest` (the SHA-256 of its `plugin.json`) and the `generation` it was installed from. The check requires the version and digest of the package in this tree, so a package released again needs its parts run again |
 | `run.applications[]` | The pinned build, and a newer build where the upgrade part uses one: `version`, `url` it came from, `sha256` of its pinned file, `status` and `reason` |
 | `tests[].part` | The part the test is, from the table above |
 | `tests[].source` | Where the test is, prefixed by its repository: `kalareach:` for the driver's tests, `kalareach-plugins:` for a part recorded from the table above |
