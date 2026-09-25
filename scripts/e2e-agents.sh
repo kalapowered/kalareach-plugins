@@ -489,6 +489,8 @@ while IFS= read -r package; do
     --arg manifest_digest "$manifest_digest" \
     --arg payload "$payload" --argjson own_home "$own_home" --arg own_home_error "$own_home_error" \
     --arg evidence_real "$evidence" --arg temporary "$temporary" --arg temporary_real "$temporary_real" \
+    --arg target "$target_dir" --arg target_real "$(cd "$target_dir" && pwd -P)" \
+    --arg shells "${KR_SHELL_PACKAGES:-}" \
     --argjson manifest "$(cat "$manifest")" \
     --arg pinned_status "$([ -z "$blocked" ] && echo installed || echo not_installed)" \
     --arg blocked "$blocked" --argjson newer_status "$newer_status" \
@@ -496,12 +498,15 @@ while IFS= read -r package; do
     --slurpfile results "$results" '
     def counts($tests): reduce ("passed", "failed", "ignored", "not_run", "not_built", "known_difference") as $o
       ({}; . + {($o): ([$tests[] | select(.outcome == $o)] | length)});
-    # A path in the evidence directory, the temporary directory, the tools directory or the home
-    # directory of whoever ran this is written relative to it; a system or runtime executable is
-    # named as it is, since which one ran is the evidence.
+    # A path in the evidence directory, the temporary directory, the build'"'"'s target directory, the
+    # managed shell'"'"'s packages, the tools directory or the home directory of whoever ran this is
+    # written relative to it; a system or runtime executable is named as it is, since which one ran
+    # is the evidence.
     def local_paths: if type == "string" then
         (split($evidence_real) | join("<evidence>"))
         | (split($temporary_real) | join("<tmp>")) | (split($temporary) | join("<tmp>"))
+        | (split($target_real) | join("<target>")) | (split($target) | join("<target>"))
+        | (if $shells == "" then . else split($shells) | join("<shells>") end)
         | (split($tools_real) | join("<tools>")) | (split($tools) | join("<tools>"))
         | (if $home == "" then . elif . == $home then "~" else split($home + "/") | join("~/") end)
       else . end;

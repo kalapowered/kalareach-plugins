@@ -74,10 +74,11 @@ common form:
 product's own terminal engine, and they name themselves `ghostty`, a terminal that supplies both
 enhanced keyboard protocols. Each step's `command` is the driver's command as the harness ran it,
 and a test's `command` is its step's. A path in the evidence directory is written `<evidence>/...`,
-one in the temporary directory, where each run's own directory is, `<tmp>/...`, one in the tools
-directory `<tools>/...` and one in the home directory of whoever ran it `~/...`; the evidence
-directory itself is named as it is, and so is a system or runtime executable, since which one ran is
-the evidence.
+one in the temporary directory, where each run's own directory is, `<tmp>/...`, one in the Cargo
+target directory the host and the driver were built in `<target>/...`, one in the managed shell's
+packages `<shells>/...`, one in the tools directory `<tools>/...` and one in the home directory of
+whoever ran it `~/...`; the evidence directory itself is named as it is, and so is a system or
+runtime executable, since which one ran is the evidence.
 
 ## The build list
 
