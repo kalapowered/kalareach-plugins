@@ -170,11 +170,12 @@ while the installation moved to 0.156.1, whose own process started on the termin
 forged titles, transcripts, registrations and hook input changed nothing the host reports (8a). Codex
 shows its sign-in screen and no composer without an account, so 14.03a did not run.
 
-The run's home held a keychain of the run's own as its default, and the record names every executable a
-process of the agent's sessions ran, with its SHA-256 and where it lies. The parts that need a vendor
-account, a binding or a registration the host issued did not run, and the record says why for each.
-Status: exercised behaviour of the host with this build on its terminal route. None of the table's
-classifications was exercised, because the host bound no connector.
+The run's home held a keychain of the run's own as its default, and the record names each executable
+image seen beneath the agent's sessions, looked at every quarter second from the launch to the end of
+each part, with its SHA-256 and where it lies; a process that started and ended between two looks is not
+in it. The parts that need a vendor account, a binding or a registration the host issued did not run,
+and the record says why for each. Status: exercised behaviour of the host with this build on its
+terminal route. None of the table's classifications was exercised, because the host bound no connector.
 
 ## kalareach/claude-code
 
@@ -446,7 +447,11 @@ nothing: it hands no installed connector to a worker, so Claude Code ran on its 
 by typing `claude` at a managed shell's prompt, with its home inside the run's own directory, every
 proxy variable at a loopback port nothing listens on, and no account. Its home held the state Claude
 Code's own onboarding leaves (`.claude.json` with `hasCompletedOnboarding`), because 2.1.278 exits when
-its first-run connection check fails; its first screen was then the folder-trust dialog.
+its first-run connection check fails; its first screen was then the folder-trust dialog. The owner
+granted the package's native bridge with the rest of what it requests. At the core commit the record
+names, the host applies a bridge recipe only for an executable a signed qualification record names, and
+none names a Claude Code executable, so the recipe is refused; the run did not read the bridge's journal
+to confirm that, and no part below depends on it.
 
 On that route the host advertised no typed capability for Claude Code and refused every typed action and
 each of this package's actions (2b); Claude Code and its local terminal outlived a killed control
@@ -456,11 +461,12 @@ it started with while the installation moved to 2.1.281, whose own process start
 forged hook events and a forged channel, changed nothing the host reports (8a); and a path typed at its
 composer, after the folder was trusted, arrived as terminal input and showed in the composer (14.03a).
 
-The run's home held a keychain of the run's own as its default, and the record names every executable a
-process of the agent's sessions ran, with its SHA-256 and where it lies. The parts that need a vendor
-account, a binding or a registration the host issued did not run, and the record says why for each.
-Status: exercised behaviour of the host with this build on its terminal route. None of the table's
-classifications was exercised, because the host bound no connector.
+The run's home held a keychain of the run's own as its default, and the record names each executable
+image seen beneath the agent's sessions, looked at every quarter second from the launch to the end of
+each part, with its SHA-256 and where it lies; a process that started and ended between two looks is not
+in it. The parts that need a vendor account, a binding or a registration the host issued did not run,
+and the record says why for each. Status: exercised behaviour of the host with this build on its
+terminal route. None of the table's classifications was exercised, because the host bound no connector.
 
 ## kalareach/opencode
 
@@ -588,11 +594,12 @@ and a restarted daemon served the session again (5a); forged titles, transcripts
 input changed nothing the host reports (8a); and a path typed at its composer arrived as terminal input
 and showed there (14.03a). No newer build is named for this package, so 6a did not run.
 
-The run's home held a keychain of the run's own as its default, and the record names every executable a
-process of the agent's sessions ran, with its SHA-256 and where it lies. The parts that need a vendor
-account, a binding or a registration the host issued did not run, and the record says why for each.
-Status: exercised behaviour of the host with this build on its terminal route. None of the table's
-classifications was exercised, because the host bound no connector.
+The run's home held a keychain of the run's own as its default, and the record names each executable
+image seen beneath the agent's sessions, looked at every quarter second from the launch to the end of
+each part, with its SHA-256 and where it lies; a process that started and ended between two looks is not
+in it. The parts that need a vendor account, a binding or a registration the host issued did not run,
+and the record says why for each. Status: exercised behaviour of the host with this build on its
+terminal route. None of the table's classifications was exercised, because the host bound no connector.
 
 ## kalareach/gemini-cli
 
@@ -749,9 +756,9 @@ installed from `snapshots/development` on a paired owner device's confirmation, 
 nothing: it hands no installed connector to a worker, so Gemini CLI ran on its terminal route, started
 by typing `gemini` at a managed shell's prompt, with its home inside the run's own directory, every
 proxy variable at a loopback port nothing listens on, and no account. The owner granted the package's
-native bridge with the rest of what it requests. At the core commit the record names, the host passes
-its bridge executor no qualified executable, so the recipe's version requirement refuses the bridge; the
-run did not read the bridge's journal to confirm that, and no part below depends on it.
+native bridge with the rest of what it requests. At the core commit the record names, the host knows no
+directory where Gemini CLI keeps its plugins, so its bridge executor refuses the recipe before it reads
+any version; the run did not read the bridge's journal to confirm that, and no part below depends on it.
 
 On that route the host advertised no typed capability for Gemini CLI and refused every typed action and
 each of this package's actions (2b); Gemini CLI and its local terminal outlived a killed control daemon,
@@ -759,11 +766,12 @@ and a restarted daemon served the session again (5a); and forged titles, transcr
 hook input changed nothing the host reports (8a). Gemini CLI asks for authentication before it shows a
 composer, so 14.03a did not run, and no newer build is named for this package, so 6a did not run.
 
-The run's home held a keychain of the run's own as its default, and the record names every executable a
-process of the agent's sessions ran, with its SHA-256 and where it lies. The parts that need a vendor
-account, a binding or a registration the host issued did not run, and the record says why for each.
-Status: exercised behaviour of the host with this build on its terminal route. None of the table's
-classifications was exercised, because the host bound no connector.
+The run's home held a keychain of the run's own as its default, and the record names each executable
+image seen beneath the agent's sessions, looked at every quarter second from the launch to the end of
+each part, with its SHA-256 and where it lies; a process that started and ended between two looks is not
+in it. The parts that need a vendor account, a binding or a registration the host issued did not run,
+and the record says why for each. Status: exercised behaviour of the host with this build on its
+terminal route. None of the table's classifications was exercised, because the host bound no connector.
 
 ## kalareach/kimi-code-cli
 
@@ -868,11 +876,12 @@ and hook input changed nothing the host reports (8a); and a path typed at its co
 was trusted, arrived as terminal input and showed there (14.03a). No newer build is named, so 6a did not
 run.
 
-The run's home held a keychain of the run's own as its default, and the record names every executable a
-process of the agent's sessions ran, with its SHA-256 and where it lies. The parts that need a vendor
-account, a binding or a registration the host issued did not run, and the record says why for each.
-Status: exercised behaviour of the host with this build on its terminal route. None of the table's
-classifications was exercised, because the host bound no connector.
+The run's home held a keychain of the run's own as its default, and the record names each executable
+image seen beneath the agent's sessions, looked at every quarter second from the launch to the end of
+each part, with its SHA-256 and where it lies; a process that started and ended between two looks is not
+in it. The parts that need a vendor account, a binding or a registration the host issued did not run,
+and the record says why for each. Status: exercised behaviour of the host with this build on its
+terminal route. None of the table's classifications was exercised, because the host bound no connector.
 
 ## kalareach/qoder-cli
 
@@ -1030,8 +1039,7 @@ typing `qodercli` at a managed shell's prompt, with its home inside the run's ow
 variable at a loopback port nothing listens on, and no account. The build was taken from the vendor's
 release archive for 1.1.63
 (`https://qoder-ide.oss-accelerate.aliyuncs.com/qodercli/releases/1.1.63/qodercli-darwin-arm64.tar.gz`),
-whose executable is the one pinned above. A helper it unpacks into its home and runs for a moment is
-ended with the run and is not counted as the agent's execution. Qoder CLI and that helper write to the
+whose executable is the one pinned above. Qoder CLI and a helper it unpacks into its home write to the
 default keychain when they start; in a home with no keychain, macOS then asked the person at the screen
 to create one, so each run's home holds a keychain of its own. The system log names these processes by
 the paths of another installation (`~/.qoder/bin/qodercli/qodercli-<version>`): Qoder CLI builds share
@@ -1044,11 +1052,12 @@ and a restarted daemon served the session again (5a); and forged titles, transcr
 hook input changed nothing the host reports (8a). Qoder CLI asks its person to sign in before it shows a
 composer, so 14.03a did not run, and no newer build is named, so 6a did not run.
 
-The run's home held a keychain of the run's own as its default, and the record names every executable a
-process of the agent's sessions ran, with its SHA-256 and where it lies. The parts that need a vendor
-account, a binding or a registration the host issued did not run, and the record says why for each.
-Status: exercised behaviour of the host with this build on its terminal route. None of the table's
-classifications was exercised, because the host bound no connector.
+The run's home held a keychain of the run's own as its default, and the record names each executable
+image seen beneath the agent's sessions, looked at every quarter second from the launch to the end of
+each part, with its SHA-256 and where it lies; a process that started and ended between two looks is not
+in it. The parts that need a vendor account, a binding or a registration the host issued did not run,
+and the record says why for each. Status: exercised behaviour of the host with this build on its
+terminal route. None of the table's classifications was exercised, because the host bound no connector.
 
 ## kalareach/opencode-attach
 
@@ -1164,11 +1173,12 @@ registrations and hook input changed nothing the host reports (8a); and a path t
 composer arrived as terminal input and showed there (14.03a). No newer build is named, so 6a did not
 run.
 
-The run's home held a keychain of the run's own as its default, and the record names every executable a
-process of the agent's sessions ran, with its SHA-256 and where it lies. The parts that need a vendor
-account, a binding or a registration the host issued did not run, and the record says why for each.
-Status: exercised behaviour of the host with this build on its terminal route. None of the table's
-classifications was exercised, because the host bound no connector.
+The run's home held a keychain of the run's own as its default, and the record names each executable
+image seen beneath the agent's sessions, looked at every quarter second from the launch to the end of
+each part, with its SHA-256 and where it lies; a process that started and ended between two looks is not
+in it. The parts that need a vendor account, a binding or a registration the host issued did not run,
+and the record says why for each. Status: exercised behaviour of the host with this build on its
+terminal route. None of the table's classifications was exercised, because the host bound no connector.
 
 ## kalareach/kimi-cli
 
@@ -1325,8 +1335,9 @@ and a restarted daemon served the session again (5a); forged titles, transcripts
 input changed nothing the host reports (8a); and a path typed at its composer arrived as terminal input
 and showed there (14.03a). No newer build is named, so 6a did not run.
 
-The run's home held a keychain of the run's own as its default, and the record names every executable a
-process of the agent's sessions ran, with its SHA-256 and where it lies. The parts that need a vendor
-account, a binding or a registration the host issued did not run, and the record says why for each.
-Status: exercised behaviour of the host with this build on its terminal route. None of the table's
-classifications was exercised, because the host bound no connector.
+The run's home held a keychain of the run's own as its default, and the record names each executable
+image seen beneath the agent's sessions, looked at every quarter second from the launch to the end of
+each part, with its SHA-256 and where it lies; a process that started and ended between two looks is not
+in it. The parts that need a vendor account, a binding or a registration the host issued did not run,
+and the record says why for each. Status: exercised behaviour of the host with this build on its
+terminal route. None of the table's classifications was exercised, because the host bound no connector.
