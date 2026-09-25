@@ -1,34 +1,34 @@
 {
   "manifest_version": 1,
   "publisher_id": "kalareach",
-  "plugin_name": "codex",
-  "version": "0.2.0",
-  "display_name": "Codex CLI",
-  "description": "Recognises Codex CLI, reads its App Server through a declarative table and stops the turn it is running.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "plugin_name": "opencode",
+  "version": "0.2.1",
+  "display_name": "OpenCode",
+  "description": "Recognises OpenCode, reads its shared server's event stream through a declarative table and stops the turn it is running.",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "2dd4e8600f52729b711996e1a1d085d7f11ae67f"
+    "revision": "aea3b0db45c5883fc7d110d57b9ae6bcb92f707d"
   },
   "match_rules": [
     {
-      "id": "codex-npm",
+      "id": "opencode-npm",
       "executable": {
-        "file_stem": "codex",
+        "file_stem": "opencode",
         "path_suffix": [],
         "version_range": null
       },
       "distribution": {
         "registry": "npm",
-        "package": "@openai/codex"
+        "package": "opencode-ai"
       },
       "confidence": "exact"
     },
     {
-      "id": "codex-executable",
+      "id": "opencode-executable",
       "executable": {
-        "file_stem": "codex",
+        "file_stem": "opencode",
         "path_suffix": [],
         "version_range": null
       },
@@ -61,50 +61,50 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "e276b90ffb7c32c01b8c8bad288852435643ffd60dc57b3067e1d56322cce971",
-      "size_bytes": "6819"
+      "digest": "8bb98bdafb200588b3ce3761b25c490f28cec70ea4a622a6e6a7ca5b314682bb",
+      "size_bytes": "6828"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "fbaed0dc7df5ebd9b20013370e58adfe280d763d176b0fe51885f39e07744e8f",
-      "size_bytes": "16071"
+      "digest": "e158152f6dac24ae864fe99acd8764b04f6ed155d0325bade8dd76c0631c76dc",
+      "size_bytes": "29209"
     },
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "c3d63e248eb922313d6ea5366713ee95d095497122f59a0491d42b00c1ab4f3b",
-      "size_bytes": "4961"
+      "digest": "b1db6178ee606513264272075d47c3638b4e6f6ae2de36ffb88d399f91a724e2",
+      "size_bytes": "4879"
     },
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "122ca902b97f73a546ee1a424179c672756dc27eca9748af30d20f79daaf6f50",
-      "size_bytes": "10511"
+      "digest": "386ca8bef0315dadb35369001f8be72f0b702be927e39dcfa1cc3e2631953ec6",
+      "size_bytes": "7937"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "51c4a083904b315b7e3fd4839f3b7bde4d6e6f298f4fea0958e6fbf7e806ef12",
-      "size_bytes": "3390"
+      "digest": "d95ec63150b25abd137b6210766d84a985c0c6ee395975ee432d8e230164bd69",
+      "size_bytes": "4067"
     }
   ],
   "capabilities": [
     {
       "capability": "metadata.match",
-      "reason": "Recognise Codex CLI from its executable name and its published package"
+      "reason": "Recognise OpenCode from its published package and its executable name"
     },
     {
       "capability": "presentation.declarative",
-      "reason": "Show the thread, the running turn and the controls for it"
+      "reason": "Show what the OpenCode session is doing and the controls for its turn"
     },
     {
       "capability": "broker.semantic_events",
-      "reason": "Read turn and item events from the App Server the session is already bound to"
+      "reason": "Read the turn, tool and permission events the bound server already publishes"
     },
     {
       "capability": "upstream.action",
-      "reason": "Ask Codex to stop the turn it is running when you press Stop"
+      "reason": "Ask OpenCode to stop the turn it is running when you press Stop"
     }
   ],
   "actions": [
@@ -118,11 +118,11 @@
       "parameters": {
         "parameters": []
       },
-      "description": "Cancel the turn the bound App Server is running, which ends it as interrupted",
+      "description": "Cancel the turn the bound OpenCode execution is running, which ends it as interrupted",
       "confirmation_required": false
     },
     {
-      "id": "thread.refresh",
+      "id": "session.refresh",
       "label": "Refresh",
       "effect": "observe",
       "implementation": {
@@ -131,7 +131,7 @@
       "parameters": {
         "parameters": []
       },
-      "description": "Draw this package's document again from the thread state the host already holds",
+      "description": "Draw this package's document again from the session state the host already holds",
       "confirmation_required": false
     }
   ],

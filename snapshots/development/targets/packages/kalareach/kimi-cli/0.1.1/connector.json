@@ -1,10 +1,10 @@
 {
   "manifest_version": 1,
-  "plugin_id": "kalareach/qoder-cli",
+  "plugin_id": "kalareach/kimi-cli",
   "protocol": {
-    "name": "qoder-cli-acp",
-    "qualified_range": "=1.1.59",
-    "tested_version": "1.1.59"
+    "name": "kimi-cli-acp",
+    "qualified_range": "=1.51.0",
+    "tested_version": "1.51.0"
   },
   "transport": "stdio",
   "framing": {
@@ -90,16 +90,6 @@
       "direction": "host_to_upstream"
     },
     {
-      "method": "session.close",
-      "wire_name": "session/close",
-      "direction": "host_to_upstream"
-    },
-    {
-      "method": "session.delete",
-      "wire_name": "session/delete",
-      "direction": "host_to_upstream"
-    },
-    {
       "method": "session.fork",
       "wire_name": "session/fork",
       "direction": "host_to_upstream"
@@ -159,17 +149,17 @@
     {
       "method": "authenticate",
       "class": "credential",
-      "evidence": "Selects the authentication method this connection acts under and starts the vendor's own credential flow; the credential stays with the agent and never reaches a component"
+      "evidence": "Checks the login this build keeps for its own Kimi account; the credential stays with the agent and never reaches a component. Without a usable login the build could not encode its own error, so the request reached the method and got no answer"
     },
     {
       "method": "session.new",
       "class": "mutation",
-      "evidence": "Creates an execution the agent owns, with its working directory and its MCP servers"
+      "evidence": "Creates an execution the agent owns, after checking its login; this build answered authentication required, so nothing was created"
     },
     {
       "method": "session.load",
       "class": "mutation",
-      "evidence": "Loads a stored conversation into this connection; stored history is not evidence that this process owns the live execution"
+      "evidence": "Loads a stored conversation into this connection and replays its history; stored history is not evidence that this process owns the live execution"
     },
     {
       "method": "session.prompt",
@@ -179,22 +169,22 @@
     {
       "method": "session.set-mode",
       "class": "mutation",
-      "evidence": "Changes the session's approval mode, which alters what the agent runs without asking"
+      "evidence": "Changes the session's mode; this build offers the one mode default and answers any other with an internal error"
     },
     {
       "method": "session.set-model",
       "class": "mutation",
-      "evidence": "Changes the model the session's next turn uses"
+      "evidence": "Changes the model the session's next turn uses and saves it as the default in the agent's own configuration file"
     },
     {
       "method": "session.cancel",
       "class": "mutation",
-      "evidence": "Ends the turn in flight. The name is in the installed executable; sent as a request this build answers method not found, which is what a notification-only handler does, and it was not exercised as a notification"
+      "evidence": "Ends the turn in flight. The installed protocol library routes it as a notification: sent as one it reached this build's handler, and sent as a request it answered method not found"
     },
     {
       "method": "session.list",
       "class": "observation",
-      "evidence": "Lists the stored sessions this account can reach without loading or resuming one"
+      "evidence": "Lists the stored sessions for a working directory without loading or resuming one"
     },
     {
       "method": "session.resume",
@@ -202,19 +192,9 @@
       "evidence": "Resumes a stored session so later turns append to it"
     },
     {
-      "method": "session.close",
-      "class": "mutation",
-      "evidence": "Closes an open session and releases what it held"
-    },
-    {
-      "method": "session.delete",
-      "class": "mutation",
-      "evidence": "Deletes a stored session"
-    },
-    {
       "method": "session.fork",
-      "class": "mutation",
-      "evidence": "Copies a stored session's history into a new session"
+      "class": "unsupported",
+      "evidence": "This build accepts the name and cannot fork: a well-formed request answered an internal error because its handler is not implemented, and the handshake does not advertise forking, so the connector states it is outside what it proxies"
     },
     {
       "method": "session.update",
@@ -262,6 +242,7 @@
       "evidence": "Releases a terminal and the resources the broker scoped to it"
     }
   ],
+  "decision_destination": null,
   "volatile_forwarding": false,
-  "qualification_note": "Qualified against Qoder CLI 1.1.59, the vendor installation under ~/.qoder, on 2026-09-20 by starting that build with --acp and reading what it answered over its standard streams: ACP protocol version 1, agentInfo qoder-cli 1.1.59, and prompt capabilities for image and embedded context. Each host-to-upstream method here was sent to that build and answered; each upstream-to-host method is a name present in that build's own executable. ACP starts a subprocess and is available only when it is explicitly selected; the vendor remote-control feature uses the vendor's own service and nothing here depends on it. max_message_bytes is this host's bound. Volatile forwarding is untested. fixtures/frames.json pins the evidence."
+  "qualification_note": "Qualified against MoonshotAI's kimi-cli 1.51.0 (PyPI kimi-cli, wheel sha256 ffb9d0d4725844d36d6c78e8d3914a96b2d6a17678c217f3abe7336fb7e02d0e), installed into an environment of its own on 2026-09-24 and started with the acp subcommand under a home directory of its own: ACP protocol version 1, agentInfo Kimi Code CLI 1.51.0, session capabilities list and resume. Each host-to-upstream method here was sent to that build and answered, or reached a handler its log records; one answered method not found is not routed; each upstream-to-host method is one the installed package calls. The kimi.com distribution reports the same agent name, so a name identifies no distribution: this table applies where the installed version and evidence match these pins, and otherwise the capability is incompatible and the terminal path is what remains. Release 1.52.0 carries no agent protocol. max_message_bytes is this host's bound. Volatile forwarding is untested."
 }

@@ -2,14 +2,14 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "claude-code",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "display_name": "Claude Code",
-  "description": "Recognises Claude Code, observes it through lifecycle and tool hooks, and carries a message into the session.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "description": "Recognises Claude Code, observes it through lifecycle and tool hooks, carries a message into the session and declares how the tool approvals it relays are answered.",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "bb5ab07e8e840bd4fb828a0c9e122fcc6f132ca7"
+    "revision": "d93f452dc76e50d8848a35ae2d68d640ee0f17f4"
   },
   "match_rules": [
     {
@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "20cc8a00b46974d853b2422e835b0e3d1d32c952c69242a6be2995d286a2d9da",
-      "size_bytes": "8996"
+      "digest": "c3c947141a245fa9b0ecd987838a91e5523bfb9b1412ef9083a1721d4b9ef701",
+      "size_bytes": "10986"
     },
     {
       "role": "native_bridge",
@@ -85,14 +85,14 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "1eb684cd8456b0704f10792a968ad44c7438706fed03f3d9b03b1e5133e081cb",
-      "size_bytes": "3134"
+      "digest": "f86f2131f523d403c987b5c076b0b5ee973349f6c362bcf894c79797eec45b3a",
+      "size_bytes": "3890"
     },
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "b473d973624ae7e262e36a386921abd4acf07755fffa6e3aaf66ab69f7aa3fa0",
-      "size_bytes": "3747"
+      "digest": "56bbd8764904a0943768e6b8ecebb49b2c23dbed7874442d47bbeab0e16e20a5",
+      "size_bytes": "8929"
     },
     {
       "role": "asset",
@@ -103,8 +103,8 @@
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "731f814d451501b8c88a1fdbd74659c9835a31e9ddb01df836f783b2ab5e9210",
-      "size_bytes": "3911"
+      "digest": "d23e72101d1f4322be2f33a31ed852a5dbd9765c44b79d566a22ac5f8a5bd375",
+      "size_bytes": "7799"
     }
   ],
   "capabilities": [
@@ -127,6 +127,14 @@
     {
       "capability": "native_bridge.install",
       "reason": "Register the forwarder Claude Code starts for its channel and its lifecycle and tool hooks"
+    },
+    {
+      "capability": "approval.decode",
+      "reason": "Recognise a tool approval Claude Code relays to the channel, and the decisions it offers"
+    },
+    {
+      "capability": "approval.respond",
+      "reason": "Answer a tool approval Claude Code is waiting on with Allow or Deny, on the channel that relayed it"
     }
   ],
   "actions": [
@@ -183,6 +191,39 @@
         "parameters": []
       },
       "description": "Draw this package's document again from the session state the host already holds",
+      "confirmation_required": false
+    },
+    {
+      "id": "approval.answer",
+      "label": "Answer",
+      "effect": "approval.respond",
+      "implementation": {
+        "type": "decision_destination",
+        "decision": "decision"
+      },
+      "parameters": {
+        "parameters": [
+          {
+            "name": "decision",
+            "kind": {
+              "type": "choice",
+              "choices": [
+                {
+                  "id": "allow",
+                  "label": "Allow"
+                },
+                {
+                  "id": "deny",
+                  "label": "Deny"
+                }
+              ]
+            },
+            "label": "Decision",
+            "required": true
+          }
+        ]
+      },
+      "description": "Answer the tool approval Claude Code is waiting on",
       "confirmation_required": false
     }
   ],

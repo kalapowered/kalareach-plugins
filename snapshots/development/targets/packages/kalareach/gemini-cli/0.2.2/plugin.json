@@ -1,57 +1,34 @@
 {
   "manifest_version": 1,
   "publisher_id": "kalareach",
-  "plugin_name": "kimi-cli",
-  "version": "0.1.0",
-  "display_name": "Kimi CLI",
-  "description": "Recognises MoonshotAI's kimi-cli, the Kimi distribution published on PyPI, reads its agent protocol through a declarative table and stops the turn it is running.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "plugin_name": "gemini-cli",
+  "version": "0.2.2",
+  "display_name": "Gemini CLI",
+  "description": "Recognises Gemini CLI, reads its agent protocol through a declarative table and stops the turn it is running, with the stock terminal untouched.",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "f6afe55131d226a0a03761945e9bbf677e8aaac7"
+    "revision": "aea3b0db45c5883fc7d110d57b9ae6bcb92f707d"
   },
   "match_rules": [
     {
-      "id": "kimi-cli-pypi",
+      "id": "gemini-cli-npm",
       "executable": {
-        "file_stem": "kimi",
+        "file_stem": "gemini",
         "path_suffix": [],
         "version_range": null
       },
       "distribution": {
-        "registry": "py_pi",
-        "project": "kimi-cli"
+        "registry": "npm",
+        "package": "@google/gemini-cli"
       },
       "confidence": "exact"
     },
     {
-      "id": "kimi-cli-pypi-command",
+      "id": "gemini-cli-executable",
       "executable": {
-        "file_stem": "kimi-cli",
-        "path_suffix": [],
-        "version_range": null
-      },
-      "distribution": {
-        "registry": "py_pi",
-        "project": "kimi-cli"
-      },
-      "confidence": "exact"
-    },
-    {
-      "id": "kimi-cli-executable",
-      "executable": {
-        "file_stem": "kimi",
-        "path_suffix": [],
-        "version_range": null
-      },
-      "distribution": null,
-      "confidence": "inferred"
-    },
-    {
-      "id": "kimi-cli-command",
-      "executable": {
-        "file_stem": "kimi-cli",
+        "file_stem": "gemini",
         "path_suffix": [],
         "version_range": null
       },
@@ -84,42 +61,42 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "5c1b2634dc9b0ba424264c22c52c3d1d7afc2616239db04db3403809d8946824",
-      "size_bytes": "7510"
+      "digest": "3daece1926560cf71a8b219a8ab9ddeef26f57bc8b985ad9925db950c3391a98",
+      "size_bytes": "5219"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "91af7bee10779652efcdc2412d4702bccc9816c08ab665babde5b54b5911211a",
-      "size_bytes": "8542"
+      "digest": "b0d3a7cb428dced8f41762a93b67d5a42aabc912af449ad3eb1cb352ae95dbe3",
+      "size_bytes": "7204"
     },
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "1b7638f593f260f2416b5a7da3fb6b06c26205750fcb1182708d40b7ff506365",
-      "size_bytes": "4884"
+      "digest": "8240295fd5e8f51aac6091c00c5cf85a85d95689efd140facfd8c84db2538083",
+      "size_bytes": "4896"
     },
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "68b188d928a430dc26e7f86a4db1c6049d1cc315cfec65ed74806bedf271faf5",
-      "size_bytes": "10641"
+      "digest": "f9c7c197726962a80f3e65e6afa77b172b4b909ae3b9fa819f15ab94f2125262",
+      "size_bytes": "9554"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "f2f99a89073b7bf9990c8e5bfeb40e0983721712f8cdbd56159ec7fd59477522",
-      "size_bytes": "4097"
+      "digest": "f64bc2273fc628047e511f466d185f091a25855035ec38d60f60ba8cf54d67a6",
+      "size_bytes": "4056"
     }
   ],
   "capabilities": [
     {
       "capability": "metadata.match",
-      "reason": "Recognise MoonshotAI's kimi-cli from its published package, and its executable names as a guess"
+      "reason": "Recognise Gemini CLI from its published package and its executable name"
     },
     {
       "capability": "presentation.declarative",
-      "reason": "Show what the Kimi CLI session is doing and the controls for its turn"
+      "reason": "Show what the Gemini CLI session is doing and the controls for its turn"
     },
     {
       "capability": "broker.semantic_events",
@@ -127,7 +104,7 @@
     },
     {
       "capability": "upstream.action",
-      "reason": "Ask Kimi CLI to stop the turn it is running when you press Stop"
+      "reason": "Ask Gemini CLI to stop the turn it is running when you press Stop"
     }
   ],
   "actions": [
@@ -141,7 +118,7 @@
       "parameters": {
         "parameters": []
       },
-      "description": "Cancel the turn the bound Kimi CLI execution is running, which ends it as interrupted",
+      "description": "Cancel the turn the bound Gemini CLI execution is running, which ends it as interrupted",
       "confirmation_required": false
     },
     {

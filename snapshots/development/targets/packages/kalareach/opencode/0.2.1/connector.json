@@ -1,8 +1,8 @@
 {
   "manifest_version": 1,
-  "plugin_id": "kalareach/opencode-attach",
+  "plugin_id": "kalareach/opencode",
   "protocol": {
-    "name": "opencode-server-events",
+    "name": "opencode-server-v2-events",
     "qualified_range": "=1.18.31",
     "tested_version": "1.18.31"
   },
@@ -509,7 +509,7 @@
     {
       "method": "global.disposed",
       "class": "observation",
-      "evidence": "Reports that the server's global scope was disposed; the document carries no payload with it, so it says nothing further about what survives"
+      "evidence": "Reports that the shared per-user scope was disposed; the document carries no payload with it, so it says nothing further about what survives"
     },
     {
       "method": "installation.update-available",
@@ -579,22 +579,22 @@
     {
       "method": "permission.asked",
       "class": "observation",
-      "evidence": "Reports that a permission is pending, with its identifier, session, permission name and patterns; answering it is a separate operation this table does not carry"
+      "evidence": "Reports a pending permission on the same stream under the earlier name"
     },
     {
       "method": "permission.replied",
       "class": "observation",
-      "evidence": "Reports the answer that resolved a pending permission; the resolution happened before the event"
+      "evidence": "Reports a pending permission's resolution under the earlier name"
     },
     {
       "method": "permission.v2.asked",
       "class": "observation",
-      "evidence": "Reports a pending permission on the same stream under the newer name"
+      "evidence": "Reports that a permission is pending, with its identifier, session, action and resources; answering it is a separate operation this table does not carry"
     },
     {
       "method": "permission.v2.replied",
       "class": "observation",
-      "evidence": "Reports a pending permission's resolution under the newer name"
+      "evidence": "Reports the answer that resolved a pending permission; the resolution happened before the event"
     },
     {
       "method": "plugin.added",
@@ -634,32 +634,32 @@
     {
       "method": "question.asked",
       "class": "observation",
-      "evidence": "Reports a question the session is waiting on, with its identifier"
+      "evidence": "Reports a pending question under the earlier name"
     },
     {
       "method": "question.rejected",
       "class": "observation",
-      "evidence": "Reports that a pending question was rejected"
+      "evidence": "Reports a pending question's rejection under the earlier name"
     },
     {
       "method": "question.replied",
       "class": "observation",
-      "evidence": "Reports the answer that resolved a pending question"
+      "evidence": "Reports a pending question's answer under the earlier name"
     },
     {
       "method": "question.v2.asked",
       "class": "observation",
-      "evidence": "Reports a pending question under the newer name"
+      "evidence": "Reports a question the session is waiting on, with its identifier"
     },
     {
       "method": "question.v2.rejected",
       "class": "observation",
-      "evidence": "Reports a pending question's rejection under the newer name"
+      "evidence": "Reports that a pending question was rejected"
     },
     {
       "method": "question.v2.replied",
       "class": "observation",
-      "evidence": "Reports a pending question's answer under the newer name"
+      "evidence": "Reports the answer that resolved a pending question"
     },
     {
       "method": "reference.updated",
@@ -673,8 +673,8 @@
     },
     {
       "method": "server.instance.disposed",
-      "class": "observation",
-      "evidence": "Reports that the server instance for the named directory was disposed. Only this API family publishes it, so seeing it is evidence of the family this table was qualified against"
+      "class": "unsupported",
+      "evidence": "The earlier API family's disposal event, which this family does not publish. Seeing it means the connection is not the family this table was qualified against, so the connector states it is outside what it proxies"
     },
     {
       "method": "session.compacted",
@@ -932,6 +932,7 @@
       "evidence": "Reports that a worktree finished preparing"
     }
   ],
+  "decision_destination": null,
   "volatile_forwarding": false,
-  "qualification_note": "Qualified against OpenCode 1.18.31 (npm opencode-ai), executable sha256 16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198, from the OpenAPI document that build serves at /doc (sha256 46db986090aae41846cd6dbe16225a1d883f0bbcb4c48814008d3f6ce140aa5c), read 2026-09-24. It covers the event stream of the unprefixed API that opencode serve and opencode attach use, GET /event, whose envelope carries id, type and properties. The shared-server family publishes 88 of these 89 names at GET /api/event with the payload under data, so a name identifies no family; this table applies where the installed version and schema match these pins, and otherwise the capability is incompatible and the terminal remains. Nothing travels host to upstream: id is the durable event identifier, and the correlation repeats it because this leg answers no request. The request leg is HTTP, so no table can name it. max_message_bytes is this host's bound. Volatile forwarding is untested."
+  "qualification_note": "Qualified against OpenCode 1.18.31 (npm opencode-ai), executable sha256 16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198, from the OpenAPI document that build serves at /doc (sha256 46db986090aae41846cd6dbe16225a1d883f0bbcb4c48814008d3f6ce140aa5c), read 2026-09-20. It covers the shared-server family's event stream at GET /api/event, whose envelope carries type, id and data. The earlier family publishes 88 of these names at GET /event with the payload under properties, so a name identifies no family; this table applies where the installed version and schema match these pins, and otherwise the capability is incompatible and the terminal remains. Nothing travels host to upstream: id is the durable event identifier, and the correlation repeats it because this leg answers no request. The request leg is HTTP, whose method is a verb and a path rather than a member of a document, so no table can name it. max_message_bytes is this host's bound. Volatile forwarding is untested."
 }

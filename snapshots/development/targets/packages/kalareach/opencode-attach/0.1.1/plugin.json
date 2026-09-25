@@ -1,34 +1,34 @@
 {
   "manifest_version": 1,
   "publisher_id": "kalareach",
-  "plugin_name": "kimi-code-cli",
-  "version": "0.2.0",
-  "display_name": "Kimi Code CLI",
-  "description": "Recognises the kimi.com Kimi Code CLI distribution, reads its agent protocol through a declarative table and stops the turn it is running.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "plugin_name": "opencode-attach",
+  "version": "0.1.1",
+  "display_name": "OpenCode (serve and attach)",
+  "description": "Recognises OpenCode, reads the event stream of a server started with opencode serve and attached to with opencode attach through a declarative table, and stops the turn it is running.",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "ecb62a456078d55433ae357b62c7445106632b1d"
+    "revision": "aea3b0db45c5883fc7d110d57b9ae6bcb92f707d"
   },
   "match_rules": [
     {
-      "id": "kimi-code-cli-home",
+      "id": "opencode-attach-npm",
       "executable": {
-        "file_stem": "kimi",
-        "path_suffix": [
-          ".kimi-code",
-          "bin"
-        ],
+        "file_stem": "opencode",
+        "path_suffix": [],
         "version_range": null
       },
-      "distribution": null,
-      "confidence": "inferred"
+      "distribution": {
+        "registry": "npm",
+        "package": "opencode-ai"
+      },
+      "confidence": "exact"
     },
     {
-      "id": "kimi-code-cli-executable",
+      "id": "opencode-attach-executable",
       "executable": {
-        "file_stem": "kimi",
+        "file_stem": "opencode",
         "path_suffix": [],
         "version_range": null
       },
@@ -61,50 +61,50 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "53f57fd74212cc387a3091577ae75d3bc8181b6e48b735b4bc2888fd22fdccb6",
-      "size_bytes": "5842"
+      "digest": "9fd3c38181f8889baf776474ddc6eb881f419a38124a1f42613ec275010bd825",
+      "size_bytes": "7279"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "32cefb2bdd4aed5c16c93868dda8eae0ef4f59beb4ac117d02391fb391ef35f4",
-      "size_bytes": "8665"
+      "digest": "ebf3106d9c5326f2f7b0c069350e5084ecd555b7116b87035dafec5d7704e3ce",
+      "size_bytes": "29155"
     },
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "774cb7f425d9bcf21e5637201abbc9cb4c4ae20da6bb07e7fbb3e9dfa447187e",
-      "size_bytes": "4881"
+      "digest": "7d063d6392c8624e79777265f939fea37bd1938ccbd503de54aeae9149cb1b5d",
+      "size_bytes": "4887"
     },
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "0ddc7b9ed451d642372078b8aed8e43651de7bdd2cbeaca66898a4669e34f59d",
-      "size_bytes": "8151"
+      "digest": "243472c0a232927ed804aaa1751503f7e8f1d1d8f87a4311c01c2154b36cd181",
+      "size_bytes": "8045"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "36af5d987758aa5da9f54eef0ac9e15358f802856b8b2b0b764363bac7ee09cc",
-      "size_bytes": "4117"
+      "digest": "86cedbaefc38123cdb2816e5b660fef2230e30a7447009b42294b3bb09d9ffe9",
+      "size_bytes": "4109"
     }
   ],
   "capabilities": [
     {
       "capability": "metadata.match",
-      "reason": "Recognise the kimi.com distribution from its own installation directory, and the executable name as a guess"
+      "reason": "Recognise OpenCode from its published package and its executable name"
     },
     {
       "capability": "presentation.declarative",
-      "reason": "Show what the Kimi Code CLI session is doing and the controls for its turn"
+      "reason": "Show what the OpenCode session is doing and the controls for its turn"
     },
     {
       "capability": "broker.semantic_events",
-      "reason": "Read the turn and tool updates the selected agent-protocol execution reports"
+      "reason": "Read the turn, tool and permission events the attached server already publishes"
     },
     {
       "capability": "upstream.action",
-      "reason": "Ask Kimi Code CLI to stop the turn it is running when you press Stop"
+      "reason": "Ask OpenCode to stop the turn it is running when you press Stop"
     }
   ],
   "actions": [
@@ -118,7 +118,7 @@
       "parameters": {
         "parameters": []
       },
-      "description": "Cancel the turn the bound Kimi Code CLI execution is running, which ends it as interrupted",
+      "description": "Cancel the turn the bound OpenCode execution is running, which ends it as interrupted",
       "confirmation_required": false
     },
     {

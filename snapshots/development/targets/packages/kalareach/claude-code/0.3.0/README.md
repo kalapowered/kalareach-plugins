@@ -1,7 +1,7 @@
 # kalareach/claude-code
 
-Recognises Claude Code, observes it through lifecycle and tool hooks, and carries a message into
-the session.
+Recognises Claude Code, observes it through lifecycle and tool hooks, carries a message into the
+session and declares how the tool approvals it relays are answered.
 
 ## What it does
 
@@ -12,32 +12,46 @@ it.
 Two surfaces reach the session, and they stay apart on purpose.
 
 The hooks watch. The installed registration points Claude Code's lifecycle and tool events at the
-core forwarder, which carries them to the worker that owns the terminal. What the package asks of the
-forwarder is that it answer nothing: write the event to the worker and exit, so no hook changes what
-Claude Code permits.
+core forwarder, which carries them to the worker that owns the terminal. The forwarder answers every
+hook with `{}`, an object that sets nothing, and exits 0, so no hook changes what Claude Code
+permits.
 
 Channels carry messages in and the answer to a tool approval back. Claude Code spawns a channel as
 an MCP server of its own and talks to it over that process's standard streams, so the gateway has
 nowhere to sit between them. This package installs the registration that makes the core forwarder
-that channel, and `connector.json` states how the frames on the private exchange are read.
+that channel, and `connector.json` states how the frames on the private exchange are read and how an
+approval is answered.
 
-## What the table says about an approval
+## How an approval is answered
 
 Claude Code relays a pending tool approval as `notifications/claude/channel/permission_request`,
-with
-a five-letter `request_id`, the tool's name, a description of the call and a preview of its
+with a five-letter `request_id`, the tool's name, a description of the call and a preview of its
 arguments. The answer is `notifications/claude/channel/permission`, carrying that same `request_id`
 and `allow` or `deny`.
 
-`connector.json` routes both of those methods and classifies them, and it puts the correlation at
-`params.request_id`, so an identifier in an answer is the one the host is resolving rather than a
-value a caller supplies. It says nothing about `allow` and `deny`.
+`connector.json` routes both methods, classifies them and puts the correlation at
+`params.request_id`. Its decision destination says which message is a pending approval, the relayed
+request, and how one is answered: `channel.permission`, repeating the request's own
+`params.request_id`, with `params.behavior` set to `allow` or `deny`. Those are the only decisions
+it maps, and a decision it does not map is refused rather than sent.
 
-That is the whole of what it does about an approval. A table routes and classifies; it names no
-destination for a decision, and this package ships no component, so nothing here turns a relayed
-request into something a person can read or turns a person's decision into a frame. Both need a
-granted decoder and encoder, which this package does not have. An approval is answered where Claude
-Code asks for it, in the terminal KalaReach already owns.
+The package registers one answering action, `approval.answer`. A call names the pending request it
+answers, and the host checks that request before it marks anything. The identifier in the answer is
+the one the request carried, never a value a caller supplies.
+
+The document draws Allow and Deny for a person who holds the approval right while an approval is
+pending. The document is written before any request exists, so the controls test that an approval is
+pending rather than naming one; a client that draws them beside a request binds the press to that
+request. They are enabled only while the host reports that it can answer approvals on this channel,
+and never during volatile-native operation. Where the host cannot carry an answer, the controls stay
+disabled and the approval is answered in the terminal, where Claude Code also asks.
+
+Only a relayed request is an approval. Text that reads like a permission prompt, on the terminal or
+in a `Notification` hook's report, makes no pending approval and never enables Allow or Deny.
+
+What is checked here: the declarations validate against the package contract, the fixtures say who
+sees the controls and who can use them, and the tests write the pinned answer from the table. What
+is not: an answer given to a live Claude Code, or carried by a running host.
 
 The message path is separate, and it is an action with its own effect class. It carries the text a
 person wrote into the session. It is not an approval path, and nothing in this package lets text
@@ -98,13 +112,11 @@ that one key and leaves every other setting where it was.
 The hooks are registered on `SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolUseFailure` and
 `Notification`. Those five were chosen because none of them refuses what Claude Code was about to do
 when a handler exits with a failure code. That narrows the ways a hook can interfere; it does not
-remove them, because a handler can answer with a stop decision on most events instead. What this
-package asks of the
-forwarder is that it answer nothing: write the event to the worker and exit. Each registration also
-carries its own timeout, one second for `SessionEnd` and five for the
-rest, so a forwarder that cannot reach the worker costs seconds rather than the ten minutes a
-command
-hook may otherwise take.
+remove them, because a handler can answer with a stop decision on most events instead. The core
+forwarder answers every hook with `{}` and exits 0 within half a second. Each registration is in
+exec form, a command and its arguments with no shell between Claude Code and the forwarder, and
+carries its own timeout, one second for `SessionEnd` and five for the rest, so a forwarder that
+cannot reach the worker costs seconds rather than the ten minutes a command hook may otherwise take.
 
 The registration installs disabled. Claude Code loads a plugin from a skills directory as soon as it
 is there, so the manifest sets its default to off and the settings key is what turns it on. Removal
@@ -118,23 +130,27 @@ registration change when it reloads its plugins or starts again.
 The forwarder runs under Claude Code's own permissions, outside the KalaReach plugin sandbox and
 outside Wasmtime, because Claude Code is the process that starts it. The installation grant says
 exactly that, and it says what the forwarder can see. None of the three files carries a session
-identifier or a secret: what the registration is worth is decided by the forwarder binding it to the
-launch KalaReach made and to the worker's private exchange, and the forwarder is the host's, not
-this package's.
+identifier or a secret: the worker admits a forwarder only for the launch KalaReach made, through
+that launch's private exchange, and the forwarder and the worker are the host's, not this package's.
 
 ## What it asks for
 
-Five capabilities. Matching, declarative presentation and broker semantic events are the reading
-half. The upstream action capability carries a message you wrote. The bridge installation capability
-is declared with the recipe it installs and the grant that says what accepting it means. There is no
-approval capability, because nothing here would exercise one.
+Seven capabilities. Matching, declarative presentation and broker semantic events are the reading
+half. The upstream action capability carries a message you wrote. The two approval capabilities let
+the table say which relayed requests are approvals and answer one with Allow or Deny. Interpreting a
+request and answering it are separate grants, and neither is within a repository's default ceiling,
+so an installation asks its owner for both. The bridge installation capability is declared with the
+recipe it installs and the grant that says what accepting it means.
 
 ## Fixtures
 
-`fixtures/conformance.json` states what a person sees in six situations, and the build evaluates
+`fixtures/conformance.json` states what a person sees in twelve situations, and the build evaluates
 this package's own predicates against each one: a bound session, an actor who may only view,
 volatile-native operation, a session with no qualified evidence for acting upstream, an upload in
-progress, and a binding disabled by repeated faults.
+progress, a binding disabled by repeated faults, a pending approval and an actor who may answer it,
+the same approval and an actor who may not, no approval waiting, volatile-native operation and
+missing evidence each leaving the answer unusable, and a session waiting on a prompt that only reads
+like a permission request.
 
 `fixtures/frames.json` is the other half: five pinned Channels frames, taken from the published
 reference's own examples and the field names in the installed executable, each with the method the
@@ -142,7 +158,11 @@ table should find, the route and class it should reach, and the identifier the t
 extract. The test `every_pinned_frame_is_read_the_way_the_table_says` under `cargo test` reads every
 frame through this package's own table, including an answer naming a request nobody issued, whose
 identifier has to come back verbatim so the host can refuse it, and an ordinary MCP tool call, which
-this table does not list and which is therefore a mutation.
+this table does not list and which is therefore a mutation. Two more tests hold the answer to the
+frames: `a_relayed_claude_code_approval_is_answered_with_its_own_identifier_and_nothing_else_is`
+writes the answer for the pinned request from the table and compares it with the pinned answer, and
+`an_answer_to_a_claude_code_approval_names_the_pending_request_it_answers` checks that a call names
+the request it answers.
 
 Some of what this package promises is structural rather than conditional, and a fixture cannot state
 it. There is no action for project trust or MCP consent, so no right produces a control for either.

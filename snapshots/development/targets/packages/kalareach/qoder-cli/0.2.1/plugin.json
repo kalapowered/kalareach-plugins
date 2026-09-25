@@ -2,14 +2,14 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "qoder-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "display_name": "Qoder CLI",
   "description": "Recognises Qoder CLI, reads its agent protocol through a declarative table and stops the turn it is running, with the terminal as the default route.",
-  "sdk_range": ">=0.1.0, <0.2.0",
+  "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "ecb62a456078d55433ae357b62c7445106632b1d"
+    "revision": "aea3b0db45c5883fc7d110d57b9ae6bcb92f707d"
   },
   "match_rules": [
     {
@@ -91,8 +91,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "cbc126029b3bf23e56ba1c65e2da4fab541761af4222bbad098e35d7df276012",
-      "size_bytes": "8430"
+      "digest": "e8e953a9d841999a12e689b5df870c61abc2310c668352b05317696444c0c5a4",
+      "size_bytes": "8462"
     },
     {
       "role": "fixture",
