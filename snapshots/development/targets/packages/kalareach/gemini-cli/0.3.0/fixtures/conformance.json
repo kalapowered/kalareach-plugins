@@ -227,6 +227,41 @@
       },
       "visible_controls": [],
       "enabled_controls": []
+    },
+    {
+      "name": "a tool permission notification the hooks report is not an approval",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel",
+          "agent.approval.respond"
+        ],
+        "binding_state": "awaiting_person",
+        "flags": [],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ],
+          [
+            "approval.respond",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "cancel",
+        "refresh"
+      ]
     }
   ]
 }

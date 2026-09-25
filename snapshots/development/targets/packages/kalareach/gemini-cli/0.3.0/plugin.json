@@ -2,14 +2,14 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "gemini-cli",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "display_name": "Gemini CLI",
-  "description": "Recognises Gemini CLI, reads its agent protocol through a declarative table and stops the turn it is running, with the stock terminal untouched.",
+  "description": "Recognises Gemini CLI, observes its sessions through hooks, reads its agent protocol through a declarative table and stops the turn it is running, with the stock terminal untouched.",
   "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "aea3b0db45c5883fc7d110d57b9ae6bcb92f707d"
+    "revision": "84e85407a7929834cf67356713325efbfca467b1"
   },
   "match_rules": [
     {
@@ -61,8 +61,20 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "3daece1926560cf71a8b219a8ab9ddeef26f57bc8b985ad9925db950c3391a98",
-      "size_bytes": "5219"
+      "digest": "207621e0506ad84d3df3dc2652cd03b69a10ba85e222c5366d8510d145c6c551",
+      "size_bytes": "7283"
+    },
+    {
+      "role": "native_bridge",
+      "path": "bridge/gemini-extension.json",
+      "digest": "2ea510ab37639c8f4b9e380c3a168b06771088d31b2b933549213479d5e764e7",
+      "size_bytes": "204"
+    },
+    {
+      "role": "native_bridge",
+      "path": "bridge/hooks.json",
+      "digest": "3ea3470d1d88d3f0d828668bcd98bacfa37b20fd638b6f5b38b7ddd58f55c0ba",
+      "size_bytes": "738"
     },
     {
       "role": "connector",
@@ -73,8 +85,8 @@
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "8240295fd5e8f51aac6091c00c5cf85a85d95689efd140facfd8c84db2538083",
-      "size_bytes": "4896"
+      "digest": "5777b8b689e3bcda61cec0f8b118a77aee37440dd7f7856e17b516a4d6dff56d",
+      "size_bytes": "5668"
     },
     {
       "role": "asset",
@@ -105,6 +117,10 @@
     {
       "capability": "upstream.action",
       "reason": "Ask Gemini CLI to stop the turn it is running when you press Stop"
+    },
+    {
+      "capability": "native_bridge.install",
+      "reason": "Register the forwarder Gemini CLI starts for its session and notification hooks"
     }
   ],
   "actions": [
@@ -136,5 +152,35 @@
     }
   ],
   "attachments": null,
-  "native_bridge": null
+  "native_bridge": {
+    "application": "Gemini CLI",
+    "application_range": "=0.60.0",
+    "install": [
+      {
+        "type": "install_file",
+        "source": "bridge/gemini-extension.json",
+        "destination": "extensions/kalareach/gemini-extension.json",
+        "digest": "2ea510ab37639c8f4b9e380c3a168b06771088d31b2b933549213479d5e764e7"
+      },
+      {
+        "type": "install_file",
+        "source": "bridge/hooks.json",
+        "destination": "extensions/kalareach/hooks/hooks.json",
+        "digest": "3ea3470d1d88d3f0d828668bcd98bacfa37b20fd638b6f5b38b7ddd58f55c0ba"
+      }
+    ],
+    "remove": [
+      {
+        "type": "remove_file",
+        "destination": "extensions/kalareach/hooks/hooks.json",
+        "digest": "3ea3470d1d88d3f0d828668bcd98bacfa37b20fd638b6f5b38b7ddd58f55c0ba"
+      },
+      {
+        "type": "remove_file",
+        "destination": "extensions/kalareach/gemini-extension.json",
+        "digest": "2ea510ab37639c8f4b9e380c3a168b06771088d31b2b933549213479d5e764e7"
+      }
+    ],
+    "grant_statement": "Installs two files under your own Gemini CLI directory: an extension named kalareach, which Gemini CLI loads for every project and every later session, whether or not you trust the folder, beside your own hooks. Gemini CLI then starts the KalaReach forwarder itself, through bash, so the forwarder runs under Gemini CLI's own permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees each session's SessionStart, SessionEnd and Notification events and no tool events, because Gemini CLI reads a failing hook's error text as a refusal of a finished tool's result, so a forwarder that is missing or out of date could change what the model reads. Removal deletes exactly those two files, each only while it still holds the bytes that were installed."
+  }
 }

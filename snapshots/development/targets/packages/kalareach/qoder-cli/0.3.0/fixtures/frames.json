@@ -1,8 +1,8 @@
 {
   "corpus_version": 1,
   "protocol": "qoder-cli-acp",
-  "tested_version": "1.1.59",
-  "source": "Two frames are the exact requests sent to the installed Qoder CLI 1.1.59 over its standard streams with --acp, and one more is such a request with the working directory it named replaced. The rest are written from names present in that build's executable and are marked as written, because observing them needs an authenticated account and a live turn.",
+  "tested_version": "1.1.63",
+  "source": "Two frames are the exact requests sent to Qoder CLI 1.1.63 over its standard streams with --acp, and one more is such a request with the working directory it named replaced. The rest are written from names present in that build's executable and are marked as written, because observing them needs an authenticated account and a live turn.",
   "frames": [
     {
       "situation": "the capability negotiation that opens a connection",
@@ -220,18 +220,18 @@
   ],
   "evidence": {
     "executable": {
-      "path": "~/.qoder/bin/qodercli/qodercli-1.1.59",
+      "path": "qodercli, from the vendor's archive qodercli/releases/1.1.63/qodercli-darwin-arm64.tar.gz",
       "platform": "macos-aarch64",
-      "version": "1.1.59",
-      "distribution": "the qoder.com installer into ~/.qoder",
-      "sha256": "c1b372d07083b98a2708ff23d4d462389fbf2bccad0d1317bb2970685f47c103"
+      "version": "1.1.63",
+      "distribution": "the qoder.com installer, which installs the same bytes as ~/.qoder/bin/qodercli/qodercli-1.1.63",
+      "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
     },
     "handshake": {
       "protocolVersion": 1,
       "agentInfo": {
         "name": "qoder-cli",
         "title": "Qoder CLI",
-        "version": "1.1.59"
+        "version": "1.1.63"
       },
       "promptCapabilities": {
         "image": true,
@@ -239,6 +239,6 @@
       },
       "acp_flag": "--acp; the build does not list it in --help and answers an initialize sent with it"
     },
-    "read_on": "2026-09-20"
+    "read_on": "2026-09-25"
   }
 }
