@@ -72,12 +72,14 @@ No attachment contribution. The default route is the terminal, where the compose
 what inserts a file; this package qualifies no composer syntax and claims no automatic insertion.
 
 No native bridge, and nothing written into Qoder CLI's settings. Qoder CLI keeps a person's hooks
-in one settings file, where adding KalaReach's would replace theirs for the same event, and loads a
-plugin only through its own install records, which hold absolute paths. It also reads hooks from
-settings a launch passes with `--settings`, and runs them beside the person's own, so that is how
-KalaReach's hooks reach it: the core repository defines the two elements a launch adds and the
-forwarder they start. No package can declare a command integration's flags yet, so this package
-claims none of the observations those hooks would add.
+in one settings file, where adding KalaReach's would replace theirs for the same event. It also
+reads hooks from settings a launch passes with `--settings`, and runs them beside the person's own,
+so that is how KalaReach's hooks reach it: the core repository defines the two elements a launch
+adds and the forwarder they start. A local marketplace declared in the person's settings would also
+work, at the cost of two keys there, Qoder CLI's own copy of the marketplace left behind after
+removal, and no hooks in the first session after installation; it is the route to take if a later
+Qoder CLI stops reading `--settings`. No package can declare a command integration's flags yet, so
+this package claims none of the observations those hooks would add.
 
 ## Fixtures
 
