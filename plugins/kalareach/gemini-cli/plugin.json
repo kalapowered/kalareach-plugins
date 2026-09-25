@@ -61,14 +61,14 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "509fcc49707df3b60b53062719d54fba26f1e4667000a43ba1c70cbad525b870",
-      "size_bytes": "8076"
+      "digest": "8d1b8e59cee884ebb4fd4a7356dd04614e2022625a5979fb2ac57da5ca293b55",
+      "size_bytes": "8811"
     },
     {
       "role": "native_bridge",
       "path": "bridge/gemini-extension-install.json",
-      "digest": "3dcf39eedad95d7210e792a0bcfcc06506ccf3e01c1ab0cec320083948b3d081",
-      "size_bytes": "68"
+      "digest": "ed5b5291f2e39bf679e945135210c5aee7863b8b8dbaa049dd53598507f172cb",
+      "size_bytes": "57"
     },
     {
       "role": "native_bridge",
@@ -166,7 +166,7 @@
         "type": "install_file",
         "source": "bridge/gemini-extension-install.json",
         "destination": "extensions/kalareach/.gemini-extension-install.json",
-        "digest": "3dcf39eedad95d7210e792a0bcfcc06506ccf3e01c1ab0cec320083948b3d081"
+        "digest": "ed5b5291f2e39bf679e945135210c5aee7863b8b8dbaa049dd53598507f172cb"
       },
       {
         "type": "install_file",
@@ -195,9 +195,9 @@
       {
         "type": "remove_file",
         "destination": "extensions/kalareach/.gemini-extension-install.json",
-        "digest": "3dcf39eedad95d7210e792a0bcfcc06506ccf3e01c1ab0cec320083948b3d081"
+        "digest": "ed5b5291f2e39bf679e945135210c5aee7863b8b8dbaa049dd53598507f172cb"
       }
     ],
-    "grant_statement": "Installs three files under your own Gemini CLI directory: the manifest of an extension named kalareach, its hooks, and the record of where it is installed. Gemini CLI loads the extension for every project and every later session, whether or not you trust the folder, beside your own hooks; where your settings allow only listed extensions, it loads it only when one of your patterns matches the source that record names. Gemini CLI then starts the KalaReach forwarder itself, through bash, so the forwarder runs under Gemini CLI's own permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees each session's SessionStart, SessionEnd and Notification events and no tool events, because Gemini CLI reads a failing hook's error text as a refusal of a finished tool's result, so a forwarder that is missing or out of date could change what the model reads. Removal deletes exactly those three files, each only while it still holds the bytes that were installed."
+    "grant_statement": "Installs three files under your own Gemini CLI directory: the manifest of an extension named kalareach, its hooks, and the record of where it is installed. Gemini CLI loads the extension for every project and every later session, whether or not you trust the folder, beside your own hooks; where your settings allow only listed extensions, it loads it only when one of your patterns matches the source that record names. Gemini CLI then starts the KalaReach forwarder itself, through bash, so the forwarder runs under Gemini CLI's own permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees each session's SessionStart, SessionEnd and Notification events and no tool events, because Gemini CLI reads a failing hook's error text as a refusal of a finished tool's result. Removal deletes exactly those three files, each only while it still holds the bytes that were installed, and the record last, only once nothing else is left beside it."
   }
 }

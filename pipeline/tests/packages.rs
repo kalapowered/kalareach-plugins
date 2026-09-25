@@ -622,9 +622,9 @@ const REVIEWED_GRANTS: &[(&str, &str)] = &[
          KalaReach forwarder itself, through bash, so the forwarder runs under Gemini CLI's own \
          permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees each \
          session's SessionStart, SessionEnd and Notification events and no tool events, because \
-         Gemini CLI reads a failing hook's error text as a refusal of a finished tool's result, so a \
-         forwarder that is missing or out of date could change what the model reads. Removal deletes \
-         exactly those three files, each only while it still holds the bytes that were installed.",
+         Gemini CLI reads a failing hook's error text as a refusal of a finished tool's result. \
+         Removal deletes exactly those three files, each only while it still holds the bytes that \
+         were installed, and the record last, only once nothing else is left beside it.",
     ),
 ];
 
@@ -922,11 +922,15 @@ fn gemini_hooks_file_refusal(file: &serde_json::Value) -> Option<String> {
 /// matcher, or once a tool event is added. The extension's manifest names the directory the recipe
 /// installs all three files into, and nothing else it could load.
 ///
-/// The third file is Gemini CLI's install record, and it names that directory as a local source and
-/// nothing else. Where a person's settings list allowed extensions, Gemini CLI refuses to start while
-/// any extension lacks a record, and loads one only when a listed pattern matches the source its
-/// record names. So the record is installed first and removed last: a recipe stopped part way never
-/// leaves the manifest without it.
+/// The third file is Gemini CLI's install record. Where a person's settings list allowed extensions,
+/// Gemini CLI refuses to start while any extension directory lacks one, and loads an extension only
+/// when a listed pattern matches the source its record names. It also reads a local extension's
+/// updates from that source, resolving a relative one, `~/...` included, from the session's working
+/// directory, where a project could put a newer manifest. So the record names `/dev/null/kalareach`,
+/// an absolute path nothing can exist under, and nothing else. Each install step's source,
+/// destination and digest are checked together, the record's first, and removal deletes each file
+/// with its installed digest in reverse, the record last: a recipe stopped part way never leaves the
+/// manifest without it.
 #[test]
 fn every_gemini_cli_hook_starts_the_forwarder_as_plain_words() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -998,29 +1002,58 @@ fn every_gemini_cli_hook_starts_the_forwarder_as_plain_words() {
         .0
         .as_ref()
         .expect("the package declares its bridge");
-    let destinations: Vec<String> = bridge
+    let installs: Vec<(String, String, String)> = bridge
         .install
         .iter()
-        .map(|step| step.writes().0.as_str().to_owned())
+        .map(|step| match step {
+            kr_plugin_sdk::plugin::BridgeStep::InstallFile {
+                source,
+                destination,
+                digest,
+            } => (
+                source.as_str().to_owned(),
+                destination.as_str().to_owned(),
+                digest.to_string(),
+            ),
+            other => panic!("the recipe edits a configuration file: {other:?}"),
+        })
         .collect();
+    let placed: Vec<(String, String)> = installs
+        .iter()
+        .map(|(source, destination, _)| (source.clone(), destination.clone()))
+        .collect();
+    let expected = [
+        (
+            "bridge/gemini-extension-install.json",
+            ".gemini-extension-install.json",
+        ),
+        ("bridge/gemini-extension.json", "gemini-extension.json"),
+        ("bridge/hooks.json", "hooks/hooks.json"),
+    ]
+    .map(|(source, file)| (source.to_owned(), format!("extensions/{name}/{file}")));
     assert_eq!(
-        destinations,
-        [
-            format!("extensions/{name}/.gemini-extension-install.json"),
-            format!("extensions/{name}/gemini-extension.json"),
-            format!("extensions/{name}/hooks/hooks.json"),
-        ],
-        "Gemini CLI loads an extension and its install record from the directory its manifest names"
+        placed, expected,
+        "each file goes where Gemini CLI reads it from, in the directory the manifest names, the record first"
     );
-    let mut removals: Vec<String> = bridge
+    let removals: Vec<(String, String)> = bridge
         .remove
         .iter()
-        .map(|step| step.undoes().0.as_str().to_owned())
+        .map(|step| match step {
+            kr_plugin_sdk::plugin::BridgeRemoval::RemoveFile {
+                destination,
+                digest,
+            } => (destination.as_str().to_owned(), digest.to_string()),
+            other => panic!("the removal edits a configuration file: {other:?}"),
+        })
+        .rev()
         .collect();
-    removals.reverse();
+    let installed: Vec<(String, String)> = installs
+        .iter()
+        .map(|(_, destination, digest)| (destination.clone(), digest.clone()))
+        .collect();
     assert_eq!(
-        removals, destinations,
-        "removal undoes the installation in reverse, so the record goes last"
+        removals, installed,
+        "removal deletes each installed file with its installed digest, in reverse, so the record goes last"
     );
 
     let record: serde_json::Value = kalareach_catalogue::read_json(
@@ -1031,11 +1064,8 @@ fn every_gemini_cli_hook_starts_the_forwarder_as_plain_words() {
     .expect("the install record reads");
     assert_eq!(
         record,
-        serde_json::json!({
-            "source": format!("~/.gemini/extensions/{name}"),
-            "type": "local",
-        }),
-        "the install record names the extension's own directory as a local source"
+        serde_json::json!({"source": "/dev/null/kalareach", "type": "local"}),
+        "the install record names a local source nothing can exist under"
     );
 }
 

@@ -69,18 +69,28 @@ package claims no tool observation.
 The native bridge installs an extension, `kalareach`, into your own Gemini CLI directory: its
 manifest at `extensions/kalareach/gemini-extension.json`, its hooks at
 `extensions/kalareach/hooks/hooks.json`, and at `extensions/kalareach/.gemini-extension-install.json`
-the record Gemini CLI keeps of where an extension came from, which names
-`~/.gemini/extensions/kalareach` as a local source. Gemini CLI loads an extension's hooks for every
-project and every later session, beside any hooks of your own, and runs them whether or not you
-trust the folder. Nothing in your `settings.json` changes, and removing the bridge deletes exactly
-those three files, each only while it still holds the bytes that were installed.
+the record Gemini CLI keeps of where an extension came from. Gemini CLI loads an extension's hooks
+for every project and every later session, beside any hooks of your own, and runs them whether or
+not you trust the folder. Nothing in your `settings.json` changes.
 
-Where your settings list allowed extensions in `security.allowedExtensions`, Gemini CLI refuses to
-start at all while any extension lacks that record, and it loads one that has it only when a
-pattern in the list matches the source the record names. It does not expand the `~`, so it tests
-the patterns against that path taken from the session's working directory: a pattern that matches
-its end, such as `/\.gemini/extensions/kalareach$`, allows this extension. Without such a pattern,
-Gemini CLI skips the extension with a warning, and the session runs without these hooks.
+The record names `/dev/null/kalareach` as a local source, a path nothing can exist under. Gemini CLI
+reads a local extension's updates from its recorded source, and it resolves a relative source,
+`~/...` included, from the session's working directory, where a project could put a newer manifest
+and have Gemini CLI offer it as an update. Nothing can be read from this one, so Gemini CLI never
+offers an update for the extension; KalaReach replaces its files itself.
+
+The record matters most where your settings list allowed extensions in `security.allowedExtensions`.
+There Gemini CLI refuses to start at all while any directory under `extensions/` has no record, and
+it loads an extension only when a pattern in the list matches the source its record names, so
+`^/dev/null/kalareach$` allows this one. Without such a pattern, Gemini CLI skips the extension with
+a warning and the session runs without these hooks.
+
+Removing the bridge deletes those three files, each only while it still holds the bytes that were
+installed, and the record last, only once nothing else is left beside it. Where something else has
+to stay in `extensions/kalareach/`, a file of yours or one that changed since it was installed, the
+record stays with it, so Gemini CLI skips that directory with a warning rather than refusing to
+start. Whatever removes the bridge also removes the directories the installation created once they
+are empty, because an empty `extensions/kalareach/` is a directory with no record too.
 
 The hooks start `kr-hook gemini-cli hook`, the KalaReach forwarder, for three events:
 `SessionStart` and `Notification` with a five-second timeout, and `SessionEnd` with one second.
