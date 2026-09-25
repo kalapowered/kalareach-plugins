@@ -588,6 +588,38 @@ struct BundledConnector {
     required_members: &'static [(&'static str, &'static str)],
 }
 
+/// Why a bridge package's installation grant is refused, or nothing when it is accepted.
+///
+/// The validator checks that a recipe is complete and removable. It cannot check that the grant a
+/// person reads before accepting it says what accepting it means. Section 11 asks for two facts,
+/// and both have to be asserted rather than mentioned. Substring checks alone could accept a
+/// crafted negation (e.g. "runs under Claude Code's own permissions inside the sandbox; it never
+/// runs outside Wasmtime's sandbox"). To ensure honest and complete disclosure, the Claude Code
+/// grant is compared directly against the reviewed disclosure.
+fn grant_refusal(plugin: &str, statement: &str) -> Option<String> {
+    if plugin == "kalareach/claude-code" {
+        let reviewed = "Installs three registration files under your own Claude Code directory, where \
+             they apply to every project and every later session, and adds one settings key \
+             that enables them. Claude Code then starts the KalaReach forwarder itself, so the \
+             forwarder runs under Claude Code's own permissions and outside the KalaReach \
+             plugin sandbox, outside Wasmtime. It sees the session's SessionStart, SessionEnd, \
+             PostToolUse, PostToolUseFailure and Notification events, and every Channels tool \
+             approval relayed to it. Removal takes the key back out and deletes exactly those \
+             three files, each only while it still holds the bytes that were installed.";
+        return (statement != reviewed)
+            .then(|| format!("the grant statement is not the reviewed one: {statement}"));
+    }
+    let discloses = statement.contains("runs under")
+        && statement.contains("own permissions")
+        && statement.contains("outside the KalaReach plugin sandbox, outside Wasmtime")
+        && statement.contains("Removal");
+    (!discloses).then(|| {
+        format!(
+            "the grant statement does not disclose required sandbox and removal terms: {statement}"
+        )
+    })
+}
+
 #[test]
 fn a_native_bridge_grant_states_where_the_code_runs() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -597,38 +629,24 @@ fn a_native_bridge_grant_states_where_the_code_runs() {
             continue;
         };
         recipes += 1;
-        // The validator checks that a recipe is complete and removable. It cannot check that the
-        // grant a person reads before accepting it says what accepting it means. Section 11 asks
-        // for two facts, and both have to be asserted rather than mentioned. Substring checks
-        // alone could accept a crafted negation (e.g. "runs under Claude Code's own permissions
-        // inside the sandbox; it never runs outside Wasmtime's sandbox"). To ensure honest and
-        // complete disclosure, the Claude Code grant is compared directly against the reviewed
-        // disclosure with assert_eq!.
-        let statement = bridge.grant_statement.as_str();
-        if package.package.manifest.plugin_id().as_str() == "kalareach/claude-code" {
-            assert_eq!(
-                statement,
-                "Installs three registration files under your own Claude Code directory, where \
-                 they apply to every project and every later session, and adds one settings key \
-                 that enables them. Claude Code then starts the KalaReach forwarder itself, so the \
-                 forwarder runs under Claude Code's own permissions and outside the KalaReach \
-                 plugin sandbox, outside Wasmtime. It sees the session's SessionStart, SessionEnd, \
-                 PostToolUse, PostToolUseFailure and Notification events, and every Channels tool \
-                 approval relayed to it. Removal takes the key back out and deletes exactly those \
-                 three files, each only while it still holds the bytes that were installed."
-            );
-        } else {
-            assert!(
-                statement.contains("runs under")
-                    && statement.contains("own permissions")
-                    && statement.contains("outside the KalaReach plugin sandbox, outside Wasmtime")
-                    && statement.contains("Removal"),
-                "{}: grant statement does not disclose required sandbox and removal terms: {statement}",
-                package.relative
-            );
+        let plugin = package.package.manifest.plugin_id().to_string();
+        if let Some(refusal) = grant_refusal(&plugin, bridge.grant_statement.as_str()) {
+            panic!("{}: {refusal}", package.relative);
         }
     }
     assert!(recipes > 0, "no package ships a native bridge");
+}
+
+/// A bridge grant that carries every phrase the disclosure needs and denies each fact is refused.
+#[test]
+fn a_bridge_grant_that_denies_where_its_code_runs_is_refused() {
+    let denied = "Installs one registration file. The forwarder never runs under its own \
+                  permissions, and it never runs outside the KalaReach plugin sandbox, outside \
+                  Wasmtime. Removal leaves the file where it is.";
+    assert!(
+        grant_refusal("kalareach/example-bridge", denied).is_some(),
+        "a grant that denies where the bridge runs is accepted"
+    );
 }
 
 #[test]
