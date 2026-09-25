@@ -80,7 +80,44 @@
       "evidence": "Answers the pending request named by request_id with allow or deny, which runs or refuses the tool call"
     }
   ],
-  "decision_destination": null,
+  "decision_destination": {
+    "answers": "channel.permission-request",
+    "method": "channel.permission",
+    "request_id_path": {
+      "segments": [
+        {
+          "type": "member",
+          "name": "params"
+        },
+        {
+          "type": "member",
+          "name": "request_id"
+        }
+      ]
+    },
+    "decision_path": {
+      "segments": [
+        {
+          "type": "member",
+          "name": "params"
+        },
+        {
+          "type": "member",
+          "name": "behavior"
+        }
+      ]
+    },
+    "decisions": [
+      {
+        "decision": "allow",
+        "value": "allow"
+      },
+      {
+        "decision": "deny",
+        "value": "deny"
+      }
+    ]
+  },
   "volatile_forwarding": false,
-  "qualification_note": "Qualified against Claude Code 2.1.278 (npm @anthropic-ai/claude-code), whose macOS arm64 executable is sha256 bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6, and the Channels reference at code.claude.com/docs/en/channels-reference, read 2026-09-20; all three notification names are in that executable. The correlation identifier is params.request_id, because every message on this surface is a JSON-RPC notification and carries no id member. This table routes and classifies. It does not encode an approval answer: it names no destination for a decision, this package ships no decoder, and nothing a package can declare names the request being answered. Volatile forwarding is untested. The bridge's host contract is the host's to provide and is pending, so this package is not runnable until a host carries it. fixtures/frames.json pins the evidence and docs/qualification-notes.md records what each claim was checked against."
+  "qualification_note": "Qualified against Claude Code 2.1.278 (npm @anthropic-ai/claude-code), whose macOS arm64 executable is sha256 bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6, and the Channels reference at code.claude.com/docs/en/channels-reference, read 2026-09-20; all three notification names are in that executable. The correlation identifier is params.request_id, because every message on this surface is a JSON-RPC notification and carries no id member. The table declares how the relayed tool approval is answered: channel.permission with the request's own params.request_id and a params.behavior of allow or deny. It declares the answer and sends nothing; the host carries the answer, and where it does not, the approval is answered in the terminal. Volatile forwarding is untested. fixtures/frames.json pins the evidence and docs/qualification-notes.md records what each claim was checked against."
 }

@@ -4,7 +4,7 @@
   "plugin_name": "claude-code",
   "version": "0.3.0",
   "display_name": "Claude Code",
-  "description": "Recognises Claude Code, observes it through lifecycle and tool hooks, and carries a message into the session.",
+  "description": "Recognises Claude Code, observes it through lifecycle and tool hooks, carries a message into the session and declares how the tool approvals it relays are answered.",
   "sdk_range": ">=0.1.1, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
@@ -85,8 +85,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "f3ddcc1b913948b39bc98ebb37961be12aa6b5fdb4f9e5e136ce2941368d071c",
-      "size_bytes": "3166"
+      "digest": "dd2f6e9b200013410798022c7031f71b6275ea3a7ed88d3c4e735b88804c4837",
+      "size_bytes": "3799"
     },
     {
       "role": "fixture",
@@ -103,8 +103,8 @@
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "731f814d451501b8c88a1fdbd74659c9835a31e9ddb01df836f783b2ab5e9210",
-      "size_bytes": "3911"
+      "digest": "d23e72101d1f4322be2f33a31ed852a5dbd9765c44b79d566a22ac5f8a5bd375",
+      "size_bytes": "7799"
     }
   ],
   "capabilities": [
@@ -127,6 +127,14 @@
     {
       "capability": "native_bridge.install",
       "reason": "Register the forwarder Claude Code starts for its channel and its lifecycle and tool hooks"
+    },
+    {
+      "capability": "approval.decode",
+      "reason": "Recognise a tool approval Claude Code relays to the channel, and the decisions it offers"
+    },
+    {
+      "capability": "approval.respond",
+      "reason": "Answer a tool approval Claude Code is waiting on with Allow or Deny, on the channel that relayed it"
     }
   ],
   "actions": [
@@ -183,6 +191,39 @@
         "parameters": []
       },
       "description": "Draw this package's document again from the session state the host already holds",
+      "confirmation_required": false
+    },
+    {
+      "id": "approval.answer",
+      "label": "Answer",
+      "effect": "approval.respond",
+      "implementation": {
+        "type": "decision_destination",
+        "decision": "decision"
+      },
+      "parameters": {
+        "parameters": [
+          {
+            "name": "decision",
+            "kind": {
+              "type": "choice",
+              "choices": [
+                {
+                  "id": "allow",
+                  "label": "Allow"
+                },
+                {
+                  "id": "deny",
+                  "label": "Deny"
+                }
+              ]
+            },
+            "label": "Decision",
+            "required": true
+          }
+        ]
+      },
+      "description": "Answer the tool approval Claude Code is waiting on",
       "confirmation_required": false
     }
   ],

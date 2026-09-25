@@ -1647,6 +1647,30 @@ fn every_bundled_adapter_is_present_and_declares_no_surface_of_its_own() {
                             action.id
                         );
                     }
+                    ActionImplementation::DecisionDestination { .. } => {
+                        // An answer goes where this package's own table says an answer goes, and
+                        // that is a method the table routes, for requests the table routes.
+                        let destination =
+                            package.package.connector.as_ref().and_then(|connector| {
+                                connector
+                                    .decision_destination
+                                    .as_ref()
+                                    .map(|destination| (connector, destination))
+                            });
+                        let Some((connector, destination)) = destination else {
+                            panic!(
+                                "{agent}: the action {} answers through a table that names no destination",
+                                action.id
+                            );
+                        };
+                        for method in [&destination.method, &destination.answers] {
+                            assert!(
+                                connector.routes.iter().any(|route| &route.method == method),
+                                "{agent}: the action {} answers through {method}, which its own table does not route",
+                                action.id
+                            );
+                        }
+                    }
                     other => panic!(
                         "{agent}: the action {} is implemented as {}, which is not a declarative form this repository reviewed",
                         action.id,
