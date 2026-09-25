@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-25T23:25:31Z",
-    "finished": "2026-09-25T23:36:45Z",
+    "started": "2026-09-25T23:41:18Z",
+    "finished": "2026-09-25T23:53:01Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,7 +13,7 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "54903cc0b09e4d4af307f80a67f5d3f459e60078",
+      "id": "8aab681e30880828b50675f4e12cfb1c04d20037",
       "modified": false
     },
     "host": {
@@ -58,7 +58,7 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-40PGyY",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-nACT4p",
     "own_home": {
       "bound_to_a_desktop": true,
       "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
@@ -71,12 +71,12 @@
       "number": 1,
       "group": "own-home",
       "what": "a session started with the person's own home names their login keychain",
-      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
+      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 37,
+      "seconds": 14,
       "log": "own-home.log",
       "error": null
     },
@@ -84,12 +84,12 @@
       "number": 2,
       "group": "agents",
       "what": "part 2b",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 36,
+      "seconds": 19,
       "log": "opencode/2b.log",
       "error": null
     },
@@ -97,12 +97,12 @@
       "number": 3,
       "group": "agents",
       "what": "part 5a",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 20,
+      "seconds": 22,
       "log": "opencode/5a.log",
       "error": null
     },
@@ -110,12 +110,12 @@
       "number": 4,
       "group": "agents",
       "what": "part 6a",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 13,
+      "seconds": 14,
       "log": "opencode/6a.log",
       "error": null
     },
@@ -123,12 +123,12 @@
       "number": 5,
       "group": "agents",
       "what": "part 8a",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 24,
+      "seconds": 25,
       "log": "opencode/8a.log",
       "error": null
     },
@@ -136,7 +136,7 @@
       "number": 6,
       "group": "agents",
       "what": "part 14.03a",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
@@ -193,7 +193,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
             "announced_after": {
               "instances": [],
@@ -208,27 +208,27 @@
             "answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 241246ec-4f7c-4029-b2c5-5ef990c403dc",
+                "detail": "STALE_SESSION: no application instance 779465ff-88da-4557-ab06-6465384ea138",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 241246ec-4f7c-4029-b2c5-5ef990c403dc",
+                "detail": "STALE_SESSION: no application instance 779465ff-88da-4557-ab06-6465384ea138",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 241246ec-4f7c-4029-b2c5-5ef990c403dc",
+                "detail": "STALE_SESSION: no application instance 779465ff-88da-4557-ab06-6465384ea138",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 241246ec-4f7c-4029-b2c5-5ef990c403dc",
+                "detail": "STALE_SESSION: no application instance 779465ff-88da-4557-ab06-6465384ea138",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 1b65556e-20cb-455e-a14d-8650f0344f0a",
+                "detail": "STALE_SESSION: no pending resource 48ecfa6e-a3de-4be2-9cc4-c875daf83afb",
                 "refused": "STALE_SESSION"
               },
               {
@@ -238,12 +238,12 @@
               },
               {
                 "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/opencode is not bound to 241246ec-4f7c-4029-b2c5-5ef990c403dc",
+                "detail": "STALE_SESSION: kalareach/opencode is not bound to 779465ff-88da-4557-ab06-6465384ea138",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/opencode is not bound to 241246ec-4f7c-4029-b2c5-5ef990c403dc",
+                "detail": "STALE_SESSION: kalareach/opencode is not bound to 779465ff-88da-4557-ab06-6465384ea138",
                 "refused": "STALE_SESSION"
               },
               {
@@ -304,7 +304,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 74033,
+                  "pid": 83968,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -314,7 +314,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 74033,
+                    "pid": 83968,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -324,8 +324,8 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 3,
-              "session_path": "<tmp>/krm-f2cb1be4/agent/current/bin:<tmp>/krm-f2cb1be4/agent/runtime:/usr/bin:/bin"
+              "samples": 2,
+              "session_path": "<tmp>/krm-3cfaefe6/agent/current/bin:<tmp>/krm-3cfaefe6/agent/runtime:/usr/bin:/bin"
             }
           }
         },
@@ -374,14 +374,14 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "agent_processes": [
               "opencode"
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 76945 (opencode)",
+              "check": "these have ended: process 85949 (opencode)",
               "what": "the agent ended with a second daemon kill"
             },
             "installed": {
@@ -392,7 +392,7 @@
               "plugin_id": "kalareach/opencode",
               "version": "0.2.1"
             },
-            "killed_daemon": 76783,
+            "killed_daemon": 85822,
             "local_terminal_input": "kr-harmless",
             "provenance": {
               "ended_before_read": [],
@@ -402,7 +402,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 76945,
+                  "pid": 85949,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -412,7 +412,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 76945,
+                    "pid": 85949,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -422,10 +422,10 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 4,
-              "session_path": "<tmp>/krm-12c97670/agent/current/bin:<tmp>/krm-12c97670/agent/runtime:/usr/bin:/bin"
+              "samples": 5,
+              "session_path": "<tmp>/krm-94c05731/agent/current/bin:<tmp>/krm-94c05731/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 77226
+            "restarted_daemon": 86344
           }
         },
         {
@@ -452,7 +452,7 @@
               "outcome": "not_run"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
             "installed": {
               "grant": [
@@ -506,7 +506,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
             "control": {
               "breaks_property": false,
@@ -536,7 +536,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 79985,
+                  "pid": 89594,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -546,7 +546,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 79985,
+                    "pid": 89594,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -556,17 +556,17 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 21,
-              "session_path": "<tmp>/krm-a8e8e742/agent/current/bin:<tmp>/krm-a8e8e742/agent/runtime:/usr/bin:/bin"
+              "samples": 22,
+              "session_path": "<tmp>/krm-e54cfc26/agent/current/bin:<tmp>/krm-e54cfc26/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 33701a3c-36d3-4df3-9a13-e48679b04a51 approval allow"
+                "title": "kalareach session d55da3ba-41d9-4d8f-b059-a4cc969db8e3 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-a8e8e742/h/.local/share/opencode/storage/session/33701a3c-36d3-4df3-9a13-e48679b04a51.json"
+                "path": "<tmp>/krm-e54cfc26/h/.local/share/opencode/storage/session/d55da3ba-41d9-4d8f-b059-a4cc969db8e3.json"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
@@ -580,7 +580,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 3,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-none-permission",
                     "stderr_first_line": "",
@@ -588,7 +588,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-none-tool",
                     "stderr_first_line": "",
@@ -596,7 +596,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "channel-none",
                     "stderr_first_line": "",
@@ -604,18 +604,18 @@
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a8e8e742/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-e54cfc26/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a8e8e742/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-e54cfc26/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -623,7 +623,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a8e8e742/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-e54cfc26/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -631,12 +631,12 @@
                     "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a8e8e742/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-e54cfc26/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 10,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -644,7 +644,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 8,
                     "exit": 0,
                     "probe": "hook-worker-permission",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -652,7 +652,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 9,
                     "exit": 0,
                     "probe": "hook-worker-tool",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -709,7 +709,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "announced": {
               "instances": [],
@@ -739,7 +739,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 82218,
+                  "pid": 91982,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -749,7 +749,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 82218,
+                    "pid": 91982,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -760,9 +760,9 @@
               ],
               "sample_interval_ms": 250,
               "samples": 1,
-              "session_path": "<tmp>/krm-3d2d5f61/agent/current/bin:<tmp>/krm-3d2d5f61/agent/runtime:/usr/bin:/bin"
+              "session_path": "<tmp>/krm-9c01a435/agent/current/bin:<tmp>/krm-9c01a435/agent/runtime:/usr/bin:/bin"
             },
-            "typed": "<tmp>/krm-3d2d5f61/w/kalareach-shot.png"
+            "typed": "<tmp>/krm-9c01a435/w/kalareach-shot.png"
           }
         },
         {

@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-25T23:25:31Z",
-    "finished": "2026-09-25T23:33:09Z",
+    "started": "2026-09-25T23:41:18Z",
+    "finished": "2026-09-25T23:49:01Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,7 +13,7 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "54903cc0b09e4d4af307f80a67f5d3f459e60078",
+      "id": "8aab681e30880828b50675f4e12cfb1c04d20037",
       "modified": false
     },
     "host": {
@@ -58,7 +58,7 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-40PGyY",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-nACT4p",
     "own_home": {
       "bound_to_a_desktop": true,
       "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
@@ -71,12 +71,12 @@
       "number": 1,
       "group": "own-home",
       "what": "a session started with the person's own home names their login keychain",
-      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
+      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 37,
+      "seconds": 14,
       "log": "own-home.log",
       "error": null
     },
@@ -84,12 +84,12 @@
       "number": 2,
       "group": "agents",
       "what": "part 2b",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 23,
+      "seconds": 19,
       "log": "kimi-cli/2b.log",
       "error": null
     },
@@ -97,12 +97,12 @@
       "number": 3,
       "group": "agents",
       "what": "part 5a",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 18,
+      "seconds": 20,
       "log": "kimi-cli/5a.log",
       "error": null
     },
@@ -110,12 +110,12 @@
       "number": 4,
       "group": "agents",
       "what": "part 6a",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 13,
+      "seconds": 14,
       "log": "kimi-cli/6a.log",
       "error": null
     },
@@ -123,12 +123,12 @@
       "number": 5,
       "group": "agents",
       "what": "part 8a",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 24,
+      "seconds": 35,
       "log": "kimi-cli/8a.log",
       "error": null
     },
@@ -136,12 +136,12 @@
       "number": 6,
       "group": "agents",
       "what": "part 14.03a",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 18,
+      "seconds": 45,
       "log": "kimi-cli/14.03a.log",
       "error": null
     }
@@ -193,7 +193,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
             "announced_after": {
               "instances": [],
@@ -208,27 +208,27 @@
             "answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 36d09c63-7069-4570-8aa8-91bb5284599d",
+                "detail": "STALE_SESSION: no application instance 2cd1af60-10bf-4939-88c8-702601db0962",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 36d09c63-7069-4570-8aa8-91bb5284599d",
+                "detail": "STALE_SESSION: no application instance 2cd1af60-10bf-4939-88c8-702601db0962",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 36d09c63-7069-4570-8aa8-91bb5284599d",
+                "detail": "STALE_SESSION: no application instance 2cd1af60-10bf-4939-88c8-702601db0962",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 36d09c63-7069-4570-8aa8-91bb5284599d",
+                "detail": "STALE_SESSION: no application instance 2cd1af60-10bf-4939-88c8-702601db0962",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource b1d564bc-180e-44b2-b461-5b1cc5502d8e",
+                "detail": "STALE_SESSION: no pending resource 91cd67c3-6290-4ea7-8d97-26c92f9c964a",
                 "refused": "STALE_SESSION"
               },
               {
@@ -238,12 +238,12 @@
               },
               {
                 "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/kimi-cli is not bound to 36d09c63-7069-4570-8aa8-91bb5284599d",
+                "detail": "STALE_SESSION: kalareach/kimi-cli is not bound to 2cd1af60-10bf-4939-88c8-702601db0962",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/kimi-cli is not bound to 36d09c63-7069-4570-8aa8-91bb5284599d",
+                "detail": "STALE_SESSION: kalareach/kimi-cli is not bound to 2cd1af60-10bf-4939-88c8-702601db0962",
                 "refused": "STALE_SESSION"
               },
               {
@@ -304,7 +304,7 @@
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
                   "inode": 54200107,
-                  "pid": 53910,
+                  "pid": 51656,
                   "sha256": "0467c7061b8f4b4e08cfe72b80da9fb3928cb11d0fbc81f51b571922c377eabb"
                 }
               ],
@@ -314,7 +314,7 @@
                     "command": "Kimi Code",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
-                    "pid": 53910,
+                    "pid": 51656,
                     "sha256": "0467c7061b8f4b4e08cfe72b80da9fb3928cb11d0fbc81f51b571922c377eabb"
                   },
                   "file": "<tools>/kimi-cli/1.51.0/wheel/kimi_cli-1.51.0-py3-none-any.whl",
@@ -325,7 +325,7 @@
               ],
               "sample_interval_ms": 250,
               "samples": 2,
-              "session_path": "<tmp>/krm-3a8f2580/agent/current/bin:<tmp>/krm-3a8f2580/agent/runtime:/usr/bin:/bin"
+              "session_path": "<tmp>/krm-fef0749d/agent/current/bin:<tmp>/krm-fef0749d/agent/runtime:/usr/bin:/bin"
             }
           }
         },
@@ -374,14 +374,14 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "agent_processes": [
               "Kimi Code"
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 55554 (Kimi Code)",
+              "check": "these have ended: process 53524 (Kimi Code)",
               "what": "the agent ended with a second daemon kill"
             },
             "installed": {
@@ -392,7 +392,7 @@
               "plugin_id": "kalareach/kimi-cli",
               "version": "0.1.1"
             },
-            "killed_daemon": 55428,
+            "killed_daemon": 53382,
             "local_terminal_input": "kr-harmless",
             "provenance": {
               "ended_before_read": [],
@@ -402,7 +402,7 @@
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
                   "inode": 54200107,
-                  "pid": 55554,
+                  "pid": 53524,
                   "sha256": "0467c7061b8f4b4e08cfe72b80da9fb3928cb11d0fbc81f51b571922c377eabb"
                 }
               ],
@@ -412,7 +412,7 @@
                     "command": "Kimi Code",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
-                    "pid": 55554,
+                    "pid": 53524,
                     "sha256": "0467c7061b8f4b4e08cfe72b80da9fb3928cb11d0fbc81f51b571922c377eabb"
                   },
                   "file": "<tools>/kimi-cli/1.51.0/wheel/kimi_cli-1.51.0-py3-none-any.whl",
@@ -423,9 +423,9 @@
               ],
               "sample_interval_ms": 250,
               "samples": 4,
-              "session_path": "<tmp>/krm-113df042/agent/current/bin:<tmp>/krm-113df042/agent/runtime:/usr/bin:/bin"
+              "session_path": "<tmp>/krm-7b8da982/agent/current/bin:<tmp>/krm-7b8da982/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 55774
+            "restarted_daemon": 53755
           }
         },
         {
@@ -452,7 +452,7 @@
               "outcome": "not_run"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
             "installed": {
               "grant": [
@@ -506,7 +506,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
             "control": {
               "breaks_property": false,
@@ -536,7 +536,7 @@
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
                   "inode": 54200107,
-                  "pid": 58498,
+                  "pid": 58174,
                   "sha256": "0467c7061b8f4b4e08cfe72b80da9fb3928cb11d0fbc81f51b571922c377eabb"
                 }
               ],
@@ -546,7 +546,7 @@
                     "command": "Kimi Code",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
-                    "pid": 58498,
+                    "pid": 58174,
                     "sha256": "0467c7061b8f4b4e08cfe72b80da9fb3928cb11d0fbc81f51b571922c377eabb"
                   },
                   "file": "<tools>/kimi-cli/1.51.0/wheel/kimi_cli-1.51.0-py3-none-any.whl",
@@ -556,23 +556,23 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 21,
-              "session_path": "<tmp>/krm-72af4642/agent/current/bin:<tmp>/krm-72af4642/agent/runtime:/usr/bin:/bin"
+              "samples": 30,
+              "session_path": "<tmp>/krm-0ed8d150/agent/current/bin:<tmp>/krm-0ed8d150/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 091d56e3-b500-4ba5-bd5d-ff0b2c73f55c approval allow"
+                "title": "kalareach session f208b352-8172-4d0f-b16b-c6841966be2b approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-72af4642/h/.kimi/sessions/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-72af4642-w/091d56e3-b500-4ba5-bd5d-ff0b2c73f55c.jsonl"
+                "path": "<tmp>/krm-0ed8d150/h/.kimi/sessions/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-0ed8d150-w/f208b352-8172-4d0f-b16b-c6841966be2b.jsonl"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
                 "probes": [
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-none-session-start",
                     "stderr_first_line": "",
@@ -607,7 +607,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-72af4642/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-0ed8d150/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -615,7 +615,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-72af4642/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-0ed8d150/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -623,7 +623,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-72af4642/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-0ed8d150/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -631,12 +631,12 @@
                     "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-72af4642/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-0ed8d150/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -652,7 +652,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-tool",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -660,7 +660,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 542,
                     "exit": 1,
                     "probe": "channel-worker",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -709,14 +709,14 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 /Volumes/Storage/working/kala/kalareach-worktrees/.targets/T-035-core/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/kimi-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "announced": {
               "instances": [],
               "more_resources": false,
               "resources": []
             },
-            "composer_row": " <tmp>/krm-5506f3ae/w/kalareach-shot.png",
+            "composer_row": " <tmp>/krm-bb910e91/w/kalareach-shot.png",
             "control": {
               "breaks_property": true,
               "refused": "input.write: LEASE_LOST: the input lease has moved on",
@@ -739,7 +739,7 @@
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
                   "inode": 54200107,
-                  "pid": 60698,
+                  "pid": 62997,
                   "sha256": "0467c7061b8f4b4e08cfe72b80da9fb3928cb11d0fbc81f51b571922c377eabb"
                 }
               ],
@@ -749,7 +749,7 @@
                     "command": "Kimi Code",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/python@3.12/3.12.14/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python",
-                    "pid": 60698,
+                    "pid": 62997,
                     "sha256": "0467c7061b8f4b4e08cfe72b80da9fb3928cb11d0fbc81f51b571922c377eabb"
                   },
                   "file": "<tools>/kimi-cli/1.51.0/wheel/kimi_cli-1.51.0-py3-none-any.whl",
@@ -759,10 +759,10 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 0,
-              "session_path": "<tmp>/krm-5506f3ae/agent/current/bin:<tmp>/krm-5506f3ae/agent/runtime:/usr/bin:/bin"
+              "samples": 1,
+              "session_path": "<tmp>/krm-bb910e91/agent/current/bin:<tmp>/krm-bb910e91/agent/runtime:/usr/bin:/bin"
             },
-            "typed": "<tmp>/krm-5506f3ae/w/kalareach-shot.png"
+            "typed": "<tmp>/krm-bb910e91/w/kalareach-shot.png"
           }
         },
         {
