@@ -311,10 +311,32 @@ document check.
 
 What core provides, and what is unverified about it:
 
-- The recipe was not installed into a live Claude Code and no session was started against it. Status:
-  unverified. Installing it would change the qualification machine's own configuration, which a
-  packaging run does not do. What removal does when a file's digest no longer matches, and whether
-  Claude Code picks the registration up without a restart, are unverified for the same reason.
+- Core's native bridge executor, `crates/kr-controller/src/catalogue/native_bridge/` at core
+  `bf075f9eb`, installed this release's recipe into an isolated Claude Code directory on the
+  qualification machine, and the qualified executable read the registration. Nothing of the person's
+  was used and no prompt was sent: Claude Code 2.1.278, the executable pinned above, ran in a
+  terminal with `CLAUDE_CONFIG_DIR` set to that directory, a dummy API key and a refused base URL,
+  under a sandbox that denied the keychain, the person's own Claude Code paths, the external volume
+  and outbound TCP, and was stopped after 14 seconds. A recorder stood first on its `PATH` as
+  `kr-hook`. Before the installation, Claude Code started no forwarder. Installed, it ran
+  `kr-hook claude-code hook` for `SessionStart`, started `kr-hook claude-code channel` as the
+  plugin's MCP server, and ran `kr-hook claude-code hook` for `SessionEnd` when it was stopped.
+  After the executor's removal it started none. The installation added the three files, the
+  directories that hold them and the settings key, and nothing else; the removal took out exactly
+  those and left `settings.json` byte for byte as it was, the other settings included. Claude Code
+  wrote its own records of the plugin beside them, `plugins/installed_plugins.json` and
+  `plugins/data/kalareach-channels-skills-dir`, which the recipe does not name and its removal does
+  not touch. Status: verified by two runs without an account, 2026-09-25.
+- The executor reads each `claude` executable on the daemon's search path without running it, and
+  refuses the recipe unless a signed qualification record names that executable's digest at a
+  version inside the recipe's range. No release carries such a record yet, so core refuses the
+  recipe and writes nothing. The runs above supplied the record this qualification publishes: the
+  digest pinned above, at 2.1.278. Status: verified by core's tests and by the runs above.
+- Not verified: a session with an account; the channel registering under
+  `--dangerously-load-development-channels`; whether a session that is already running picks the
+  registration up without a restart; and what Claude Code does with its own plugin records after the
+  removal. A removal keeps and reports a file changed since it was installed; that is verified by
+  core's tests against a stand-in directory, not against a live install.
 - The host contract is core's `kr-hook` forwarder and the worker's gateway, at core `e2f867b3`
   (`crates/kr-hook` and `docs/bridges/claude-code/README.md`):
   - The recipe registers `kr-hook claude-code channel` and `kr-hook claude-code hook`, and the
