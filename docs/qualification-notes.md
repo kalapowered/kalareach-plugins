@@ -355,9 +355,13 @@ What core provides, and what is unverified about it:
     surface, an extra argument or an undeclared flag, is a usage error: it is refused on standard
     error with exit code 64, before anything is read or connected, because Claude Code reads a
     hook's exit code 2 as a request to block (`crates/kr-hook/src/cli.rs`).
-  - The launch's environment names the registration file in `KR_REGISTRATION` and the owner-only
-    credential file in `KR_CREDENTIAL`. Both are paths. The forwarder reads both, and a registration
-    named without a credential is an error (`crates/kr-hook/src/registration.rs`).
+  - The launch's environment names one file, the registration, in `KR_REGISTRATION`, a path. The
+    registration names the owner-only credential file beside it, and the forwarder reads the
+    credential only from a file in the registration's own directory that no other user can read, so
+    no credential travels in the environment. That holds from core `571f197a`, where the worker's
+    launch sets `KR_REGISTRATION` alone (`crates/kr-hook/src/registration.rs`,
+    `crates/kr-worker/src/broker/attach.rs`); at `e2f867b3` the environment also named the
+    credential file, in `KR_CREDENTIAL`.
   - The worker admits a forwarder only when the kernel names the connecting process, its parent
     chain leads to the Claude Code process the worker launched with every link checked by start
     identity, it presents the launch credential, and the installation record names its application
@@ -385,11 +389,12 @@ What core provides, and what is unverified about it:
   that revision.
 - Claude Code documents `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` as a setting that strips every variable
   it recognises as a credential from the hooks and MCP stdio servers it starts. Source:
-  `https://code.claude.com/docs/en/env-vars`, read 2026-09-25. Status: document check. Whether it
-  strips `KR_CREDENTIAL` and keeps `KR_REGISTRATION` was not checked here. Where it strips
-  `KR_CREDENTIAL`, the forwarder at that core revision cannot present the launch credential: its
-  hooks still answer `{}` and report nothing, and the channel exits 1 before its handshake, which
-  Claude Code shows as a failed server.
+  `https://code.claude.com/docs/en/env-vars`, read 2026-09-25. Status: document check. From core
+  `571f197a` the forwarder needs `KR_REGISTRATION` alone, which names no credential, and core's
+  bridge page says the setting keeps it (`docs/bridges/claude-code/README.md`, "Finding the
+  worker"). Status: document check of core's page; which names the setting strips was not checked
+  here. Where it did not keep `KR_REGISTRATION`, the hooks would still answer `{}` and report
+  nothing, and the channel would complete its handshake and declare nothing, as outside a launch.
 - The forwarder finds its launch only through the environment Claude Code gives the processes it
   starts. Core's bridge page cites the hooks reference for a hook inheriting Claude Code's
   environment, and relies on Claude Code passing the same variables to the MCP servers it starts.
