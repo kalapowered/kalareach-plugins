@@ -660,6 +660,130 @@ fn a_bridge_grant_that_denies_where_its_code_runs_is_refused() {
     assert!(grant_refusal(plugin, &changed).is_some());
 }
 
+/// Every hook registration in a Claude Code hooks file, with the event it is registered for.
+fn hook_registrations(file: &serde_json::Value) -> Vec<(&str, &serde_json::Value)> {
+    let events = file
+        .get("hooks")
+        .and_then(serde_json::Value::as_object)
+        .expect("the file registers hooks by event");
+    let mut registrations = Vec::new();
+    for (event, groups) in events {
+        for group in groups.as_array().expect("each event lists its groups") {
+            let handlers = group
+                .get("hooks")
+                .and_then(serde_json::Value::as_array)
+                .expect("each group lists its hooks");
+            for handler in handlers {
+                registrations.push((event.as_str(), handler));
+            }
+        }
+    }
+    registrations
+}
+
+/// Why one hook registration is not the forwarder started in exec form, or nothing when it is.
+///
+/// Exec form is a `command` that names a program and an `args` list, which Claude Code starts with
+/// no shell between them. The worker lets only a hook Claude Code started itself select the
+/// thread, so a shell string, or a shell that starts the forwarder, leaves every report moving
+/// nothing. A member this check does not know could change how the hook runs, in the background
+/// for one, so a registration carries only its type, its command, its arguments and a timeout.
+fn hook_registration_refusal(handler: &serde_json::Value) -> Option<String> {
+    let Some(members) = handler.as_object() else {
+        return Some("the registration is not an object".to_owned());
+    };
+    if let Some(other) = members
+        .keys()
+        .find(|name| !matches!(name.as_str(), "type" | "command" | "args" | "timeout"))
+    {
+        return Some(format!("the registration carries {other}"));
+    }
+    if handler.get("type") != Some(&serde_json::json!("command")) {
+        return Some("the registration is not a command".to_owned());
+    }
+    let Some(command) = handler.get("command").and_then(serde_json::Value::as_str) else {
+        return Some("the registration names no command".to_owned());
+    };
+    if command.is_empty()
+        || command.chars().any(|character| {
+            character.is_whitespace() || "\"'`$;&|<>(){}[]*?~#!\\".contains(character)
+        })
+    {
+        return Some(format!("the command {command:?} is a shell string"));
+    }
+    let Some(args) = handler.get("args").and_then(serde_json::Value::as_array) else {
+        return Some("the registration has no argument list".to_owned());
+    };
+    let Some(args) = args
+        .iter()
+        .map(serde_json::Value::as_str)
+        .collect::<Option<Vec<&str>>>()
+    else {
+        return Some("an argument is not text".to_owned());
+    };
+    if command != "kr-hook" || args != ["claude-code", "hook"] {
+        return Some(format!(
+            "the registration starts {command} {args:?}, not the forwarder's hook"
+        ));
+    }
+    None
+}
+
+/// Why a Claude Code hooks file registers a hook other than the forwarder in exec form.
+fn hooks_file_refusal(file: &serde_json::Value) -> Option<String> {
+    hook_registrations(file)
+        .into_iter()
+        .find_map(|(event, handler)| {
+            hook_registration_refusal(handler).map(|refusal| format!("{event}: {refusal}"))
+        })
+}
+
+/// Every hook the Claude Code bridge registers starts the forwarder in exec form, and the same
+/// check refuses the file once any registration in it is moved to a shell form.
+#[test]
+fn every_claude_code_hook_starts_the_forwarder_in_exec_form() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let package = package_named(&loaded, "kalareach/claude-code");
+    let file: serde_json::Value =
+        kalareach_catalogue::read_json(&package.directory.join("bridge/hooks.json"))
+            .expect("the hooks file reads");
+    assert_eq!(
+        hook_registrations(&file).len(),
+        5,
+        "one registration for each of the five events"
+    );
+    assert_eq!(hooks_file_refusal(&file), None);
+
+    let exec = hook_registrations(&file)[0].1.clone();
+    let mut backgrounded = exec.clone();
+    backgrounded["async"] = serde_json::json!(true);
+    let shell_forms = [
+        serde_json::json!({ "type": "command", "command": "kr-hook claude-code hook", "timeout": 5 }),
+        serde_json::json!({
+            "type": "command", "command": "kr-hook claude-code hook", "args": [], "timeout": 5
+        }),
+        serde_json::json!({
+            "type": "command", "command": "/bin/sh", "args": ["-c", "kr-hook claude-code hook"],
+            "timeout": 5
+        }),
+        backgrounded,
+    ];
+    let events: Vec<String> = hook_registrations(&file)
+        .iter()
+        .map(|(event, _)| (*event).to_owned())
+        .collect();
+    for event in &events {
+        for shell_form in &shell_forms {
+            let mut copy = file.clone();
+            copy["hooks"][event.as_str()][0]["hooks"][0] = shell_form.clone();
+            assert!(
+                hooks_file_refusal(&copy).is_some(),
+                "{event}: a registration moved to {shell_form} is accepted"
+            );
+        }
+    }
+}
+
 #[test]
 fn a_connector_names_one_protocol_and_identifies_its_application_exactly() {
     let loaded = packages::load(&root()).expect("the repository loads");
