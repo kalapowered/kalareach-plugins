@@ -317,10 +317,11 @@ What core provides, and what is unverified about it:
   Claude Code picks the registration up without a restart, are unverified for the same reason.
 - The host contract is core's `kr-hook` forwarder and the worker's gateway, at core `e2f867b3`
   (`crates/kr-hook` and `docs/bridges/claude-code/README.md`):
-  - The forwarder accepts `kr-hook claude-code channel` and `kr-hook claude-code hook`, the two
-    invocations the recipe registers. It refuses any other on standard error with exit code 64,
-    before it reads or connects anything, because Claude Code reads a hook's exit code 2 as a
-    request to block (`crates/kr-hook/src/cli.rs`).
+  - The recipe registers `kr-hook claude-code channel` and `kr-hook claude-code hook`, and the
+    forwarder accepts both. A command line it does not accept, such as an unknown application or
+    surface, an extra argument or an undeclared flag, is a usage error: it is refused on standard
+    error with exit code 64, before anything is read or connected, because Claude Code reads a
+    hook's exit code 2 as a request to block (`crates/kr-hook/src/cli.rs`).
   - The launch's environment names the registration file in `KR_REGISTRATION` and the owner-only
     credential file in `KR_CREDENTIAL`. Both are paths. The forwarder reads both, and a registration
     named without a credential is an error (`crates/kr-hook/src/registration.rs`).
