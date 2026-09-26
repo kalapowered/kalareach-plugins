@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-26T00:45:04Z",
-    "finished": "2026-09-26T00:53:53Z",
+    "started": "2026-09-26T01:04:06Z",
+    "finished": "2026-09-26T01:11:36Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "a6ffbd036e99b6842d513e3f48b64d342e2a35c2",
+      "id": "f8b2af5eeaabf5c29242aeffcd2d95dd653dd293",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "0c7b20925b0897a48d682648155b7b311f30ac03",
+        "id": "56daf033daeac2f5a6a582f3c8c69daed7727ded",
         "modified": false
       }
     },
@@ -58,7 +58,7 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-QFtVnj",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-clZq6J",
     "own_home": {
       "bound_to_a_desktop": true,
       "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
@@ -76,7 +76,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 8,
+      "seconds": 12,
       "log": "own-home.log",
       "error": null
     },
@@ -89,7 +89,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 20,
+      "seconds": 12,
       "log": "opencode/2b.log",
       "error": null
     },
@@ -102,7 +102,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 17,
+      "seconds": 16,
       "log": "opencode/5a.log",
       "error": null
     },
@@ -115,7 +115,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 9,
+      "seconds": 8,
       "log": "opencode/6a.log",
       "error": null
     },
@@ -128,7 +128,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 24,
+      "seconds": 18,
       "log": "opencode/8a.log",
       "error": null
     },
@@ -141,7 +141,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 32,
+      "seconds": 12,
       "log": "opencode/14.03a.log",
       "error": null
     }
@@ -208,27 +208,27 @@
             "answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance fe0ae69a-6969-443c-a624-3b542dd69b60",
+                "detail": "STALE_SESSION: no application instance 8764aa8c-70d6-4603-bbbf-402973f80fec",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance fe0ae69a-6969-443c-a624-3b542dd69b60",
+                "detail": "STALE_SESSION: no application instance 8764aa8c-70d6-4603-bbbf-402973f80fec",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance fe0ae69a-6969-443c-a624-3b542dd69b60",
+                "detail": "STALE_SESSION: no application instance 8764aa8c-70d6-4603-bbbf-402973f80fec",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance fe0ae69a-6969-443c-a624-3b542dd69b60",
+                "detail": "STALE_SESSION: no application instance 8764aa8c-70d6-4603-bbbf-402973f80fec",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 8805a459-a13b-471a-b705-4ed4e8ed3672",
+                "detail": "STALE_SESSION: no pending resource 91fc1b61-33f1-4c83-970b-3450d752d8dc",
                 "refused": "STALE_SESSION"
               },
               {
@@ -238,12 +238,12 @@
               },
               {
                 "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/opencode is not bound to fe0ae69a-6969-443c-a624-3b542dd69b60",
+                "detail": "STALE_SESSION: kalareach/opencode is not bound to 8764aa8c-70d6-4603-bbbf-402973f80fec",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/opencode is not bound to fe0ae69a-6969-443c-a624-3b542dd69b60",
+                "detail": "STALE_SESSION: kalareach/opencode is not bound to 8764aa8c-70d6-4603-bbbf-402973f80fec",
                 "refused": "STALE_SESSION"
               },
               {
@@ -305,7 +305,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 52328,
+                  "pid": 62850,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -315,7 +315,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 52328,
+                    "pid": 62850,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -326,8 +326,8 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 19,
-              "session_path": "<tmp>/krm-27afbc97/agent/current/bin:<tmp>/krm-27afbc97/agent/runtime:/usr/bin:/bin"
+              "samples": 17,
+              "session_path": "<tmp>/krm-16f8c597/agent/current/bin:<tmp>/krm-16f8c597/agent/runtime:/usr/bin:/bin"
             }
           }
         },
@@ -383,7 +383,7 @@
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 53909 (opencode)",
+              "check": "these have ended: process 65244 (opencode)",
               "what": "the agent ended with a second daemon kill"
             },
             "installed": {
@@ -394,7 +394,7 @@
               "plugin_id": "kalareach/opencode",
               "version": "0.2.1"
             },
-            "killed_daemon": 53693,
+            "killed_daemon": 65082,
             "local_terminal_input": "kr-harmless",
             "provenance": {
               "ended_before_read": [],
@@ -405,7 +405,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 53909,
+                  "pid": 65244,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -415,7 +415,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 53909,
+                    "pid": 65244,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -426,10 +426,10 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 21,
-              "session_path": "<tmp>/krm-9b34d7fa/agent/current/bin:<tmp>/krm-9b34d7fa/agent/runtime:/usr/bin:/bin"
+              "samples": 19,
+              "session_path": "<tmp>/krm-3cce420e/agent/current/bin:<tmp>/krm-3cce420e/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 54271
+            "restarted_daemon": 65567
           }
         },
         {
@@ -541,7 +541,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 57082,
+                  "pid": 67687,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -551,7 +551,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 57082,
+                    "pid": 67687,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -562,17 +562,17 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 51,
-              "session_path": "<tmp>/krm-d48b9bab/agent/current/bin:<tmp>/krm-d48b9bab/agent/runtime:/usr/bin:/bin"
+              "samples": 37,
+              "session_path": "<tmp>/krm-9c544825/agent/current/bin:<tmp>/krm-9c544825/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session d895c0ee-d434-46bf-863f-d0069407937b approval allow"
+                "title": "kalareach session 96bc0bf9-da89-490b-bdb7-14ee5172ee7f approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-d48b9bab/h/.local/share/opencode/storage/session/d895c0ee-d434-46bf-863f-d0069407937b.json"
+                "path": "<tmp>/krm-9c544825/h/.local/share/opencode/storage/session/96bc0bf9-da89-490b-bdb7-14ee5172ee7f.json"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
@@ -594,7 +594,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 3,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-none-tool",
                     "stderr_first_line": "",
@@ -613,7 +613,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d48b9bab/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-9c544825/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -621,28 +621,28 @@
                     "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d48b9bab/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-9c544825/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d48b9bab/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-9c544825/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d48b9bab/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-9c544825/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -658,7 +658,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-tool",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -666,7 +666,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 7,
                     "exit": 1,
                     "probe": "channel-worker",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -746,7 +746,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 68061,
+                  "pid": 69661,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -756,7 +756,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 68061,
+                    "pid": 69661,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -767,10 +767,10 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 22,
-              "session_path": "<tmp>/krm-6cdba5b8/agent/current/bin:<tmp>/krm-6cdba5b8/agent/runtime:/usr/bin:/bin"
+              "samples": 15,
+              "session_path": "<tmp>/krm-4df6cfbb/agent/current/bin:<tmp>/krm-4df6cfbb/agent/runtime:/usr/bin:/bin"
             },
-            "typed": "<tmp>/krm-6cdba5b8/w/kalareach-shot.png"
+            "typed": "<tmp>/krm-4df6cfbb/w/kalareach-shot.png"
           }
         },
         {

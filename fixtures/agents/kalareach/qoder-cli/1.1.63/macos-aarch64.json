@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-26T00:45:04Z",
-    "finished": "2026-09-26T00:56:25Z",
+    "started": "2026-09-26T01:04:06Z",
+    "finished": "2026-09-26T01:14:09Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "a6ffbd036e99b6842d513e3f48b64d342e2a35c2",
+      "id": "f8b2af5eeaabf5c29242aeffcd2d95dd653dd293",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "0c7b20925b0897a48d682648155b7b311f30ac03",
+        "id": "56daf033daeac2f5a6a582f3c8c69daed7727ded",
         "modified": false
       }
     },
@@ -58,7 +58,7 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-QFtVnj",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-clZq6J",
     "own_home": {
       "bound_to_a_desktop": true,
       "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
@@ -76,7 +76,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 8,
+      "seconds": 12,
       "log": "own-home.log",
       "error": null
     },
@@ -89,7 +89,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 16,
+      "seconds": 19,
       "log": "qoder-cli/2b.log",
       "error": null
     },
@@ -128,7 +128,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 19,
+      "seconds": 20,
       "log": "qoder-cli/8a.log",
       "error": null
     },
@@ -208,27 +208,27 @@
             "answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 3ae206b5-2018-4f41-a5cf-dc1fc7fb9bbc",
+                "detail": "STALE_SESSION: no application instance 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 3ae206b5-2018-4f41-a5cf-dc1fc7fb9bbc",
+                "detail": "STALE_SESSION: no application instance 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 3ae206b5-2018-4f41-a5cf-dc1fc7fb9bbc",
+                "detail": "STALE_SESSION: no application instance 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 3ae206b5-2018-4f41-a5cf-dc1fc7fb9bbc",
+                "detail": "STALE_SESSION: no application instance 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 8ee9032c-6bd9-480a-b388-9569dce61139",
+                "detail": "STALE_SESSION: no pending resource bab832d8-7ad9-48f5-a318-ec437bf0f695",
                 "refused": "STALE_SESSION"
               },
               {
@@ -238,12 +238,12 @@
               },
               {
                 "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/qoder-cli is not bound to 3ae206b5-2018-4f41-a5cf-dc1fc7fb9bbc",
+                "detail": "STALE_SESSION: kalareach/qoder-cli is not bound to 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/qoder-cli is not bound to 3ae206b5-2018-4f41-a5cf-dc1fc7fb9bbc",
+                "detail": "STALE_SESSION: kalareach/qoder-cli is not bound to 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
                 "refused": "STALE_SESSION"
               },
               {
@@ -305,7 +305,7 @@
                   "from": "build",
                   "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
                   "inode": 70406463,
-                  "pid": 2839,
+                  "pid": 80272,
                   "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                 }
               ],
@@ -315,7 +315,7 @@
                     "command": "qodercli",
                     "from": "build",
                     "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
-                    "pid": 2839,
+                    "pid": 80272,
                     "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                   },
                   "file": "<tools>/qoder-cli/1.1.63/bin/qodercli",
@@ -326,8 +326,8 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 24,
-              "session_path": "<tmp>/krm-57ea1dc0/agent/current/bin:<tmp>/krm-57ea1dc0/agent/runtime:/usr/bin:/bin"
+              "samples": 25,
+              "session_path": "<tmp>/krm-d2a018c0/agent/current/bin:<tmp>/krm-d2a018c0/agent/runtime:/usr/bin:/bin"
             }
           }
         },
@@ -383,7 +383,7 @@
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 7244 (qodercli)",
+              "check": "these have ended: process 81980 (qodercli)",
               "what": "the agent ended with a second daemon kill"
             },
             "installed": {
@@ -394,7 +394,7 @@
               "plugin_id": "kalareach/qoder-cli",
               "version": "0.3.0"
             },
-            "killed_daemon": 7101,
+            "killed_daemon": 81801,
             "local_terminal_input": "❯ 2. Don't trust and exit",
             "provenance": {
               "ended_before_read": [],
@@ -405,7 +405,7 @@
                   "from": "build",
                   "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
                   "inode": 70406463,
-                  "pid": 7244,
+                  "pid": 81980,
                   "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                 }
               ],
@@ -415,7 +415,7 @@
                     "command": "qodercli",
                     "from": "build",
                     "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
-                    "pid": 7244,
+                    "pid": 81980,
                     "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                   },
                   "file": "<tools>/qoder-cli/1.1.63/bin/qodercli",
@@ -426,10 +426,10 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 17,
-              "session_path": "<tmp>/krm-74c39e46/agent/current/bin:<tmp>/krm-74c39e46/agent/runtime:/usr/bin:/bin"
+              "samples": 16,
+              "session_path": "<tmp>/krm-fd6fb101/agent/current/bin:<tmp>/krm-fd6fb101/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 7572
+            "restarted_daemon": 82361
           }
         },
         {
@@ -541,7 +541,7 @@
                   "from": "build",
                   "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
                   "inode": 70406463,
-                  "pid": 9651,
+                  "pid": 84809,
                   "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                 }
               ],
@@ -551,7 +551,7 @@
                     "command": "qodercli",
                     "from": "build",
                     "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
-                    "pid": 9651,
+                    "pid": 84809,
                     "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                   },
                   "file": "<tools>/qoder-cli/1.1.63/bin/qodercli",
@@ -562,23 +562,23 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 39,
-              "session_path": "<tmp>/krm-977fa8e3/agent/current/bin:<tmp>/krm-977fa8e3/agent/runtime:/usr/bin:/bin"
+              "samples": 37,
+              "session_path": "<tmp>/krm-a6dfd3d8/agent/current/bin:<tmp>/krm-a6dfd3d8/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 139218b7-dc1b-4064-af55-9e697e529c85 approval allow"
+                "title": "kalareach session 1cc2fc7b-7541-46af-a31a-ff8ffcccbd3d approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-977fa8e3/h/.qoder/projects/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-977fa8e3-w/139218b7-dc1b-4064-af55-9e697e529c85.jsonl"
+                "path": "<tmp>/krm-a6dfd3d8/h/.qoder/projects/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-a6dfd3d8-w/1cc2fc7b-7541-46af-a31a-ff8ffcccbd3d.jsonl"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
                 "probes": [
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-none-session-start",
                     "stderr_first_line": "",
@@ -586,7 +586,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-none-permission",
                     "stderr_first_line": "",
@@ -594,7 +594,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 6,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-none-tool",
                     "stderr_first_line": "",
@@ -602,7 +602,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 6,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "channel-none",
                     "stderr_first_line": "",
@@ -613,15 +613,15 @@
                     "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-977fa8e3/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a6dfd3d8/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-977fa8e3/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a6dfd3d8/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -629,20 +629,20 @@
                     "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-977fa8e3/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a6dfd3d8/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 7,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-977fa8e3/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a6dfd3d8/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 9,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -650,7 +650,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 10,
                     "exit": 0,
                     "probe": "hook-worker-permission",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -658,7 +658,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 10,
+                    "elapsed_ms": 8,
                     "exit": 0,
                     "probe": "hook-worker-tool",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
