@@ -901,8 +901,8 @@ fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly(
 
 /// A reviewed declaration is compared whole: another command, a flag changed, added, dropped or
 /// moved, a variable changed or added, or one word of the statement changed is not the reviewed
-/// declaration. And a statement that lists an argument shortened, or two out of their order, is
-/// refused by the same check that accepts the host's own.
+/// declaration. And a statement that shortens a flag, lists two flags out of their order or leaves
+/// a variable's value out is refused by the same check that accepts the host's own.
 #[test]
 fn a_changed_command_integration_is_not_the_reviewed_one() {
     let loaded = packages::load(&root()).expect("the repository loads");
