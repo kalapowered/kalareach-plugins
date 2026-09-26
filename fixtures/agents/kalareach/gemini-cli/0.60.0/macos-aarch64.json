@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-26T00:21:30Z",
-    "finished": "2026-09-26T00:25:25Z",
+    "started": "2026-09-26T00:45:04Z",
+    "finished": "2026-09-26T00:48:53Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "311ade131be33a5fc41c063b045ddc92dcd9b960",
+      "id": "a6ffbd036e99b6842d513e3f48b64d342e2a35c2",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "a215635e2a6eec8cd6e281990418c6676629b668",
+        "id": "0c7b20925b0897a48d682648155b7b311f30ac03",
         "modified": false
       }
     },
@@ -58,7 +58,7 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-wP462Z",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-QFtVnj",
     "own_home": {
       "bound_to_a_desktop": true,
       "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
@@ -115,7 +115,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 11,
+      "seconds": 8,
       "log": "gemini-cli/6a.log",
       "error": null
     },
@@ -128,7 +128,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 18,
+      "seconds": 19,
       "log": "gemini-cli/8a.log",
       "error": null
     },
@@ -141,7 +141,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 8,
+      "seconds": 9,
       "log": "gemini-cli/14.03a.log",
       "error": null
     }
@@ -208,27 +208,27 @@
             "answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 67d7ff71-cc9f-4d3c-ada3-e93f6bb28e1b",
+                "detail": "STALE_SESSION: no application instance 5e52416b-0a8a-4c8c-8703-1a24781967c2",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 67d7ff71-cc9f-4d3c-ada3-e93f6bb28e1b",
+                "detail": "STALE_SESSION: no application instance 5e52416b-0a8a-4c8c-8703-1a24781967c2",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 67d7ff71-cc9f-4d3c-ada3-e93f6bb28e1b",
+                "detail": "STALE_SESSION: no application instance 5e52416b-0a8a-4c8c-8703-1a24781967c2",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 67d7ff71-cc9f-4d3c-ada3-e93f6bb28e1b",
+                "detail": "STALE_SESSION: no application instance 5e52416b-0a8a-4c8c-8703-1a24781967c2",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 332681ce-a319-428f-8b6c-5205aa8607a3",
+                "detail": "STALE_SESSION: no pending resource 71339af0-969f-4176-b525-e9d722165ef3",
                 "refused": "STALE_SESSION"
               },
               {
@@ -238,12 +238,12 @@
               },
               {
                 "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 67d7ff71-cc9f-4d3c-ada3-e93f6bb28e1b",
+                "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 5e52416b-0a8a-4c8c-8703-1a24781967c2",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 67d7ff71-cc9f-4d3c-ada3-e93f6bb28e1b",
+                "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 5e52416b-0a8a-4c8c-8703-1a24781967c2",
                 "refused": "STALE_SESSION"
               },
               {
@@ -305,34 +305,34 @@
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-1202158b/agent/current/bin/gemini",
+                  "command": "node <tmp>/krm-c700c40c/agent/current/bin/gemini",
                   "device": 16777234,
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
                   "inode": 54188627,
-                  "pid": 6324,
+                  "pid": 16122,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-1202158b/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-c700c40c/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 6324,
+                    "pid": 16122,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-1202158b/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-c700c40c/agent/current/bin/gemini",
                   "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
                   "what": "gemini"
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 18,
-              "session_path": "<tmp>/krm-1202158b/agent/current/bin:<tmp>/krm-1202158b/agent/runtime:/usr/bin:/bin"
+              "samples": 19,
+              "session_path": "<tmp>/krm-c700c40c/agent/current/bin:<tmp>/krm-c700c40c/agent/runtime:/usr/bin:/bin"
             }
           }
         },
@@ -384,12 +384,12 @@
           "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "agent_processes": [
-              "node <tmp>/krm-3e0b115f/agent/current/bin/gemini",
-              "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-3e0b115f/agent/current/bin/gemini"
+              "node <tmp>/krm-9552880e/agent/current/bin/gemini",
+              "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-9552880e/agent/current/bin/gemini"
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 7500 (node <tmp>/krm-3e0b115f/agent/current/bin/gemini), process 7529 (/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-3e0b115f/agent/current/bin/gemini)",
+              "check": "these have ended: process 17455 (node <tmp>/krm-9552880e/agent/current/bin/gemini), process 17517 (/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-9552880e/agent/current/bin/gemini)",
               "what": "the agent ended with a second daemon kill"
             },
             "installed": {
@@ -401,42 +401,42 @@
               "plugin_id": "kalareach/gemini-cli",
               "version": "0.3.0"
             },
-            "killed_daemon": 7374,
+            "killed_daemon": 17228,
             "local_terminal_input": "● 2. Trust parent folder",
             "provenance": {
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-3e0b115f/agent/current/bin/gemini",
+                  "command": "node <tmp>/krm-9552880e/agent/current/bin/gemini",
                   "device": 16777234,
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
                   "inode": 54188627,
-                  "pid": 7500,
+                  "pid": 17455,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-3e0b115f/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-9552880e/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 7500,
+                    "pid": 17455,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-3e0b115f/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-9552880e/agent/current/bin/gemini",
                   "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
                   "what": "gemini"
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 20,
-              "session_path": "<tmp>/krm-3e0b115f/agent/current/bin:<tmp>/krm-3e0b115f/agent/runtime:/usr/bin:/bin"
+              "samples": 22,
+              "session_path": "<tmp>/krm-9552880e/agent/current/bin:<tmp>/krm-9552880e/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 7752
+            "restarted_daemon": 18745
           }
         },
         {
@@ -545,49 +545,49 @@
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-d559f675/agent/current/bin/gemini",
+                  "command": "node <tmp>/krm-d6bc1bbd/agent/current/bin/gemini",
                   "device": 16777234,
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
                   "inode": 54188627,
-                  "pid": 9894,
+                  "pid": 25166,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-d559f675/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-d6bc1bbd/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 9894,
+                    "pid": 25166,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-d559f675/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-d6bc1bbd/agent/current/bin/gemini",
                   "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
                   "what": "gemini"
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 38,
-              "session_path": "<tmp>/krm-d559f675/agent/current/bin:<tmp>/krm-d559f675/agent/runtime:/usr/bin:/bin"
+              "samples": 39,
+              "session_path": "<tmp>/krm-d6bc1bbd/agent/current/bin:<tmp>/krm-d6bc1bbd/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 3d6be8df-09e5-4744-b8bd-80220c5c7151 approval allow"
+                "title": "kalareach session 01ad10aa-9445-4dbd-8bd4-199d913004e8 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-d559f675/h/.gemini/tmp/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-d559f675-w/chats/session-3d6be8df-09e5-4744-b8bd-80220c5c7151.json"
+                "path": "<tmp>/krm-d6bc1bbd/h/.gemini/tmp/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-d6bc1bbd-w/chats/session-01ad10aa-9445-4dbd-8bd4-199d913004e8.json"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
                 "probes": [
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-none-session-start",
                     "stderr_first_line": "",
@@ -603,7 +603,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-none-tool",
                     "stderr_first_line": "",
@@ -622,7 +622,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d559f675/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d6bc1bbd/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -630,15 +630,15 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d559f675/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d6bc1bbd/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d559f675/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d6bc1bbd/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -646,12 +646,12 @@
                     "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d559f675/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-d6bc1bbd/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 8,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -675,7 +675,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 6,
                     "exit": 1,
                     "probe": "channel-worker",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
