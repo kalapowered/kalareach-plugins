@@ -823,33 +823,116 @@ fn statement_refusal(integration: &CommandIntegration) -> Option<String> {
     listing_refusal(integration, &integration.statement())
 }
 
+/// Every JSON string `statement` writes, read whole and decoded, each with the text written between
+/// it and the string before it.
+///
+/// The contract writes the command, each flag and each variable's value as a JSON string, and the
+/// words around them hold no quote, so a quote outside a string opens one. A string ends at the
+/// first quote no backslash escapes, and it is decoded as JSON: a quote escaped inside one string
+/// never starts another, so no string is read as part of another.
+fn written_strings(statement: &str) -> Result<Vec<(&str, String)>, String> {
+    let bytes = statement.as_bytes();
+    let mut strings = Vec::new();
+    let mut words_start = 0;
+    let mut at = 0;
+    while at < bytes.len() {
+        if bytes[at] != b'"' {
+            at += 1;
+            continue;
+        }
+        let mut end = at + 1;
+        loop {
+            match bytes.get(end) {
+                None => return Err(format!("the string opened at byte {at} never ends")),
+                Some(b'\\') => end += 2,
+                Some(b'"') => break,
+                Some(_) => end += 1,
+            }
+        }
+        let value: String = serde_json::from_str(&statement[at..=end])
+            .map_err(|error| format!("the string at byte {at} is not JSON: {error}"))?;
+        strings.push((&statement[words_start..at], value));
+        at = end + 1;
+        words_start = at;
+    }
+    Ok(strings)
+}
+
 /// Why `statement` does not list the command, every flag and every variable of `integration`
 /// exactly, in the order the host applies them, or nothing when it does.
 ///
-/// The contract writes the command and each flag as a JSON string, and each variable as its name,
-/// `=` and its value as a JSON string. A JSON string escapes every quote inside it, so one
-/// argument's written form cannot be found inside another's: finding each in turn, each after the
-/// one before it, finds every argument whole and in its place, and nothing shortened.
+/// Every string the statement writes, read whole, is exactly the command, then each flag, then each
+/// variable's value, and nothing else, so nothing is shortened, added, dropped or moved. A flag is
+/// never written after `=`, where it would read as a variable's value, and each value is written
+/// after exactly its variable's own name.
 fn listing_refusal(integration: &CommandIntegration, statement: &str) -> Option<String> {
-    let quoted = |text: &str| serde_json::to_string(text).expect("text is a JSON string");
-    let mut listed = vec![quoted(&integration.command)];
-    listed.extend(integration.flags.iter().map(|flag| quoted(flag)));
-    listed.extend(
+    let strings = match written_strings(statement) {
+        Ok(strings) => strings,
+        Err(why) => return Some(format!("{why}: {statement}")),
+    };
+    let written: Vec<&str> = strings.iter().map(|(_, value)| value.as_str()).collect();
+    let mut declared = vec![integration.command.as_str()];
+    declared.extend(integration.flags.iter().map(String::as_str));
+    declared.extend(
         integration
             .variables
             .iter()
-            .map(|variable| format!("{}={}", variable.name, quoted(&variable.value))),
+            .map(|variable| variable.value.as_str()),
     );
-    let mut from = 0;
-    for item in &listed {
-        let Some(at) = statement[from..].find(item.as_str()) else {
+    if written != declared {
+        return Some(format!(
+            "the statement writes {written:?}, not {declared:?}: {statement}"
+        ));
+    }
+    let flags = &strings[1..=integration.flags.len()];
+    if let Some((_, flag)) = flags.iter().find(|(words, _)| words.ends_with('=')) {
+        return Some(format!(
+            "the flag {flag:?} is written as a variable's value: {statement}"
+        ));
+    }
+    let values = &strings[1 + integration.flags.len()..];
+    for ((words, _), variable) in values.iter().zip(&integration.variables) {
+        if !words.ends_with(&format!(" {}=", variable.name)) {
             return Some(format!(
-                "the statement does not list {item} after byte {from}: {statement}"
+                "the value of {} is not written after exactly its name: {statement}",
+                variable.name
             ));
-        };
-        from += at + item.len();
+        }
     }
     None
+}
+
+/// Statements that each misstate `integration` in one way, made from the statement the host renders
+/// for it: the last flag shortened, written inside another string, written as a variable's value or
+/// followed by one more; the first two flags swapped; the first variable's value left out, written
+/// under a longer name or followed by one more variable.
+fn misstatements(integration: &CommandIntegration) -> Vec<String> {
+    let rendered = integration.statement();
+    let quoted = |text: &str| serde_json::to_string(text).expect("text is a JSON string");
+    let mut wrong = Vec::new();
+    if let Some(last) = integration.flags.last() {
+        let written = quoted(last);
+        let mut shorter = last.clone();
+        shorter.pop();
+        wrong.push(rendered.replacen(&written, &quoted(&shorter), 1));
+        wrong.push(rendered.replacen(&written, &format!("\"prefix\\{written}"), 1));
+        wrong.push(rendered.replacen(&written, &format!("EXTRA={written}"), 1));
+        wrong.push(rendered.replacen(&written, &format!("{written} \"--extra\""), 1));
+    }
+    if let [first, second, ..] = integration.flags.as_slice() {
+        wrong.push(rendered.replacen(
+            &format!("{} {}", quoted(first), quoted(second)),
+            &format!("{} {}", quoted(second), quoted(first)),
+            1,
+        ));
+    }
+    if let Some(variable) = integration.variables.first() {
+        let written = format!("{}={}", variable.name, quoted(&variable.value));
+        wrong.push(rendered.replacen(&written, &variable.name, 1));
+        wrong.push(rendered.replacen(&written, &format!("NOT_{written}"), 1));
+        wrong.push(rendered.replacen(&written, &format!("{written}, EXTRA=\"1\""), 1));
+    }
+    wrong
 }
 
 /// Every package that declares a command integration declares the reviewed one, validates, asks
@@ -901,8 +984,8 @@ fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly(
 
 /// A reviewed declaration is compared whole: another command, a flag changed, added, dropped or
 /// moved, a variable changed or added, or one word of the statement changed is not the reviewed
-/// declaration. And a statement that shortens a flag, lists two flags out of their order or leaves
-/// a variable's value out is refused by the same check that accepts the host's own.
+/// declaration. And for each declaration, and for one with two flags and a variable, every
+/// misstatement of the host's statement is refused by the same check that accepts the host's own.
 #[test]
 fn a_changed_command_integration_is_not_the_reviewed_one() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -959,11 +1042,9 @@ fn a_changed_command_integration_is_not_the_reviewed_one() {
                 reviewed.plugin
             );
         }
+        assert_statement_is_checked(&integration);
     }
-
-    // The listing check itself: the host's own statement passes, and one that shortens a flag,
-    // lists two flags out of their order or leaves a variable's value out does not.
-    let integration = CommandIntegration {
+    assert_statement_is_checked(&CommandIntegration {
         command: "agent".to_owned(),
         flags: vec!["--one".to_owned(), "--two".to_owned()],
         variables: vec![IntegrationVariable {
@@ -971,18 +1052,21 @@ fn a_changed_command_integration_is_not_the_reviewed_one() {
             value: "true".to_owned(),
         }],
         grant_statement: Summary::new("A statement").expect("a statement"),
-    };
+    });
+}
+
+/// The listing check accepts the statement the host renders for `integration` and refuses every
+/// misstatement of it.
+fn assert_statement_is_checked(integration: &CommandIntegration) {
     let rendered = integration.statement();
-    assert_eq!(listing_refusal(&integration, &rendered), None, "{rendered}");
-    for statement in [
-        rendered.replace("\"--two\"", "\"--tw\""),
-        rendered.replace("\"--one\" \"--two\"", "\"--two\" \"--one\""),
-        rendered.replace("GEMINI_CLI_NO_RELAUNCH=\"true\"", "GEMINI_CLI_NO_RELAUNCH"),
-    ] {
-        assert_ne!(statement, rendered);
+    assert_eq!(listing_refusal(integration, &rendered), None, "{rendered}");
+    let wrong = misstatements(integration);
+    assert!(!wrong.is_empty(), "{rendered}");
+    for statement in wrong {
+        assert_ne!(statement, rendered, "a misstatement that changes nothing");
         assert!(
-            listing_refusal(&integration, &statement).is_some(),
-            "{statement} is accepted"
+            listing_refusal(integration, &statement).is_some(),
+            "{statement} is accepted as {rendered}"
         );
     }
 }
