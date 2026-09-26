@@ -8,14 +8,18 @@ use kr_plugin_sdk::capability::PluginCapability;
 use kr_plugin_sdk::connector::{
     AnswerError, FieldPath, FieldSegment, MethodClass, ResponseCorrelation,
 };
+use kr_plugin_sdk::digest::PayloadDigest;
 use kr_plugin_sdk::effect::{
     ActionImplementation, ActionInvocation, ActionRight, AttachmentInsertion, EffectClass,
     InvocationError, ParameterKind,
 };
 use kr_plugin_sdk::ids::ParameterName;
+use kr_plugin_sdk::integration::{CommandIntegration, IntegrationVariable};
 use kr_plugin_sdk::matching::MatchConfidence;
 use kr_plugin_sdk::predicate::{BindingState, Predicate, PresentationFlag};
 use kr_plugin_sdk::presentation::Control;
+use kr_plugin_sdk::text::Summary;
+use kr_plugin_sdk::validate::FindingCode;
 
 fn root() -> PathBuf {
     repository_root(Path::new(env!("CARGO_MANIFEST_DIR"))).expect("the repository root is above us")
@@ -680,6 +684,376 @@ fn a_bridge_grant_that_denies_where_its_code_runs_is_refused() {
     assert!(grant_refusal(plugin, &changed).is_some());
 }
 
+/// The flags a reviewed command integration adds, in the order the host adds them.
+enum ReviewedFlags {
+    /// Each flag, written out.
+    Written(&'static [&'static str]),
+    /// Flags the core repository keeps as a fixture: how many there are, and the SHA-256 of the
+    /// fixture, which is the list written as JSON with two-space indentation and a final newline.
+    /// The package adds exactly the bytes the core repository's tests read.
+    Pinned { count: usize, sha256: &'static str },
+}
+
+/// A command integration exactly as it was reviewed.
+struct ReviewedIntegration {
+    plugin: &'static str,
+    command: &'static str,
+    flags: ReviewedFlags,
+    variables: &'static [(&'static str, &'static str)],
+    /// What the package's grant says beside the list the host renders from the declaration.
+    grant_statement: &'static str,
+}
+
+/// The command integration of every package that declares one, exactly as it was reviewed.
+///
+/// The validator checks that a declaration's command is one of the package's own executables, that
+/// each flag is one whole visible argument and that each variable is on the contract's closed list.
+/// It cannot check that the flags are the ones the application's qualification found, or that the
+/// statement a person reads before granting the integration says what granting it costs them. So
+/// each declaration is written here, and the package has to carry exactly that: a new declaration,
+/// or a changed command, flag, variable or statement, fails until it is reviewed and written here.
+const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
+    ReviewedIntegration {
+        plugin: "kalareach/claude-code",
+        command: "claude",
+        flags: ReviewedFlags::Written(&[
+            "--dangerously-load-development-channels",
+            "plugin:kalareach-channels@skills-dir",
+        ]),
+        variables: &[],
+        grant_statement: "When you run claude in a KalaReach session with this integration on, \
+             KalaReach adds the development channels flag naming kalareach-channels, the channel \
+             plugin this package's bridge installs, so that Claude Code can register it as the \
+             session's channel. The flag skips the channel allowlist for that one plugin; every \
+             other condition Claude Code sets for a channel, your organisation's channel setting \
+             among them, still applies. Claude Code shows a warning that lists the development \
+             channel and asks you to confirm it in the terminal before the session starts.",
+    },
+    ReviewedIntegration {
+        plugin: "kalareach/gemini-cli",
+        command: "gemini",
+        flags: ReviewedFlags::Written(&[]),
+        variables: &[("GEMINI_CLI_NO_RELAUNCH", "true")],
+        grant_statement: "When you run gemini in a KalaReach session with this integration on, \
+             KalaReach sets GEMINI_CLI_NO_RELAUNCH to true for it, so the process KalaReach \
+             launched runs the session itself instead of starting a second copy of Gemini CLI to \
+             run it, and the hooks this package's bridge registers can select the session's \
+             thread. You give up what that second copy was for. Gemini CLI no longer raises the \
+             session's memory limit to half of this machine's memory, which it otherwise does \
+             where that is more than Node's default, so a very large session runs out of memory \
+             sooner. When Gemini CLI restarts after an update, or for a restart it asks for, the \
+             session ends instead and you run gemini again.",
+    },
+    ReviewedIntegration {
+        plugin: "kalareach/qoder-cli",
+        command: "qodercli",
+        // `--settings` and the inline settings after it, as the core repository keeps them in
+        // `fixtures/bridges/qoder-cli/flags.json`.
+        flags: ReviewedFlags::Pinned {
+            count: 2,
+            sha256: "d867f03b41f63a11688ee1c6e0a79455ffbaca09d2c38150b6f8d4b4c269261f",
+        },
+        variables: &[],
+        grant_statement: "When you run qodercli in a KalaReach session with this integration on, \
+             KalaReach adds --settings with inline settings that register the KalaReach forwarder, \
+             kr-hook qoder-cli hook, for SessionStart, SessionEnd, PostToolUse, PostToolUseFailure \
+             and Notification, with a timeout of one second for SessionEnd and five for the \
+             others. Qoder CLI runs these hooks beside your own, and nothing is written to your \
+             Qoder CLI settings. Qoder CLI starts the forwarder itself, so the forwarder runs \
+             under Qoder CLI's own permissions and outside the KalaReach plugin sandbox, outside \
+             Wasmtime. It sees those five events of that session.",
+    },
+];
+
+impl ReviewedIntegration {
+    /// Why `integration` is not this reviewed declaration, or nothing when it is.
+    fn refusal(&self, integration: &CommandIntegration) -> Option<String> {
+        if integration.command != self.command {
+            return Some(format!(
+                "the command is {:?}, not {:?}",
+                integration.command, self.command
+            ));
+        }
+        match self.flags {
+            ReviewedFlags::Written(flags) => {
+                if integration.flags != flags {
+                    return Some(format!(
+                        "the flags are {:?}, not {flags:?}",
+                        integration.flags
+                    ));
+                }
+            }
+            ReviewedFlags::Pinned { count, sha256 } => {
+                let mut written =
+                    serde_json::to_string_pretty(&integration.flags).expect("a list of text");
+                written.push('\n');
+                let digest = PayloadDigest::of(written.as_bytes()).to_string();
+                if integration.flags.len() != count || digest != sha256 {
+                    return Some(format!(
+                        "the {} flags are not the {count} pinned by {sha256}: their digest is \
+                         {digest}",
+                        integration.flags.len()
+                    ));
+                }
+            }
+        }
+        let variables: Vec<(&str, &str)> = integration
+            .variables
+            .iter()
+            .map(|variable| (variable.name.as_str(), variable.value.as_str()))
+            .collect();
+        if variables != self.variables {
+            return Some(format!(
+                "the variables are {variables:?}, not {:?}",
+                self.variables
+            ));
+        }
+        (integration.grant_statement.as_str() != self.grant_statement).then(|| {
+            format!(
+                "the grant is not the reviewed statement: {}",
+                integration.grant_statement
+            )
+        })
+    }
+}
+
+/// Why the statement a person confirms before granting `integration`, as the host renders it, does
+/// not list its command, every flag and every variable exactly, or nothing when it does.
+fn statement_refusal(integration: &CommandIntegration) -> Option<String> {
+    listing_refusal(integration, &integration.statement())
+}
+
+/// Why `statement` does not list the command, every flag and every variable of `integration`
+/// exactly, in the order the host applies them, or nothing when it does.
+///
+/// The contract writes the command and each flag as a JSON string, and each variable as its name,
+/// `=` and its value as a JSON string. A JSON string escapes every quote inside it, so one
+/// argument's written form cannot be found inside another's: finding each in turn, each after the
+/// one before it, finds every argument whole and in its place, and nothing shortened.
+fn listing_refusal(integration: &CommandIntegration, statement: &str) -> Option<String> {
+    let quoted = |text: &str| serde_json::to_string(text).expect("text is a JSON string");
+    let mut listed = vec![quoted(&integration.command)];
+    listed.extend(integration.flags.iter().map(|flag| quoted(flag)));
+    listed.extend(
+        integration
+            .variables
+            .iter()
+            .map(|variable| format!("{}={}", variable.name, quoted(&variable.value))),
+    );
+    let mut from = 0;
+    for item in &listed {
+        let Some(at) = statement[from..].find(item.as_str()) else {
+            return Some(format!(
+                "the statement does not list {item} after byte {from}: {statement}"
+            ));
+        };
+        from += at + item.len();
+    }
+    None
+}
+
+/// Every package that declares a command integration declares the reviewed one, validates, asks
+/// for the capability that applies it and states the package contract that reads it, and the grant
+/// a person confirms lists its command, every flag and every variable exactly. A reviewed package
+/// that stops declaring its integration fails too.
+#[test]
+fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    for package in &loaded.repository.packages {
+        let manifest = &package.package.manifest;
+        let plugin = manifest.plugin_id().to_string();
+        assert!(
+            manifest.command_integration.is_none()
+                || REVIEWED_INTEGRATIONS
+                    .iter()
+                    .any(|reviewed| reviewed.plugin == plugin),
+            "{plugin} declares a command integration nobody has reviewed"
+        );
+    }
+    for reviewed in REVIEWED_INTEGRATIONS {
+        let package = package_named(&loaded, reviewed.plugin);
+        let manifest = &package.package.manifest;
+        let integration = manifest
+            .command_integration
+            .as_ref()
+            .unwrap_or_else(|| panic!("{} declares no command integration", reviewed.plugin));
+        if let Some(refusal) = reviewed.refusal(integration) {
+            panic!("{}: {refusal}", reviewed.plugin);
+        }
+        assert!(
+            manifest.requests(PluginCapability::CommandIntegrationLaunch),
+            "{} does not ask for the capability that applies its integration",
+            reviewed.plugin
+        );
+        // A host on an earlier package contract cannot read the member, so it refuses the package
+        // by its range rather than by a member it does not know.
+        assert_eq!(
+            manifest.sdk_range.to_string(),
+            ">=0.1.2, <0.2.0",
+            "{}",
+            reviewed.plugin
+        );
+        if let Some(refusal) = statement_refusal(integration) {
+            panic!("{}: {refusal}", reviewed.plugin);
+        }
+    }
+}
+
+/// A reviewed declaration is compared whole: another command, a flag changed, added, dropped or
+/// moved, a variable changed or added, or one word of the statement changed is not the reviewed
+/// declaration. And a statement that lists an argument shortened, or two out of their order, is
+/// refused by the same check that accepts the host's own.
+#[test]
+fn a_changed_command_integration_is_not_the_reviewed_one() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    for reviewed in REVIEWED_INTEGRATIONS {
+        let integration = package_named(&loaded, reviewed.plugin)
+            .package
+            .manifest
+            .command_integration
+            .clone()
+            .unwrap_or_else(|| panic!("{} declares no command integration", reviewed.plugin));
+        assert_eq!(reviewed.refusal(&integration), None);
+
+        let mut changes: Vec<CommandIntegration> = Vec::new();
+        let mut command = integration.clone();
+        command.command.push('x');
+        changes.push(command);
+        let mut added = integration.clone();
+        added.flags.push("--verbose".to_owned());
+        changes.push(added);
+        if let Some(last) = integration.flags.len().checked_sub(1) {
+            let mut changed = integration.clone();
+            changed.flags[last].push(' ');
+            changes.push(changed);
+            let mut dropped = integration.clone();
+            dropped.flags.pop();
+            changes.push(dropped);
+        }
+        if integration.flags.len() > 1 {
+            let mut moved = integration.clone();
+            moved.flags.swap(0, 1);
+            changes.push(moved);
+        }
+        let mut variable = integration.clone();
+        match variable.variables.first_mut() {
+            Some(first) => first.value = "1".to_owned(),
+            None => variable.variables.push(IntegrationVariable {
+                name: "GEMINI_CLI_NO_RELAUNCH".to_owned(),
+                value: "true".to_owned(),
+            }),
+        }
+        changes.push(variable);
+        let mut statement = integration.clone();
+        statement.grant_statement = Summary::new(reviewed.grant_statement.replacen(
+            "KalaReach",
+            "Kala Reach",
+            1,
+        ))
+        .expect("a statement");
+        changes.push(statement);
+        for changed in &changes {
+            assert!(
+                reviewed.refusal(changed).is_some(),
+                "{}: {changed:?} is accepted as the reviewed declaration",
+                reviewed.plugin
+            );
+        }
+    }
+
+    // The listing check itself: the host's own statement passes, and one that shortens a flag,
+    // lists two flags out of their order or leaves a variable's value out does not.
+    let integration = CommandIntegration {
+        command: "agent".to_owned(),
+        flags: vec!["--one".to_owned(), "--two".to_owned()],
+        variables: vec![IntegrationVariable {
+            name: "GEMINI_CLI_NO_RELAUNCH".to_owned(),
+            value: "true".to_owned(),
+        }],
+        grant_statement: Summary::new("A statement").expect("a statement"),
+    };
+    let rendered = integration.statement();
+    assert_eq!(listing_refusal(&integration, &rendered), None, "{rendered}");
+    for statement in [
+        rendered.replace("\"--two\"", "\"--tw\""),
+        rendered.replace("\"--one\" \"--two\"", "\"--two\" \"--one\""),
+        rendered.replace("GEMINI_CLI_NO_RELAUNCH=\"true\"", "GEMINI_CLI_NO_RELAUNCH"),
+    ] {
+        assert_ne!(statement, rendered);
+        assert!(
+            listing_refusal(&integration, &statement).is_some(),
+            "{statement} is accepted"
+        );
+    }
+}
+
+/// A package whose command integration sets a variable outside the contract's closed list is
+/// refused, where the same package with its reviewed declaration loads, and the refusal is the
+/// variable's and nothing else's. A permitted name with another value, a variable that loads code
+/// into the process and a name reserved for the worker are each outside the list.
+#[test]
+fn a_command_integration_that_sets_a_variable_outside_the_closed_list_is_refused() {
+    for (name, value) in [
+        ("GEMINI_CLI_NO_RELAUNCH", "1"),
+        ("NODE_OPTIONS", "--require /tmp/preload.js"),
+        ("KR_REGISTRATION", "/tmp/registration"),
+    ] {
+        let temporary = tempfile::tempdir().expect("a temporary directory");
+        let repository = temporary.path();
+        let package = repository_holding(repository, "gemini-cli");
+        let loaded = packages::load(repository).expect("the copy loads");
+        assert!(
+            loaded.rejected.is_empty(),
+            "the copy as it is: {:?}",
+            loaded
+                .rejected
+                .iter()
+                .map(|rejected| &rejected.report.findings)
+                .collect::<Vec<_>>()
+        );
+
+        let path = package.join("plugin.json");
+        let mut manifest: serde_json::Value =
+            kalareach_catalogue::read_json(&path).expect("the manifest reads");
+        let variables = manifest
+            .get_mut("command_integration")
+            .and_then(|integration| integration.get_mut("variables"))
+            .expect("gemini-cli declares the variables its integration sets");
+        *variables = serde_json::json!([{ "name": name, "value": value }]);
+        let mut text = serde_json::to_string_pretty(&manifest).expect("the manifest renders");
+        text.push('\n');
+        std::fs::write(&path, text).expect("the manifest writes");
+
+        let loaded = packages::load(repository).expect("the repository loads");
+        let [rejected] = loaded.rejected.as_slice() else {
+            panic!(
+                "{name}={value}: {} packages are refused, not one",
+                loaded.rejected.len()
+            );
+        };
+        assert_eq!(
+            rejected.report.codes(),
+            [FindingCode::IntegrationInvalid],
+            "{name}={value}: {:?}",
+            rejected.report.findings
+        );
+    }
+}
+
+/// A repository in `repository` holding the publisher record and a copy of one of this
+/// repository's packages, and the copy's directory.
+fn repository_holding(repository: &Path, plugin: &str) -> PathBuf {
+    std::fs::create_dir_all(repository.join("publishers")).expect("publishers directory");
+    std::fs::copy(
+        root().join("publishers/kalareach.json"),
+        repository.join("publishers/kalareach.json"),
+    )
+    .expect("the publisher record copies");
+    let destination = repository.join("plugins/kalareach").join(plugin);
+    copy_tree(&root().join("plugins/kalareach").join(plugin), &destination);
+    destination
+}
+
 /// Every hook registration in a Claude Code hooks file, with the event it is registered for.
 fn hook_registrations(file: &serde_json::Value) -> Vec<(&str, &serde_json::Value)> {
     let events = file
@@ -701,14 +1075,16 @@ fn hook_registrations(file: &serde_json::Value) -> Vec<(&str, &serde_json::Value
     registrations
 }
 
-/// Why one hook registration is not the forwarder started in exec form, or nothing when it is.
+/// Why one hook registration is not the forwarder's hook for `application` started in exec form,
+/// or nothing when it is.
 ///
-/// Exec form is a `command` that names a program and an `args` list, which Claude Code starts with
-/// no shell between them. The worker lets only a hook Claude Code started itself select the
-/// thread, so a shell string, or a shell that starts the forwarder, leaves every report moving
-/// nothing. A member this check does not know could change how the hook runs, in the background
-/// for one, so a registration carries only its type, its command, its arguments and a timeout.
-fn hook_registration_refusal(handler: &serde_json::Value) -> Option<String> {
+/// Exec form is a `command` that names a program and an `args` list, which Claude Code and Qoder
+/// CLI start with no shell between them. The worker lets only a hook the application started itself
+/// select the thread, so a shell string, or a shell that starts the forwarder, leaves every report
+/// moving nothing. A member this check does not know could change how the hook runs, in the
+/// background for one, so a registration carries only its type, its command, its arguments and a
+/// timeout.
+fn hook_registration_refusal(application: &str, handler: &serde_json::Value) -> Option<String> {
     let Some(members) = handler.as_object() else {
         return Some("the registration is not an object".to_owned());
     };
@@ -741,9 +1117,9 @@ fn hook_registration_refusal(handler: &serde_json::Value) -> Option<String> {
     else {
         return Some("an argument is not text".to_owned());
     };
-    if command != "kr-hook" || args != ["claude-code", "hook"] {
+    if command != "kr-hook" || args != [application, "hook"] {
         return Some(format!(
-            "the registration starts {command} {args:?}, not the forwarder's hook"
+            "the registration starts {command} {args:?}, not the forwarder's hook for {application}"
         ));
     }
     None
@@ -754,7 +1130,8 @@ fn hooks_file_refusal(file: &serde_json::Value) -> Option<String> {
     hook_registrations(file)
         .into_iter()
         .find_map(|(event, handler)| {
-            hook_registration_refusal(handler).map(|refusal| format!("{event}: {refusal}"))
+            hook_registration_refusal("claude-code", handler)
+                .map(|refusal| format!("{event}: {refusal}"))
         })
 }
 
@@ -801,6 +1178,110 @@ fn every_claude_code_hook_starts_the_forwarder_in_exec_form() {
                 "{event}: a registration moved to {shell_form} is accepted"
             );
         }
+    }
+}
+
+/// The events the settings of a Qoder CLI launch register the forwarder for, each with its timeout
+/// in seconds. On these five only exit code 2 refuses anything, and the forwarder never exits 2.
+const QODER_CLI_HOOKS: &[(&str, u64)] = &[
+    ("Notification", 5),
+    ("PostToolUse", 5),
+    ("PostToolUseFailure", 5),
+    ("SessionEnd", 1),
+    ("SessionStart", 5),
+];
+
+/// Why the settings a Qoder CLI launch passes register anything but the forwarder's hook in exec
+/// form, with no matcher, for exactly its five events, or nothing when they do not.
+fn qoder_settings_refusal(settings: &serde_json::Value) -> Option<String> {
+    let Some(members) = settings.as_object() else {
+        return Some("the settings are not an object".to_owned());
+    };
+    if members.len() != 1 {
+        return Some("the settings carry more than hooks".to_owned());
+    }
+    let Some(events) = settings.get("hooks").and_then(serde_json::Value::as_object) else {
+        return Some("the settings register no hooks by event".to_owned());
+    };
+    let mut registered: Vec<&str> = events.keys().map(String::as_str).collect();
+    registered.sort_unstable();
+    let expected: Vec<&str> = QODER_CLI_HOOKS.iter().map(|(event, _)| *event).collect();
+    if registered != expected {
+        return Some(format!(
+            "the settings register {registered:?}, not {expected:?}"
+        ));
+    }
+    for (event, timeout) in QODER_CLI_HOOKS {
+        let Some(groups) = events[*event].as_array() else {
+            return Some(format!("{event}: no list of groups"));
+        };
+        let [group] = groups.as_slice() else {
+            return Some(format!("{event}: one group, not {}", groups.len()));
+        };
+        if group.as_object().map(serde_json::Map::len) != Some(1) {
+            return Some(format!(
+                "{event}: the group carries more than its hooks, a matcher for one"
+            ));
+        }
+        let Some(handlers) = group.get("hooks").and_then(serde_json::Value::as_array) else {
+            return Some(format!("{event}: the group lists no hooks"));
+        };
+        let [handler] = handlers.as_slice() else {
+            return Some(format!("{event}: one hook, not {}", handlers.len()));
+        };
+        if let Some(refusal) = hook_registration_refusal("qoder-cli", handler) {
+            return Some(format!("{event}: {refusal}"));
+        }
+        if handler.get("timeout") != Some(&serde_json::json!(timeout)) {
+            return Some(format!("{event}: the timeout is not {timeout} seconds"));
+        }
+    }
+    None
+}
+
+/// Qoder CLI's command integration adds `--settings` and settings that hold hooks and nothing else:
+/// the forwarder's hook in exec form for each of its five events, with no matcher, so Qoder CLI
+/// starts the forwarder itself for every tool, notification and session source. The same check
+/// refuses the settings once a registration moves to a shell form or names another application,
+/// once a group gains a matcher, once an event is dropped, or once the settings carry anything but
+/// hooks.
+#[test]
+fn qoder_cli_s_integration_passes_the_forwarder_s_hooks_in_exec_form_and_nothing_else() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let integration = package_named(&loaded, "kalareach/qoder-cli")
+        .package
+        .manifest
+        .command_integration
+        .as_ref()
+        .expect("qoder-cli declares its command integration");
+    let [flag, inline] = integration.flags.as_slice() else {
+        panic!("two flags, not {}", integration.flags.len());
+    };
+    assert_eq!(flag, "--settings");
+    let settings: serde_json::Value = serde_json::from_str(inline).expect("the settings are JSON");
+    assert_eq!(qoder_settings_refusal(&settings), None);
+
+    let mut shell = settings.clone();
+    shell["hooks"]["SessionStart"][0]["hooks"][0] = serde_json::json!({
+        "type": "command", "command": "kr-hook qoder-cli hook", "timeout": 5
+    });
+    let mut other = settings.clone();
+    other["hooks"]["SessionEnd"][0]["hooks"][0]["args"] =
+        serde_json::json!(["claude-code", "hook"]);
+    let mut matcher = settings.clone();
+    matcher["hooks"]["PostToolUse"][0]["matcher"] = serde_json::json!("Bash");
+    let mut dropped = settings.clone();
+    dropped["hooks"]
+        .as_object_mut()
+        .expect("hooks by event")
+        .remove("Notification");
+    let mut more = settings.clone();
+    more["permissions"] = serde_json::json!({ "allow": ["Bash"] });
+    for changed in [shell, other, matcher, dropped, more] {
+        assert!(
+            qoder_settings_refusal(&changed).is_some(),
+            "{changed} is accepted"
+        );
     }
 }
 
