@@ -12,6 +12,7 @@
       "pinned": "bin/claude",
       "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
       "command": "claude",
+      "launch": "native",
       "arguments": [],
       "runtime": [],
       "environment": {
@@ -61,6 +62,7 @@
       "pinned": "lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
       "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
       "command": "codex",
+      "launch": "child",
       "arguments": [],
       "runtime": [
         "node"
@@ -95,6 +97,7 @@
       "pinned": "lib/node_modules/@google/gemini-cli/bundle/gemini.js",
       "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
       "command": "gemini",
+      "launch": "script",
       "arguments": [],
       "runtime": [
         "node"
@@ -121,6 +124,7 @@
       "pinned": "wheel/kimi_cli-1.51.0-py3-none-any.whl",
       "sha256": "ffb9d0d4725844d36d6c78e8d3914a96b2d6a17678c217f3abe7336fb7e02d0e",
       "command": "kimi",
+      "launch": "wheel",
       "arguments": [],
       "runtime": ["python3.12"],
       "environment": {
@@ -150,6 +154,7 @@
       "pinned": "bin/kimi",
       "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11",
       "command": "kimi",
+      "launch": "native",
       "arguments": [],
       "runtime": [],
       "environment": {},
@@ -181,6 +186,7 @@
       "pinned": "lib/node_modules/opencode-ai/bin/opencode.exe",
       "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
       "command": "opencode",
+      "launch": "native",
       "arguments": [],
       "runtime": [],
       "environment": {},
@@ -207,6 +213,7 @@
       "pinned": "lib/node_modules/opencode-ai/bin/opencode.exe",
       "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
       "command": "opencode",
+      "launch": "native",
       "arguments": [
         "attach",
         "http://127.0.0.1:{port}"
@@ -245,6 +252,7 @@
       "pinned": "bin/qodercli",
       "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0",
       "command": "qodercli",
+      "launch": "native",
       "arguments": [],
       "runtime": [],
       "environment": {},

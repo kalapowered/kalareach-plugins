@@ -66,7 +66,7 @@ common form:
 | `tests[].part` | The part the test is, from the table above |
 | `tests[].source` | Where the test is, prefixed by its repository: `kalareach:` for the driver's tests, `kalareach-plugins:` for a part recorded from the table above |
 | `tests[].needs` | For a part not run, what it needs: a vendor account, a connector binding, a launch registration or draft reads |
-| `tests[].evidence` | What a part observed, its control included; under `installed`, the package the host installed, which must be the one in `run.packages`; and under `provenance`, the PATH the session's shell searched, what each launch ran and how it reached the pinned file, and each executable image seen beneath the agent's sessions, with the SHA-256 of the file whose inode the process maps and where it lies (`build`, `newer build`, `runtime`, `run`, `shell` or `system`), from looks every `sample_interval_ms` from the first launch to the end of the part. A process that started and ended between two looks is not there, and one that ended before its image was read is named under `ended_before_read` |
+| `tests[].evidence` | What a part observed, its control included; under `installed`, the package the host installed, which must be the one in `run.packages`; and under `provenance`, the PATH the session's shell searched, what each launch ran and how it reached the pinned file, and each executable image seen beneath the agent's sessions, with the SHA-256 of the file whose inode the process maps and where it lies (`build`, `newer build`, `runtime`, `run`, `shell` or `system`), from looks every `sample_interval_ms` from just before each launch until the part's sessions ended, and one more when the part's own steps ended; each look reads every process's mapped image, so an image that changes under the same process is seen, and hashes it through one handle on the mapped file. A process that started and ended between two looks is not there, and one that ended before its image was read is named under `ended_before_read`. `launches` says how each launch reached the pinned file |
 | `tests[].condition` | On a part a vendor gate held: `{gate, observed, fallback}`, where `observed` is `untested` or `unavailable` and `fallback` names the test of the same record that ran the path used instead. The gated part stays `not_run`; the fallback carries its own outcome |
 | `attachment_paths[]` | The attachment path each operation declares: every action whose effect carries a prompt or an attachment, then the terminal route; `declared` is `typed_submission`, `verified_composer_insertion`, `terminal_draft_path`, or `null` for nothing declared, and `package_digest` is the manifest digest the declaration was read from |
 
@@ -84,15 +84,17 @@ runtime executable, since which one ran is the evidence.
 
 `builds.json` pins each connector package's build for this platform: where it comes from, where it
 is installed under the tools directory (`prefix`), the file whose SHA-256 names it (`pinned`), the
-command a person types, the runtimes it needs (each linked by its own name into a directory of the
-run's own, which the session searches after the build's `bin` and before the system's), the
-variables that switch its updater and telemetry off, files its vendor's own first-run steps leave
-in its home, the text its first screen shows, one harmless input with the text it shows, how it
-reaches its composer where it has one without an account, the server its terminal route starts
-first where it has one, where its vendor keeps a conversation, and the newer build the upgrade part
-moves to where one is named. The harness checks each build's digest before it runs anything with
-it, and for a build installed from a wheel, every file digest the wheel's `RECORD` lists against the
-installed code.
+command a person types, how a launch reaches the pinned file (`launch`: `native`, its own process
+maps it; `child`, a runtime starts a process that maps it; `script`, a runtime's first argument is
+it; `wheel`, a runtime loads the installation the harness compared with the wheel), the runtimes it
+needs (each linked by its own name into a directory of the run's own, which the session searches
+after the build's `bin` and before the system's), the variables that switch its updater and
+telemetry off, files its vendor's own first-run steps leave in its home, the text its first screen
+shows, one harmless input with the text it shows, how it reaches its composer where it has one
+without an account, the server its terminal route starts first where it has one, where its vendor
+keeps a conversation, and the newer build the upgrade part moves to where one is named. The harness
+checks each build's digest before it runs anything with it, and for a build installed from a wheel,
+every file digest the wheel's `RECORD` lists against the installed code.
 
 ## Running it
 

@@ -274,10 +274,12 @@ look_again() {
 }
 
 # Compares the code a wheel installed under $1 with the wheel $2: every file the wheel's RECORD
-# lists with a SHA-256 must be in the installation's site-packages with that digest. Prints how
-# many files were compared, or what did not match.
+# lists with a SHA-256 must be in the installation's site-packages with that digest, and the
+# launcher $3 a person types must be the one the installer wrote, as the installation's own RECORD
+# names it, starting that installation's interpreter. Prints how many files were compared, or what
+# did not match.
 verify_wheel() {
-  local prefix="$1" wheel="$2" site list count others
+  local prefix="$1" wheel="$2" launcher="$3" site list count others recorded wanted actual
   site="$(find "$prefix/lib" -maxdepth 2 -type d -name site-packages | head -1)"
   [ -n "$site" ] || {
     echo "no site-packages under $prefix"
@@ -296,6 +298,19 @@ verify_wheel() {
     head -3 "$list.out" | tr '\n' ';'
     return 1
   fi
+  if [ "$(head -1 "$prefix/bin/$launcher")" != "#!$prefix/bin/python" ]; then
+    echo "$prefix/bin/$launcher does not start the installation's own interpreter"
+    return 1
+  fi
+  recorded="$(cat "$site"/*.dist-info/RECORD | awk -F, -v name="../../../bin/$launcher" '$1 == name { print $2 }' | head -1)"
+  wanted="${recorded#sha256=}"
+  while [ $((${#wanted} % 4)) -ne 0 ]; do wanted="$wanted="; done
+  wanted="$(printf '%s' "$wanted" | tr '_-' '/+' | base64 -D 2>/dev/null | xxd -p -c 64)"
+  actual="$(shasum -a 256 "$prefix/bin/$launcher" | cut -d ' ' -f 1)"
+  if [ -z "$recorded" ] || [ "$wanted" != "$actual" ]; then
+    echo "$prefix/bin/$launcher is not the launcher the installation's RECORD names"
+    return 1
+  fi
   echo "$count"
 }
 
@@ -308,6 +323,7 @@ digest_of() {
 failed=0
 ran=0
 passed_count=0
+written=()
 
 # Once per run, before any agent: a session a person starts with their own home, and no agent,
 # names their login keychain as its default. It is the first step of every record.
@@ -382,8 +398,9 @@ while IFS= read -r package; do
   # A build installed from a wheel runs the code the wheel installed, which is compared with it.
   payload=""
   if [ -z "$blocked" ] && [ "${pinned_file##*.}" = "whl" ]; then
-    if compared="$(verify_wheel "$tools/$(printf '%s' "$entry" | jq -r '.prefix')" "$pinned_file")"; then
-      payload="; its installed code matches the $compared files the wheel's RECORD lists"
+    if compared="$(verify_wheel "$tools/$(printf '%s' "$entry" | jq -r '.prefix')" "$pinned_file" \
+      "$(printf '%s' "$entry" | jq -r '.command')")"; then
+      payload="; its installed code matches the $compared files the wheel's RECORD lists, and its launcher the installation's RECORD"
     else
       blocked="the code installed from $pinned_file differs from it: $compared (the tools directory)"
     fi
@@ -396,7 +413,7 @@ while IFS= read -r package; do
   printf '%s' "$entry" | jq --arg tools "$tools" --argjson files "$files" --argjson actions "$actions" \
     --argjson newer_status "$newer_status" '{
       package, actions: $actions, application, version,
-      prefix: ($tools + "/" + .prefix), pinned, sha256, command, arguments,
+      prefix: ($tools + "/" + .prefix), pinned, sha256, command, launch, arguments,
       runtime: [.runtime[] | $files[.]], environment, home, ready, harmless, composer,
       server, transcript,
       newer: (if .newer == null or $newer_status != true then null else
@@ -612,16 +629,21 @@ while IFS= read -r package; do
     failed=1
   fi
 
-  if [ "$write" -eq 1 ]; then
-    destination="$root/fixtures/agents/$publisher/$plugin/$version/$platform.json"
-    mkdir -p "$(dirname "$destination")"
-    # The evidence directory is this machine's; the record keeps its name as the run stated it.
-    cp "$directory/record.json" "$destination"
-    echo "$package: wrote $destination"
-  fi
+  written+=("$publisher/$plugin/$version")
 done <<<"$packages"
 
 echo
+# The whole run is read once more before any record is written, so a run that stops here writes
+# none.
 no_dialog_since "$run_began" "the whole run"
+if [ "$write" -eq 1 ]; then
+  for record in ${written[@]+"${written[@]}"}; do
+    destination="$root/fixtures/agents/$record/$platform.json"
+    mkdir -p "$(dirname "$destination")"
+    # The evidence directory is this machine's; the record keeps its name as the run stated it.
+    cp "$evidence/$(printf '%s' "$record" | cut -d / -f 2)/record.json" "$destination"
+    echo "wrote $destination"
+  done
+fi
 echo "$passed_count of $ran parts that ran passed; evidence in $evidence"
 exit "$failed"
