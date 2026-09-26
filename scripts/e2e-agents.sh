@@ -11,7 +11,8 @@
 #      the core checkout --core names, or finds them already built there, and names the commit.
 #   2. It checks each agent build in the tools directory against the SHA-256 fixtures/agents/
 #      builds.json pins, and a build installed from a wheel against every file digest the wheel's
-#      RECORD lists. A build that is missing or different runs nothing, and says so.
+#      RECORD lists and its launcher against the RECORD the wheel's own distribution installed. A
+#      build that is missing or different runs nothing, and says so.
 #   3. Once, with no agent, it checks that a session a person starts with their own home, in the
 #      execution context the host gives it, names their login keychain as its default.
 #   4. For each package, and each selected part the driver has a test for, the driver starts a host
@@ -78,7 +79,7 @@ parts=(
 )
 
 usage() {
-  sed -n '36,49p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
+  sed -n '37,50p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
   exit 2
 }
 
@@ -279,7 +280,7 @@ look_again() {
 # names it, starting that installation's interpreter. Prints how many files were compared, or what
 # did not match.
 verify_wheel() {
-  local prefix="$1" wheel="$2" launcher="$3" site list count others recorded wanted actual
+  local prefix="$1" wheel="$2" launcher="$3" site list count others recorded wanted actual dist record
   site="$(find "$prefix/lib" -maxdepth 2 -type d -name site-packages | head -1)"
   [ -n "$site" ] || {
     echo "no site-packages under $prefix"
@@ -302,13 +303,29 @@ verify_wheel() {
     echo "$prefix/bin/$launcher does not start the installation's own interpreter"
     return 1
   fi
-  recorded="$(cat "$site"/*.dist-info/RECORD | awk -F, -v name="../../../bin/$launcher" '$1 == name { print $2 }' | head -1)"
+  # The launcher belongs to the pinned wheel's own distribution, as that distribution's installed
+  # RECORD says, and to no other.
+  dist="$(unzip -Z1 "$wheel" | grep -E '^[^/]+[.]dist-info/RECORD$' | head -1)"
+  dist="${dist%/RECORD}"
+  if [ -z "$dist" ] || [ ! -f "$site/$dist/RECORD" ]; then
+    echo "the installation holds no RECORD of the wheel's own distribution"
+    return 1
+  fi
+  others="$(for record in "$site"/*.dist-info/RECORD; do
+    [ "$record" = "$site/$dist/RECORD" ] && continue
+    awk -F, -v name="../../../bin/$launcher" '$1 == name' "$record"
+  done | wc -l | tr -d ' ')"
+  if [ "$others" -ne 0 ]; then
+    echo "another distribution's RECORD also names $prefix/bin/$launcher"
+    return 1
+  fi
+  recorded="$(awk -F, -v name="../../../bin/$launcher" '$1 == name { print $2 }' "$site/$dist/RECORD" | head -1)"
   wanted="${recorded#sha256=}"
   while [ $((${#wanted} % 4)) -ne 0 ]; do wanted="$wanted="; done
   wanted="$(printf '%s' "$wanted" | tr '_-' '/+' | base64 -D 2>/dev/null | xxd -p -c 64)"
   actual="$(shasum -a 256 "$prefix/bin/$launcher" | cut -d ' ' -f 1)"
   if [ -z "$recorded" ] || [ "$wanted" != "$actual" ]; then
-    echo "$prefix/bin/$launcher is not the launcher the installation's RECORD names"
+    echo "$prefix/bin/$launcher is not the launcher the wheel's installed RECORD names"
     return 1
   fi
   echo "$count"
@@ -400,7 +417,7 @@ while IFS= read -r package; do
   if [ -z "$blocked" ] && [ "${pinned_file##*.}" = "whl" ]; then
     if compared="$(verify_wheel "$tools/$(printf '%s' "$entry" | jq -r '.prefix')" "$pinned_file" \
       "$(printf '%s' "$entry" | jq -r '.command')")"; then
-      payload="; its installed code matches the $compared files the wheel's RECORD lists, and its launcher the installation's RECORD"
+      payload="; its installed code matches the $compared files the wheel's RECORD lists, and its launcher the RECORD of the wheel's own distribution, the only one naming it"
     else
       blocked="the code installed from $pinned_file differs from it: $compared (the tools directory)"
     fi

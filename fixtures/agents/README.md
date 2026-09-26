@@ -94,7 +94,9 @@ shows, one harmless input with the text it shows, how it reaches its composer wh
 without an account, the server its terminal route starts first where it has one, where its vendor
 keeps a conversation, and the newer build the upgrade part moves to where one is named. The harness
 checks each build's digest before it runs anything with it, and for a build installed from a wheel,
-every file digest the wheel's `RECORD` lists against the installed code.
+every file digest the wheel's `RECORD` lists against the installed code, and the launcher a person
+types against the `RECORD` the wheel's own distribution installed, which must be the only one naming
+it.
 
 ## Running it
 
