@@ -1336,8 +1336,8 @@ typing `kimi` at a managed shell's prompt, with its home inside the run's own di
 variable at a loopback port nothing listens on, and no account. It runs on Python 3.12, whose executable
 the run links into a directory of its own, and it names its process "Kimi Code", so its execution is the
 program the shell started for the command. Before the run the harness compared the installed code with
-the pinned wheel's RECORD and the `kimi` launcher with the installation's own RECORD, and each launch
-was required to map the installation's own compiled modules.
+the pinned wheel's RECORD and the `kimi` launcher with the RECORD kimi-cli's own distribution installed,
+the only one naming it, and each launch was required to map the installation's own compiled modules.
 
 On that route the host advertised no typed capability for kimi-cli and refused every typed action and
 each of this package's actions (2b); kimi-cli and its local terminal outlived a killed control daemon,
