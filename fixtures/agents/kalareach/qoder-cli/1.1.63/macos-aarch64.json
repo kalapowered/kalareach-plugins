@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-26T01:04:06Z",
-    "finished": "2026-09-26T01:14:09Z",
+    "started": "2026-09-26T10:20:49Z",
+    "finished": "2026-09-26T10:24:27Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "f8b2af5eeaabf5c29242aeffcd2d95dd653dd293",
+      "id": "e008eadff1f5eb8dfb22772b8a16260ff8e88520",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "56daf033daeac2f5a6a582f3c8c69daed7727ded",
+        "id": "fec122531bd3facb45576ba842e8b5c3cfa7fd9f",
         "modified": false
       }
     },
@@ -34,8 +34,8 @@
     "packages": [
       {
         "name": "kalareach/qoder-cli",
-        "version": "0.3.0",
-        "manifest_digest": "288f612c07772fec7d2ad1ec70559bc96677a54e2b22c2e528ffd071c0b6524f",
+        "version": "0.4.0",
+        "manifest_digest": "d26c69197ec46528fd36da257e601a1c6153aeeb76999355a2eab55d6bb1d927",
         "generation": "snapshots/development"
       }
     ],
@@ -58,7 +58,7 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-clZq6J",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-3i7ih4",
     "own_home": {
       "bound_to_a_desktop": true,
       "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
@@ -71,12 +71,12 @@
       "number": 1,
       "group": "own-home",
       "what": "a session started with the person's own home names their login keychain",
-      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
+      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 12,
+      "seconds": 14,
       "log": "own-home.log",
       "error": null
     },
@@ -84,12 +84,12 @@
       "number": 2,
       "group": "agents",
       "what": "part 2b",
-      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 0,
-      "seconds": 19,
+      "exit": 101,
+      "seconds": 15,
       "log": "qoder-cli/2b.log",
       "error": null
     },
@@ -97,12 +97,12 @@
       "number": 3,
       "group": "agents",
       "what": "part 5a",
-      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 13,
+      "seconds": 12,
       "log": "qoder-cli/5a.log",
       "error": null
     },
@@ -110,7 +110,7 @@
       "number": 4,
       "group": "agents",
       "what": "part 6a",
-      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
@@ -123,12 +123,12 @@
       "number": 5,
       "group": "agents",
       "what": "part 8a",
-      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 20,
+      "seconds": 18,
       "log": "qoder-cli/8a.log",
       "error": null
     },
@@ -136,7 +136,7 @@
       "number": 6,
       "group": "agents",
       "what": "part 14.03a",
-      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
@@ -149,10 +149,10 @@
   "identifiers": {
     "KR-REQ-12.32": {
       "family": "requirement",
-      "verdict": "passed",
+      "verdict": "failed",
       "counts": {
-        "passed": 3,
-        "failed": 0,
+        "passed": 2,
+        "failed": 1,
         "ignored": 0,
         "not_run": 10,
         "not_built": 0,
@@ -186,149 +186,17 @@
           "part": "2b",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
-          "outcome": "passed",
+          "outcome": "failed",
+          "reason": "agent.capabilities is refused with INVALID_ARGUMENT \"\": STALE_SESSION: no application instance 1ce6d57d-daa1-4e70-a6c5-9ea4f531a1eb",
           "runs": [
             {
               "step": 2,
-              "outcome": "passed"
+              "outcome": "failed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
-            "announced_after": {
-              "instances": [],
-              "more_resources": false,
-              "resources": []
-            },
-            "announced_before": {
-              "instances": [],
-              "more_resources": false,
-              "resources": []
-            },
-            "answers": [
-              {
-                "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource bab832d8-7ad9-48f5-a318-ec437bf0f695",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.draft.add_attachment",
-                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
-                "refused": "INVALID_ARGUMENT"
-              },
-              {
-                "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/qoder-cli is not bound to 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/qoder-cli is not bound to 971bfceb-7a36-4c1f-8196-fd561c6a3b8f",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.capabilities",
-                "detail": "INVALID_ARGUMENT: agent.capabilities is not a read this host serves",
-                "refused": "INVALID_ARGUMENT"
-              },
-              {
-                "call": "agent.commands",
-                "detail": "INVALID_ARGUMENT: agent.commands is not a read this host serves",
-                "refused": "INVALID_ARGUMENT"
-              }
-            ],
-            "attachment_request": "refused before any instance is looked at: agent.draft.add_attachment names an application instance in its selectors and carries none in its parameters, so this refusal says nothing about the terminal route",
-            "capability_states": [
-              [
-                "plugin.metadata.match/1",
-                "not_tested"
-              ],
-              [
-                "plugin.presentation.declarative/1",
-                "not_tested"
-              ],
-              [
-                "plugin.broker.semantic_events/1",
-                "not_tested"
-              ],
-              [
-                "plugin.upstream.action/1",
-                "not_tested"
-              ]
-            ],
-            "control": {
-              "breaks_property": false,
-              "result": {
-                "forwarded_bytes": 3,
-                "input_bytes": 3,
-                "keyboard": "ghostty",
-                "screen_shows": "❯ 2. Don't trust and exit"
-              },
-              "what": "terminal input under the lease from the same device and connection, which the host accepts where it refuses the typed actions",
-              "why_not": "only a bound connector can advertise a typed capability or accept a typed action, and this host binds none"
-            },
-            "installed": {
-              "grant": [
-                "upstream.action"
-              ],
-              "manifest_digest": "288f612c07772fec7d2ad1ec70559bc96677a54e2b22c2e528ffd071c0b6524f",
-              "plugin_id": "kalareach/qoder-cli",
-              "version": "0.3.0"
-            },
-            "live_bindings": 0,
-            "provenance": {
-              "ended_before_read": [],
-              "executed": [
-                {
-                  "command": "qodercli",
-                  "device": 16777234,
-                  "from": "build",
-                  "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
-                  "inode": 70406463,
-                  "pid": 80272,
-                  "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
-                }
-              ],
-              "launches": [
-                {
-                  "agent_process": {
-                    "command": "qodercli",
-                    "from": "build",
-                    "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
-                    "pid": 80272,
-                    "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
-                  },
-                  "file": "<tools>/qoder-cli/1.1.63/bin/qodercli",
-                  "launch": "native",
-                  "reached": "the agent's own process maps it",
-                  "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0",
-                  "what": "qodercli"
-                }
-              ],
-              "sample_interval_ms": 250,
-              "samples": 25,
-              "session_path": "<tmp>/krm-d2a018c0/agent/current/bin:<tmp>/krm-d2a018c0/agent/runtime:/usr/bin:/bin"
-            }
+            "exit": 101
           }
         },
         {
@@ -376,25 +244,26 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "agent_processes": [
               "qodercli"
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 81980 (qodercli)",
+              "check": "these have ended: process 32420 (qodercli)",
               "what": "the agent ended with a second daemon kill"
             },
             "installed": {
               "grant": [
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "288f612c07772fec7d2ad1ec70559bc96677a54e2b22c2e528ffd071c0b6524f",
+              "manifest_digest": "d26c69197ec46528fd36da257e601a1c6153aeeb76999355a2eab55d6bb1d927",
               "plugin_id": "kalareach/qoder-cli",
-              "version": "0.3.0"
+              "version": "0.4.0"
             },
-            "killed_daemon": 81801,
+            "killed_daemon": 32290,
             "local_terminal_input": "❯ 2. Don't trust and exit",
             "provenance": {
               "ended_before_read": [],
@@ -405,7 +274,7 @@
                   "from": "build",
                   "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
                   "inode": 70406463,
-                  "pid": 81980,
+                  "pid": 32420,
                   "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                 }
               ],
@@ -415,7 +284,7 @@
                     "command": "qodercli",
                     "from": "build",
                     "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
-                    "pid": 81980,
+                    "pid": 32420,
                     "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                   },
                   "file": "<tools>/qoder-cli/1.1.63/bin/qodercli",
@@ -426,10 +295,10 @@
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 16,
-              "session_path": "<tmp>/krm-fd6fb101/agent/current/bin:<tmp>/krm-fd6fb101/agent/runtime:/usr/bin:/bin"
+              "samples": 17,
+              "session_path": "<tmp>/krm-6cdee4a9/agent/current/bin:<tmp>/krm-6cdee4a9/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 82361
+            "restarted_daemon": 32787
           }
         },
         {
@@ -456,15 +325,16 @@
               "outcome": "not_run"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
             "installed": {
               "grant": [
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "288f612c07772fec7d2ad1ec70559bc96677a54e2b22c2e528ffd071c0b6524f",
+              "manifest_digest": "d26c69197ec46528fd36da257e601a1c6153aeeb76999355a2eab55d6bb1d927",
               "plugin_id": "kalareach/qoder-cli",
-              "version": "0.3.0"
+              "version": "0.4.0"
             },
             "provenance": {
               "ended_before_read": [],
@@ -510,7 +380,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
             "control": {
               "breaks_property": false,
@@ -526,11 +396,12 @@
             },
             "installed": {
               "grant": [
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "288f612c07772fec7d2ad1ec70559bc96677a54e2b22c2e528ffd071c0b6524f",
+              "manifest_digest": "d26c69197ec46528fd36da257e601a1c6153aeeb76999355a2eab55d6bb1d927",
               "plugin_id": "kalareach/qoder-cli",
-              "version": "0.3.0"
+              "version": "0.4.0"
             },
             "provenance": {
               "ended_before_read": [],
@@ -541,7 +412,7 @@
                   "from": "build",
                   "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
                   "inode": 70406463,
-                  "pid": 84809,
+                  "pid": 34735,
                   "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                 }
               ],
@@ -551,7 +422,7 @@
                     "command": "qodercli",
                     "from": "build",
                     "image": "<tools>/qoder-cli/1.1.63/bin/qodercli",
-                    "pid": 84809,
+                    "pid": 34735,
                     "sha256": "f3fd5ba1db73dd9591bc0bd0f7a3b1dd28fcc17ec4eb3eeb6ac2aa92cb91c0a0"
                   },
                   "file": "<tools>/qoder-cli/1.1.63/bin/qodercli",
@@ -563,16 +434,16 @@
               ],
               "sample_interval_ms": 250,
               "samples": 37,
-              "session_path": "<tmp>/krm-a6dfd3d8/agent/current/bin:<tmp>/krm-a6dfd3d8/agent/runtime:/usr/bin:/bin"
+              "session_path": "<tmp>/krm-db94871b/agent/current/bin:<tmp>/krm-db94871b/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 1cc2fc7b-7541-46af-a31a-ff8ffcccbd3d approval allow"
+                "title": "kalareach session d1496875-39d7-4a69-b983-73a4ea2fcab8 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-a6dfd3d8/h/.qoder/projects/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-a6dfd3d8-w/1cc2fc7b-7541-46af-a31a-ff8ffcccbd3d.jsonl"
+                "path": "<tmp>/krm-db94871b/h/.qoder/projects/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-db94871b-w/d1496875-39d7-4a69-b983-73a4ea2fcab8.jsonl"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
@@ -602,7 +473,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "channel-none",
                     "stderr_first_line": "",
@@ -610,10 +481,10 @@
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a6dfd3d8/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-db94871b/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -621,7 +492,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a6dfd3d8/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-db94871b/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -629,20 +500,20 @@
                     "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a6dfd3d8/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-db94871b/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a6dfd3d8/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-db94871b/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 9,
+                    "elapsed_ms": 8,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -650,7 +521,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 10,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-permission",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -658,7 +529,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-tool",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -716,15 +587,16 @@
               "outcome": "not_run"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+          "command": "KR_AGENTS_BUILD=<evidence>/qoder-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/qoder-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "installed": {
               "grant": [
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "288f612c07772fec7d2ad1ec70559bc96677a54e2b22c2e528ffd071c0b6524f",
+              "manifest_digest": "d26c69197ec46528fd36da257e601a1c6153aeeb76999355a2eab55d6bb1d927",
               "plugin_id": "kalareach/qoder-cli",
-              "version": "0.3.0"
+              "version": "0.4.0"
             },
             "provenance": {
               "ended_before_read": [],
@@ -755,7 +627,7 @@
       "operation": "terminal",
       "declared": null,
       "source": "plugin.json",
-      "package_digest": "288f612c07772fec7d2ad1ec70559bc96677a54e2b22c2e528ffd071c0b6524f"
+      "package_digest": "d26c69197ec46528fd36da257e601a1c6153aeeb76999355a2eab55d6bb1d927"
     }
   ],
   "failures_outside_identifiers": [],
@@ -764,19 +636,21 @@
   "warnings": [],
   "summary": {
     "identifiers": 2,
-    "passed": 1,
-    "failed": 0,
+    "passed": 0,
+    "failed": 1,
     "known_difference": 0,
     "not_run": 1,
     "known_differences": 0,
     "tests": {
-      "passed": 3,
-      "failed": 0,
+      "passed": 2,
+      "failed": 1,
       "ignored": 0,
       "not_run": 12,
       "not_built": 0,
       "known_difference": 0
     },
-    "failed_steps": []
+    "failed_steps": [
+      2
+    ]
   }
 }
