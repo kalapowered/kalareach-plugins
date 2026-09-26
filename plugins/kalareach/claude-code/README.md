@@ -75,7 +75,7 @@ The registration is what makes the channel available; it is not what turns it on
 registers a channel only when every one of these holds where it runs:
 
 - The session names the server or its plugin at launch. A registration Claude Code can see is not a
-  registration it uses.
+  registration it uses. The command integration below names it for sessions KalaReach launches.
 - The plugin is on the effective allowlist, which is the vendor's own unless an organisation
 replaces
   it, or the session was started with the development flag instead.
@@ -133,14 +133,33 @@ exactly that, and it says what the forwarder can see. None of the three files ca
 identifier or a secret: the worker admits a forwarder only for the launch KalaReach made, through
 that launch's private exchange, and the forwarder and the worker are the host's, not this package's.
 
+## The command integration
+
+A session uses the channel only when it names the channel's plugin at launch, the first of the gates
+above. The package declares that as its command integration: when a person runs `claude` in a
+KalaReach session with the integration on, the host adds two arguments, in this order,
+`--dangerously-load-development-channels` and `plugin:kalareach-channels@skills-dir`, the plugin the
+registration above installs.
+
+The development flag is also the second gate's route. Claude Code registers the plugin it names
+whether or not that plugin is on the channel allowlist, the vendor's or an organisation's, and the
+flag skips that allowlist only: the organisation's channel setting and every other gate still
+decide. Claude Code shows a full-screen warning that lists the development channels it is loading,
+and the session starts only once the person confirms it in the terminal.
+
+Applying the integration is a grant of its own, `command_integration.launch`, which the owner
+confirms for every release that declares it. The grant shows the package's statement beside the
+command and both arguments exactly as the host adds them.
+
 ## What it asks for
 
-Seven capabilities. Matching, declarative presentation and broker semantic events are the reading
+Eight capabilities. Matching, declarative presentation and broker semantic events are the reading
 half. The upstream action capability carries a message you wrote. The two approval capabilities let
 the table say which relayed requests are approvals and answer one with Allow or Deny. Interpreting a
 request and answering it are separate grants, and neither is within a repository's default ceiling,
 so an installation asks its owner for both. The bridge installation capability is declared with the
-recipe it installs and the grant that says what accepting it means.
+recipe it installs and the grant that says what accepting it means, and the command integration
+capability with the two arguments it adds and a grant of its own.
 
 ## Fixtures
 

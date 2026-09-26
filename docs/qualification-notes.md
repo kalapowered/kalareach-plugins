@@ -429,6 +429,32 @@ What core provides, and what is unverified about it:
   to the worker's private exchange is the admission above, and it was not observed against a live
   install.
 
+### The command integration
+
+From version 0.4.0 the package declares its command integration: the command `claude`, the flags
+`--dangerously-load-development-channels` and `plugin:kalareach-channels@skills-dir` in that order,
+and no variables. It requests `command_integration.launch` and states `sdk_range`
+`>=0.1.2, <0.2.0`, the package contract that carries the member (core `fec12253`,
+`crates/kr-plugin-sdk/src/integration.rs`).
+
+| Fact | Source | Read | Status |
+| --- | --- | --- | --- |
+| A session uses a channel only when it names the channel's plugin at launch, with `--channels` or with `--dangerously-load-development-channels`, and the development flag takes its entries as `plugin:<name>@<marketplace>` or `server:<name>`. The plugin the recipe installs and enables is `kalareach-channels@skills-dir` | `https://code.claude.com/docs/en/channels` and `https://code.claude.com/docs/en/channels-reference`; the bridge table above | 2026-09-26 | Document check |
+| The development flag registers the entries it names whether or not they are on the channel allowlist, Anthropic's or the one an organisation sets with `allowedChannelPlugins`, entry by entry, and it skips the allowlist only: `channelsEnabled` still applies, and so does every other gate above. The vendor says not to use it to run channels from untrusted sources | `https://code.claude.com/docs/en/channels-reference`, "Test during the research preview"; `https://code.claude.com/docs/en/channels`, the organisation's allowlist | 2026-09-26 | Document check |
+| Claude Code first shows a full-screen warning that lists the development channels it is loading, and the session continues only when the person chooses to in the terminal | `https://code.claude.com/docs/en/channels-reference`, the webhook walkthrough | 2026-09-26 | Document check |
+| Core's worker builds its Claude Code fixture package from these two flags, and its Claude Code launch test is unchanged | `fixture::COMMAND` and `FLAGS` in `crates/kr-worker/src/broker/connectors.rs`, and `crates/kr-hook/tests/launch.rs`, at core `fec12253` | 2026-09-26 | Core's tests, against a stand-in application |
+
+The grant's statement says that the flag names `kalareach-channels` so that Claude Code can register
+it as the session's channel, that it skips the allowlist for that plugin alone while every other
+condition still applies, and that Claude Code asks the person to confirm the development channel in
+its terminal before the session starts. The grant shows it beside the command and both flags as the
+host renders them, and `pipeline/tests/packages.rs` checks the declaration and the statement against
+the reviewed ones.
+
+Not verified: the channel registering under the flag, as above; the warning on the binary; and a
+session KalaReach launches with the integration applied. At core `fec12253` sessions are created
+with no command integration enabled, so no launch adds these flags.
+
 ### Pipeline changes this package required
 
 `pipeline/tests/release.rs`: target paths are derived rather than written out, because this
@@ -718,10 +744,10 @@ invocation (it exits 64 with its usage) would replace every tool result the mode
 three events registered, the worst such a failure can do is the warning above.
 
 Limits, in the order they matter. Gemini CLI's relaunch means the process KalaReach launches never
-starts a hook itself, so the worker records these observations and none of them selects the
-session's thread; `GEMINI_CLI_NO_RELAUNCH=true` in the launch's environment would make the launched
-process start them, and would also switch off the heap sizing and the restart after code 199, which
-is the trade a command integration that sets it has to make. The recipe's removal steps delete the
+starts a hook itself, so without the command integration below the worker records these
+observations and none of them selects the session's thread; the integration sets
+`GEMINI_CLI_NO_RELAUNCH=true` in the launch's environment, which makes the launched process start
+them and switches off the heap sizing and the restart after code 199. The recipe's removal steps delete the
 three files, the record last, and cannot remove a directory or leave a file on a condition, so two
 things fall to whatever applies them. It has to take the record only once nothing else is left in
 `extensions/kalareach/`, keeping it beside a file of the person's or one that changed, and it has to
@@ -732,6 +758,35 @@ hooks run only if the person adds a pattern that matches the record's source; no
 writes can add one. The bridge range is `=0.60.0`, the only release checked. Not verified: a
 `Notification` event and its payload on the binary, which need a tool that asks for permission and
 so a model turn, and a session launched by a running KalaReach worker.
+
+### The command integration
+
+From version 0.4.0 the package declares its command integration: the command `gemini`, no flags, and
+the variable `GEMINI_CLI_NO_RELAUNCH` with the value `true`, the one pair the package contract
+permits (core `fec12253`, `PERMITTED_VARIABLES` in `crates/kr-plugin-sdk/src/integration.rs`). It
+requests `command_integration.launch` and states `sdk_range` `>=0.1.2, <0.2.0`. Everything below
+was read from 0.60.0, in the files pinned by digest above.
+
+| Fact | Source | Read | Status |
+| --- | --- | --- | --- |
+| The process that was started runs the session itself when `GEMINI_CLI_NO_RELAUNCH` or `SANDBOX` is set. Otherwise it starts a second node process with `GEMINI_CLI_NO_RELAUNCH` set to `true` and runs the session there, so `true` is the value the build gives its own child | `run` in `bundle/gemini.js`; `getSpawnConfig` in `chunk-PJREBWY3.js` | 2026-09-26 | Binary check, read |
+| With the variable set, every hook's parent is the process that was started | The runs in the hooks table above that recorded each hook's parent with and without `GEMINI_CLI_NO_RELAUNCH=true` | 2026-09-25 | Binary check, run |
+| The heap sizing a person gives up: the first process gives the child `--max-old-space-size` at half the machine's memory where that is more than its own heap limit, unless the user's `settings.json` sets `advanced.autoConfigureMemory` to `false` | `getMemoryNodeArgs` in `bundle/gemini.js` | 2026-09-26 | Binary check, read |
+| The restart a person gives up: after an update completes, or when the build asks to restart, the session's process exits with code 199, and the first process starts the child again for as long as it exits with that code. Without the variable that exit ends the session | `relaunchApp` in `chunk-PJREBWY3.js`; `run` in `bundle/gemini.js` | 2026-09-26 | Binary check, read |
+| The first process keeps the administrator settings a child reports and sends them to the next child it starts, which a process with no child never needs | `run` in `bundle/gemini.js` | 2026-09-26 | Binary check, read |
+
+The grant's statement says that the launched process then runs the session itself, so that the
+hooks this package's bridge registers can select the thread, and what the person gives up for it:
+the memory limit raised to half the machine's memory, so a very large session runs out of memory
+sooner, and the restart after an update or one the build asks for, so the session ends instead. The
+grant shows it beside the variable as the host renders it, and `pipeline/tests/packages.rs` checks
+the declaration and the statement against the reviewed ones. No hook selects the thread without the
+variable, and the integration applies only where it is turned on, so the person who turns it on
+chooses the trade.
+
+Not verified: a session KalaReach launches with the integration applied, and a thread selected by
+its hooks. At core `fec12253` sessions are created with no command integration enabled, so no
+launch sets the variable.
 
 ### What is not qualified here
 
@@ -979,7 +1034,8 @@ this qualification, the network denied and no account:
 So two sources add hooks without replacing the person's own: the launch, and a local marketplace.
 KalaReach's hooks reach Qoder CLI on the launch, as `--settings` and inline JSON. Either way a
 session gets its registration only when KalaReach launches it through a command integration, which
-no package can declare yet, and a hook without one answers `{}` and reports nothing. The launch
+this package declares from version 0.4.0, below, and a hook without one answers `{}` and reports
+nothing. The launch
 writes nothing into the person's Qoder CLI directory; the marketplace would cost two keys in the
 person's `settings.json`, Qoder CLI's own copy and record of the marketplace left behind after
 removal, and no hooks in the first session after installation. The marketplace is the route to take
@@ -988,8 +1044,9 @@ if a later Qoder CLI stops reading `--settings`.
 The core repository defines the launch's two elements (`fixtures/bridges/qoder-cli/flags.json`,
 sha256 `d867f03b41f63a11688ee1c6e0a79455ffbaca09d2c38150b6f8d4b4c269261f`) and the forwarder they
 start, `kr-hook qoder-cli hook`, registered in exec form for the five events above with a timeout of
-one second for `SessionEnd` and five for the rest. This package declares no native bridge and claims
-none of those hooks' observations.
+one second for `SessionEnd` and five for the rest. This package declares no native bridge; from
+version 0.4.0 it declares those two elements as its command integration, below, and it claims none
+of those hooks' observations.
 
 What the build did with them, each run with no account:
 
@@ -1014,6 +1071,29 @@ What the build did with them, each run with no account:
 
 Not verified: `PostToolUse`, `PostToolUseFailure` and `Notification` on the binary, which need a
 model turn, and a session launched by a running KalaReach worker.
+
+### The command integration
+
+From version 0.4.0 the package declares its command integration: the command `qodercli`, the two
+elements above as its flags, byte for byte, and no variables. It requests
+`command_integration.launch` and states `sdk_range` `>=0.1.2, <0.2.0`, the package contract that
+carries the member (core `fec12253`, `crates/kr-plugin-sdk/src/integration.rs`).
+
+| Fact | Source | Read | Status |
+| --- | --- | --- | --- |
+| The flags are the core fixture's bytes: written as JSON with two-space indentation and a final newline, the list has the fixture's SHA-256, `d867f03b41f63a11688ee1c6e0a79455ffbaca09d2c38150b6f8d4b4c269261f` | `fixtures/bridges/qoder-cli/flags.json` at core `fec12253`; `pipeline/tests/packages.rs`, which checks the digest and that the settings hold the forwarder's hook in exec form for the five events and nothing else | 2026-09-26 | Checked by this repository's tests |
+| The two elements add the hooks beside the person's own, and with the forwarder built from core and a stand-in worker they ran end to end | The runs above | 2026-09-25 | Binary check, run |
+| The command is `qodercli`, the stable command name and the one the qualification cases type. The `qoder` dispatcher execs `qodercli` in place, but one declaration names one command and the host applies it only to an invocation of that command, so a Qoder CLI started as `qoder` runs without the integration | `fixtures/agents/builds.json`; the dispatcher read above; the package contract at core `fec12253` (`docs/plugins/README.md`, "Command integration") | 2026-09-26 | Binary check of the dispatcher; document check of the contract |
+
+The grant's statement says that the settings register the forwarder for the five events with their
+timeouts, that Qoder CLI runs the hooks beside the person's own and nothing is written to their
+settings, that Qoder CLI starts the forwarder itself, under its own permissions and outside the
+plugin sandbox and Wasmtime, and that the forwarder sees those five events. The grant shows it beside
+the command and both elements as the host renders them, and `pipeline/tests/packages.rs` checks the
+declaration and the statement against the reviewed ones.
+
+Not verified: a session KalaReach launches with the integration applied. At core `fec12253` sessions
+are created with no command integration enabled, so no launch adds these elements.
 
 ### What is not qualified here
 
