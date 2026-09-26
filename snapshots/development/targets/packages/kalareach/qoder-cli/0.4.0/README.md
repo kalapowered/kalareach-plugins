@@ -8,7 +8,8 @@ running, with the terminal as the default route.
 KalaReach matches Qoder CLI's own entry points, labels the session, and runs it through the ordinary
 terminal path. That terminal is the default and it stays exactly as Qoder CLI draws it, and it
 carries everything the upstream has no typed path for. What this package adds is a reading of the
-agent protocol the same build speaks, and one control over the turn.
+agent protocol the same build speaks, one control over the turn, and a command integration that has
+Qoder CLI start KalaReach's forwarder for its hooks.
 
 `connector.json` is the declarative native-proxy table for the agent protocol the same build speaks
 over its standard streams: one JSON document per line, identifiers at `id`, methods at `method`,
@@ -78,8 +79,28 @@ so that is how KalaReach's hooks reach it: the core repository defines the two e
 adds and the forwarder they start. A local marketplace declared in the person's settings would also
 work, at the cost of two keys there, Qoder CLI's own copy of the marketplace left behind after
 removal, and no hooks in the first session after installation; it is the route to take if a later
-Qoder CLI stops reading `--settings`. No package can declare a command integration's flags yet, so
-this package claims none of the observations those hooks would add.
+Qoder CLI stops reading `--settings`. This package declares the two elements as its command
+integration, below.
+
+## The command integration
+
+When a person runs `qodercli` in a KalaReach session with the integration on, the host adds two
+arguments, in this order: `--settings`, and inline settings that hold hooks and nothing else. They
+are the two elements the core repository keeps in `fixtures/bridges/qoder-cli/flags.json`, byte for
+byte: `kr-hook qoder-cli hook`, the KalaReach forwarder, in exec form and with no matcher, for
+`SessionStart`, `SessionEnd`, `PostToolUse`, `PostToolUseFailure` and `Notification`, with a timeout
+of one second for `SessionEnd` and five for the rest. On these five events only exit code 2 refuses
+anything, and the forwarder never exits with it.
+
+Qoder CLI runs these hooks beside the person's own and starts the forwarder itself, as its own
+child, so the forwarder runs under Qoder CLI's own permissions, outside the KalaReach plugin sandbox
+and outside Wasmtime. Qoder CLI runs no hook in a folder the person has not trusted. The integration
+names `qodercli`, the stable command name; a Qoder CLI started through the `qoder` dispatcher runs
+without it.
+
+Applying the integration is a grant of its own, `command_integration.launch`, which the owner
+confirms for every release that declares it. The grant shows the package's statement beside the
+command and both arguments exactly as the host adds them.
 
 ## Fixtures
 

@@ -112,8 +112,28 @@ invocation, prints exactly that kind of text, so a hook on tool events could cha
 reads; on these three, the most it can do is a warning.
 
 Gemini CLI starts a copy of itself as a child process and runs the session there, unless
-`GEMINI_CLI_NO_RELAUNCH` is set. The hooks are that child's, not the process KalaReach launched, so
-the worker records what they report and none of them selects the session's thread.
+`GEMINI_CLI_NO_RELAUNCH` is set. Without the command integration below, the hooks are that child's,
+not the process KalaReach launched, so the worker records what they report and none of them selects
+the session's thread.
+
+## The command integration
+
+The package declares a command integration that sets `GEMINI_CLI_NO_RELAUNCH=true`, the value Gemini
+CLI gives the child it starts, and adds no arguments. When a person runs `gemini` in a KalaReach
+session with the integration on, the process KalaReach launched runs the session itself and starts
+the hooks, so they can select the session's thread.
+
+That gives up what the child is for. The first process raises the child's memory limit to half of
+the machine's memory where that is more than Node's default, unless the person's settings turn
+automatic memory configuration off; without the child the session keeps Node's default, and a very
+large session runs out of memory sooner. When the child exits to restart, after an update or for a
+restart Gemini CLI asks for, the first process starts the session again; without it the session ends
+and the person runs `gemini` again. The first process also keeps the administrator settings a child
+reports and passes them to the next child it starts, which a session with no child never needs.
+
+Applying the integration is a grant of its own, `command_integration.launch`, which the owner
+confirms for every release that declares it. The grant says what the person gives up, beside the
+variable exactly as the host sets it.
 
 ## Fixtures
 

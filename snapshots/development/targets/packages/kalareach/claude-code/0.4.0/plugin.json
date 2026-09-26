@@ -2,14 +2,14 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "claude-code",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "display_name": "Claude Code",
   "description": "Recognises Claude Code, observes it through lifecycle and tool hooks, carries a message into the session and declares how the tool approvals it relays are answered.",
-  "sdk_range": ">=0.1.1, <0.2.0",
+  "sdk_range": ">=0.1.2, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "d93f452dc76e50d8848a35ae2d68d640ee0f17f4"
+    "revision": "3efd5eed04308e54e6a55c19f7483c55d8b3e515"
   },
   "match_rules": [
     {
@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "c3c947141a245fa9b0ecd987838a91e5523bfb9b1412ef9083a1721d4b9ef701",
-      "size_bytes": "10986"
+      "digest": "aecc4582377dc8867e6f72847e14c635821930899ea1f0ff3ee13f68227a69c2",
+      "size_bytes": "12304"
     },
     {
       "role": "native_bridge",
@@ -127,6 +127,10 @@
     {
       "capability": "native_bridge.install",
       "reason": "Register the forwarder Claude Code starts for its channel and its lifecycle and tool hooks"
+    },
+    {
+      "capability": "command_integration.launch",
+      "reason": "Start Claude Code in KalaReach sessions with the flag that names this package's channel"
     },
     {
       "capability": "approval.decode",
@@ -280,5 +284,14 @@
       }
     ],
     "grant_statement": "Installs three registration files under your own Claude Code directory, where they apply to every project and every later session, and adds one settings key that enables them. Claude Code then starts the KalaReach forwarder itself, so the forwarder runs under Claude Code's own permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees the session's SessionStart, SessionEnd, PostToolUse, PostToolUseFailure and Notification events, and every Channels tool approval relayed to it. Removal takes the key back out and deletes exactly those three files, each only while it still holds the bytes that were installed."
+  },
+  "command_integration": {
+    "command": "claude",
+    "flags": [
+      "--dangerously-load-development-channels",
+      "plugin:kalareach-channels@skills-dir"
+    ],
+    "variables": [],
+    "grant_statement": "When you run claude in a KalaReach session with this integration on, KalaReach adds the development channels flag naming kalareach-channels, the channel plugin this package's bridge installs, so that Claude Code can register it as the session's channel. The flag skips the channel allowlist for that one plugin; every other condition Claude Code sets for a channel, your organisation's channel setting among them, still applies. Claude Code shows a warning that lists the development channel and asks you to confirm it in the terminal before the session starts."
   }
 }
