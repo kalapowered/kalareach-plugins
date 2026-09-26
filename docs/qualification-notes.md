@@ -482,18 +482,16 @@ needs Claude Code's own directory, which does not exist when the package is inst
 qualification record naming a Claude Code executable, which none does; the run did not read the
 bridge's journal to see which stopped it, and no part below depends on it.
 
-Part 2b failed at that host commit. The qualification driver expects a paired device's
-`agent.capabilities` read to be refused with `INVALID_ARGUMENT`, as a read the device is not served;
-from core `a823c0017` the host serves a paired device the agent reads under its grant, so it looked
-the application instance up and refused the read with `STALE_SESSION`, naming no instance it holds.
-The read was refused either way, but the driver stops at the first answer it does not expect, so
-2b's other checks did not run. Run alone against the same host with version 0.3.0 of this package
-and of the Gemini CLI and Qoder CLI packages, 2b failed the same way for all three, so the failure
-is the driver's expectation and not this release. On that route Claude Code and its local terminal
-outlived a killed control daemon, and a restarted daemon served the session again (5a); a running
-Claude Code kept the executable it started with while the installation moved to 2.1.281, whose own
-process started on the terminal route (6a); forged titles, transcripts, registrations and hook
-input, including this package's forwarder fed forged hook events and a forged channel, changed
+The record names core `28d6c4b19`, the host these parts ran on, where part 2b runs at the
+qualification driver's fix for the agent reads a paired device is served: from core `a823c0017` the
+host serves a paired device's `agent.capabilities` and `agent.commands` reads under its grant, and
+refuses one for an application instance it does not hold with `STALE_SESSION`, which is the refusal
+the driver now expects there. On that route the host advertised no typed capability for Claude Code
+and refused every typed action and each of this package's actions (2b); Claude Code and its local
+terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a
+running Claude Code kept the executable it started with while the installation moved to 2.1.281,
+whose own process started on the terminal route (6a); forged titles, transcripts, registrations and
+hook input, including this package's forwarder fed forged hook events and a forged channel, changed
 nothing the host reports (8a); and a path typed at its composer, after the folder was trusted,
 arrived as terminal input and showed in the composer (14.03a).
 
@@ -829,12 +827,13 @@ the core commit the record names, the host knows no directory where Gemini CLI k
 its bridge executor refuses the recipe before it reads any version; the run did not read the bridge's
 journal to confirm that, and no part below depends on it.
 
-Part 2b failed at that host commit, for the reason the Claude Code section gives: the driver expects a
-refusal the host no longer gives, and version 0.3.0 of this package failed it the same way against the
-same host. On that route Gemini CLI and its local terminal outlived a killed control daemon, and a
-restarted daemon served the session again (5a); and forged titles, transcripts, registrations and hook
-input changed nothing the host reports (8a). Gemini CLI asks for authentication before it shows a
-composer, so 14.03a did not run, and no newer build is named for this package, so 6a did not run.
+The record names core `28d6c4b19`, where part 2b runs at the qualification driver's fix the Claude
+Code section describes. On that route the host advertised no typed capability for Gemini CLI and
+refused every typed action and each of this package's actions (2b); Gemini CLI and its local
+terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); and
+forged titles, transcripts, registrations and hook input changed nothing the host reports (8a).
+Gemini CLI asks for authentication before it shows a composer, so 14.03a did not run, and no newer
+build is named for this package, so 6a did not run.
 
 The run's home held a keychain of the run's own as its default, and the record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
@@ -1145,12 +1144,13 @@ the paths of another installation (`~/.qoder/bin/qodercli/qodercli-<version>`): 
 one Mach-O UUID, and the log shows, for a UUID, the first path it registered. The record's paths and
 digests come from each process's own text mapping.
 
-Part 2b failed at that host commit, for the reason the Claude Code section gives: the driver expects a
-refusal the host no longer gives, and version 0.3.0 of this package failed it the same way against the
-same host. On that route Qoder CLI and its local terminal outlived a killed control daemon, and a
-restarted daemon served the session again (5a); and forged titles, transcripts, registrations and hook
-input changed nothing the host reports (8a). Qoder CLI asks its person to sign in before it shows a
-composer, so 14.03a did not run, and no newer build is named, so 6a did not run.
+The record names core `28d6c4b19`, where part 2b runs at the qualification driver's fix the Claude
+Code section describes. On that route the host advertised no typed capability for Qoder CLI and
+refused every typed action and each of this package's actions (2b); Qoder CLI and its local terminal
+outlived a killed control daemon, and a restarted daemon served the session again (5a); and forged
+titles, transcripts, registrations and hook input changed nothing the host reports (8a). Qoder CLI
+asks its person to sign in before it shows a composer, so 14.03a did not run, and no newer build is
+named, so 6a did not run.
 
 The run's home held a keychain of the run's own as its default, and the record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
