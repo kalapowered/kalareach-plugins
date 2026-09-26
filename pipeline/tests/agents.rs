@@ -282,19 +282,17 @@ fn check_steps(record: &Value, problems: &mut Vec<String>) {
         .collect();
     match own_home.as_slice() {
         [step] => {
-            let failed = step["exit"] != 0;
+            // The check failed when it exited otherwise than 0, said why, or read no keychain.
+            let failed = step["exit"] != 0
+                || !step["error"].is_null()
+                || record["run"]["own_home"]["default_keychain"]
+                    .as_str()
+                    .is_none();
             if failed == entries(&record["failures_outside_identifiers"]).is_empty() {
                 problems.push(
                     "failures_outside_identifiers names the own-home check exactly when it failed"
                         .to_owned(),
                 );
-            }
-            if !failed
-                && record["run"]["own_home"]["default_keychain"]
-                    .as_str()
-                    .is_none()
-            {
-                problems.push("run.own_home names no default keychain".to_owned());
             }
         }
         _ => problems.push(format!(
@@ -308,16 +306,20 @@ fn check_steps(record: &Value, problems: &mut Vec<String>) {
         .flat_map(|map| map.values())
         .flat_map(|identifier| entries(&identifier["tests"]))
     {
+        let part_step = format!("part {}", test["part"].as_str().unwrap_or_default());
         for run in entries(&test["runs"]) {
             let step = steps.iter().find(|step| step["number"] == run["step"]);
             match step {
                 Some(step)
                     if step["group"] == "agents"
+                        && step["what"] == part_step.as_str()
                         && run["outcome"] == test["outcome"]
-                        && test["command"] == step["command"] => {}
+                        && test["command"] == step["command"]
+                        && (test["outcome"] != "passed"
+                            || (step["exit"] == 0 && step["error"].is_null())) => {}
                 _ => problems.push(format!(
-                    "{}: its run names step {}, which is not a part's step with its command and \
-                     outcome",
+                    "{}: its run names step {}, which is not its part's step with its command, \
+                     its outcome and, for a pass, a clean exit",
                     test["test"], run["step"]
                 )),
             }
@@ -433,7 +435,14 @@ fn check_identifier(
         }
     }
     let counted = |outcome: &str| counts.get(outcome).copied().unwrap_or(0);
-    for outcome in OUTCOMES {
+    for outcome in [
+        "passed",
+        "failed",
+        "ignored",
+        "not_run",
+        "not_built",
+        "known_difference",
+    ] {
         if entry["counts"][outcome] != counted(outcome) {
             problems.push(format!(
                 "{identifier}: counts.{outcome} is {}, and {} of its tests are {outcome}",
