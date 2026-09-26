@@ -702,6 +702,8 @@ struct ReviewedIntegration {
     variables: &'static [(&'static str, &'static str)],
     /// What the package's grant says beside the list the host renders from the declaration.
     grant_statement: &'static str,
+    /// The list the host renders from the declaration for the grant, exactly as the owner reads it.
+    listed: &'static str,
 }
 
 /// The command integration of every package that declares one, exactly as it was reviewed.
@@ -728,6 +730,11 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
              other condition Claude Code sets for a channel, your organisation's channel setting \
              among them, still applies. Claude Code shows a warning that lists the development \
              channel and asks you to confirm it in the terminal before the session starts.",
+        listed: concat!(
+            r#"Runs "claude" in KalaReach sessions with these arguments added, in this order: "#,
+            r#""--dangerously-load-development-channels" "plugin:kalareach-channels@skills-dir"."#,
+            r#" It sets no environment variables."#,
+        ),
     },
     ReviewedIntegration {
         plugin: "kalareach/gemini-cli",
@@ -743,6 +750,10 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
              where that is more than Node's default, so a very large session runs out of memory \
              sooner. When Gemini CLI restarts after an update, or for a restart it asks for, the \
              session ends instead and you run gemini again.",
+        listed: concat!(
+            r#"Runs "gemini" in KalaReach sessions with no arguments added."#,
+            r#" It sets these environment variables: GEMINI_CLI_NO_RELAUNCH="true"."#,
+        ),
     },
     ReviewedIntegration {
         plugin: "kalareach/qoder-cli",
@@ -762,6 +773,21 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
              Qoder CLI settings. Qoder CLI starts the forwarder itself, so the forwarder runs \
              under Qoder CLI's own permissions and outside the KalaReach plugin sandbox, outside \
              Wasmtime. It sees those five events of that session.",
+        // The inline settings are one argument, so they are written as one JSON string, their own
+        // quotes escaped.
+        listed: concat!(
+            r#"Runs "qodercli" in KalaReach sessions with these arguments added,"#,
+            r#" in this order: "--settings" "{\"hooks\":{\"SessionStart\":["#,
+            r#"{\"hooks\":[{\"type\":\"command\",\"command\":\"kr-hook\",\"args\":["#,
+            r#"\"qoder-cli\",\"hook\"],\"timeout\":5}]}],\"SessionEnd\":[{\"hooks\":["#,
+            r#"{\"type\":\"command\",\"command\":\"kr-hook\",\"args\":[\"qoder-cli\","#,
+            r#"\"hook\"],\"timeout\":1}]}],\"PostToolUse\":[{\"hooks\":[{\"type\":\"command\","#,
+            r#"\"command\":\"kr-hook\",\"args\":[\"qoder-cli\",\"hook\"],\"timeout\":5}]}],"#,
+            r#"\"PostToolUseFailure\":[{\"hooks\":[{\"type\":\"command\",\"command\":\"kr-hook\","#,
+            r#"\"args\":[\"qoder-cli\",\"hook\"],\"timeout\":5}]}],\"Notification\":["#,
+            r#"{\"hooks\":[{\"type\":\"command\",\"command\":\"kr-hook\",\"args\":["#,
+            r#"\"qoder-cli\",\"hook\"],\"timeout\":5}]}]}}". It sets no environment variables."#,
+        ),
     },
 ];
 
@@ -815,12 +841,23 @@ impl ReviewedIntegration {
             )
         })
     }
-}
 
-/// Why the statement a person confirms before granting `integration`, as the host renders it, does
-/// not list its command, every flag and every variable exactly, or nothing when it does.
-fn statement_refusal(integration: &CommandIntegration) -> Option<String> {
-    listing_refusal(integration, &integration.statement())
+    /// Why `statement` is not the list reviewed for this integration, which the grant shows the
+    /// owner beside its statement, or nothing when it is.
+    ///
+    /// The whole statement is compared with the reviewed list, so nothing is added, dropped or
+    /// moved anywhere in it, in a string or between two. The reviewed list is then read back, so
+    /// every string it writes is exactly the command, a flag or a variable's value of
+    /// `integration`, whole and in its place.
+    fn listed_refusal(&self, integration: &CommandIntegration, statement: &str) -> Option<String> {
+        if statement != self.listed {
+            return Some(format!(
+                "the grant shows {statement:?}, not the reviewed list {:?}",
+                self.listed
+            ));
+        }
+        listing_refusal(integration, statement)
+    }
 }
 
 /// Every JSON string `statement` writes, read whole and decoded, each with the text written between
@@ -858,13 +895,15 @@ fn written_strings(statement: &str) -> Result<Vec<(&str, String)>, String> {
     Ok(strings)
 }
 
-/// Why `statement` does not list the command, every flag and every variable of `integration`
-/// exactly, in the order the host applies them, or nothing when it does.
+/// Why the strings `statement` writes are not exactly the command, the flags and the variables of
+/// `integration`, in the order the host applies them, or nothing when they are.
 ///
 /// Every string the statement writes, read whole, is exactly the command, then each flag, then each
-/// variable's value, and nothing else, so nothing is shortened, added, dropped or moved. A flag is
-/// never written after `=`, where it would read as a variable's value, and each value is written
-/// after exactly its variable's own name.
+/// variable's value, and no other string is written, so no string is shortened, added, dropped or
+/// moved. A flag is never written after `=`, where it would read as a variable's value, and each
+/// value is written after exactly its variable's own name. The other words are not this check's:
+/// an argument written without quotes is no string, so [`ReviewedIntegration::listed_refusal`]
+/// compares the whole statement with the reviewed list first.
 fn listing_refusal(integration: &CommandIntegration, statement: &str) -> Option<String> {
     let strings = match written_strings(statement) {
         Ok(strings) => strings,
@@ -935,6 +974,30 @@ fn misstatements(integration: &CommandIntegration) -> Vec<String> {
     wrong
 }
 
+/// Statements that each add to what the host renders for `integration` in words no string holds:
+/// an argument written without quotes between the first two flags or after the last one, or a
+/// variable whose value is written without quotes after the last one.
+fn unquoted_additions(integration: &CommandIntegration) -> Vec<String> {
+    let rendered = integration.statement();
+    let quoted = |text: &str| serde_json::to_string(text).expect("text is a JSON string");
+    let mut added = Vec::new();
+    if let [first, second, ..] = integration.flags.as_slice() {
+        let pair = format!("{} {}", quoted(first), quoted(second));
+        let spread = format!("{} --extra {}", quoted(first), quoted(second));
+        added.push(rendered.replacen(&pair, &spread, 1));
+    }
+    if let Some(last) = integration.flags.last() {
+        let written = format!("{}.", quoted(last));
+        added.push(rendered.replacen(&written, &format!("{} --extra.", quoted(last)), 1));
+    }
+    if let Some(last) = integration.variables.last() {
+        let written = format!("{}={}.", last.name, quoted(&last.value));
+        let more = format!("{}={}, EXTRA=1.", last.name, quoted(&last.value));
+        added.push(rendered.replacen(&written, &more, 1));
+    }
+    added
+}
+
 /// Every package that declares a command integration declares the reviewed one, validates, asks
 /// for the capability that applies it and states the package contract that reads it, and the grant
 /// a person confirms lists its command, every flag and every variable exactly. A reviewed package
@@ -976,7 +1039,7 @@ fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly(
             "{}",
             reviewed.plugin
         );
-        if let Some(refusal) = statement_refusal(integration) {
+        if let Some(refusal) = reviewed.listed_refusal(integration, &integration.statement()) {
             panic!("{}: {refusal}", reviewed.plugin);
         }
     }
@@ -984,8 +1047,10 @@ fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly(
 
 /// A reviewed declaration is compared whole: another command, a flag changed, added, dropped or
 /// moved, a variable changed or added, or one word of the statement changed is not the reviewed
-/// declaration. And for each declaration, and for one with two flags and a variable, every
-/// misstatement of the host's statement is refused by the same check that accepts the host's own.
+/// declaration, and each change to the command, a flag or a variable changes the list the grant
+/// shows. For each declaration, the check that accepts the list the host renders refuses every
+/// misstatement of its strings and every addition in words no string holds; and for a declaration
+/// with two flags and a variable, the string check refuses every misstatement of its strings.
 #[test]
 fn a_changed_command_integration_is_not_the_reviewed_one() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -1035,14 +1100,43 @@ fn a_changed_command_integration_is_not_the_reviewed_one() {
         ))
         .expect("a statement");
         changes.push(statement);
-        for changed in &changes {
+        for (index, changed) in changes.iter().enumerate() {
             assert!(
                 reviewed.refusal(changed).is_some(),
                 "{}: {changed:?} is accepted as the reviewed declaration",
                 reviewed.plugin
             );
+            // Every change but the last, which is the grant's statement, changes the list.
+            if index + 1 < changes.len() {
+                assert!(
+                    reviewed
+                        .listed_refusal(changed, &changed.statement())
+                        .is_some(),
+                    "{}: {changed:?} shows the reviewed list",
+                    reviewed.plugin
+                );
+            }
         }
-        assert_statement_is_checked(&integration);
+
+        let rendered = integration.statement();
+        assert_eq!(
+            reviewed.listed_refusal(&integration, &rendered),
+            None,
+            "{rendered}"
+        );
+        let wrong: Vec<String> = misstatements(&integration)
+            .into_iter()
+            .chain(unquoted_additions(&integration))
+            .collect();
+        assert!(!wrong.is_empty(), "{rendered}");
+        for statement in wrong {
+            assert_ne!(statement, rendered, "a misstatement that changes nothing");
+            assert!(
+                reviewed.listed_refusal(&integration, &statement).is_some(),
+                "{}: {statement} is accepted as the reviewed list",
+                reviewed.plugin
+            );
+        }
     }
     assert_statement_is_checked(&CommandIntegration {
         command: "agent".to_owned(),
@@ -1055,8 +1149,8 @@ fn a_changed_command_integration_is_not_the_reviewed_one() {
     });
 }
 
-/// The listing check accepts the statement the host renders for `integration` and refuses every
-/// misstatement of it.
+/// The string check accepts the statement the host renders for `integration` and refuses every
+/// misstatement of its strings.
 fn assert_statement_is_checked(integration: &CommandIntegration) {
     let rendered = integration.statement();
     assert_eq!(listing_refusal(integration, &rendered), None, "{rendered}");
