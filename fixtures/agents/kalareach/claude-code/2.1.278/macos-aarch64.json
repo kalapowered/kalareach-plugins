@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-25T23:41:18Z",
-    "finished": "2026-09-25T23:43:22Z",
+    "started": "2026-09-26T00:21:30Z",
+    "finished": "2026-09-26T00:23:04Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "8aab681e30880828b50675f4e12cfb1c04d20037",
+      "id": "311ade131be33a5fc41c063b045ddc92dcd9b960",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "95c1e2ae86a3fd020fa5ab3049d1b2928e4e9df5",
+        "id": "a215635e2a6eec8cd6e281990418c6676629b668",
         "modified": false
       }
     },
@@ -67,7 +67,7 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-nACT4p",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-wP462Z",
     "own_home": {
       "bound_to_a_desktop": true,
       "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
@@ -85,7 +85,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 14,
+      "seconds": 8,
       "log": "own-home.log",
       "error": null
     },
@@ -98,7 +98,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 19,
+      "seconds": 12,
       "log": "claude-code/2b.log",
       "error": null
     },
@@ -111,7 +111,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 18,
+      "seconds": 13,
       "log": "claude-code/5a.log",
       "error": null
     },
@@ -124,7 +124,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 19,
+      "seconds": 17,
       "log": "claude-code/6a.log",
       "error": null
     },
@@ -137,7 +137,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 23,
+      "seconds": 17,
       "log": "claude-code/8a.log",
       "error": null
     },
@@ -150,7 +150,7 @@
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 22,
+      "seconds": 17,
       "log": "claude-code/14.03a.log",
       "error": null
     }
@@ -217,27 +217,27 @@
             "answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 7450fedd-7962-4f5d-bb00-ffe7eb534108",
+                "detail": "STALE_SESSION: no application instance 240a601e-2281-44f4-84e6-c6e8f8fcba71",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 7450fedd-7962-4f5d-bb00-ffe7eb534108",
+                "detail": "STALE_SESSION: no application instance 240a601e-2281-44f4-84e6-c6e8f8fcba71",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 7450fedd-7962-4f5d-bb00-ffe7eb534108",
+                "detail": "STALE_SESSION: no application instance 240a601e-2281-44f4-84e6-c6e8f8fcba71",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 7450fedd-7962-4f5d-bb00-ffe7eb534108",
+                "detail": "STALE_SESSION: no application instance 240a601e-2281-44f4-84e6-c6e8f8fcba71",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 1d0ffa62-0dfe-4b00-a06d-039b57f15941",
+                "detail": "STALE_SESSION: no pending resource 6821a83d-4271-4e21-a516-4d1ece22f6dd",
                 "refused": "STALE_SESSION"
               },
               {
@@ -247,17 +247,17 @@
               },
               {
                 "call": "plugin.action.invoke prompt.send",
-                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 7450fedd-7962-4f5d-bb00-ffe7eb534108",
+                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 240a601e-2281-44f4-84e6-c6e8f8fcba71",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke status.refresh",
-                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 7450fedd-7962-4f5d-bb00-ffe7eb534108",
+                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 240a601e-2281-44f4-84e6-c6e8f8fcba71",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "plugin.action.invoke approval.answer",
-                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 7450fedd-7962-4f5d-bb00-ffe7eb534108",
+                "detail": "STALE_SESSION: kalareach/claude-code is not bound to 240a601e-2281-44f4-84e6-c6e8f8fcba71",
                 "refused": "STALE_SESSION"
               },
               {
@@ -330,10 +330,11 @@
               "executed": [
                 {
                   "command": "claude",
+                  "device": 16777234,
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 11714,
+                  "pid": 90194,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
@@ -343,18 +344,19 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 11714,
+                    "pid": 90194,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "launch": "native",
                   "reached": "the agent's own process maps it",
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
                   "what": "claude"
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 1,
-              "session_path": "<tmp>/krm-ba03c194/agent/current/bin:<tmp>/krm-ba03c194/agent/runtime:/usr/bin:/bin"
+              "samples": 14,
+              "session_path": "<tmp>/krm-3aba8087/agent/current/bin:<tmp>/krm-3aba8087/agent/runtime:/usr/bin:/bin"
             }
           }
         },
@@ -410,7 +412,7 @@
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 13333 (claude)",
+              "check": "these have ended: process 91389 (claude)",
               "what": "the agent ended with a second daemon kill"
             },
             "installed": {
@@ -424,17 +426,18 @@
               "plugin_id": "kalareach/claude-code",
               "version": "0.3.0"
             },
-            "killed_daemon": 13203,
+            "killed_daemon": 91257,
             "local_terminal_input": "❯ Yes, I trust this folder",
             "provenance": {
               "ended_before_read": [],
               "executed": [
                 {
                   "command": "claude",
+                  "device": 16777234,
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 13333,
+                  "pid": 91389,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
@@ -444,20 +447,21 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 13333,
+                    "pid": 91389,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "launch": "native",
                   "reached": "the agent's own process maps it",
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
                   "what": "claude"
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 4,
-              "session_path": "<tmp>/krm-82acb582/agent/current/bin:<tmp>/krm-82acb582/agent/runtime:/usr/bin:/bin"
+              "samples": 16,
+              "session_path": "<tmp>/krm-c51785c9/agent/current/bin:<tmp>/krm-c51785c9/agent/runtime:/usr/bin:/bin"
             },
-            "restarted_daemon": 13497
+            "restarted_daemon": 91661
           }
         },
         {
@@ -487,15 +491,15 @@
           "evidence": {
             "control": {
               "breaks_property": true,
-              "check": "process 15369 runs <tools>/claude-code/2.1.281/bin/claude (inode 69651059), not <tools>/claude-code/2.1.278/bin/claude (inode 69649374)",
-              "relaunched_process": 15369,
+              "check": "process 93371 runs <tools>/claude-code/2.1.281/bin/claude (inode 69651059), not <tools>/claude-code/2.1.278/bin/claude (inode 69649374)",
+              "relaunched_process": 93371,
               "relaunched_runs": {
                 "file": "<tools>/claude-code/2.1.281/bin/claude",
                 "inode": 69651059
               },
               "what": "the agent relaunched in the first session after the upgrade"
             },
-            "first_agent_process": 15103,
+            "first_agent_process": 92845,
             "installed": {
               "grant": [
                 "approval.decode",
@@ -521,18 +525,20 @@
               "executed": [
                 {
                   "command": "claude",
+                  "device": 16777234,
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 15103,
+                  "pid": 92845,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
                   "command": "claude",
+                  "device": 16777234,
                   "from": "newer build",
                   "image": "<tools>/claude-code/2.1.281/bin/claude",
                   "inode": 69651059,
-                  "pid": 15229,
+                  "pid": 93100,
                   "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626"
                 }
               ],
@@ -542,10 +548,11 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 15103,
+                    "pid": 92845,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "launch": "native",
                   "reached": "the agent's own process maps it",
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
                   "what": "claude"
@@ -555,10 +562,11 @@
                     "command": "claude",
                     "from": "newer build",
                     "image": "<tools>/claude-code/2.1.281/bin/claude",
-                    "pid": 15229,
+                    "pid": 93100,
                     "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626"
                   },
                   "file": "<tools>/claude-code/2.1.281/bin/claude",
+                  "launch": "native",
                   "reached": "the agent's own process maps it",
                   "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626",
                   "what": "claude"
@@ -568,43 +576,44 @@
                     "command": "claude",
                     "from": "newer build",
                     "image": "<tools>/claude-code/2.1.281/bin/claude",
-                    "pid": 15369,
+                    "pid": 93371,
                     "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626"
                   },
                   "file": "<tools>/claude-code/2.1.281/bin/claude",
+                  "launch": "native",
                   "reached": "the agent's own process maps it",
                   "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626",
                   "what": "claude"
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 8,
-              "session_path": "<tmp>/krm-b99613cf/agent/current/bin:<tmp>/krm-b99613cf/agent/runtime:/usr/bin:/bin"
+              "samples": 20,
+              "session_path": "<tmp>/krm-02b7884d/agent/current/bin:<tmp>/krm-02b7884d/agent/runtime:/usr/bin:/bin"
             },
             "second_session_answers": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 9854165b-7cb0-492d-b95f-50356e2059ea",
+                "detail": "STALE_SESSION: no application instance 95917ed0-d111-4394-9919-1631d35214fb",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 9854165b-7cb0-492d-b95f-50356e2059ea",
+                "detail": "STALE_SESSION: no application instance 95917ed0-d111-4394-9919-1631d35214fb",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 9854165b-7cb0-492d-b95f-50356e2059ea",
+                "detail": "STALE_SESSION: no application instance 95917ed0-d111-4394-9919-1631d35214fb",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 9854165b-7cb0-492d-b95f-50356e2059ea",
+                "detail": "STALE_SESSION: no application instance 95917ed0-d111-4394-9919-1631d35214fb",
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource af22be8f-fa0d-4f69-b6c4-bbe6163240ef",
+                "detail": "STALE_SESSION: no pending resource 1f3cb75f-f8d6-4639-ba57-a589de06fb40",
                 "refused": "STALE_SESSION"
               },
               {
@@ -689,10 +698,11 @@
               "executed": [
                 {
                   "command": "claude",
+                  "device": 16777234,
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 16964,
+                  "pid": 94477,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
@@ -702,27 +712,28 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 16964,
+                    "pid": 94477,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "launch": "native",
                   "reached": "the agent's own process maps it",
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
                   "what": "claude"
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 22,
-              "session_path": "<tmp>/krm-3d50473a/agent/current/bin:<tmp>/krm-3d50473a/agent/runtime:/usr/bin:/bin"
+              "samples": 35,
+              "session_path": "<tmp>/krm-8192c32b/agent/current/bin:<tmp>/krm-8192c32b/agent/runtime:/usr/bin:/bin"
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session fa4db6d4-5925-48a3-8c56-21768b086146 approval allow"
+                "title": "kalareach session 16605839-4bbd-49aa-9d94-2803648cd297 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-3d50473a/h/.claude/projects/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-3d50473a-w/fa4db6d4-5925-48a3-8c56-21768b086146.jsonl"
+                "path": "<tmp>/krm-8192c32b/h/.claude/projects/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-8192c32b-w/16605839-4bbd-49aa-9d94-2803648cd297.jsonl"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
@@ -736,7 +747,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 3,
                     "exit": 0,
                     "probe": "hook-none-permission",
                     "stderr_first_line": "",
@@ -763,7 +774,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-3d50473a/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-8192c32b/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -771,7 +782,7 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-3d50473a/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-8192c32b/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -779,20 +790,20 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-3d50473a/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-8192c32b/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 3,
+                    "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-3d50473a/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-8192c32b/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -872,7 +883,7 @@
               "more_resources": false,
               "resources": []
             },
-            "composer_row": "❯ <tmp>/krm-7bdd22a9/w/kalareach-shot.png",
+            "composer_row": "❯ <tmp>/krm-18dd6ff2/w/kalareach-shot.png",
             "control": {
               "breaks_property": true,
               "refused": "input.write: LEASE_LOST: the input lease has moved on",
@@ -894,27 +905,30 @@
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c gc.auto=0 -c maintenance.auto=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never clone --depth 1 --recurse-submodules --shallow-submodules -- git@github.com:anthropics/claude-plugins-official.git <tmp>/krm-7bdd22a9/h/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone",
+                  "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c gc.auto=0 -c maintenance.auto=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never clone --depth 1 --recurse-submodules --shallow-submodules -- git@github.com:anthropics/claude-plugins-official.git <tmp>/krm-18dd6ff2/h/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone",
+                  "device": 16777234,
                   "from": "system",
                   "image": "/Applications/Xcode.app/Contents/Developer/usr/bin/git",
                   "inode": 12560984,
-                  "pid": 19638,
+                  "pid": 96876,
                   "sha256": "10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
                 },
                 {
                   "command": "claude",
+                  "device": 16777234,
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 19291,
+                  "pid": 96316,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
                   "command": "ssh -T -o BatchMode=yes -o ConnectTimeout=2 -o StrictHostKeyChecking=yes git@github.com",
+                  "device": 16777234,
                   "from": "system",
                   "image": "/usr/bin/ssh",
                   "inode": 1152921500312572825,
-                  "pid": 19431,
+                  "pid": 96667,
                   "sha256": "17542914a3fb55e7efeb35a90d594a21c84bf6a4cfe1fc8ddff5606dc2658fc3"
                 }
               ],
@@ -924,20 +938,21 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 19291,
+                    "pid": 96316,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
+                  "launch": "native",
                   "reached": "the agent's own process maps it",
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6",
                   "what": "claude"
                 }
               ],
               "sample_interval_ms": 250,
-              "samples": 20,
-              "session_path": "<tmp>/krm-7bdd22a9/agent/current/bin:<tmp>/krm-7bdd22a9/agent/runtime:/usr/bin:/bin"
+              "samples": 34,
+              "session_path": "<tmp>/krm-18dd6ff2/agent/current/bin:<tmp>/krm-18dd6ff2/agent/runtime:/usr/bin:/bin"
             },
-            "typed": "<tmp>/krm-7bdd22a9/w/kalareach-shot.png"
+            "typed": "<tmp>/krm-18dd6ff2/w/kalareach-shot.png"
           }
         },
         {
