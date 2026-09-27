@@ -81,8 +81,8 @@ build is named in its release's entry only when all of these hold:
 `validate` prints each build it names and each pinned build it leaves out, with every condition that
 build does not meet. Input that cannot be read for what it shows stops the pipeline instead: a record
 in bad form, a record run on another platform than its file name says, a platform the list does not
-know, a build pinned twice or for a package this repository does not publish, and one executable
-named as two versions.
+know, a build pinned twice or for a package this repository does not publish with a connector table,
+and one executable named as two versions.
 
 The builds are signed with the index and kept apart from the package's bytes, so a generation adds or
 withdraws a build without a new package. A build is added when its record newly qualifies, and

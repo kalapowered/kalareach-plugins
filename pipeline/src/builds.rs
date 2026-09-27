@@ -31,7 +31,7 @@
 //! A build that misses any of them is left out, and [`Builds::omitted`] says why. Input that
 //! cannot be read for what it shows is refused instead: a build list or a record that breaks its
 //! form, a platform the list does not know, a build pinned for a package this repository does not
-//! publish, or one executable named as two versions.
+//! publish or publishes without a connector table, or one executable named as two versions.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -287,24 +287,18 @@ impl Builds {
 /// # Errors
 ///
 /// Returns an error when the build list is refused ([`read_list`]), pins a build for a package this
-/// repository does not publish, or a record cannot be read or breaks its form.
+/// repository does not publish or publishes without a connector table, or a record cannot be read or
+/// breaks its form.
 pub fn load(root: &Path, packages: &[LoadedPackage]) -> Result<Builds> {
     let Some(list) = read_list(root)? else {
         return Ok(Builds::default());
     };
     let mut builds = Builds::default();
     for pinned in &list.builds {
-        let Some(package) = packages
-            .iter()
-            .find(|package| package.package.manifest.plugin_id().as_str() == pinned.package)
-        else {
-            return Err(Error::Layout {
-                detail: format!(
-                    "{LIST} pins a build for {}, which this repository does not publish",
-                    pinned.package
-                ),
-            });
-        };
+        let package =
+            connector_package(packages, &pinned.package).map_err(|what| Error::Layout {
+                detail: format!("{LIST} pins a build for {what}"),
+            })?;
         let manifest = &package.package.manifest;
         let release = manifest.version.to_string();
         let relative = records::path(
@@ -342,6 +336,29 @@ pub fn load(root: &Path, packages: &[LoadedPackage]) -> Result<Builds> {
         named.sort_by(|left, right| canonical(left).cmp(&canonical(right)));
     }
     Ok(builds)
+}
+
+/// The package this repository publishes under `plugin_id` with a connector table, or what it is
+/// instead. A build is qualified against a connector's table, so a pin or a record for any other
+/// package is one the pipeline cannot read for what it shows.
+fn connector_package<'a>(
+    packages: &'a [LoadedPackage],
+    plugin_id: &str,
+) -> std::result::Result<&'a LoadedPackage, String> {
+    let Some(package) = packages
+        .iter()
+        .find(|package| package.package.manifest.plugin_id().as_str() == plugin_id)
+    else {
+        return Err(format!(
+            "{plugin_id}, which this repository does not publish"
+        ));
+    };
+    if package.package.connector.is_none() {
+        return Err(format!(
+            "{plugin_id}, whose release has no connector table for a build to be qualified against"
+        ));
+    }
+    Ok(package)
 }
 
 /// The order an entry's builds are written in, so a rebuild writes the same bytes.
@@ -472,8 +489,8 @@ fn qualification_gaps(record: &Value) -> Vec<String> {
 /// Everything that keeps the repository's records from matching its packages and its build list.
 ///
 /// Every connector package has a record for the build its table is pinned to. Every record, pinned
-/// or not, is one the repository can read for what it shows: for a package it publishes, on the
-/// list's platform, in good form, for the release it publishes, and run against the version its
+/// or not, is one the repository can read for what it shows: for a connector package it publishes,
+/// on the list's platform, in good form, for the release it publishes, and run against the version its
 /// path names, which is the pinned application and SHA-256 where the list pins that build. None of
 /// this needs a pin, so a build withdrawn by removing its pin keeps its record, and the record
 /// still has to hold.
@@ -534,13 +551,9 @@ fn check_record(
             "not a record: a record is <publisher>/<plugin>/<version>/<os>-<arch>.json".to_owned(),
         ]);
     };
-    let Some(package) = packages.iter().find(|package| {
-        package.package.manifest.publisher_id.as_str() == publisher
-            && package.package.manifest.plugin_name.as_str() == plugin
-    }) else {
-        return Ok(vec![format!(
-            "a record for {publisher}/{plugin}, which this repository does not publish"
-        )]);
+    let package = match connector_package(packages, &format!("{publisher}/{plugin}")) {
+        Ok(package) => package,
+        Err(what) => return Ok(vec![format!("a record for {what}")]),
     };
     if *file != format!("{}.json", list.platform.name()) {
         return Ok(vec![format!(

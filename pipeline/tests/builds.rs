@@ -314,6 +314,31 @@ fn write_list(directory: &Path, builds: &[Value]) {
     );
 }
 
+/// Adds a copy of the example package, which has no connector table, to the repository in
+/// `directory`, and returns the digest of its manifest.
+fn add_example_package(directory: &Path) -> String {
+    let destination = directory.join("plugins/kalareach/example-declarative");
+    copy_tree(
+        &root().join("plugins/kalareach/example-declarative"),
+        &destination,
+    );
+    PayloadDigest::of(&std::fs::read(destination.join("plugin.json")).expect("the manifest reads"))
+        .to_string()
+}
+
+/// A pin for a build of the example package's application.
+fn example_pin() -> Value {
+    pin(
+        "kalareach/example-declarative",
+        "example-agent",
+        "1.0.0",
+        "npm @kalareach/example-agent",
+        "native",
+        &"a".repeat(64),
+        None,
+    )
+}
+
 /// The build the list pins for Claude Code, as an index entry names it.
 fn claude_code_build() -> QualifiedBuild {
     QualifiedBuild {
@@ -746,6 +771,19 @@ fn input_that_cannot_be_read_for_what_it_shows_is_refused() {
             .contains("pins a build for kalareach/codex, which this repository does not publish"),
         "{refusal}"
     );
+
+    let no_connector = temporary.path().join("no-connector");
+    claude_code_repository(&no_connector, &qualified_record());
+    add_example_package(&no_connector);
+    write_list(&no_connector, &[claude_code_pin(), example_pin()]);
+    let refusal = refused(&no_connector);
+    assert!(
+        refusal.contains(
+            "pins a build for kalareach/example-declarative, whose release has no connector table \
+             for a build to be qualified against"
+        ),
+        "{refusal}"
+    );
 }
 
 /// One executable pinned for two packages at one version, as OpenCode's two packages pin theirs, is
@@ -952,6 +990,49 @@ fn removing_the_pin_of_a_build_no_table_names_leaves_its_record_whole() {
     assert_eq!(
         builds::check_records(&repository, &loaded.repository.packages).expect("the records read"),
         Vec::<String>::new()
+    );
+}
+
+/// A record is for a connector package: a record in good form for the release of a package with no
+/// connector table, which no build could be qualified by, is one the record check reports.
+#[test]
+fn a_record_for_a_package_without_a_connector_is_reported() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    claude_code_repository(&repository, &qualified_record());
+    let digest = add_example_package(&repository);
+    let mut record = qualified_record();
+    record["run"]["packages"] = json!([{
+        "name": "kalareach/example-declarative",
+        "version": "0.1.0",
+        "manifest_digest": digest,
+        "generation": "snapshots/development",
+    }]);
+    record["attachment_paths"] = json!([{
+        "operation": "terminal",
+        "declared": null,
+        "source": "plugin.json",
+        "package_digest": digest,
+    }]);
+    record["run"]["applications"] = json!([{
+        "id": "example-agent",
+        "version": "1.0.0",
+        "status": "installed",
+        "url": "https://registry.npmjs.org/@kalareach/example-agent/-/example-agent-1.0.0.tgz",
+        "sha256": "a".repeat(64),
+        "build": "darwin-arm64",
+        "reason": "the build the table is pinned to",
+    }]);
+    let relative = "fixtures/agents/kalareach/example-declarative/1.0.0/macos-aarch64.json";
+    write_json(&repository.join(relative), &record);
+
+    let loaded = packages::load(&repository).expect("the repository loads");
+    assert_eq!(
+        builds::check_records(&repository, &loaded.repository.packages).expect("the records read"),
+        vec![format!(
+            "{relative}: a record for kalareach/example-declarative, whose release has no \
+             connector table for a build to be qualified against"
+        )]
     );
 }
 
