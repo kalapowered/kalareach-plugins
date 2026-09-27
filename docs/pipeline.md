@@ -71,7 +71,9 @@ build is named in its release's entry only when all of these hold:
 - its pinned file is what a process runs, a `native` or `child` launch. A script runs as its
   interpreter and a wheel is an archive, so neither names an executable a host runs;
 - its record is in good form and is for this release and this build: the release's version,
-  manifest digest and attachment paths, and the build's application, version and SHA-256;
+  manifest digest and attachment paths, and, as the build every part ran against, the first of the
+  record's `run.applications`, installed, with the build's application, version and SHA-256. The
+  newer build an upgrade part moved to is listed after it and qualifies nothing;
 - the record's run is whole: no failure outside its identifiers, no problem and no failed step;
 - no part failed, and every part of the eight cases passed. A part that did not run is not a pass,
   whatever kept it from running.
@@ -85,7 +87,8 @@ named as two versions.
 The builds are signed with the index and kept apart from the package's bytes, so a generation adds or
 withdraws a build without a new package. A build is added when its record newly qualifies, and
 withdrawn when its pin is removed or a newly measured record no longer qualifies; the package's
-digest, and every copy a host installed, stay as they are.
+digest, and every copy a host installed, stay as they are. A withdrawn build's record stays too, and
+still has to meet every check the repository makes of it.
 
 Before anything is signed, `build` holds every entry's builds to the SDK's own rule: no more than
 `MAX_QUALIFIED_BUILDS` (256) in one entry, each on a platform the release lists, and one version for

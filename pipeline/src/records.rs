@@ -17,6 +17,7 @@ use std::path::{Path, PathBuf};
 
 use kr_plugin_sdk::effect::{AttachmentInsertion, EffectClass};
 use kr_plugin_sdk::matching::{Architecture, OperatingSystem};
+use kr_plugin_sdk::version::PackageVersion;
 use serde_json::{Value, json};
 
 use crate::packages::LoadedPackage;
@@ -177,19 +178,47 @@ pub fn form_problems(record: &Value, platform: &Platform) -> Vec<String> {
     if run["host"]["repository"] != "kalareach" {
         problems.push("run.host names no host repository".to_owned());
     }
-    if entries(&run["packages"]).is_empty() {
-        problems.push("run.packages names no package".to_owned());
-    }
-    for entry in entries(&run["applications"]) {
-        if entry["id"].as_str().is_none_or(str::is_empty)
-            || entry["version"].as_str().is_none_or(str::is_empty)
-            || !is_hex(&entry["sha256"], 64)
-        {
-            problems.push(format!(
-                "run.applications names {} without an application, a version and a SHA-256",
-                entry["id"]
-            ));
+    // The identities the record names, each whole, so that a record for another release or another
+    // build is told apart from one that names neither.
+    match run["packages"].as_array() {
+        Some(named) if !named.is_empty() => {
+            for entry in named {
+                if entry["name"].as_str().is_none_or(str::is_empty)
+                    || entry["version"]
+                        .as_str()
+                        .is_none_or(|version| PackageVersion::parse(version).is_err())
+                    || !is_hex(&entry["manifest_digest"], 64)
+                {
+                    problems.push(format!(
+                        "run.packages names {entry} without a package, a release version and a \
+                         manifest digest"
+                    ));
+                }
+            }
         }
+        _ => {
+            problems.push("run.packages is not a list of the packages the run installed".to_owned())
+        }
+    }
+    match run["applications"].as_array() {
+        Some(named) if !named.is_empty() => {
+            for entry in named {
+                if entry["id"].as_str().is_none_or(str::is_empty)
+                    || entry["version"].as_str().is_none_or(str::is_empty)
+                    || !is_hex(&entry["sha256"], 64)
+                    || entry["status"].as_str().is_none_or(str::is_empty)
+                {
+                    problems.push(format!(
+                        "run.applications names {entry} without an application, a version, a \
+                         SHA-256 and a status"
+                    ));
+                }
+            }
+        }
+        _ => problems.push(
+            "run.applications is not a list whose first entry is the build the parts ran against"
+                .to_owned(),
+        ),
     }
     let identifiers = record["identifiers"].as_object();
     let keys: BTreeSet<&str> = identifiers
@@ -289,8 +318,16 @@ pub fn release_problems(record: &Value, package: &LoadedPackage) -> Vec<String> 
     problems
 }
 
-/// Where a record in good form names no run of one build: the application, its version and the
-/// SHA-256 of its pinned file, together in one of `run.applications`.
+/// The build a record's parts ran against: the first of `run.applications`. A later entry is the
+/// newer build an upgrade part moves to, which the parts did not qualify.
+#[must_use]
+pub fn tested_build(record: &Value) -> &Value {
+    &record["run"]["applications"][0]
+}
+
+/// Where a record in good form did not run its parts against one build: the build it names first
+/// in `run.applications`, installed, is not the application at the version with the SHA-256 of its
+/// pinned file.
 #[must_use]
 pub fn build_problems(
     record: &Value,
@@ -298,18 +335,30 @@ pub fn build_problems(
     version: &str,
     sha256: &str,
 ) -> Vec<String> {
-    let ran = entries(&record["run"]["applications"])
-        .into_iter()
-        .any(|entry| {
-            entry["id"] == application && entry["version"] == version && entry["sha256"] == sha256
-        });
-    if ran {
+    let tested = tested_build(record);
+    if tested["id"] == application
+        && tested["version"] == version
+        && tested["sha256"] == sha256
+        && tested["status"] == "installed"
+    {
         Vec::new()
     } else {
         vec![format!(
-            "run.applications names no build {application} {version} with the SHA-256 {sha256}"
+            "the record's parts ran against {} {} with the SHA-256 {} ({}), not {application} \
+             {version} with the SHA-256 {sha256}",
+            text(&tested["id"]),
+            text(&tested["version"]),
+            text(&tested["sha256"]),
+            text(&tested["status"])
         )]
     }
+}
+
+/// A value as text, or its JSON where it is not text.
+fn text(value: &Value) -> String {
+    value
+        .as_str()
+        .map_or_else(|| value.to_string(), str::to_owned)
 }
 
 /// Every test of every identifier the record holds.
@@ -585,7 +634,7 @@ fn attachment_paths(package: &LoadedPackage) -> Value {
 }
 
 /// The entries of a list, or none where the value is not one.
-fn entries(value: &Value) -> Vec<&Value> {
+pub(crate) fn entries(value: &Value) -> Vec<&Value> {
     value
         .as_array()
         .map(|list| list.iter().collect())

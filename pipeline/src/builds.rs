@@ -21,7 +21,9 @@
 //! - its pinned file is what a process runs (a `native` or `child` launch). A script's process is
 //!   its interpreter and a wheel is an archive: a host names no executable by their digests;
 //! - its record is in good form, and is for this release (its version, manifest and attachment
-//!   paths) and for this build (its application, version and SHA-256);
+//!   paths) and for this build: the build its parts ran against, the first of the record's
+//!   `run.applications`, installed, is this application at this version with this SHA-256. A newer
+//!   build an upgrade part moved to is listed after it, and qualifies nothing;
 //! - the record's run is whole: no failure outside its identifiers, no problem, no failed step;
 //! - no part failed, and every part of section 12's eight cases ([`REQUIRED_PARTS`]) passed. A part
 //!   not run is not a pass, whatever the reason it could not run.
@@ -31,8 +33,8 @@
 //! form, a platform the list does not know, a build pinned for a package this repository does not
 //! publish, or one executable named as two versions.
 
-use std::collections::BTreeMap;
-use std::path::Path;
+use std::collections::{BTreeMap, BTreeSet};
+use std::path::{Path, PathBuf};
 
 use kr_plugin_sdk::catalogue::QualifiedBuild;
 use kr_plugin_sdk::digest::PayloadDigest;
@@ -465,4 +467,148 @@ fn qualification_gaps(record: &Value) -> Vec<String> {
         ));
     }
     gaps
+}
+
+/// Everything that keeps the repository's records from matching its packages and its build list.
+///
+/// Every connector package has a record for the build its table is pinned to: in good form, for
+/// this release, whose parts ran against that version, and, where the list pins that build, against
+/// the pinned application and SHA-256. A pinned build that has a record has one in good form for
+/// its release and build. A record for a build neither a table nor the list names is stale. None of
+/// this needs a build to be pinned, so a build withdrawn by removing its pin keeps its record, and
+/// the record still has to hold.
+///
+/// # Errors
+///
+/// Returns an error when the build list is refused or a record cannot be read.
+pub fn check_records(root: &Path, packages: &[LoadedPackage]) -> Result<Vec<String>> {
+    let Some(list) = read_list(root)? else {
+        return Ok(vec![format!("{LIST} is missing")]);
+    };
+    let mut problems = Vec::new();
+    let mut expected = BTreeSet::new();
+    let mut check = |relative: &Path, found: Vec<String>| {
+        problems.extend(
+            found
+                .into_iter()
+                .map(|problem| format!("{}: {problem}", relative.display())),
+        );
+    };
+    for package in packages {
+        let Some(connector) = &package.package.connector else {
+            continue;
+        };
+        let manifest = &package.package.manifest;
+        let plugin_id = manifest.plugin_id().to_string();
+        let tested = connector.protocol.tested_version.to_string();
+        let relative = records::path(
+            manifest.publisher_id.as_str(),
+            manifest.plugin_name.as_str(),
+            &tested,
+            &list.platform,
+        );
+        expected.insert(relative.clone());
+        let path = root.join(&relative);
+        if !path.is_file() {
+            check(
+                &relative,
+                vec![format!(
+                    "{plugin_id} has no record for {tested}, the build its table is pinned to"
+                )],
+            );
+            continue;
+        }
+        let record: Value = read_json(&path)?;
+        let mut found = records::form_problems(&record, &list.platform);
+        found.extend(records::release_problems(&record, package));
+        let pinned = list
+            .builds
+            .iter()
+            .find(|pinned| pinned.package == plugin_id && pinned.version.to_string() == tested);
+        match pinned {
+            Some(pinned) => found.extend(records::build_problems(
+                &record,
+                pinned.application.as_str(),
+                &tested,
+                &pinned.sha256.to_string(),
+            )),
+            None => {
+                let ran = &records::tested_build(&record)["version"];
+                if ran != tested.as_str() {
+                    found.push(format!(
+                        "the record's parts ran against version {ran}, not {tested}, the version \
+                         its table is pinned to"
+                    ));
+                }
+            }
+        }
+        check(&relative, found);
+    }
+    for pinned in &list.builds {
+        let Some(package) = packages
+            .iter()
+            .find(|package| package.package.manifest.plugin_id().as_str() == pinned.package)
+        else {
+            continue;
+        };
+        let manifest = &package.package.manifest;
+        let relative = records::path(
+            manifest.publisher_id.as_str(),
+            manifest.plugin_name.as_str(),
+            &pinned.version.to_string(),
+            &list.platform,
+        );
+        if !expected.insert(relative.clone()) {
+            continue;
+        }
+        let path = root.join(&relative);
+        if !path.is_file() {
+            continue;
+        }
+        let record: Value = read_json(&path)?;
+        let mut found = records::form_problems(&record, &list.platform);
+        found.extend(records::release_problems(&record, package));
+        found.extend(records::build_problems(
+            &record,
+            pinned.application.as_str(),
+            &pinned.version.to_string(),
+            &pinned.sha256.to_string(),
+        ));
+        check(&relative, found);
+    }
+    for relative in record_files(root) {
+        if !expected.contains(&relative) {
+            check(
+                &relative,
+                vec![
+                    "a record for a build no connector table and no pinned build names".to_owned(),
+                ],
+            );
+        }
+    }
+    Ok(problems)
+}
+
+/// Every record file under the records directory, relative to the repository root: the files four
+/// directories down, which is where a record for one publisher, plugin, version and platform is.
+fn record_files(root: &Path) -> Vec<PathBuf> {
+    let mut found = Vec::new();
+    let mut directories = vec![(root.join(records::RECORDS), 0_usize)];
+    while let Some((directory, depth)) = directories.pop() {
+        let Ok(entries) = std::fs::read_dir(&directory) else {
+            continue;
+        };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                directories.push((path, depth + 1));
+            } else if depth == 3
+                && let Ok(relative) = path.strip_prefix(root)
+            {
+                found.push(relative.to_path_buf());
+            }
+        }
+    }
+    found.sort();
+    found
 }

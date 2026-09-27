@@ -62,7 +62,7 @@ common form:
 | `run.host` | `{repository, commit: {id, modified}}`: the core repository and commit the host and the driver were built from, as `run.commit` names the commit of this repository the harness ran from |
 | `run.own_home` | What the check before the first agent read: the default keychain a session started with the person's own home and no agent names, and the execution context the host gave that session (`worker_profile`, and `bound_to_a_desktop`). The check is the first step of every record, group `own-home`; when it fails, `failures_outside_identifiers` names it |
 | `run.packages[]` | The package the parts ran against: `name`, `version`, `manifest_digest` (the SHA-256 of its `plugin.json`) and the `generation` it was installed from. The check requires the version and digest of the package in this tree, so a package released again needs its parts run again |
-| `run.applications[]` | The pinned build, and a newer build where the upgrade part uses one: `version`, `url` it came from, `sha256` of its pinned file, `status` and `reason` |
+| `run.applications[]` | The pinned build every part ran against, first, then the newer build where the upgrade part uses one: `id`, `version`, `url` it came from, `sha256` of its pinned file, `status` and `reason`. The first is the only build the record says anything about |
 | `tests[].part` | The part the test is, from the table above |
 | `tests[].source` | Where the test is, prefixed by its repository: `kalareach:` for the driver's tests, `kalareach-plugins:` for a part recorded from the table above |
 | `tests[].needs` | For a part not run, what it needs: a vendor account, a connector binding, a launch registration or draft reads |
@@ -101,8 +101,9 @@ it.
 ## What the index takes from them
 
 The catalogue pipeline names a pinned build in its release's index entry only when the record for
-that release, build and platform is in good form, is a whole run of this release and this build,
-shows no part failed, and shows every part of the eight cases (1 to 8b above) passed. A part not run
+that release, build and platform is in good form, is a whole run of this release whose parts ran
+against this build (the first of its `run.applications`, installed, with the pinned SHA-256), shows
+no part failed, and shows every part of the eight cases (1 to 8b above) passed. A part not run
 is not a pass. The pinned file must be what a process runs: a build whose `launch` is `script` or
 `wheel` is never named, since a script runs as its interpreter and a wheel is an archive. The parts
 of the typed-path rule, 14.03a and 14.03b, say nothing about the build and are not required, but a

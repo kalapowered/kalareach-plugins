@@ -355,7 +355,8 @@ fn an_entry_names_the_build_its_record_qualifies_with_its_digest_and_version() {
 
 /// The records as they stand name no build: each pinned build is left out for the parts of section
 /// 12's cases that did not pass, and a script or a wheel for naming no executable at all. So the
-/// index this repository builds is the one it built before an entry could name a build.
+/// index this repository builds is the one it built before an entry could name a build. The check
+/// goes through the builds the list pins, so a pin removed to withdraw a build does not break it.
 #[test]
 fn no_build_is_named_while_a_section_12_part_has_not_passed() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -381,12 +382,17 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         ("kalareach/opencode-attach", &[and_upgrade]),
         ("kalareach/qoder-cli", &[and_upgrade]),
     ];
-    for (plugin, reasons) in expected {
+    for pinned in &list.builds {
+        let reasons = expected
+            .iter()
+            .find(|(plugin, _)| *plugin == pinned.package)
+            .map(|(_, reasons)| *reasons)
+            .unwrap_or_else(|| panic!("{} is pinned; say here why it is left out", pinned.package));
         let omitted = builds
             .omitted()
             .iter()
-            .find(|omitted| omitted.plugin_id == plugin)
-            .unwrap_or_else(|| panic!("the pinned build of {plugin} is left out"));
+            .find(|omitted| omitted.plugin_id == pinned.package)
+            .unwrap_or_else(|| panic!("the pinned build of {} is left out", pinned.package));
         assert_eq!(omitted.reasons, reasons, "{omitted}");
         assert_eq!(omitted.platform, "macos-aarch64");
     }
@@ -500,7 +506,21 @@ fn a_record_that_is_not_a_whole_run_of_this_release_and_build_leaves_the_build_o
     assert_eq!(
         left_out_because(&other_build),
         vec![format!(
-            "run.applications names no build claude-code 2.1.278 with the SHA-256 \
+            "the record's parts ran against claude-code 2.1.278 with the SHA-256 \
+             {CLAUDE_CODE_NEWER_SHA256} (installed), not claude-code 2.1.278 with the SHA-256 \
+             {CLAUDE_CODE_SHA256}"
+        )]
+    );
+
+    let mut record = qualified_record();
+    record["run"]["applications"][0]["status"] = json!("not_installed");
+    let not_installed = temporary.path().join("not-installed");
+    claude_code_repository(&not_installed, &record);
+    assert_eq!(
+        left_out_because(&not_installed),
+        vec![format!(
+            "the record's parts ran against claude-code 2.1.278 with the SHA-256 \
+             {CLAUDE_CODE_SHA256} (not_installed), not claude-code 2.1.278 with the SHA-256 \
              {CLAUDE_CODE_SHA256}"
         )]
     );
@@ -603,6 +623,43 @@ fn input_that_cannot_be_read_for_what_it_shows_is_refused() {
         "{refusal}"
     );
 
+    // A record that names no whole release, or no list of builds, is not a record for another
+    // release or build: it names neither, and is refused rather than read as one.
+    let mut record = qualified_record();
+    record["run"]["packages"] = json!([{}]);
+    let no_release = temporary.path().join("no-release");
+    claude_code_repository(&no_release, &record);
+    let refusal = refused(&no_release);
+    assert!(
+        refusal.contains(
+            "run.packages names {} without a package, a release version and a manifest digest"
+        ),
+        "{refusal}"
+    );
+    let mut record = qualified_record();
+    record["run"]["applications"] = json!({});
+    let no_builds = temporary.path().join("no-builds");
+    claude_code_repository(&no_builds, &record);
+    let refusal = refused(&no_builds);
+    assert!(
+        refusal.contains(
+            "run.applications is not a list whose first entry is the build the parts ran against"
+        ),
+        "{refusal}"
+    );
+    let mut record = qualified_record();
+    record["run"]["applications"][0]
+        .as_object_mut()
+        .expect("the tested build")
+        .remove("sha256");
+    let no_digest = temporary.path().join("no-digest");
+    claude_code_repository(&no_digest, &record);
+    let refusal = refused(&no_digest);
+    assert!(
+        refusal.contains("without an application, a version, a SHA-256 and a status"),
+        "{refusal}"
+    );
+
     let two_versions = temporary.path().join("two-versions");
     claude_code_repository(&two_versions, &qualified_record());
     let mut pin = pinned("kalareach/claude-code");
@@ -668,33 +725,58 @@ fn one_executable_pinned_for_two_packages_at_one_version_is_read() {
     assert_eq!(opencode[0].version, opencode[1].version);
 }
 
-/// A generation adds a build when another pinned build's record qualifies, with no change to the
-/// package; an entry writes its builds in one order, whatever order the list gives them in.
-#[test]
-fn a_second_qualified_build_is_added_in_the_entry_s_own_order() {
-    let temporary = tempfile::tempdir().expect("a temporary directory");
-    let repository = temporary.path().join("repository");
-    claude_code_repository(&repository, &qualified_record());
+/// Where the record of the newer Claude Code build is, beside the pinned build's.
+const NEWER_RECORD: &str = "fixtures/agents/kalareach/claude-code/2.1.281/macos-aarch64.json";
+
+/// A repository whose list pins the newer Claude Code build as well as the pinned one, newer first,
+/// with `newer_record` as the newer build's record.
+fn two_build_repository(directory: &Path, newer_record: &Value) {
+    claude_code_repository(directory, &qualified_record());
     let first = pinned("kalareach/claude-code");
     let mut second = first.clone();
     second["version"] = json!("2.1.281");
     second["sha256"] = json!(CLAUDE_CODE_NEWER_SHA256);
     second["newer"] = Value::Null;
-    // The newer build is listed first; the record of the pinned build names it too.
-    write_list(&repository, &[second, first]);
-    write_json(
-        &repository.join("fixtures/agents/kalareach/claude-code/2.1.281/macos-aarch64.json"),
-        &qualified_record(),
-    );
+    write_list(directory, &[second, first]);
+    write_json(&directory.join(NEWER_RECORD), newer_record);
+}
 
+/// The newer Claude Code build, as an index entry names it.
+fn newer_build() -> QualifiedBuild {
     let mut newer = claude_code_build();
     newer.version = PackageVersion::parse("2.1.281").expect("a version");
     newer.executable_digest = PayloadDigest::parse(CLAUDE_CODE_NEWER_SHA256).expect("a digest");
+    newer
+}
+
+/// A generation adds a build when another pinned build's own record qualifies it, with no change to
+/// the package: a record whose parts ran against that build, first in its applications. An entry
+/// writes its builds in one order, whatever order the list gives them in.
+#[test]
+fn a_second_build_whose_own_record_qualifies_it_is_added_in_the_entry_s_order() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    let mut newer_record = qualified_record();
+    newer_record["run"]["applications"] = json!([{
+        "id": "claude-code",
+        "version": "2.1.281",
+        "status": "installed",
+        "url": "https://registry.npmjs.org/@anthropic-ai/claude-code-darwin-arm64/-/claude-code-darwin-arm64-2.1.281.tgz",
+        "sha256": CLAUDE_CODE_NEWER_SHA256,
+        "build": "darwin-arm64",
+        "reason": "the build the table is pinned to",
+    }]);
+    two_build_repository(&repository, &newer_record);
+
     assert_eq!(
         claude_code_entry_builds(&repository),
-        vec![claude_code_build(), newer]
+        vec![claude_code_build(), newer_build()]
     );
     let loaded = packages::load(&repository).expect("the repository loads");
+    assert_eq!(
+        builds::check_records(&repository, &loaded.repository.packages).expect("the records read"),
+        Vec::<String>::new()
+    );
     assert_eq!(
         index_of(&loaded.repository)
             .canonical_json()
@@ -702,6 +784,70 @@ fn a_second_qualified_build_is_added_in_the_entry_s_own_order() {
         index_of(&loaded.repository)
             .canonical_json()
             .expect("the index renders")
+    );
+}
+
+/// The newer build an upgrade part moves to is listed in the record of the build it upgrades from,
+/// after it, and that record's parts did not run against it: the same record under the newer
+/// build's name qualifies nothing, and only the build it ran against is named.
+#[test]
+fn the_upgrade_target_listed_in_another_build_s_record_is_not_named() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    two_build_repository(&repository, &qualified_record());
+
+    let loaded = packages::load(&repository).expect("the repository loads");
+    assert_eq!(
+        claude_code_entry(&mut index_of(&loaded.repository)).builds,
+        vec![claude_code_build()]
+    );
+    let omitted = loaded.repository.builds.omitted();
+    assert_eq!(omitted.len(), 1, "{omitted:?}");
+    assert_eq!(omitted[0].version, "2.1.281");
+    assert_eq!(
+        omitted[0].reasons,
+        vec![format!(
+            "the record's parts ran against claude-code 2.1.278 with the SHA-256 \
+             {CLAUDE_CODE_SHA256} (installed), not claude-code 2.1.281 with the SHA-256 \
+             {CLAUDE_CODE_NEWER_SHA256}"
+        )]
+    );
+    let problems =
+        builds::check_records(&repository, &loaded.repository.packages).expect("the records read");
+    assert!(
+        problems
+            .iter()
+            .any(|problem| problem.starts_with(NEWER_RECORD)
+                && problem.contains("parts ran against claude-code 2.1.278")),
+        "{problems:?}"
+    );
+}
+
+/// A build is withdrawn by removing its pin: the next index leaves it out, the package and its
+/// record stay as they are, and the record still meets every check the repository makes.
+#[test]
+fn removing_a_pin_withdraws_its_build_and_leaves_the_record_whole() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    claude_code_repository(&repository, &qualified_record());
+    assert_eq!(
+        claude_code_entry_builds(&repository),
+        vec![claude_code_build()]
+    );
+
+    write_list(&repository, &[]);
+    let loaded = packages::load(&repository).expect("the repository loads");
+    assert_eq!(loaded.repository.builds.named().count(), 0);
+    assert!(loaded.repository.builds.omitted().is_empty());
+    assert!(
+        claude_code_entry(&mut index_of(&loaded.repository))
+            .builds
+            .is_empty()
+    );
+    assert!(repository.join(CLAUDE_CODE_RECORD).is_file());
+    assert_eq!(
+        builds::check_records(&repository, &loaded.repository.packages).expect("the records read"),
+        Vec::<String>::new()
     );
 }
 
