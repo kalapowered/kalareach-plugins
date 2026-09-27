@@ -33,7 +33,7 @@
 //! form, a platform the list does not know, a build pinned for a package this repository does not
 //! publish, or one executable named as two versions.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use kr_plugin_sdk::catalogue::QualifiedBuild;
@@ -471,12 +471,12 @@ fn qualification_gaps(record: &Value) -> Vec<String> {
 
 /// Everything that keeps the repository's records from matching its packages and its build list.
 ///
-/// Every connector package has a record for the build its table is pinned to: in good form, for
-/// this release, whose parts ran against that version, and, where the list pins that build, against
-/// the pinned application and SHA-256. A pinned build that has a record has one in good form for
-/// its release and build. A record for a build neither a table nor the list names is stale. None of
-/// this needs a build to be pinned, so a build withdrawn by removing its pin keeps its record, and
-/// the record still has to hold.
+/// Every connector package has a record for the build its table is pinned to. Every record, pinned
+/// or not, is one the repository can read for what it shows: for a package it publishes, on the
+/// list's platform, in good form, for the release it publishes, and run against the version its
+/// path names, which is the pinned application and SHA-256 where the list pins that build. None of
+/// this needs a pin, so a build withdrawn by removing its pin keeps its record, and the record
+/// still has to hold.
 ///
 /// # Errors
 ///
@@ -486,20 +486,11 @@ pub fn check_records(root: &Path, packages: &[LoadedPackage]) -> Result<Vec<Stri
         return Ok(vec![format!("{LIST} is missing")]);
     };
     let mut problems = Vec::new();
-    let mut expected = BTreeSet::new();
-    let mut check = |relative: &Path, found: Vec<String>| {
-        problems.extend(
-            found
-                .into_iter()
-                .map(|problem| format!("{}: {problem}", relative.display())),
-        );
-    };
     for package in packages {
         let Some(connector) = &package.package.connector else {
             continue;
         };
         let manifest = &package.package.manifest;
-        let plugin_id = manifest.plugin_id().to_string();
         let tested = connector.protocol.tested_version.to_string();
         let relative = records::path(
             manifest.publisher_id.as_str(),
@@ -507,86 +498,86 @@ pub fn check_records(root: &Path, packages: &[LoadedPackage]) -> Result<Vec<Stri
             &tested,
             &list.platform,
         );
-        expected.insert(relative.clone());
-        let path = root.join(&relative);
-        if !path.is_file() {
-            check(
-                &relative,
-                vec![format!(
-                    "{plugin_id} has no record for {tested}, the build its table is pinned to"
-                )],
-            );
-            continue;
+        if !root.join(&relative).is_file() {
+            problems.push(format!(
+                "{}: {} has no record for {tested}, the build its table is pinned to",
+                relative.display(),
+                manifest.plugin_id()
+            ));
         }
-        let record: Value = read_json(&path)?;
-        let mut found = records::form_problems(&record, &list.platform);
-        found.extend(records::release_problems(&record, package));
-        let pinned = list
-            .builds
-            .iter()
-            .find(|pinned| pinned.package == plugin_id && pinned.version.to_string() == tested);
-        match pinned {
-            Some(pinned) => found.extend(records::build_problems(
-                &record,
-                pinned.application.as_str(),
-                &tested,
-                &pinned.sha256.to_string(),
-            )),
-            None => {
-                let ran = &records::tested_build(&record)["version"];
-                if ran != tested.as_str() {
-                    found.push(format!(
-                        "the record's parts ran against version {ran}, not {tested}, the version \
-                         its table is pinned to"
-                    ));
-                }
-            }
-        }
-        check(&relative, found);
-    }
-    for pinned in &list.builds {
-        let Some(package) = packages
-            .iter()
-            .find(|package| package.package.manifest.plugin_id().as_str() == pinned.package)
-        else {
-            continue;
-        };
-        let manifest = &package.package.manifest;
-        let relative = records::path(
-            manifest.publisher_id.as_str(),
-            manifest.plugin_name.as_str(),
-            &pinned.version.to_string(),
-            &list.platform,
-        );
-        if !expected.insert(relative.clone()) {
-            continue;
-        }
-        let path = root.join(&relative);
-        if !path.is_file() {
-            continue;
-        }
-        let record: Value = read_json(&path)?;
-        let mut found = records::form_problems(&record, &list.platform);
-        found.extend(records::release_problems(&record, package));
-        found.extend(records::build_problems(
-            &record,
-            pinned.application.as_str(),
-            &pinned.version.to_string(),
-            &pinned.sha256.to_string(),
-        ));
-        check(&relative, found);
     }
     for relative in record_files(root) {
-        if !expected.contains(&relative) {
-            check(
-                &relative,
-                vec![
-                    "a record for a build no connector table and no pinned build names".to_owned(),
-                ],
-            );
-        }
+        problems.extend(
+            check_record(root, &relative, packages, &list)?
+                .into_iter()
+                .map(|problem| format!("{}: {problem}", relative.display())),
+        );
     }
     Ok(problems)
+}
+
+/// What keeps one record file from being a record this repository can read for what it shows.
+fn check_record(
+    root: &Path,
+    relative: &Path,
+    packages: &[LoadedPackage],
+    list: &List,
+) -> Result<Vec<String>> {
+    let named: Vec<String> = relative
+        .strip_prefix(records::RECORDS)
+        .unwrap_or(relative)
+        .iter()
+        .map(|part| part.to_string_lossy().into_owned())
+        .collect();
+    let [publisher, plugin, version, file] = named.as_slice() else {
+        return Ok(vec![
+            "not a record: a record is <publisher>/<plugin>/<version>/<os>-<arch>.json".to_owned(),
+        ]);
+    };
+    let Some(package) = packages.iter().find(|package| {
+        package.package.manifest.publisher_id.as_str() == publisher
+            && package.package.manifest.plugin_name.as_str() == plugin
+    }) else {
+        return Ok(vec![format!(
+            "a record for {publisher}/{plugin}, which this repository does not publish"
+        )]);
+    };
+    if *file != format!("{}.json", list.platform.name()) {
+        return Ok(vec![format!(
+            "a record for another platform than {}, the one the build list is for",
+            list.platform
+        )]);
+    }
+    let record: Value = read_json(&root.join(relative))?;
+    let mut found = records::form_problems(&record, &list.platform);
+    if !found.is_empty() {
+        return Ok(found);
+    }
+    found.extend(records::release_problems(&record, package));
+    let plugin_id = package.package.manifest.plugin_id().to_string();
+    let pinned = list
+        .builds
+        .iter()
+        .find(|pinned| pinned.package == plugin_id && pinned.version.to_string() == *version);
+    match pinned {
+        Some(pinned) => found.extend(records::build_problems(
+            &record,
+            pinned.application.as_str(),
+            version,
+            &pinned.sha256.to_string(),
+        )),
+        None => {
+            let tested = records::tested_build(&record);
+            if tested["version"] != version.as_str() || tested["status"] != "installed" {
+                found.push(format!(
+                    "the record's parts ran against version {} ({}), not {version}, the version \
+                     its path names",
+                    tested["version"], tested["status"]
+                ));
+            }
+        }
+    }
+    Ok(found)
 }
 
 /// Every record file under the records directory, relative to the repository root: the files four

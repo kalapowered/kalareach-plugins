@@ -71,16 +71,45 @@ fn copy_tree(from: &Path, to: &Path) {
     }
 }
 
-/// The build list's entry for one package, as this repository pins it.
-fn pinned(plugin: &str) -> Value {
-    let list = read_json(&root().join(builds::LIST));
-    list["builds"]
-        .as_array()
-        .expect("the list names builds")
-        .iter()
-        .find(|build| build["package"] == plugin)
-        .unwrap_or_else(|| panic!("the build list pins a build for {plugin}"))
-        .clone()
+/// The SHA-256 of the Codex executable the build list pins.
+const CODEX_SHA256: &str = "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e";
+
+/// The SHA-256 of the OpenCode executable both OpenCode packages pin.
+const OPENCODE_SHA256: &str = "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198";
+
+/// One build list entry, written here rather than read from the repository's own list, so these
+/// tests hold whatever the repository pins or withdraws.
+fn pin(
+    package: &str,
+    application: &str,
+    version: &str,
+    distribution: &str,
+    launch: &str,
+    sha256: &str,
+    newer: Option<(&str, &str)>,
+) -> Value {
+    json!({
+        "package": package,
+        "application": application,
+        "version": version,
+        "distribution": distribution,
+        "launch": launch,
+        "sha256": sha256,
+        "newer": newer.map(|(version, sha256)| json!({ "version": version, "sha256": sha256 })),
+    })
+}
+
+/// The Claude Code build, with the newer build its upgrade part moves to.
+fn claude_code_pin() -> Value {
+    pin(
+        "kalareach/claude-code",
+        "claude-code",
+        "2.1.278",
+        "npm @anthropic-ai/claude-code-darwin-arm64",
+        "native",
+        CLAUDE_CODE_SHA256,
+        Some(("2.1.281", CLAUDE_CODE_NEWER_SHA256)),
+    )
 }
 
 /// The identifier a part belongs to.
@@ -269,7 +298,7 @@ fn claude_code_repository(directory: &Path, record: &Value) {
         &root().join("plugins/kalareach/claude-code"),
         &directory.join("plugins/kalareach/claude-code"),
     );
-    write_list(directory, &[pinned("kalareach/claude-code")]);
+    write_list(directory, &[claude_code_pin()]);
     write_json(&directory.join(CLAUDE_CODE_RECORD), record);
 }
 
@@ -583,9 +612,9 @@ fn a_script_or_a_wheel_pin_names_no_executable() {
         let temporary = tempfile::tempdir().expect("a temporary directory");
         let repository = temporary.path().join("repository");
         claude_code_repository(&repository, &qualified_record());
-        let mut pin = pinned("kalareach/claude-code");
-        pin["launch"] = json!(launch);
-        write_list(&repository, &[pin]);
+        let mut entry = claude_code_pin();
+        entry["launch"] = json!(launch);
+        write_list(&repository, &[entry]);
         assert_eq!(left_out_because(&repository), vec![reason.to_owned()]);
     }
 }
@@ -662,9 +691,9 @@ fn input_that_cannot_be_read_for_what_it_shows_is_refused() {
 
     let two_versions = temporary.path().join("two-versions");
     claude_code_repository(&two_versions, &qualified_record());
-    let mut pin = pinned("kalareach/claude-code");
-    pin["newer"]["sha256"] = json!(CLAUDE_CODE_SHA256);
-    write_list(&two_versions, &[pin]);
+    let mut entry = claude_code_pin();
+    entry["newer"]["sha256"] = json!(CLAUDE_CODE_SHA256);
+    write_list(&two_versions, &[entry]);
     let refusal = refused(&two_versions);
     assert!(
         refusal.contains(&format!(
@@ -686,8 +715,8 @@ fn input_that_cannot_be_read_for_what_it_shows_is_refused() {
 
     let pinned_twice = temporary.path().join("pinned-twice");
     claude_code_repository(&pinned_twice, &qualified_record());
-    let pin = pinned("kalareach/claude-code");
-    write_list(&pinned_twice, &[pin.clone(), pin]);
+    let twice = claude_code_pin();
+    write_list(&pinned_twice, &[twice.clone(), twice]);
     let refusal = refused(&pinned_twice);
     assert!(
         refusal.contains("it pins kalareach/claude-code 2.1.278 twice"),
@@ -698,7 +727,18 @@ fn input_that_cannot_be_read_for_what_it_shows_is_refused() {
     claude_code_repository(&unpublished, &qualified_record());
     write_list(
         &unpublished,
-        &[pinned("kalareach/claude-code"), pinned("kalareach/codex")],
+        &[
+            claude_code_pin(),
+            pin(
+                "kalareach/codex",
+                "codex",
+                "0.155.1",
+                "npm @openai/codex",
+                "child",
+                CODEX_SHA256,
+                None,
+            ),
+        ],
     );
     let refusal = refused(&unpublished);
     assert!(
@@ -709,20 +749,52 @@ fn input_that_cannot_be_read_for_what_it_shows_is_refused() {
 }
 
 /// One executable pinned for two packages at one version, as OpenCode's two packages pin theirs, is
-/// one executable at one version, and the list is read.
+/// one executable at one version: the list is read, and each pin is decided on its own record.
 #[test]
 fn one_executable_pinned_for_two_packages_at_one_version_is_read() {
-    let list = builds::read_list(&root())
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    std::fs::create_dir_all(repository.join("publishers")).expect("publishers directory");
+    std::fs::copy(
+        root().join("publishers/kalareach.json"),
+        repository.join("publishers/kalareach.json"),
+    )
+    .expect("the publisher record copies");
+    for plugin in ["opencode", "opencode-attach"] {
+        copy_tree(
+            &root().join("plugins/kalareach").join(plugin),
+            &repository.join("plugins/kalareach").join(plugin),
+        );
+    }
+    write_list(
+        &repository,
+        &["opencode", "opencode-attach"].map(|plugin| {
+            pin(
+                &format!("kalareach/{plugin}"),
+                plugin,
+                "1.18.31",
+                "npm opencode-ai",
+                "native",
+                OPENCODE_SHA256,
+                None,
+            )
+        }),
+    );
+
+    let list = builds::read_list(&repository)
         .expect("the build list reads")
         .expect("the repository has a build list");
-    let opencode: Vec<_> = list
-        .builds
-        .iter()
-        .filter(|build| build.package.starts_with("kalareach/opencode"))
-        .collect();
-    assert_eq!(opencode.len(), 2);
-    assert_eq!(opencode[0].sha256, opencode[1].sha256);
-    assert_eq!(opencode[0].version, opencode[1].version);
+    assert_eq!(list.builds.len(), 2);
+    assert_eq!(list.builds[0].sha256, list.builds[1].sha256);
+    assert_eq!(list.builds[0].version, list.builds[1].version);
+    let loaded = packages::load(&repository).expect("the repository loads");
+    let omitted = loaded.repository.builds.omitted();
+    assert_eq!(omitted.len(), 2, "{omitted:?}");
+    assert!(
+        omitted.iter().all(|omitted| omitted.reasons.len() == 1
+            && omitted.reasons[0].starts_with("no qualification record at")),
+        "{omitted:?}"
+    );
 }
 
 /// Where the record of the newer Claude Code build is, beside the pinned build's.
@@ -732,7 +804,7 @@ const NEWER_RECORD: &str = "fixtures/agents/kalareach/claude-code/2.1.281/macos-
 /// with `newer_record` as the newer build's record.
 fn two_build_repository(directory: &Path, newer_record: &Value) {
     claude_code_repository(directory, &qualified_record());
-    let first = pinned("kalareach/claude-code");
+    let first = claude_code_pin();
     let mut second = first.clone();
     second["version"] = json!("2.1.281");
     second["sha256"] = json!(CLAUDE_CODE_NEWER_SHA256);
@@ -749,15 +821,11 @@ fn newer_build() -> QualifiedBuild {
     newer
 }
 
-/// A generation adds a build when another pinned build's own record qualifies it, with no change to
-/// the package: a record whose parts ran against that build, first in its applications. An entry
-/// writes its builds in one order, whatever order the list gives them in.
-#[test]
-fn a_second_build_whose_own_record_qualifies_it_is_added_in_the_entry_s_order() {
-    let temporary = tempfile::tempdir().expect("a temporary directory");
-    let repository = temporary.path().join("repository");
-    let mut newer_record = qualified_record();
-    newer_record["run"]["applications"] = json!([{
+/// A record of the newer Claude Code build's own run, with every part passed: the build its parts
+/// ran against, first in its applications, is the newer build.
+fn newer_build_record() -> Value {
+    let mut record = qualified_record();
+    record["run"]["applications"] = json!([{
         "id": "claude-code",
         "version": "2.1.281",
         "status": "installed",
@@ -766,6 +834,17 @@ fn a_second_build_whose_own_record_qualifies_it_is_added_in_the_entry_s_order() 
         "build": "darwin-arm64",
         "reason": "the build the table is pinned to",
     }]);
+    record
+}
+
+/// A generation adds a build when another pinned build's own record qualifies it, with no change to
+/// the package: a record whose parts ran against that build, first in its applications. An entry
+/// writes its builds in one order, whatever order the list gives them in.
+#[test]
+fn a_second_build_whose_own_record_qualifies_it_is_added_in_the_entry_s_order() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    let newer_record = newer_build_record();
     two_build_repository(&repository, &newer_record);
 
     assert_eq!(
@@ -845,6 +924,31 @@ fn removing_a_pin_withdraws_its_build_and_leaves_the_record_whole() {
             .is_empty()
     );
     assert!(repository.join(CLAUDE_CODE_RECORD).is_file());
+    assert_eq!(
+        builds::check_records(&repository, &loaded.repository.packages).expect("the records read"),
+        Vec::<String>::new()
+    );
+}
+
+/// A build no connector table names is withdrawn the same way: its pin goes, its record stays and
+/// still meets every check the repository makes, and the index names the builds still pinned.
+#[test]
+fn removing_the_pin_of_a_build_no_table_names_leaves_its_record_whole() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    two_build_repository(&repository, &newer_build_record());
+    assert_eq!(
+        claude_code_entry_builds(&repository),
+        vec![claude_code_build(), newer_build()]
+    );
+
+    write_list(&repository, &[claude_code_pin()]);
+    let loaded = packages::load(&repository).expect("the repository loads");
+    assert_eq!(
+        claude_code_entry(&mut index_of(&loaded.repository)).builds,
+        vec![claude_code_build()]
+    );
+    assert!(repository.join(NEWER_RECORD).is_file());
     assert_eq!(
         builds::check_records(&repository, &loaded.repository.packages).expect("the records read"),
         Vec::<String>::new()

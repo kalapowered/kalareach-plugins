@@ -3,11 +3,11 @@
 //! A connector table is qualified against one upstream build, and section 12 asks for eight cases
 //! to be run against that build and recorded per operating system and architecture. The records are
 //! under `fixtures/agents/<publisher>/<plugin>/<version>/<os>-<arch>.json`, in the form
-//! `fixtures/agents/README.md` states. `kalareach_catalogue::builds::check_records` holds each
-//! package's record to it: in good form, bound to this release of the package by its manifest
-//! digest, and run against the build the table is pinned to, with the SHA-256 the build list pins
-//! where it pins that build. A record no table and no pinned build names is a stale record, and
-//! fails the same way.
+//! `fixtures/agents/README.md` states. `kalareach_catalogue::builds::check_records` requires the
+//! record of the build each table is pinned to, and holds every record to that form: for a package
+//! this repository publishes, bound to its current release by the manifest digest, and run against
+//! the build its path names, with the SHA-256 the build list pins where it pins that build. A record
+//! kept after its build's pin is removed is held to the same.
 //!
 //! What this cannot say is whether a case qualifies: a record that names a part as not run is still
 //! a record. Acceptance is read from the outcomes, part by part, and `kalareach_catalogue::builds`

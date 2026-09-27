@@ -11,8 +11,9 @@ fixtures/agents/<publisher>/<plugin>/<application version>/<os>-<arch>.json
 
 `scripts/e2e-agents.sh` produces them, through the qualification driver in the core repository
 (`tests/e2e/agents`), and `pipeline/tests/agents.rs` checks on every run that each connector package
-has the record for the build its table is pinned to, and that the record is for this release of the
-package. A record states outcomes; it does not qualify a case by existing. A case qualifies for an
+has the record for the build its table is pinned to, and that every record, pinned or kept after its
+build was withdrawn, is for this release of its package and was run against the build its path
+names. A record states outcomes; it does not qualify a case by existing. A case qualifies for an
 agent only when every part of it passed.
 
 ## The parts
