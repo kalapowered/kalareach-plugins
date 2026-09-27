@@ -107,6 +107,8 @@ pub struct Repository {
     pub packages: Vec<LoadedPackage>,
     /// The withdrawn releases.
     pub revocations: Revocations,
+    /// The executable builds each release is qualified against, and the pinned builds left out.
+    pub builds: crate::builds::Builds,
 }
 
 /// One package that did not validate.
@@ -127,12 +129,13 @@ pub struct Loaded {
     pub rejected: Vec<Rejected>,
 }
 
-/// Loads and validates every publisher record and package in the repository.
+/// Loads and validates every publisher record and package in the repository, and decides which
+/// pinned builds each release names.
 ///
 /// # Errors
 ///
-/// Returns an error when the layout is wrong, a document cannot be read, or two packages claim the
-/// same identity. A package that merely fails validation is reported in [`Loaded::rejected`]
+/// Returns an error when the layout is wrong, a document cannot be read, two packages claim the
+/// same identity, or the build list or a qualification record is refused ([`crate::builds::load`]). A package that merely fails validation is reported in [`Loaded::rejected`]
 /// rather than ending the run, so one command reports every defect in the repository.
 pub fn load(root: &Path) -> Result<Loaded> {
     let mut repository = Repository::default();
@@ -325,6 +328,12 @@ pub fn load(root: &Path) -> Result<Loaded> {
     repository
         .packages
         .sort_by(|left, right| left.relative.cmp(&right.relative));
+    // A build is named for a release this repository publishes, so the builds are read once every
+    // package has validated. A repository with a package that did not is refused by its caller, with
+    // that package's report.
+    if rejected.is_empty() {
+        repository.builds = crate::builds::load(root, &repository.packages)?;
+    }
     Ok(Loaded {
         repository,
         rejected,

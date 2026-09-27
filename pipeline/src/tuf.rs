@@ -133,8 +133,8 @@ pub fn stage_targets(
 ///
 /// # Errors
 ///
-/// Returns an error when a target cannot be staged, a key cannot be read, or the metadata cannot
-/// be signed or written.
+/// Returns an error when an entry names builds an index may not carry, a target cannot be staged,
+/// a key cannot be read, or the metadata cannot be signed or written.
 pub async fn build(
     repository: &Repository,
     index: &CatalogueIndex,
@@ -143,9 +143,10 @@ pub async fn build(
     out_dir: &Path,
     replace: bool,
 ) -> Result<BuildOutcome> {
-    // Everything that can be checked is checked before anything is written or removed: the
-    // generation number, the destination, and the keys. A build that fails afterwards leaves the
-    // destination as it found it.
+    // Everything that can be checked is checked before anything is written or removed: what the
+    // entries say about their builds, the generation number, the destination, and the keys. A build
+    // that fails afterwards leaves the destination as it found it.
+    crate::index::check_builds(index)?;
     let version = generation_version(index)?;
     let existing = describe_destination(out_dir)?;
     if existing == Destination::Occupied && !replace {
@@ -550,7 +551,7 @@ pub struct Verified {
 /// # Errors
 ///
 /// Returns an error when the metadata does not verify against the trust root, a target's digest
-/// does not match, or the index cannot be read.
+/// does not match, the index cannot be read, or an entry names builds an index may not carry.
 pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verified> {
     let root_bytes = read(&generation_dir.join("root.json"))?;
     let absolute = std::fs::canonicalize(generation_dir).map_err(|source| Error::Io {
@@ -618,6 +619,9 @@ pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verif
             path: PathBuf::from(INDEX_TARGET),
             source,
         })?;
+    // What an entry says about its builds is a signed statement a host takes an executable's version
+    // from, and a host refuses a generation whose entries break the SDK's rules for them.
+    crate::index::check_builds(&index)?;
 
     // The metadata proves the targets are the bytes it signed. The index says which bytes each
     // package consists of. Comparing the two is what makes a target name mean one package's file

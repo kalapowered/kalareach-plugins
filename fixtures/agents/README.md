@@ -98,6 +98,16 @@ every file digest the wheel's `RECORD` lists against the installed code, and the
 types against the `RECORD` the wheel's own distribution installed, which must be the only one naming
 it.
 
+## What the index takes from them
+
+The catalogue pipeline names a pinned build in its release's index entry only when the record for
+that release, build and platform is in good form, is a whole run of this release and this build,
+shows no part failed, and shows every part of the eight cases (1 to 8b above) passed. A part not run
+is not a pass. The pinned file must be what a process runs: a build whose `launch` is `script` or
+`wheel` is never named, since a script runs as its interpreter and a wheel is an archive. The parts
+of the typed-path rule, 14.03a and 14.03b, say nothing about the build and are not required, but a
+failed one keeps the build out. `docs/pipeline.md` describes the rest.
+
 ## Running it
 
 ```bash

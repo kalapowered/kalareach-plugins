@@ -6,8 +6,9 @@
 //!    and every package fixture is evaluated against the package's own control predicates. A
 //!    package that a host would reject never reaches an index.
 //! 2. **The index.** One signed metadata snapshot carrying every package's compact description,
-//!    match rules, capability declarations and payload hashes and sizes, rendered as canonical
-//!    JSON so the same inputs always produce the same bytes.
+//!    match rules, capability declarations, payload hashes and sizes, and the executable builds
+//!    each release is qualified against, rendered as canonical JSON so the same inputs always
+//!    produce the same bytes.
 //! 3. **The TUF repository.** Root, timestamp, snapshot and targets metadata over the index and
 //!    every package payload, signed with keys the pipeline reads from a directory outside the
 //!    repository and refuses to read from inside it.
@@ -16,10 +17,12 @@
 //! of the same inputs produces the same index bytes and the same target digests.
 
 pub mod bench;
+pub mod builds;
 pub mod fixtures;
 pub mod index;
 pub mod keys;
 pub mod packages;
+pub mod records;
 pub mod tuf;
 
 use std::path::{Path, PathBuf};
@@ -99,6 +102,19 @@ pub enum Error {
     Layout {
         /// What is wrong.
         detail: String,
+    },
+    /// An index entry names builds an index may not carry.
+    ///
+    /// Boxed for the same reason as [`Error::Tuf`]: the SDK's error carries two versions and a
+    /// digest, and every fallible call in this crate would otherwise carry that size.
+    #[error("{plugin_id} {version}: {source}")]
+    Builds {
+        /// The package the entry is for.
+        plugin_id: String,
+        /// The release.
+        version: String,
+        /// What the builds break, in the SDK's words.
+        source: Box<kr_plugin_sdk::catalogue::BuildsError>,
     },
 }
 

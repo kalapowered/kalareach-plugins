@@ -23,6 +23,9 @@ accepts, and the two cannot drift.
 Validation reports every defect it finds rather than stopping at the first, because somebody fixing
 a package wants the whole list.
 
+It then reads the build list and the qualification records under `fixtures/agents` and decides which
+executable builds each release names, as the next section describes.
+
 ## The index
 
 The index is the complete signed metadata snapshot a host synchronises: compact descriptions,
@@ -50,6 +53,44 @@ The last line counts the index and nothing else. The TUF metadata over it grows 
 count too, so the real figure is lower. Every synthetic entry comes from one template, so the size
 per entry is that package's metadata: a catalogue of longer descriptions and more match rules costs
 more per entry.
+
+### Qualified builds
+
+Each entry names the executable builds of the application its release is qualified against: the
+application, the distribution it came from, the upstream version, the operating system and
+architecture, and the SHA-256 of the executable. A host takes an executable's version from these and
+nowhere else, and holds it to the ranges the release declares for its native bridge recipe and its
+connector table, so naming a build opens those version checks for it. An entry that names no build
+has no `builds` member at all, which is how every index was written before an entry could name one.
+
+The builds come from `fixtures/agents`, not from the packages. The build list, `builds.json`, pins
+each build, and one qualification record per release, build and platform states the outcome of
+every part of the specification's eight qualification cases (`fixtures/agents/README.md`). A pinned
+build is named in its release's entry only when all of these hold:
+
+- its pinned file is what a process runs, a `native` or `child` launch. A script runs as its
+  interpreter and a wheel is an archive, so neither names an executable a host runs;
+- its record is in good form and is for this release and this build: the release's version,
+  manifest digest and attachment paths, and the build's application, version and SHA-256;
+- the record's run is whole: no failure outside its identifiers, no problem and no failed step;
+- no part failed, and every part of the eight cases passed. A part that did not run is not a pass,
+  whatever kept it from running.
+
+`validate` prints each build it names and each pinned build it leaves out, with every condition that
+build does not meet. Input that cannot be read for what it shows stops the pipeline instead: a record
+in bad form, a record run on another platform than its file name says, a platform the list does not
+know, a build pinned twice or for a package this repository does not publish, and one executable
+named as two versions.
+
+The builds are signed with the index and kept apart from the package's bytes, so a generation adds or
+withdraws a build without a new package. A build is added when its record newly qualifies, and
+withdrawn when its pin is removed or a newly measured record no longer qualifies; the package's
+digest, and every copy a host installed, stay as they are.
+
+Before anything is signed, `build` holds every entry's builds to the SDK's own rule: no more than
+`MAX_QUALIFIED_BUILDS` (256) in one entry, each on a platform the release lists, and one version for
+each executable. A generation that breaks it is refused, naming the entry, in the SDK's words, and
+`verify` refuses a generation that carries one, as a host does.
 
 ## The generation
 

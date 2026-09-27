@@ -12,6 +12,7 @@ Licensed under the BSD 3-Clause License. See [LICENSE](LICENSE).
 | `publishers/` | One record per publisher: identifier, display name, homepage and whether it ships with KalaReach |
 | `pipeline/` | The `kalareach-catalogue` command: validation, the index build, TUF signing and verification |
 | `revocations/` | One record per withdrawn release, keyed to its exact version and manifest digest |
+| `fixtures/agents/` | The agent builds each connector is pinned to, and the qualification records the index takes each release's qualified builds from |
 | `snapshots/` | Built generations. `snapshots/development/` is a signed fixture; everything else is build output |
 | `scripts/` | Development key generation, and running the pipeline against a local core checkout |
 | `docs/` | How to publish a package, and how the pipeline works |

@@ -1,7 +1,9 @@
 //! Building the catalogue index.
 //!
 //! The index is the complete signed metadata snapshot a host synchronises. It carries what a host
-//! needs to search, match and decide, and nothing it would only need after deciding.
+//! needs to search, match and decide, and nothing it would only need after deciding. Each entry
+//! names the executable builds its release is qualified against ([`crate::builds`]), which is
+//! where a host takes an executable's version from.
 //!
 //! The build is deterministic. Entries are ordered by publisher, plugin name and version, object
 //! keys are sorted and the rendering is fixed, so the same packages always produce the same bytes.
@@ -14,6 +16,7 @@ use kr_plugin_sdk::scalars::TimestampMs;
 use kr_plugin_sdk::scalars::Nullable;
 
 use crate::packages::{Repository, Revocations};
+use crate::{Error, Result};
 
 /// Builds the index for one generation.
 ///
@@ -45,12 +48,33 @@ pub fn build(
                     loaded.manifest_size_bytes,
                 );
                 entry.revocation = Nullable(revocation_for(revocations, &entry));
+                entry.builds = repository
+                    .builds
+                    .for_release(entry.plugin_id.as_str(), &entry.version.to_string());
                 entry
             })
             .collect(),
     };
     index.sort();
     index
+}
+
+/// Checks what every entry says about its builds, as a host does when it verifies a generation: no
+/// more than the SDK's bound, each on a platform the release supports, and one version for each
+/// executable.
+///
+/// # Errors
+///
+/// Returns [`Error::Builds`] naming the first entry that breaks a rule, in the SDK's words.
+pub fn check_builds(index: &CatalogueIndex) -> Result<()> {
+    for entry in &index.entries {
+        entry.check_builds().map_err(|source| Error::Builds {
+            plugin_id: entry.plugin_id.to_string(),
+            version: entry.version.to_string(),
+            source: Box::new(source),
+        })?;
+    }
+    Ok(())
 }
 
 /// Returns the revocation record for one entry, where the repository carries one.

@@ -1,7 +1,7 @@
 //! The KalaReach catalogue command.
 //!
 //! ```text
-//! kalareach-catalogue validate            check every package and publisher record
+//! kalareach-catalogue validate            check every package, publisher record and build record
 //! kalareach-catalogue root                write the trust root into the signing directory
 //! kalareach-catalogue build --out <dir>   build and sign one generation
 //! kalareach-catalogue verify <dir>        verify a generation with the TUF client
@@ -40,7 +40,8 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
-    /// Validate every package and publisher record.
+    /// Validate every package, publisher record and build record, and say which builds each
+    /// release names.
     Validate,
     /// Write the trust root into the signing directory from the keys already there.
     Root(RootArgs),
@@ -160,6 +161,27 @@ fn validate(root: &std::path::Path) -> Result<Repository> {
         loaded.repository.publishers.len(),
         loaded.repository.packages.len()
     );
+    let builds = &loaded.repository.builds;
+    let named: Vec<_> = builds.named().collect();
+    println!(
+        "{} build(s) named, {} pinned build(s) left out",
+        named.len(),
+        builds.omitted().len()
+    );
+    for (plugin_id, release, build) in named {
+        println!(
+            "  named for {plugin_id} {release}: {} {} from {} on {} {}, executable {}",
+            build.application,
+            build.version,
+            build.distribution,
+            build.os.as_str(),
+            build.architecture.as_str(),
+            build.executable_digest
+        );
+    }
+    for omitted in builds.omitted() {
+        println!("  left out: {omitted}");
+    }
     Ok(loaded.repository)
 }
 
