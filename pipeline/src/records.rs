@@ -42,6 +42,24 @@ pub const ATTACHMENTS: &str = "KR-REQ-14.03";
 /// The outcomes a part can have.
 const OUTCOMES: [&str; 3] = ["passed", "failed", "not_run"];
 
+/// The members a record has. A record says what was run and what it showed; it names no capability
+/// and no grant, and a member outside this list is refused rather than read past, so nothing in a
+/// record can be taken for something that changes what a host allows.
+pub const MEMBERS: [&str; 12] = [
+    "schema",
+    "extension",
+    "repository",
+    "run",
+    "steps",
+    "identifiers",
+    "attachment_paths",
+    "failures_outside_identifiers",
+    "known_differences",
+    "problems",
+    "warnings",
+    "summary",
+];
+
 /// The operating system and architecture a record was run on, as its file name writes them.
 ///
 /// The name is `<os>-<arch>`: `macos`, `linux` or `windows`, then `aarch64` or `x86_64`. The
@@ -141,6 +159,18 @@ pub fn path(publisher: &str, plugin: &str, version: &str, platform: &Platform) -
 #[must_use]
 pub fn form_problems(record: &Value, platform: &Platform) -> Vec<String> {
     let mut problems = Vec::new();
+    for member in record
+        .as_object()
+        .into_iter()
+        .flat_map(|object| object.keys())
+    {
+        if !MEMBERS.contains(&member.as_str()) {
+            problems.push(format!(
+                "{member} is not a member of a record: a record states what was run and what it \
+                 showed, and carries nothing that could create an effect or raise a grant"
+            ));
+        }
+    }
     for (field, wanted) in [
         ("schema", "kalareach.conformance/1"),
         ("extension", "kalareach.agent-qualification/1"),

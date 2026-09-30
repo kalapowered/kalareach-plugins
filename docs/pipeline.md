@@ -80,7 +80,8 @@ build is named in its release's entry only when all of these hold:
 
 `validate` prints each build it names and each pinned build it leaves out, with every condition that
 build does not meet. Input that cannot be read for what it shows stops the pipeline instead: a record
-in bad form, a record run on another platform than its file name says, a platform the list does not
+in bad form (a record has the top-level members its form names and no others, so none can carry a
+`capabilities` or a `grant` there), a record run on another platform than its file name says, a platform the list does not
 know, a build pinned twice or for a package this repository does not publish with a connector table,
 and one executable named as two versions.
 
