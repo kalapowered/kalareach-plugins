@@ -394,7 +394,8 @@ fn refused(directory: &Path) -> String {
 
 /// A release whose record shows every part of section 12's cases passed names its pinned build:
 /// the application and distribution the build list gives, the version, the platform the record's
-/// file name gives, and the SHA-256 of the executable.
+/// file name gives, and the SHA-256 of the executable. KR-REQ-18.06: the qualified builds an entry
+/// names are the compatibility data a host admits an adapter's versions from.
 #[test]
 fn an_entry_names_the_build_its_record_qualifies_with_its_digest_and_version() {
     let temporary = tempfile::tempdir().expect("a temporary directory");

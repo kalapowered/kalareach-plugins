@@ -207,3 +207,21 @@ checkout, writes a trust root over it, runs the tests, validates every package, 
 a generation, verifies the committed development generation, and measures a ten thousand entry
 catalogue. The keys it makes are its own and last as long as the run; production signing happens in
 the signing environment and not here.
+
+## What the checks hold
+
+Each property of a signed catalogue has a check that fails when the property is removed.
+
+| Property | Check |
+| --- | --- |
+| Every entry pins its publisher, its source and its package: the publisher has a record here and in the index, the source is a repository and a 40-character revision, and the digest and the source are those of the package's own `plugin.json` | `kr_req_04_13_every_entry_pins_its_publisher_source_and_package_digest` |
+| Every entry carries the compatibility data a host admits from: bounded SDK and WIT ranges the pinned versions fall in, the platforms it runs on, and builds only on those platforms | `kr_req_18_06_every_entry_carries_the_compatibility_data_a_host_admits_from` |
+| A generation altered after it was signed does not verify: an index, a package file or a revocation | `release.rs`, and `kr_req_25_21_a_revocation_altered_after_signing_fails_verification` |
+| A qualification record has only the top-level members its form names, so it carries no `capabilities` or `grant` member; the members an index carries for a build are the SDK's | `kr_req_11_18_a_record_with_an_added_capabilities_or_grant_member_is_refused` |
+| Every connector package has a qualification record for the build its table is pinned to, in good form and matching its package | `every_connector_package_has_a_qualification_record_for_its_pinned_build`, which this repository's continuous integration runs with the rest of the tests |
+
+That check shows that each connector package has a record that reads and matches its package. It
+does not decide that a build qualifies: a record can name a part as not run, and the index names a
+build only when every part passed (see Qualified builds). An executable no signed build names has
+no version, and a host keeps its terminal as the route for it and offers no typed action; that half
+is the host's, and its own tests hold it.

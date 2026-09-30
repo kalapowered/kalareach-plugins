@@ -93,6 +93,8 @@ fn the_index_carries_every_package_with_its_payload_hashes() {
     assert_eq!(keys, sorted);
 }
 
+/// KR-REQ-25.21: the generation this repository commits verifies as a host verifies it, before any
+/// package of it is read.
 #[tokio::test]
 async fn the_committed_development_generation_verifies() {
     let verified = tuf::verify(&development_generation(), true)
@@ -121,6 +123,7 @@ async fn the_development_generation_matches_the_packages_it_was_built_from() {
     );
 }
 
+/// KR-REQ-25.21: an index altered after it was signed does not verify.
 #[tokio::test]
 async fn a_tampered_target_fails_verification() {
     let temporary = tempfile::tempdir().expect("a temporary directory");
@@ -147,6 +150,7 @@ async fn a_tampered_target_fails_verification() {
     );
 }
 
+/// KR-REQ-25.21: metadata altered after it was signed does not verify.
 #[tokio::test]
 async fn a_replaced_metadata_signature_fails_verification() {
     let temporary = tempfile::tempdir().expect("a temporary directory");
@@ -242,6 +246,8 @@ async fn a_generation_signs_and_verifies_end_to_end() {
     assert!(refused.to_string().contains("written once"), "{refused}");
 }
 
+/// KR-REQ-25.21: a package file swapped for another signed file of the same generation does not
+/// verify, so a package is only ever the bytes its index names.
 #[tokio::test]
 async fn a_replaced_package_payload_fails_verification() {
     let temporary = tempfile::tempdir().expect("a temporary directory");
@@ -263,6 +269,7 @@ async fn a_replaced_package_payload_fails_verification() {
         .expect_err("a swapped package payload does not verify");
 }
 
+/// KR-REQ-25.21: a generation that lacks a file its index names does not verify.
 #[tokio::test]
 async fn a_missing_package_payload_fails_verification() {
     let temporary = tempfile::tempdir().expect("a temporary directory");
