@@ -80,10 +80,10 @@ build is named in its release's entry only when all of these hold:
 
 `validate` prints each build it names and each pinned build it leaves out, with every condition that
 build does not meet. Input that cannot be read for what it shows stops the pipeline instead: a record
-in bad form (a record has the top-level members its form names and no others, so none can carry a
-`capabilities` or a `grant` there), a record run on another platform than its file name says, a platform the list does not
-know, a build pinned twice or for a package this repository does not publish with a connector table,
-and one executable named as two versions.
+in bad form (a record has the top-level members its form names and no others, so a `capabilities`
+or a `grant` member added there is refused), a record run on another platform than its file name
+says, a platform the list does not know, a build pinned twice or for a package this repository
+does not publish with a connector table, and one executable named as two versions.
 
 The builds are signed with the index and kept apart from the package's bytes, so a generation adds or
 withdraws a build without a new package. A build is added when its record newly qualifies, and
@@ -217,7 +217,7 @@ Each property of a signed catalogue has a check that fails when the property is 
 | Every entry pins its publisher, its source and its package: the publisher has a record here and in the index, the source is a repository and a 40-character revision, and the digest and the source are those of the package's own `plugin.json` | `kr_req_04_13_every_entry_pins_its_publisher_source_and_package_digest` |
 | Every entry carries the compatibility data a host admits from: bounded SDK and WIT ranges the pinned versions fall in, the platforms it runs on, and builds only on those platforms | `kr_req_18_06_every_entry_carries_the_compatibility_data_a_host_admits_from` |
 | A generation altered after it was signed does not verify: an index, a package file or a revocation | `release.rs`, and `kr_req_25_21_a_revocation_altered_after_signing_fails_verification` |
-| A qualification record has only the top-level members its form names, so it carries no `capabilities` or `grant` member; the members an index carries for a build are the SDK's | `kr_req_11_18_a_record_with_an_added_capabilities_or_grant_member_is_refused` |
+| A qualification record has only the top-level members its form names, so a `capabilities` or `grant` member added at the top level is refused; what an index carries for a build is what the SDK's types allow, which core's index parse holds | `kr_req_11_18_a_record_with_an_added_capabilities_or_grant_member_is_refused` |
 | Every connector package has a qualification record for the build its table is pinned to, in good form and matching its package | `every_connector_package_has_a_qualification_record_for_its_pinned_build`, which this repository's continuous integration runs with the rest of the tests |
 
 That check shows that each connector package has a record that reads and matches its package. It
