@@ -186,7 +186,8 @@ fn recount(record: &mut Value) {
 }
 
 /// The record with every part of both identifiers passed: each part that did not run gets a step of
-/// its own that exited cleanly, and the counts, verdicts and summary follow.
+/// its own that exited cleanly, each part that failed has its own step exit cleanly, and the
+/// counts, verdicts and summary follow.
 fn every_part_passed(record: &Value) -> Value {
     let mut record = record.clone();
     let mut next = record["steps"]
@@ -197,12 +198,24 @@ fn every_part_passed(record: &Value) -> Value {
         .max()
         .unwrap_or(0);
     let mut added = Vec::new();
+    let mut repaired = Vec::new();
     for identifier in ["KR-REQ-12.32", "KR-REQ-14.03"] {
         let tests = record["identifiers"][identifier]["tests"]
             .as_array_mut()
             .expect("the identifier lists its tests");
         for test in tests.iter_mut() {
             if test["outcome"] == "passed" {
+                continue;
+            }
+            if test["outcome"] == "failed" {
+                test["outcome"] = json!("passed");
+                for run in test["runs"].as_array_mut().into_iter().flatten() {
+                    run["outcome"] = json!("passed");
+                    repaired.push(run["step"].clone());
+                }
+                if let Some(fields) = test.as_object_mut() {
+                    fields.remove("reason");
+                }
                 continue;
             }
             next += 1;
@@ -228,10 +241,16 @@ fn every_part_passed(record: &Value) -> Value {
             }));
         }
     }
-    record["steps"]
+    let steps = record["steps"]
         .as_array_mut()
-        .expect("the record lists its steps")
-        .extend(added);
+        .expect("the record lists its steps");
+    for step in steps.iter_mut() {
+        if repaired.contains(&step["number"]) {
+            step["exit"] = json!(0);
+            step["error"] = Value::Null;
+        }
+    }
+    steps.extend(added);
     recount(&mut record);
     record
 }
