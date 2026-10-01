@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-26T01:04:06Z",
-    "finished": "2026-09-26T01:10:25Z",
+    "started": "2026-10-01T18:36:30Z",
+    "finished": "2026-10-01T18:43:41Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "f8b2af5eeaabf5c29242aeffcd2d95dd653dd293",
+      "id": "030933e6bf2106a9fa210040e2a80388b3efbc00",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "56daf033daeac2f5a6a582f3c8c69daed7727ded",
+        "id": "daad6681a66f4791218c550456900d051c2cd82d",
         "modified": false
       }
     },
@@ -48,21 +48,37 @@
         "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11",
         "build": "darwin-arm64",
         "reason": "the build the table is pinned to"
+      },
+      {
+        "id": "kimi-code-cli",
+        "version": "2.1.0",
+        "status": "installed",
+        "url": "https://code.kimi.com/kimi-code/binaries/2.1.0/kimi-code-darwin-arm64",
+        "sha256": "71f18445f23e061eb88b34bce88245887bdd546c17196a8c4d9959afe8de133a",
+        "build": "darwin-arm64",
+        "reason": "the newer build the upgrade part moves to"
       }
     ],
     "selection": [
+      "1",
+      "2a",
       "2b",
+      "2c",
+      "3",
+      "4",
       "5a",
       "6a",
+      "7",
       "8a",
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-clZq6J",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-TmJwvx",
     "own_home": {
       "bound_to_a_desktop": true,
-      "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
+      "default_keychain": "the person's login keychain",
       "home": "~",
+      "show_keychain_info_status": 0,
       "worker_profile": "desktop_bound"
     }
   },
@@ -71,77 +87,155 @@
       "number": 1,
       "group": "own-home",
       "what": "a session started with the person's own home names their login keychain",
-      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-90fa24da07d573a9 --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 12,
+      "seconds": 11,
       "log": "own-home.log",
       "error": null
     },
     {
       "number": 2,
       "group": "agents",
-      "what": "part 2b",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "what": "part 1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 0,
-      "seconds": 13,
-      "log": "kimi-code-cli/2b.log",
+      "exit": 101,
+      "seconds": 65,
+      "log": "kimi-code-cli/1.log",
       "error": null
     },
     {
       "number": 3,
       "group": "agents",
-      "what": "part 5a",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "what": "part 2a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 0,
-      "seconds": 13,
-      "log": "kimi-code-cli/5a.log",
+      "exit": 101,
+      "seconds": 61,
+      "log": "kimi-code-cli/2a.log",
       "error": null
     },
     {
       "number": 4,
       "group": "agents",
-      "what": "part 6a",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "what": "part 2b",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 8,
-      "log": "kimi-code-cli/6a.log",
+      "seconds": 15,
+      "log": "kimi-code-cli/2b.log",
       "error": null
     },
     {
       "number": 5,
       "group": "agents",
-      "what": "part 8a",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "what": "part 2c",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 18,
-      "log": "kimi-code-cli/8a.log",
+      "seconds": 15,
+      "log": "kimi-code-cli/2c.log",
       "error": null
     },
     {
       "number": 6,
       "group": "agents",
-      "what": "part 14.03a",
-      "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "what": "part 3",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 12,
+      "seconds": 62,
+      "log": "kimi-code-cli/3.log",
+      "error": null
+    },
+    {
+      "number": 7,
+      "group": "agents",
+      "what": "part 4",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 54,
+      "log": "kimi-code-cli/4.log",
+      "error": null
+    },
+    {
+      "number": 8,
+      "group": "agents",
+      "what": "part 5a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 16,
+      "log": "kimi-code-cli/5a.log",
+      "error": null
+    },
+    {
+      "number": 9,
+      "group": "agents",
+      "what": "part 6a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 21,
+      "log": "kimi-code-cli/6a.log",
+      "error": null
+    },
+    {
+      "number": 10,
+      "group": "agents",
+      "what": "part 7",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 58,
+      "log": "kimi-code-cli/7.log",
+      "error": null
+    },
+    {
+      "number": 11,
+      "group": "agents",
+      "what": "part 8a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 20,
+      "log": "kimi-code-cli/8a.log",
+      "error": null
+    },
+    {
+      "number": 12,
+      "group": "agents",
+      "what": "part 14.03a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 14,
       "log": "kimi-code-cli/14.03a.log",
       "error": null
     }
@@ -149,37 +243,1000 @@
   "identifiers": {
     "KR-REQ-12.32": {
       "family": "requirement",
-      "verdict": "passed",
+      "verdict": "failed",
       "counts": {
-        "passed": 3,
-        "failed": 0,
+        "passed": 8,
+        "failed": 2,
         "ignored": 0,
-        "not_run": 10,
+        "not_run": 3,
         "not_built": 0,
         "known_difference": 0
       },
       "tests": [
         {
-          "test": "part 1",
+          "test": "kr-e2e-agents --test cases a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution",
           "part": "1",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account and a spending bound, then the typed or bridge route (an account from the user)",
-          "needs": [
-            "vendor account"
-          ]
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "failed",
+          "reason": "a check of the part failed; its text is in the part's log",
+          "runs": [
+            {
+              "step": 2,
+              "outcome": "failed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
+          "evidence": {
+            "confinement": {
+              "fresh_screen_ms": [
+                52,
+                52,
+                52
+              ],
+              "left_in_data": {
+                "file_history_removed": 0,
+                "sessions_bucket_existed": true,
+                "sessions_bucket_left": false,
+                "trust_records_left": 0,
+                "trust_records_removed": 1
+              },
+              "new_sessions": 1,
+              "other_writer_seen": false,
+              "profile_sha256": "ef9740ee19229fd6ef7e31898d4cf7346da19d433c7f8fdcb73979951dc715a3",
+              "proxy": {
+                "by_host": [
+                  {
+                    "host": "api.kimi.ai",
+                    "open": 0,
+                    "received": 67667,
+                    "sent": 329194,
+                    "tunnels": 5
+                  },
+                  {
+                    "host": "auth.kimi.ai",
+                    "open": 0,
+                    "received": 5998,
+                    "sent": 2991,
+                    "tunnels": 1
+                  }
+                ],
+                "hosts": [
+                  "api.kimi.ai",
+                  "auth.kimi.ai"
+                ],
+                "refused": 1,
+                "tunnels": 6
+              },
+              "residuals": [
+                "A string of the login's files is found by its whole text. One that the screen wraps, that a tool truncates or that an encoding changes is not found by value, and the agent's own record of the conversation is the backstop.",
+                "A request the agent makes before the part stops it, such as a subagent's or a goal's first, has gone out when the part stops. The close charges it.",
+                "The proxy counts tunnels, not requests, and sees no TLS server name. The agent's own record counts the requests.",
+                "The person's own older data in the agent's history and log directories is searched whole, so a login string in it would stop a part and cannot be told from the run's.",
+                "The agent's oauth directory is not searched, because it holds the agent's own credentials.",
+                "A request for a conversation's title is seen in the conversation's own record when it succeeds and in the conversation's own log when it fails, and that log writes the line at debug level, which a run does not enable: a failed request leaves no line at the level a run uses. The pinned terminal makes no such request, and a part that sees one stops and charges it as a turn.",
+                "A launch that resumes a saved conversation runs none of the checks before its first turn, so that no shell line enters the conversation. The checks of the part's first launch, which ran the same profile, cover it."
+              ],
+              "resumed_launches": 0,
+              "secrets": {
+                "complete": true,
+                "found_in_data": 0,
+                "found_in_run": 0,
+                "intermediate": 0,
+                "places_in_data": 17,
+                "strings": 7
+              },
+              "servers_switched_off": 5,
+              "settings": {
+                "allow_built_in": 0,
+                "loads_more": false,
+                "mode_manual": true,
+                "rules": 4,
+                "unlisted": 0
+              },
+              "subagent_started": false,
+              "turns": {
+                "charged": 2,
+                "others": 0,
+                "prompts": 2,
+                "steers": 0,
+                "titles": 0
+              },
+              "unasked_tools": [
+                "Read",
+                "Grep",
+                "Glob",
+                "ReadMediaFile",
+                "SetTodoList",
+                "TodoList",
+                "TaskList",
+                "TaskOutput",
+                "WaitFor",
+                "CronList",
+                "WebSearch",
+                "FetchURL",
+                "Agent",
+                "AgentSwarm",
+                "AskUserQuestion",
+                "NotifyUser",
+                "Skill",
+                "EnterPlanMode",
+                "ExitPlanMode",
+                "CreateGoal",
+                "GetGoal",
+                "SetGoalBudget",
+                "UpdateGoal",
+                "select_tools"
+              ],
+              "workspaces": {
+                "additive": true,
+                "restored": false
+              },
+              "zero_turn": [
+                {
+                  "canary_read_inside_works": true,
+                  "canary_read_outside_refused": true,
+                  "connections_only_to_the_proxy": true,
+                  "connections_seen": 0,
+                  "device_keys_reach_the_composer": true,
+                  "direct_connection_v4_refused": true,
+                  "direct_connection_v6_refused": true,
+                  "person_copy_cannot_run": true,
+                  "proxy_refused_a_host_it_was_not_given": true,
+                  "proxy_tunnelled_to_a_host_it_was_given": true,
+                  "server_list_complete": true,
+                  "servers_disabled": 5,
+                  "write_outside_refused": true
+                }
+              ]
+            },
+            "declined_requests": 0,
+            "failure_codes": [
+              {
+                "code": "part_failed"
+              }
+            ],
+            "login_held": true,
+            "person_files": {
+              "appended": [
+                {
+                  "appended": 2,
+                  "earlier_lines_intact": true,
+                  "file": "~/.kimi-code/session_index.jsonl",
+                  "others": 0,
+                  "own": [
+                    {
+                      "holds_the_mark": false,
+                      "id": "<not published>",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    },
+                    {
+                      "holds_the_mark": false,
+                      "id": "<not published>",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    }
+                  ]
+                }
+              ],
+              "config_directory_removed": null,
+              "files": [
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/config.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/mcp.json",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/AGENTS.md",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/tui.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": true,
+                  "file": "~/.kimi-code/logs/kimi-code.log",
+                  "modified_changed": true,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": true
+                },
+                {
+                  "changed": true,
+                  "file": "<not published>",
+                  "modified_changed": true,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": false
+                }
+              ],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr4d14c36b3f34",
+                "run_directory": "<tmp>/krm-1ece1a68"
+              }
+            },
+            "person_home": {
+              "appended": [
+                "~/.kimi-code/logs/kimi-code.log",
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "changed_uncompared": [],
+              "created_and_left": [],
+              "created_and_removed": [],
+              "left_holding_the_part": [
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "left_unsearched": [],
+              "read_whole_after": true,
+              "removed_by_something_else": [],
+              "rewritten": [],
+              "unread_after": [],
+              "upkeep": [
+                {
+                  "bytes": 10331,
+                  "created": 0,
+                  "modified_ms": 1790879823322,
+                  "path": "workspaces.json",
+                  "rewritten": 1,
+                  "sha256": "94251a23f12331a11137a2f852c4d2c8b400172af8a2f4adf15b6f5fdc7714a6"
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "cache",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "search-index",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "updates",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "telemetry",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "file-history",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.1",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.2",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.3",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.4",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.5",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 50674,
+                  "created": 0,
+                  "modified_ms": 1790879816415,
+                  "path": "sessions/.index-cache",
+                  "rewritten": 1,
+                  "sha256": "184176a6a4bf6a11035f470127685e647cf40b6713f56246dbcf14b61d43770a"
+                },
+                {
+                  "bytes": 0,
+                  "created": 8,
+                  "modified_ms": null,
+                  "path": "sessions/.index-dirty",
+                  "rewritten": 0,
+                  "sha256": null
+                }
+              ],
+              "others": {
+                "created_and_left": {
+                  "~/.kimi-code/sessions/.index-dirty": 8,
+                  "~/.kimi-code/workspace-trust": 1
+                },
+                "left_holding_the_part": {
+                  "~/.kimi-code/workspace-trust": 1,
+                  "~/.kimi-code/*": 1
+                },
+                "rewritten": {
+                  "~/.kimi-code/credentials": 1,
+                  "~/.kimi-code/sessions/.index-cache": 1,
+                  "~/.kimi-code/*": 1
+                }
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "inode": 69651153,
+                  "pid": 42626,
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571355,
+                  "pid": 42778,
+                  "sha256": "16303dedab719ddb63efd9dd68092a0da37b397bfd4fcb856d5f1c86c5ee414b"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571822,
+                  "pid": 42779,
+                  "sha256": "b636262803922ee1dd0fbf614818473ffa53c811e44fd3278c2270d3af4759d3"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                    "pid": 42626,
+                    "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "launch": "native",
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                }
+              ],
+              "pids": [
+                42626,
+                42778,
+                42779
+              ],
+              "sample_interval_ms": 250,
+              "samples": 56,
+              "session_path": "<tmp>/krm-1ece1a68/agent/current/bin:<tmp>/krm-1ece1a68/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "tools_offered": []
+          }
         },
         {
-          "test": "part 2a",
+          "test": "kr-e2e-agents --test cases slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device",
           "part": "2a",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a live conversation, which needs a vendor account (an account from the user)",
-          "needs": [
-            "vendor account"
-          ]
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "failed",
+          "reason": "the agent was not shown to be running its turn when the second prompt was entered, so the prompt was not shown to wait for a turn that was still running",
+          "runs": [
+            {
+              "step": 3,
+              "outcome": "failed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "kimi-code/kimi-for-coding-highspeed"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 33,
+              "declined_requests": 0,
+              "home": "person",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-554ca1e7/w/.kimi-code/AGENTS.md",
+                  "<tmp>/krm-554ca1e7/w/.kimi-code/local.toml",
+                  "<tmp>/krm-554ca1e7/w/.kimi-code/skills",
+                  "<tmp>/krm-554ca1e7/w/.kimi-code/agents",
+                  "<tmp>/krm-554ca1e7/w/AGENTS.md",
+                  "<tmp>/krm-554ca1e7/w/agents.md",
+                  "<tmp>/krm-554ca1e7/w/.agents",
+                  "<tmp>/krm-554ca1e7/w/.mcp.json",
+                  "<tmp>/krm-554ca1e7/w/.git",
+                  "<tmp>/krm-554ca1e7/h/.kimi-code",
+                  "<tmp>/krm-554ca1e7/h/.agents",
+                  "<tmp>/krm-554ca1e7/h/.mcp.json",
+                  "~/.kimi-code/plugins"
+                ],
+                "probes": [],
+                "servers_switched_off": [],
+                "switches": [
+                  "--skills-dir",
+                  "<tmp>/krm-554ca1e7/skills"
+                ],
+                "tools_offered": []
+              },
+              "login": "vendor subscription login",
+              "stored": "file in the agent's own directory",
+              "turns": 3,
+              "variable": null,
+              "variables_absent": [
+                "KIMI_*",
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "MOONSHOT_*"
+              ]
+            },
+            "confinement": {
+              "fresh_screen_ms": [
+                53,
+                51,
+                49
+              ],
+              "left_in_data": {
+                "file_history_removed": 0,
+                "sessions_bucket_existed": true,
+                "sessions_bucket_left": false,
+                "trust_records_left": 0,
+                "trust_records_removed": 1
+              },
+              "new_sessions": 1,
+              "other_writer_seen": false,
+              "profile_sha256": "ef9740ee19229fd6ef7e31898d4cf7346da19d433c7f8fdcb73979951dc715a3",
+              "proxy": {
+                "by_host": [
+                  {
+                    "host": "api.kimi.ai",
+                    "open": 0,
+                    "received": 248667,
+                    "sent": 334243,
+                    "tunnels": 7
+                  },
+                  {
+                    "host": "auth.kimi.ai",
+                    "open": 0,
+                    "received": 0,
+                    "sent": 0,
+                    "tunnels": 0
+                  }
+                ],
+                "hosts": [
+                  "api.kimi.ai",
+                  "auth.kimi.ai"
+                ],
+                "refused": 1,
+                "tunnels": 7
+              },
+              "residuals": [
+                "A string of the login's files is found by its whole text. One that the screen wraps, that a tool truncates or that an encoding changes is not found by value, and the agent's own record of the conversation is the backstop.",
+                "A request the agent makes before the part stops it, such as a subagent's or a goal's first, has gone out when the part stops. The close charges it.",
+                "The proxy counts tunnels, not requests, and sees no TLS server name. The agent's own record counts the requests.",
+                "The person's own older data in the agent's history and log directories is searched whole, so a login string in it would stop a part and cannot be told from the run's.",
+                "The agent's oauth directory is not searched, because it holds the agent's own credentials.",
+                "A request for a conversation's title is seen in the conversation's own record when it succeeds and in the conversation's own log when it fails, and that log writes the line at debug level, which a run does not enable: a failed request leaves no line at the level a run uses. The pinned terminal makes no such request, and a part that sees one stops and charges it as a turn.",
+                "A launch that resumes a saved conversation runs none of the checks before its first turn, so that no shell line enters the conversation. The checks of the part's first launch, which ran the same profile, cover it."
+              ],
+              "resumed_launches": 0,
+              "secrets": {
+                "complete": true,
+                "found_in_data": 0,
+                "found_in_run": 0,
+                "intermediate": 0,
+                "places_in_data": 17,
+                "strings": 5
+              },
+              "servers_switched_off": 5,
+              "settings": {
+                "allow_built_in": 0,
+                "loads_more": false,
+                "mode_manual": true,
+                "rules": 4,
+                "unlisted": 0
+              },
+              "subagent_started": false,
+              "turns": {
+                "charged": 3,
+                "others": 0,
+                "prompts": 3,
+                "steers": 0,
+                "titles": 0
+              },
+              "unasked_tools": [
+                "Read",
+                "Grep",
+                "Glob",
+                "ReadMediaFile",
+                "SetTodoList",
+                "TodoList",
+                "TaskList",
+                "TaskOutput",
+                "WaitFor",
+                "CronList",
+                "WebSearch",
+                "FetchURL",
+                "Agent",
+                "AgentSwarm",
+                "AskUserQuestion",
+                "NotifyUser",
+                "Skill",
+                "EnterPlanMode",
+                "ExitPlanMode",
+                "CreateGoal",
+                "GetGoal",
+                "SetGoalBudget",
+                "UpdateGoal",
+                "select_tools"
+              ],
+              "workspaces": {
+                "additive": true,
+                "restored": false
+              },
+              "zero_turn": [
+                {
+                  "canary_read_inside_works": true,
+                  "canary_read_outside_refused": true,
+                  "connections_only_to_the_proxy": true,
+                  "connections_seen": 0,
+                  "device_keys_reach_the_composer": true,
+                  "direct_connection_v4_refused": true,
+                  "direct_connection_v6_refused": true,
+                  "person_copy_cannot_run": true,
+                  "proxy_refused_a_host_it_was_not_given": true,
+                  "proxy_tunnelled_to_a_host_it_was_given": true,
+                  "server_list_complete": true,
+                  "servers_disabled": 5,
+                  "write_outside_refused": true
+                }
+              ]
+            },
+            "failure_codes": [
+              {
+                "code": "queued_prompt_not_during_turn"
+              }
+            ],
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "3d1a463c39c14957d412628d17041129cc1ea50508444cbe54ec9eb61351fb06",
+              "plugin_id": "kalareach/kimi-code-cli",
+              "version": "0.2.1"
+            },
+            "login_held": true,
+            "person_files": {
+              "appended": [
+                {
+                  "appended": 2,
+                  "earlier_lines_intact": true,
+                  "file": "~/.kimi-code/session_index.jsonl",
+                  "others": 0,
+                  "own": [
+                    {
+                      "holds_the_mark": false,
+                      "id": "<not published>",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    },
+                    {
+                      "holds_the_mark": false,
+                      "id": "<not published>",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    }
+                  ]
+                }
+              ],
+              "config_directory_removed": null,
+              "files": [
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/config.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/mcp.json",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/AGENTS.md",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/tui.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": true,
+                  "file": "~/.kimi-code/logs/kimi-code.log",
+                  "modified_changed": true,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": true
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": false
+                }
+              ],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr9beea4ab32ce",
+                "run_directory": "<tmp>/krm-554ca1e7"
+              }
+            },
+            "person_home": {
+              "appended": [
+                "~/.kimi-code/logs/kimi-code.log",
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "changed_uncompared": [],
+              "created_and_left": [],
+              "created_and_removed": [],
+              "left_holding_the_part": [
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "left_unsearched": [],
+              "read_whole_after": true,
+              "removed_by_something_else": [],
+              "rewritten": [],
+              "unread_after": [],
+              "upkeep": [
+                {
+                  "bytes": 10529,
+                  "created": 0,
+                  "modified_ms": 1790879889253,
+                  "path": "workspaces.json",
+                  "rewritten": 1,
+                  "sha256": "2fbe9feb9cd20dea629664869a47b4ccbf3c25e30d87cc8f389a69ff07a2a44c"
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "cache",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "search-index",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "updates",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "telemetry",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "file-history",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.1",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.2",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.3",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.4",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.5",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 50674,
+                  "created": 0,
+                  "modified_ms": 1790879882239,
+                  "path": "sessions/.index-cache",
+                  "rewritten": 1,
+                  "sha256": "184176a6a4bf6a11035f470127685e647cf40b6713f56246dbcf14b61d43770a"
+                },
+                {
+                  "bytes": 0,
+                  "created": 12,
+                  "modified_ms": null,
+                  "path": "sessions/.index-dirty",
+                  "rewritten": 0,
+                  "sha256": null
+                }
+              ],
+              "others": {
+                "created_and_left": {
+                  "~/.kimi-code/sessions/.index-dirty": 12,
+                  "~/.kimi-code/workspace-trust": 1
+                },
+                "left_holding_the_part": {
+                  "~/.kimi-code/workspace-trust": 1,
+                  "~/.kimi-code/*": 1
+                },
+                "rewritten": {
+                  "~/.kimi-code/sessions/.index-cache": 1,
+                  "~/.kimi-code/*": 1
+                }
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "inode": 69651153,
+                  "pid": 43503,
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571355,
+                  "pid": 43639,
+                  "sha256": "16303dedab719ddb63efd9dd68092a0da37b397bfd4fcb856d5f1c86c5ee414b"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571822,
+                  "pid": 43640,
+                  "sha256": "b636262803922ee1dd0fbf614818473ffa53c811e44fd3278c2270d3af4759d3"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                    "pid": 43503,
+                    "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "launch": "native",
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                }
+              ],
+              "pids": [
+                43503,
+                43639,
+                43640
+              ],
+              "sample_interval_ms": 250,
+              "samples": 96,
+              "session_path": "<tmp>/krm-554ca1e7/agent/current/bin:<tmp>/krm-554ca1e7/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "queued": {
+              "answer": "1241",
+              "order": {
+                "after": {
+                  "busy": false,
+                  "unfinished": false
+                },
+                "before": {
+                  "busy": true,
+                  "unfinished": true
+                },
+                "busy_at_submission": false,
+                "first_finished": 35,
+                "new_turn": true,
+                "queued_record": null,
+                "records_queue": false,
+                "second_answered": 51,
+                "second_prompt": 42
+              }
+            }
+          }
         },
         {
           "test": "kr-e2e-agents --test cases an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused",
@@ -189,75 +1246,56 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 2,
+              "step": 4,
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
-            "announced_after": {
-              "instances": [],
-              "more_resources": false,
-              "resources": []
+            "after": {
+              "instances": [
+                {
+                  "application_instance_id": "eebb4b67-5714-4811-85f6-91e370d07e8a",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790879947164-8404c5a1-465d-4722-8058-c6634ffcc99e",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790879947164"
+                }
+              ],
+              "waited_ms": 0
             },
-            "announced_before": {
-              "instances": [],
-              "more_resources": false,
-              "resources": []
-            },
-            "answers": [
-              {
-                "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance ff48d7c9-4f20-4fea-a22a-4d82f613a929",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance ff48d7c9-4f20-4fea-a22a-4d82f613a929",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance ff48d7c9-4f20-4fea-a22a-4d82f613a929",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance ff48d7c9-4f20-4fea-a22a-4d82f613a929",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource fdfa9c21-a0a4-43e1-bd6f-6e7615e53de3",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.draft.add_attachment",
-                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
-                "refused": "INVALID_ARGUMENT"
-              },
-              {
-                "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/kimi-code-cli is not bound to ff48d7c9-4f20-4fea-a22a-4d82f613a929",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/kimi-code-cli is not bound to ff48d7c9-4f20-4fea-a22a-4d82f613a929",
-                "refused": "STALE_SESSION"
-              },
+            "agent_reads": [
               {
                 "call": "agent.capabilities",
-                "detail": "INVALID_ARGUMENT: agent.capabilities is not a read this host serves",
-                "refused": "INVALID_ARGUMENT"
+                "detail": "accepted",
+                "error": null,
+                "refused": null
               },
               {
                 "call": "agent.commands",
-                "detail": "INVALID_ARGUMENT: agent.commands is not a read this host serves",
-                "refused": "INVALID_ARGUMENT"
+                "detail": "accepted",
+                "error": null,
+                "refused": null
               }
             ],
             "attachment_request": "refused before any instance is looked at: agent.draft.add_attachment names an application instance in its selectors and carries none in its parameters, so this refusal says nothing about the terminal route",
+            "binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790879947164-8404c5a1-465d-4722-8058-c6634ffcc99e",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
             "capability_states": [
               [
                 "plugin.metadata.match/1",
@@ -276,6 +1314,68 @@
                 "not_tested"
               ]
             ],
+            "checker_controls": [
+              {
+                "check": "detected",
+                "rejected": true,
+                "said": "the instance names Some(PluginId(\"kalareach/not-the-installed-package\")), not the installed package kalareach/kimi-code-cli",
+                "wrong": "the instance names another package"
+              },
+              {
+                "check": "detected",
+                "rejected": true,
+                "said": "the launched execution has ended and 1 instance(s) are still announced live",
+                "wrong": "the launched execution has ended"
+              },
+              {
+                "check": "ended",
+                "rejected": true,
+                "said": "1 instance(s) are still announced live after the execution ended",
+                "wrong": "an instance is still announced after its execution ended"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "agent.prompt is advertised as usable",
+                "wrong": "agent.prompt is usable"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "agent.prompt.submit was not answered with a refusal: the connection ended",
+                "wrong": "a typed mutation is answered by no refusal"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "agent.prompt.submit was accepted: accepted",
+                "wrong": "a typed mutation is accepted"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "a command backend exists: c0/b0/registration.1.1",
+                "wrong": "a command backend's c0/b0/registration.1.1 exists"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "a command backend exists: c0/b0/launch",
+                "wrong": "a command backend's c0/b0/launch exists"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "a command backend exists: c0/b0/credential",
+                "wrong": "a command backend's c0/b0/credential exists"
+              },
+              {
+                "check": "unchanged",
+                "rejected": true,
+                "said": "the instance and revision were Some(Held { instance: ApplicationInstanceId(Uuid(eebb4b67-5714-4811-85f6-91e370d07e8a)), revision: AgentBindingRevision(U64(2)) }) and are Some(Held { instance: ApplicationInstanceId(Uuid(eebb4b67-5714-4811-85f6-91e370d07e8a)), revision: AgentBindingRevision(U64(1)) }) (1 live)",
+                "wrong": "the binding revision moved on"
+              }
+            ],
             "control": {
               "breaks_property": false,
               "result": {
@@ -285,8 +1385,39 @@
                 "screen_shows": "❯ Don't trust"
               },
               "what": "terminal input under the lease from the same device and connection, which the host accepts where it refuses the typed actions",
-              "why_not": "only a bound connector can advertise a typed capability or accept a typed action, and this host binds none"
+              "why_not": "only a typed route could advertise a typed action or accept one, and a launch the integration did not make has none"
             },
+            "detected": {
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "eebb4b67-5714-4811-85f6-91e370d07e8a"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "eebb4b67-5714-4811-85f6-91e370d07e8a",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790879947164-8404c5a1-465d-4722-8058-c6634ffcc99e",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790879947164"
+                }
+              ],
+              "waited_ms": 1541
+            },
+            "detection_control": {
+              "after": {
+                "instances": [],
+                "waited_ms": 261
+              },
+              "breaks_property": true,
+              "check": "the launched execution has ended and no instance is live",
+              "instance_ended": true,
+              "what": "the agent ended by its recorded identities"
+            },
+            "executable_identity": "no read the host serves names the executable of an adopted instance; the image the agent runs is under provenance",
             "installed": {
               "grant": [
                 "upstream.action"
@@ -295,7 +1426,7 @@
               "plugin_id": "kalareach/kimi-code-cli",
               "version": "0.2.1"
             },
-            "live_bindings": 0,
+            "live_bindings": 1,
             "provenance": {
               "ended_before_read": [],
               "executed": [
@@ -305,7 +1436,7 @@
                   "from": "build",
                   "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
                   "inode": 69651153,
-                  "pid": 54653,
+                  "pid": 45666,
                   "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
                 }
               ],
@@ -315,7 +1446,7 @@
                     "command": "kimi",
                     "from": "build",
                     "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
-                    "pid": 54653,
+                    "pid": 45666,
                     "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
                   },
                   "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
@@ -325,66 +1456,142 @@
                   "what": "kimi"
                 }
               ],
+              "pids": [
+                45666
+              ],
               "sample_interval_ms": 250,
-              "samples": 14,
-              "session_path": "<tmp>/krm-081bf88a/agent/current/bin:<tmp>/krm-081bf88a/agent/runtime:/usr/bin:/bin"
+              "samples": 20,
+              "session_path": "<tmp>/krm-49aa3ccb/agent/current/bin:<tmp>/krm-49aa3ccb/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to eebb4b67-5714-4811-85f6-91e370d07e8a: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to eebb4b67-5714-4811-85f6-91e370d07e8a: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to eebb4b67-5714-4811-85f6-91e370d07e8a: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to eebb4b67-5714-4811-85f6-91e370d07e8a: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "detail": "STALE_SESSION: no pending resource 4aa52273-c268-4ada-b816-91130c3fa2ea",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to eebb4b67-5714-4811-85f6-91e370d07e8a: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                }
+              ],
+              "backend_files": [],
+              "capability_records": [],
+              "resources": 0
             }
           }
         },
         {
-          "test": "part 2c",
+          "test": "kr-e2e-agents --test cases under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused",
           "part": "2c",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a binding, and the host hands no installed connector to a worker (the connector hand-over to workers)",
-          "needs": [
-            "connector binding"
-          ]
-        },
-        {
-          "test": "part 3",
-          "part": "3",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account and an approval a binding serves (an account from the user; the connector hand-over to workers)",
-          "needs": [
-            "vendor account"
-          ]
-        },
-        {
-          "test": "part 4",
-          "part": "4",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account and a typed route (an account from the user; the connector hand-over to workers)",
-          "needs": [
-            "vendor account"
-          ]
-        },
-        {
-          "test": "kr-e2e-agents --test cases a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running",
-          "part": "5a",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
           "outcome": "passed",
           "runs": [
             {
-              "step": 3,
+              "step": 5,
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
           "evidence": {
-            "agent_processes": [
-              "kimi"
-            ],
+            "after": {
+              "instances": [
+                {
+                  "application_instance_id": "6db4b152-5634-4ed6-a4d8-dc41ccf73997",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790879963034-0da4d74d-5eae-4098-a3e7-e28a6b0fd933",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790879963034"
+                }
+              ],
+              "waited_ms": 0
+            },
+            "binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790879963034-0da4d74d-5eae-4098-a3e7-e28a6b0fd933",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
             "control": {
+              "after": {
+                "instances": [],
+                "waited_ms": 2
+              },
+              "answers": [
+                {
+                  "call": "plugin.action.invoke session.refresh",
+                  "detail": "STALE_SESSION: kalareach/kimi-code-cli is not bound to 6db4b152-5634-4ed6-a4d8-dc41ccf73997",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                }
+              ],
               "breaks_property": true,
-              "check": "these have ended: process 55975 (kimi)",
-              "what": "the agent ended with a second daemon kill"
+              "what": "the agent ended, its binding with it, and the same presentation action sent again as a new action"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "6db4b152-5634-4ed6-a4d8-dc41ccf73997",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790879963034-0da4d74d-5eae-4098-a3e7-e28a6b0fd933",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790879963034"
+                }
+              ],
+              "waited_ms": 1542
+            },
+            "held": {
+              "instance": "6db4b152-5634-4ed6-a4d8-dc41ccf73997",
+              "revision": 1
             },
             "installed": {
               "grant": [
@@ -394,7 +1601,1338 @@
               "plugin_id": "kalareach/kimi-code-cli",
               "version": "0.2.1"
             },
-            "killed_daemon": 55805,
+            "provenance": {
+              "ended_before_read": [],
+              "executed": [
+                {
+                  "command": "kimi",
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "inode": 69651153,
+                  "pid": 45953,
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "kimi",
+                    "from": "build",
+                    "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                    "pid": 45953,
+                    "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11",
+                  "what": "kimi"
+                }
+              ],
+              "pids": [
+                45953
+              ],
+              "sample_interval_ms": 250,
+              "samples": 19,
+              "session_path": "<tmp>/krm-dd5333a4/agent/current/bin:<tmp>/krm-dd5333a4/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "supported": [
+              {
+                "call": "plugin.action.invoke session.refresh",
+                "detail": "accepted",
+                "error": null,
+                "refused": null
+              }
+            ],
+            "unsupported": [
+              {
+                "call": "agent.prompt.submit",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 6db4b152-5634-4ed6-a4d8-dc41ccf73997: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.prompt.queue",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 6db4b152-5634-4ed6-a4d8-dc41ccf73997: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.turn.steer",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 6db4b152-5634-4ed6-a4d8-dc41ccf73997: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.turn.cancel",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 6db4b152-5634-4ed6-a4d8-dc41ccf73997: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.approval.respond",
+                "detail": "STALE_SESSION: no pending resource 37daa6fc-dd1d-43ab-87d7-b4d217c0b6a2",
+                "error": null,
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.draft.add_attachment",
+                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                "error": null,
+                "refused": "INVALID_ARGUMENT"
+              },
+              {
+                "call": "plugin.action.invoke turn.cancel",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 6db4b152-5634-4ed6-a4d8-dc41ccf73997: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              }
+            ]
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once",
+          "part": "3",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 6,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "kimi-code/kimi-for-coding-highspeed"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 35,
+              "declined_requests": 0,
+              "home": "person",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-697f6c64/w/.kimi-code/AGENTS.md",
+                  "<tmp>/krm-697f6c64/w/.kimi-code/local.toml",
+                  "<tmp>/krm-697f6c64/w/.kimi-code/skills",
+                  "<tmp>/krm-697f6c64/w/.kimi-code/agents",
+                  "<tmp>/krm-697f6c64/w/AGENTS.md",
+                  "<tmp>/krm-697f6c64/w/agents.md",
+                  "<tmp>/krm-697f6c64/w/.agents",
+                  "<tmp>/krm-697f6c64/w/.mcp.json",
+                  "<tmp>/krm-697f6c64/w/.git",
+                  "<tmp>/krm-697f6c64/h/.kimi-code",
+                  "<tmp>/krm-697f6c64/h/.agents",
+                  "<tmp>/krm-697f6c64/h/.mcp.json",
+                  "~/.kimi-code/plugins"
+                ],
+                "probes": [],
+                "servers_switched_off": [],
+                "switches": [
+                  "--skills-dir",
+                  "<tmp>/krm-697f6c64/skills"
+                ],
+                "tools_offered": []
+              },
+              "login": "vendor subscription login",
+              "stored": "file in the agent's own directory",
+              "turns": 2,
+              "variable": null,
+              "variables_absent": [
+                "KIMI_*",
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "MOONSHOT_*"
+              ]
+            },
+            "command": "echo krf6fef0 >> a",
+            "confinement": {
+              "fresh_screen_ms": [
+                52,
+                51,
+                51
+              ],
+              "left_in_data": {
+                "file_history_removed": 0,
+                "sessions_bucket_existed": true,
+                "sessions_bucket_left": false,
+                "trust_records_left": 0,
+                "trust_records_removed": 1
+              },
+              "new_sessions": 1,
+              "other_writer_seen": false,
+              "profile_sha256": "ef9740ee19229fd6ef7e31898d4cf7346da19d433c7f8fdcb73979951dc715a3",
+              "proxy": {
+                "by_host": [
+                  {
+                    "host": "api.kimi.ai",
+                    "open": 0,
+                    "received": 67556,
+                    "sent": 437362,
+                    "tunnels": 6
+                  },
+                  {
+                    "host": "auth.kimi.ai",
+                    "open": 0,
+                    "received": 0,
+                    "sent": 0,
+                    "tunnels": 0
+                  }
+                ],
+                "hosts": [
+                  "api.kimi.ai",
+                  "auth.kimi.ai"
+                ],
+                "refused": 1,
+                "tunnels": 6
+              },
+              "residuals": [
+                "A string of the login's files is found by its whole text. One that the screen wraps, that a tool truncates or that an encoding changes is not found by value, and the agent's own record of the conversation is the backstop.",
+                "A request the agent makes before the part stops it, such as a subagent's or a goal's first, has gone out when the part stops. The close charges it.",
+                "The proxy counts tunnels, not requests, and sees no TLS server name. The agent's own record counts the requests.",
+                "The person's own older data in the agent's history and log directories is searched whole, so a login string in it would stop a part and cannot be told from the run's.",
+                "The agent's oauth directory is not searched, because it holds the agent's own credentials.",
+                "A request for a conversation's title is seen in the conversation's own record when it succeeds and in the conversation's own log when it fails, and that log writes the line at debug level, which a run does not enable: a failed request leaves no line at the level a run uses. The pinned terminal makes no such request, and a part that sees one stops and charges it as a turn.",
+                "A launch that resumes a saved conversation runs none of the checks before its first turn, so that no shell line enters the conversation. The checks of the part's first launch, which ran the same profile, cover it."
+              ],
+              "resumed_launches": 0,
+              "secrets": {
+                "complete": true,
+                "found_in_data": 0,
+                "found_in_run": 0,
+                "intermediate": 0,
+                "places_in_data": 17,
+                "strings": 5
+              },
+              "servers_switched_off": 5,
+              "settings": {
+                "allow_built_in": 0,
+                "loads_more": false,
+                "mode_manual": true,
+                "rules": 4,
+                "unlisted": 0
+              },
+              "subagent_started": false,
+              "turns": {
+                "charged": 2,
+                "others": 0,
+                "prompts": 2,
+                "steers": 0,
+                "titles": 0
+              },
+              "unasked_tools": [
+                "Read",
+                "Grep",
+                "Glob",
+                "ReadMediaFile",
+                "SetTodoList",
+                "TodoList",
+                "TaskList",
+                "TaskOutput",
+                "WaitFor",
+                "CronList",
+                "WebSearch",
+                "FetchURL",
+                "Agent",
+                "AgentSwarm",
+                "AskUserQuestion",
+                "NotifyUser",
+                "Skill",
+                "EnterPlanMode",
+                "ExitPlanMode",
+                "CreateGoal",
+                "GetGoal",
+                "SetGoalBudget",
+                "UpdateGoal",
+                "select_tools"
+              ],
+              "workspaces": {
+                "additive": true,
+                "restored": false
+              },
+              "zero_turn": [
+                {
+                  "canary_read_inside_works": true,
+                  "canary_read_outside_refused": true,
+                  "connections_only_to_the_proxy": true,
+                  "connections_seen": 0,
+                  "device_keys_reach_the_composer": true,
+                  "direct_connection_v4_refused": true,
+                  "direct_connection_v6_refused": true,
+                  "person_copy_cannot_run": true,
+                  "proxy_refused_a_host_it_was_not_given": true,
+                  "proxy_tunnelled_to_a_host_it_was_given": true,
+                  "server_list_complete": true,
+                  "servers_disabled": 5,
+                  "write_outside_refused": true
+                }
+              ]
+            },
+            "control": {
+              "breaks_property": true,
+              "check": true,
+              "command": "echo krf6fef0-2 >> a",
+              "device_refused": "LEASE_LOST",
+              "executions": 0,
+              "what": "a second approval with the local terminal holding the lease: it denied and the device's allow was refused"
+            },
+            "decisions": {
+              "after_reconnecting": 1,
+              "after_the_control": 2,
+              "after_the_race": 1,
+              "answering_calls_marked_by": [],
+              "calls_marked_by": [],
+              "conversation": "session_91059c0d-04b9-4a7a-ba56-6a93339e7720",
+              "marked_by": "\"type\":\"permission.record_approval_result\""
+            },
+            "detected": {
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "927085b0-c8c9-4678-b6e0-32c12a27ce6d"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "927085b0-c8c9-4678-b6e0-32c12a27ce6d",
+                  "bypass": null,
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790879980148-75dd17df-a664-48d2-8c12-afad845fe757",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790879980148"
+                }
+              ],
+              "waited_ms": 1
+            },
+            "executions": {
+              "after_reconnecting": 1,
+              "after_the_race": 1
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "3d1a463c39c14957d412628d17041129cc1ea50508444cbe54ec9eb61351fb06",
+              "plugin_id": "kalareach/kimi-code-cli",
+              "version": "0.2.1"
+            },
+            "login_held": true,
+            "loser": {
+              "exit_status": 8,
+              "receipt": {
+                "seen": true,
+                "shows": "input lease"
+              },
+              "typed": "3",
+              "who": "the local terminal"
+            },
+            "person_files": {
+              "appended": [
+                {
+                  "appended": 2,
+                  "earlier_lines_intact": true,
+                  "file": "~/.kimi-code/session_index.jsonl",
+                  "others": 0,
+                  "own": [
+                    {
+                      "holds_the_mark": false,
+                      "id": "<not published>",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    },
+                    {
+                      "holds_the_mark": false,
+                      "id": "session_91059c0d-04b9-4a7a-ba56-6a93339e7720",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    }
+                  ]
+                }
+              ],
+              "config_directory_removed": null,
+              "files": [
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/config.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/mcp.json",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/AGENTS.md",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/tui.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": true,
+                  "file": "~/.kimi-code/logs/kimi-code.log",
+                  "modified_changed": true,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": true
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": false
+                }
+              ],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr9ab8e6f6fef0",
+                "run_directory": "<tmp>/krm-697f6c64"
+              }
+            },
+            "person_home": {
+              "appended": [
+                "~/.kimi-code/logs/kimi-code.log",
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "changed_uncompared": [],
+              "created_and_left": [
+                "~/.kimi-code/sessions/.index-dirty/session_91059c0d-04b9-4a7a-ba56-6a93339e7720.1790879985360",
+                "~/.kimi-code/sessions/.index-dirty/session_91059c0d-04b9-4a7a-ba56-6a93339e7720.1790879985383",
+                "~/.kimi-code/sessions/.index-dirty/session_91059c0d-04b9-4a7a-ba56-6a93339e7720.1790879986185",
+                "~/.kimi-code/sessions/.index-dirty/session_91059c0d-04b9-4a7a-ba56-6a93339e7720.1790879991979",
+                "~/.kimi-code/sessions/.index-dirty/session_91059c0d-04b9-4a7a-ba56-6a93339e7720.1790879996161",
+                "~/.kimi-code/sessions/.index-dirty/session_91059c0d-04b9-4a7a-ba56-6a93339e7720.1790879996194"
+              ],
+              "created_and_removed": [],
+              "left_holding_the_part": [
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "left_unsearched": [],
+              "read_whole_after": true,
+              "removed_by_something_else": [],
+              "rewritten": [],
+              "unread_after": [],
+              "upkeep": [
+                {
+                  "bytes": 10727,
+                  "created": 0,
+                  "modified_ms": 1790879985332,
+                  "path": "workspaces.json",
+                  "rewritten": 1,
+                  "sha256": "5b56fa31ca464641491372ab88f6c520b16bb796cd5fc0c4e7174175544b4c7e"
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "cache",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "search-index",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "updates",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "telemetry",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "file-history",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.1",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.2",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.3",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.4",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.5",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 50674,
+                  "created": 0,
+                  "modified_ms": 1790879978188,
+                  "path": "sessions/.index-cache",
+                  "rewritten": 1,
+                  "sha256": "184176a6a4bf6a11035f470127685e647cf40b6713f56246dbcf14b61d43770a"
+                },
+                {
+                  "bytes": 0,
+                  "created": 8,
+                  "modified_ms": null,
+                  "path": "sessions/.index-dirty",
+                  "rewritten": 0,
+                  "sha256": null
+                }
+              ],
+              "others": {
+                "created_and_left": {
+                  "~/.kimi-code/sessions/.index-dirty": 2,
+                  "~/.kimi-code/workspace-trust": 1
+                },
+                "left_holding_the_part": {
+                  "~/.kimi-code/workspace-trust": 1,
+                  "~/.kimi-code/*": 1
+                },
+                "rewritten": {
+                  "~/.kimi-code/sessions/.index-cache": 1,
+                  "~/.kimi-code/*": 1
+                }
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "inode": 69651153,
+                  "pid": 46262,
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571355,
+                  "pid": 46603,
+                  "sha256": "16303dedab719ddb63efd9dd68092a0da37b397bfd4fcb856d5f1c86c5ee414b"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571822,
+                  "pid": 46604,
+                  "sha256": "b636262803922ee1dd0fbf614818473ffa53c811e44fd3278c2270d3af4759d3"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                    "pid": 46262,
+                    "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "launch": "native",
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                }
+              ],
+              "pids": [
+                46262,
+                46603,
+                46604
+              ],
+              "sample_interval_ms": 250,
+              "samples": 96,
+              "session_path": "<tmp>/krm-697f6c64/agent/current/bin:<tmp>/krm-697f6c64/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "replay": {
+              "checker_control_rejected": true,
+              "probe": "zqkr9ab8e6f6fef0",
+              "typed_again": false
+            },
+            "resources": 0,
+            "winner": {
+              "typed": "1",
+              "who": "the paired device, which held the input lease"
+            }
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work",
+          "part": "4",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 7,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "kimi-code/kimi-for-coding-highspeed"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 37,
+              "declined_requests": 0,
+              "home": "person",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-7a2f0c84/w/.kimi-code/AGENTS.md",
+                  "<tmp>/krm-7a2f0c84/w/.kimi-code/local.toml",
+                  "<tmp>/krm-7a2f0c84/w/.kimi-code/skills",
+                  "<tmp>/krm-7a2f0c84/w/.kimi-code/agents",
+                  "<tmp>/krm-7a2f0c84/w/AGENTS.md",
+                  "<tmp>/krm-7a2f0c84/w/agents.md",
+                  "<tmp>/krm-7a2f0c84/w/.agents",
+                  "<tmp>/krm-7a2f0c84/w/.mcp.json",
+                  "<tmp>/krm-7a2f0c84/w/.git",
+                  "<tmp>/krm-7a2f0c84/h/.kimi-code",
+                  "<tmp>/krm-7a2f0c84/h/.agents",
+                  "<tmp>/krm-7a2f0c84/h/.mcp.json",
+                  "~/.kimi-code/plugins"
+                ],
+                "probes": [],
+                "servers_switched_off": [],
+                "switches": [
+                  "--skills-dir",
+                  "<tmp>/krm-7a2f0c84/skills"
+                ],
+                "tools_offered": []
+              },
+              "login": "vendor subscription login",
+              "stored": "file in the agent's own directory",
+              "turns": 2,
+              "variable": null,
+              "variables_absent": [
+                "KIMI_*",
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "MOONSHOT_*"
+              ]
+            },
+            "admission": "the agent's conversation held the prompt, and no screen the device was sent from the submission until it disconnected showed the reply mark or the code in upper case",
+            "after_reconnect": {
+              "finished_replies": 1,
+              "prompts": 1,
+              "seen": true,
+              "shows": "KR303D7FC26782-END"
+            },
+            "confinement": {
+              "fresh_screen_ms": [
+                53,
+                52,
+                51
+              ],
+              "left_in_data": {
+                "file_history_removed": 0,
+                "sessions_bucket_existed": true,
+                "sessions_bucket_left": false,
+                "trust_records_left": 0,
+                "trust_records_removed": 1
+              },
+              "new_sessions": 1,
+              "other_writer_seen": false,
+              "profile_sha256": "ef9740ee19229fd6ef7e31898d4cf7346da19d433c7f8fdcb73979951dc715a3",
+              "proxy": {
+                "by_host": [
+                  {
+                    "host": "api.kimi.ai",
+                    "open": 0,
+                    "received": 123692,
+                    "sent": 222387,
+                    "tunnels": 5
+                  },
+                  {
+                    "host": "auth.kimi.ai",
+                    "open": 0,
+                    "received": 0,
+                    "sent": 0,
+                    "tunnels": 0
+                  }
+                ],
+                "hosts": [
+                  "api.kimi.ai",
+                  "auth.kimi.ai"
+                ],
+                "refused": 1,
+                "tunnels": 5
+              },
+              "residuals": [
+                "A string of the login's files is found by its whole text. One that the screen wraps, that a tool truncates or that an encoding changes is not found by value, and the agent's own record of the conversation is the backstop.",
+                "A request the agent makes before the part stops it, such as a subagent's or a goal's first, has gone out when the part stops. The close charges it.",
+                "The proxy counts tunnels, not requests, and sees no TLS server name. The agent's own record counts the requests.",
+                "The person's own older data in the agent's history and log directories is searched whole, so a login string in it would stop a part and cannot be told from the run's.",
+                "The agent's oauth directory is not searched, because it holds the agent's own credentials.",
+                "A request for a conversation's title is seen in the conversation's own record when it succeeds and in the conversation's own log when it fails, and that log writes the line at debug level, which a run does not enable: a failed request leaves no line at the level a run uses. The pinned terminal makes no such request, and a part that sees one stops and charges it as a turn.",
+                "A launch that resumes a saved conversation runs none of the checks before its first turn, so that no shell line enters the conversation. The checks of the part's first launch, which ran the same profile, cover it."
+              ],
+              "resumed_launches": 0,
+              "secrets": {
+                "complete": true,
+                "found_in_data": 0,
+                "found_in_run": 0,
+                "intermediate": 0,
+                "places_in_data": 17,
+                "strings": 5
+              },
+              "servers_switched_off": 5,
+              "settings": {
+                "allow_built_in": 0,
+                "loads_more": false,
+                "mode_manual": true,
+                "rules": 4,
+                "unlisted": 0
+              },
+              "subagent_started": false,
+              "turns": {
+                "charged": 2,
+                "others": 0,
+                "prompts": 2,
+                "steers": 0,
+                "titles": 0
+              },
+              "unasked_tools": [
+                "Read",
+                "Grep",
+                "Glob",
+                "ReadMediaFile",
+                "SetTodoList",
+                "TodoList",
+                "TaskList",
+                "TaskOutput",
+                "WaitFor",
+                "CronList",
+                "WebSearch",
+                "FetchURL",
+                "Agent",
+                "AgentSwarm",
+                "AskUserQuestion",
+                "NotifyUser",
+                "Skill",
+                "EnterPlanMode",
+                "ExitPlanMode",
+                "CreateGoal",
+                "GetGoal",
+                "SetGoalBudget",
+                "UpdateGoal",
+                "select_tools"
+              ],
+              "workspaces": {
+                "additive": true,
+                "restored": false
+              },
+              "zero_turn": [
+                {
+                  "canary_read_inside_works": true,
+                  "canary_read_outside_refused": true,
+                  "connections_only_to_the_proxy": true,
+                  "connections_seen": 0,
+                  "device_keys_reach_the_composer": true,
+                  "direct_connection_v4_refused": true,
+                  "direct_connection_v6_refused": true,
+                  "person_copy_cannot_run": true,
+                  "proxy_refused_a_host_it_was_not_given": true,
+                  "proxy_tunnelled_to_a_host_it_was_given": true,
+                  "server_list_complete": true,
+                  "servers_disabled": 5,
+                  "write_outside_refused": true
+                }
+              ]
+            },
+            "control": {
+              "breaks_property": true,
+              "check": true,
+              "finished_replies": 2,
+              "prompts": 2,
+              "what": "the same prompt sent again"
+            },
+            "conversation": "session_3280139f-8aab-499c-a0be-e95aac3d29dd",
+            "cutoff": {
+              "fresh_screens": 0,
+              "reader_stopped": true
+            },
+            "detected": {
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "5139baf7-9f1d-4590-acc3-c2276daf5539"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "5139baf7-9f1d-4590-acc3-c2276daf5539",
+                  "bypass": null,
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790880042850-4c271aab-e339-44f7-ae2b-9b8981bfd106",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790880042850"
+                }
+              ],
+              "waited_ms": 1
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "3d1a463c39c14957d412628d17041129cc1ea50508444cbe54ec9eb61351fb06",
+              "plugin_id": "kalareach/kimi-code-cli",
+              "version": "0.2.1"
+            },
+            "login_held": true,
+            "markers": {
+              "looked_for": "KR30",
+              "reply_begins": "KR303D7FC26782-START",
+              "reply_ends": "KR303D7FC26782-END",
+              "screen_reply_mark": null
+            },
+            "person_files": {
+              "appended": [
+                {
+                  "appended": 2,
+                  "earlier_lines_intact": true,
+                  "file": "~/.kimi-code/session_index.jsonl",
+                  "others": 0,
+                  "own": [
+                    {
+                      "holds_the_mark": false,
+                      "id": "<not published>",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    },
+                    {
+                      "holds_the_mark": false,
+                      "id": "session_3280139f-8aab-499c-a0be-e95aac3d29dd",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    }
+                  ]
+                }
+              ],
+              "config_directory_removed": null,
+              "files": [
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/config.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/mcp.json",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/AGENTS.md",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/tui.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": true,
+                  "file": "~/.kimi-code/logs/kimi-code.log",
+                  "modified_changed": true,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": true
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": false
+                }
+              ],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr303d7fc26782",
+                "run_directory": "<tmp>/krm-7a2f0c84"
+              }
+            },
+            "person_home": {
+              "appended": [
+                "~/.kimi-code/logs/kimi-code.log",
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "changed_uncompared": [],
+              "created_and_left": [
+                "~/.kimi-code/sessions/.index-dirty/session_3280139f-8aab-499c-a0be-e95aac3d29dd.1790880048020",
+                "~/.kimi-code/sessions/.index-dirty/session_3280139f-8aab-499c-a0be-e95aac3d29dd.1790880048047",
+                "~/.kimi-code/sessions/.index-dirty/session_3280139f-8aab-499c-a0be-e95aac3d29dd.1790880048930",
+                "~/.kimi-code/sessions/.index-dirty/session_3280139f-8aab-499c-a0be-e95aac3d29dd.1790880052328",
+                "~/.kimi-code/sessions/.index-dirty/session_3280139f-8aab-499c-a0be-e95aac3d29dd.1790880053328",
+                "~/.kimi-code/sessions/.index-dirty/session_3280139f-8aab-499c-a0be-e95aac3d29dd.1790880053349",
+                "~/.kimi-code/sessions/.index-dirty/session_3280139f-8aab-499c-a0be-e95aac3d29dd.1790880055935"
+              ],
+              "created_and_removed": [],
+              "left_holding_the_part": [
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "left_unsearched": [],
+              "read_whole_after": true,
+              "removed_by_something_else": [],
+              "rewritten": [],
+              "unread_after": [],
+              "upkeep": [
+                {
+                  "bytes": 10925,
+                  "created": 0,
+                  "modified_ms": 1790880047999,
+                  "path": "workspaces.json",
+                  "rewritten": 1,
+                  "sha256": "3c587d7cc2ca2ec5764d450c489f2e1b95f68532d36c0e9401894b54e9f2dc7c"
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "cache",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "search-index",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "updates",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "telemetry",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "file-history",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.1",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.2",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.3",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.4",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.5",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 50674,
+                  "created": 0,
+                  "modified_ms": 1790880040876,
+                  "path": "sessions/.index-cache",
+                  "rewritten": 1,
+                  "sha256": "184176a6a4bf6a11035f470127685e647cf40b6713f56246dbcf14b61d43770a"
+                },
+                {
+                  "bytes": 0,
+                  "created": 9,
+                  "modified_ms": null,
+                  "path": "sessions/.index-dirty",
+                  "rewritten": 0,
+                  "sha256": null
+                }
+              ],
+              "others": {
+                "created_and_left": {
+                  "~/.kimi-code/sessions/.index-dirty": 2,
+                  "~/.kimi-code/workspace-trust": 1
+                },
+                "left_holding_the_part": {
+                  "~/.kimi-code/workspace-trust": 1,
+                  "~/.kimi-code/*": 1
+                },
+                "rewritten": {
+                  "~/.kimi-code/sessions/.index-cache": 1,
+                  "~/.kimi-code/*": 1
+                }
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "inode": 69651153,
+                  "pid": 47464,
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571355,
+                  "pid": 47603,
+                  "sha256": "16303dedab719ddb63efd9dd68092a0da37b397bfd4fcb856d5f1c86c5ee414b"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571822,
+                  "pid": 47604,
+                  "sha256": "b636262803922ee1dd0fbf614818473ffa53c811e44fd3278c2270d3af4759d3"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                    "pid": 47464,
+                    "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "launch": "native",
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                }
+              ],
+              "pids": [
+                47464,
+                47603,
+                47604
+              ],
+              "sample_interval_ms": 250,
+              "samples": 70,
+              "session_path": "<tmp>/krm-7a2f0c84/agent/current/bin:<tmp>/krm-7a2f0c84/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "reconciled": {
+              "attachment": "350504c2-dce8-401e-a74a-825f3e703dac",
+              "epoch": 2,
+              "next_sequence": 34,
+              "stale_input": "AMBIGUOUS_ATTACHMENT"
+            }
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running",
+          "part": "5a",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 8,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "evidence": {
+            "after_restart": {
+              "detection": {
+                "instances": [
+                  {
+                    "application_instance_id": "03f27b2e-9d02-4a61-bc35-64d196ae95b3",
+                    "bypass": "not_integrated",
+                    "ended_at": null,
+                    "mode": "native_terminal",
+                    "plugin_id": "kalareach/kimi-code-cli",
+                    "profile_id": "lp-1790880097997-9e4109aa-95d1-4dc8-99aa-f225b9f827e1",
+                    "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                    "started_at": "1790880097997"
+                  }
+                ],
+                "waited_ms": 0
+              },
+              "surface": {
+                "answers": [
+                  {
+                    "call": "agent.prompt.submit",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 03f27b2e-9d02-4a61-bc35-64d196ae95b3: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.prompt.queue",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 03f27b2e-9d02-4a61-bc35-64d196ae95b3: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.turn.steer",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 03f27b2e-9d02-4a61-bc35-64d196ae95b3: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.turn.cancel",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 03f27b2e-9d02-4a61-bc35-64d196ae95b3: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.approval.respond",
+                    "detail": "STALE_SESSION: no pending resource 64477d9d-b056-4cc2-a2c5-f7c4d4c9ab9b",
+                    "error": null,
+                    "refused": "STALE_SESSION"
+                  },
+                  {
+                    "call": "agent.draft.add_attachment",
+                    "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                    "error": null,
+                    "refused": "INVALID_ARGUMENT"
+                  },
+                  {
+                    "call": "plugin.action.invoke turn.cancel",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 03f27b2e-9d02-4a61-bc35-64d196ae95b3: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  }
+                ],
+                "backend_files": [],
+                "capability_records": [],
+                "resources": 0
+              }
+            },
+            "agent_processes": [
+              "kimi"
+            ],
+            "control": {
+              "breaks_property": true,
+              "check": "these have ended: process 48275 (kimi)",
+              "what": "the agent ended with a second daemon kill"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "03f27b2e-9d02-4a61-bc35-64d196ae95b3",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790880097997-9e4109aa-95d1-4dc8-99aa-f225b9f827e1",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790880097997"
+                }
+              ],
+              "waited_ms": 1539
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "3d1a463c39c14957d412628d17041129cc1ea50508444cbe54ec9eb61351fb06",
+              "plugin_id": "kalareach/kimi-code-cli",
+              "version": "0.2.1"
+            },
+            "killed_daemon": 48232,
             "local_terminal_input": "❯ Don't trust",
             "provenance": {
               "ended_before_read": [],
@@ -405,7 +2943,7 @@
                   "from": "build",
                   "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
                   "inode": 69651153,
-                  "pid": 55975,
+                  "pid": 48275,
                   "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
                 }
               ],
@@ -415,7 +2953,7 @@
                     "command": "kimi",
                     "from": "build",
                     "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
-                    "pid": 55975,
+                    "pid": 48275,
                     "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
                   },
                   "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
@@ -425,11 +2963,15 @@
                   "what": "kimi"
                 }
               ],
+              "pids": [
+                48275
+              ],
               "sample_interval_ms": 250,
-              "samples": 16,
-              "session_path": "<tmp>/krm-9706cf2e/agent/current/bin:<tmp>/krm-9706cf2e/agent/runtime:/usr/bin:/bin"
+              "samples": 24,
+              "session_path": "<tmp>/krm-38cd67e1/agent/current/bin:<tmp>/krm-38cd67e1/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
             },
-            "restarted_daemon": 56249
+            "restarted_daemon": 48376
           }
         },
         {
@@ -438,9 +2980,9 @@
           "source": "kalareach-plugins:fixtures/agents/README.md",
           "keyed_by": "case_table",
           "outcome": "not_run",
-          "reason": "the terminal route has no gateway, so it holds no gateway request state (the connector hand-over to workers)",
+          "reason": "waits for the command integration: a session made through kr new gets no command integration, so no launch has a gateway holding request state (the command integration's landing)",
           "needs": [
-            "connector binding"
+            "command integration"
           ]
         },
         {
@@ -448,16 +2990,70 @@
           "part": "6a",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
-          "outcome": "not_run",
-          "reason": "the build list names no newer build of this agent (the build list)",
+          "outcome": "passed",
           "runs": [
             {
-              "step": 4,
-              "outcome": "not_run"
+              "step": 9,
+              "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
+            "control": {
+              "breaks_property": true,
+              "check": "process 48760 runs <tools>/kimi-code-cli/2.1.0/bin/kimi (inode 77304692), not <tools>/kimi-code-cli/2.0.2/bin/kimi (inode 69651153)",
+              "relaunched_process": 48760,
+              "relaunched_runs": {
+                "file": "<tools>/kimi-code-cli/2.1.0/bin/kimi",
+                "inode": 77304692
+              },
+              "what": "the agent relaunched in the first session after the upgrade"
+            },
+            "first_after_upgrade": {
+              "instances": [
+                {
+                  "application_instance_id": "f2ecc115-f3a9-4f9a-b46a-126222ec5598",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790880115943-c3850617-c42b-45b3-a4a0-3d102bcc7064",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790880115943"
+                }
+              ],
+              "waited_ms": 0
+            },
+            "first_agent_process": 48595,
+            "first_binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790880115943-c3850617-c42b-45b3-a4a0-3d102bcc7064",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
+            "first_detection": {
+              "instances": [
+                {
+                  "application_instance_id": "f2ecc115-f3a9-4f9a-b46a-126222ec5598",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790880115943-c3850617-c42b-45b3-a4a0-3d102bcc7064",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790880115943"
+                }
+              ],
+              "waited_ms": 1537
+            },
             "installed": {
               "grant": [
                 "upstream.action"
@@ -466,13 +3062,171 @@
               "plugin_id": "kalareach/kimi-code-cli",
               "version": "0.2.1"
             },
+            "launch": "native",
+            "newer": {
+              "mark": {
+                "file": "<tools>/kimi-code-cli/2.1.0/bin/kimi",
+                "inode": 77304692
+              },
+              "version": "2.1.0"
+            },
+            "pinned": {
+              "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+              "inode": 69651153
+            },
             "provenance": {
               "ended_before_read": [],
-              "executed": [],
-              "launches": [],
+              "executed": [
+                {
+                  "command": "kimi",
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "inode": 69651153,
+                  "pid": 48595,
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                },
+                {
+                  "command": "kimi",
+                  "device": 16777234,
+                  "from": "newer build",
+                  "image": "<tools>/kimi-code-cli/2.1.0/bin/kimi",
+                  "inode": 77304692,
+                  "pid": 48681,
+                  "sha256": "71f18445f23e061eb88b34bce88245887bdd546c17196a8c4d9959afe8de133a"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "kimi",
+                    "from": "build",
+                    "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                    "pid": 48595,
+                    "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11",
+                  "what": "kimi"
+                },
+                {
+                  "agent_process": {
+                    "command": "kimi",
+                    "from": "newer build",
+                    "image": "<tools>/kimi-code-cli/2.1.0/bin/kimi",
+                    "pid": 48681,
+                    "sha256": "71f18445f23e061eb88b34bce88245887bdd546c17196a8c4d9959afe8de133a"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.1.0/bin/kimi",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "71f18445f23e061eb88b34bce88245887bdd546c17196a8c4d9959afe8de133a",
+                  "what": "kimi"
+                },
+                {
+                  "agent_process": {
+                    "command": "kimi",
+                    "from": "newer build",
+                    "image": "<tools>/kimi-code-cli/2.1.0/bin/kimi",
+                    "pid": 48760,
+                    "sha256": "71f18445f23e061eb88b34bce88245887bdd546c17196a8c4d9959afe8de133a"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.1.0/bin/kimi",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "71f18445f23e061eb88b34bce88245887bdd546c17196a8c4d9959afe8de133a",
+                  "what": "kimi"
+                }
+              ],
+              "pids": [
+                48595,
+                48681,
+                48760
+              ],
               "sample_interval_ms": 250,
-              "samples": 0,
-              "session_path": null
+              "samples": 33,
+              "session_path": "<tmp>/krm-51e899e9/agent/current/bin:<tmp>/krm-51e899e9/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "second_binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790880119923-f730cd61-c817-44c4-8392-330949e68ed5",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
+            "second_detection": {
+              "instances": [
+                {
+                  "application_instance_id": "11df58b8-e5b3-4679-8335-c55ec8cb3e85",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790880119923-f730cd61-c817-44c4-8392-330949e68ed5",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790880119923"
+                }
+              ],
+              "waited_ms": 1800
+            },
+            "second_surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 11df58b8-e5b3-4679-8335-c55ec8cb3e85: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 11df58b8-e5b3-4679-8335-c55ec8cb3e85: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 11df58b8-e5b3-4679-8335-c55ec8cb3e85: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 11df58b8-e5b3-4679-8335-c55ec8cb3e85: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "detail": "STALE_SESSION: no pending resource aa706649-80ef-430b-b1e8-ca11486a1573",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 11df58b8-e5b3-4679-8335-c55ec8cb3e85: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                }
+              ],
+              "backend_files": [],
+              "capability_records": [],
+              "resources": 0
             }
           }
         },
@@ -482,21 +3236,616 @@
           "source": "kalareach-plugins:fixtures/agents/README.md",
           "keyed_by": "case_table",
           "outcome": "not_run",
-          "reason": "needs a binding, to show each process bound to its own adapter and schema (the connector hand-over to workers)",
+          "reason": "waits for the command integration: a build outside the qualified range can be refused only a typed route, and no launch has one without the integration (the command integration's landing)",
           "needs": [
-            "connector binding"
+            "command integration"
           ]
         },
         {
-          "test": "part 7",
+          "test": "kr-e2e-agents --test cases a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged",
           "part": "7",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account, since a saved conversation needs a turn (an account from the user)",
-          "needs": [
-            "vendor account"
-          ]
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 10,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "kimi-code/kimi-for-coding-highspeed"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 39,
+              "declined_requests": 0,
+              "home": "person",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-21dde0b5/w/.kimi-code/AGENTS.md",
+                  "<tmp>/krm-21dde0b5/w/.kimi-code/local.toml",
+                  "<tmp>/krm-21dde0b5/w/.kimi-code/skills",
+                  "<tmp>/krm-21dde0b5/w/.kimi-code/agents",
+                  "<tmp>/krm-21dde0b5/w/AGENTS.md",
+                  "<tmp>/krm-21dde0b5/w/agents.md",
+                  "<tmp>/krm-21dde0b5/w/.agents",
+                  "<tmp>/krm-21dde0b5/w/.mcp.json",
+                  "<tmp>/krm-21dde0b5/w/.git",
+                  "<tmp>/krm-21dde0b5/h/.kimi-code",
+                  "<tmp>/krm-21dde0b5/h/.agents",
+                  "<tmp>/krm-21dde0b5/h/.mcp.json",
+                  "~/.kimi-code/plugins"
+                ],
+                "probes": [],
+                "servers_switched_off": [],
+                "switches": [
+                  "--skills-dir",
+                  "<tmp>/krm-21dde0b5/skills"
+                ],
+                "tools_offered": []
+              },
+              "login": "vendor subscription login",
+              "stored": "file in the agent's own directory",
+              "turns": 2,
+              "variable": null,
+              "variables_absent": [
+                "KIMI_*",
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "MOONSHOT_*"
+              ]
+            },
+            "confinement": {
+              "fresh_screen_ms": [
+                53,
+                53,
+                51,
+                56,
+                89,
+                58
+              ],
+              "left_in_data": {
+                "file_history_removed": 0,
+                "sessions_bucket_existed": true,
+                "sessions_bucket_left": false,
+                "trust_records_left": 0,
+                "trust_records_removed": 1
+              },
+              "new_sessions": 1,
+              "other_writer_seen": false,
+              "profile_sha256": "ef9740ee19229fd6ef7e31898d4cf7346da19d433c7f8fdcb73979951dc715a3",
+              "proxy": {
+                "by_host": [
+                  {
+                    "host": "api.kimi.ai",
+                    "open": 0,
+                    "received": 91565,
+                    "sent": 225098,
+                    "tunnels": 8
+                  },
+                  {
+                    "host": "auth.kimi.ai",
+                    "open": 0,
+                    "received": 0,
+                    "sent": 0,
+                    "tunnels": 0
+                  }
+                ],
+                "hosts": [
+                  "api.kimi.ai",
+                  "auth.kimi.ai"
+                ],
+                "refused": 1,
+                "tunnels": 8
+              },
+              "residuals": [
+                "A string of the login's files is found by its whole text. One that the screen wraps, that a tool truncates or that an encoding changes is not found by value, and the agent's own record of the conversation is the backstop.",
+                "A request the agent makes before the part stops it, such as a subagent's or a goal's first, has gone out when the part stops. The close charges it.",
+                "The proxy counts tunnels, not requests, and sees no TLS server name. The agent's own record counts the requests.",
+                "The person's own older data in the agent's history and log directories is searched whole, so a login string in it would stop a part and cannot be told from the run's.",
+                "The agent's oauth directory is not searched, because it holds the agent's own credentials.",
+                "A request for a conversation's title is seen in the conversation's own record when it succeeds and in the conversation's own log when it fails, and that log writes the line at debug level, which a run does not enable: a failed request leaves no line at the level a run uses. The pinned terminal makes no such request, and a part that sees one stops and charges it as a turn.",
+                "A launch that resumes a saved conversation runs none of the checks before its first turn, so that no shell line enters the conversation. The checks of the part's first launch, which ran the same profile, cover it."
+              ],
+              "resumed_launches": 1,
+              "secrets": {
+                "complete": true,
+                "found_in_data": 0,
+                "found_in_run": 0,
+                "intermediate": 0,
+                "places_in_data": 17,
+                "strings": 5
+              },
+              "servers_switched_off": 5,
+              "settings": {
+                "allow_built_in": 0,
+                "loads_more": false,
+                "mode_manual": true,
+                "rules": 4,
+                "unlisted": 0
+              },
+              "subagent_started": false,
+              "turns": {
+                "charged": 2,
+                "others": 0,
+                "prompts": 2,
+                "steers": 0,
+                "titles": 0
+              },
+              "unasked_tools": [
+                "Read",
+                "Grep",
+                "Glob",
+                "ReadMediaFile",
+                "SetTodoList",
+                "TodoList",
+                "TaskList",
+                "TaskOutput",
+                "WaitFor",
+                "CronList",
+                "WebSearch",
+                "FetchURL",
+                "Agent",
+                "AgentSwarm",
+                "AskUserQuestion",
+                "NotifyUser",
+                "Skill",
+                "EnterPlanMode",
+                "ExitPlanMode",
+                "CreateGoal",
+                "GetGoal",
+                "SetGoalBudget",
+                "UpdateGoal",
+                "select_tools"
+              ],
+              "workspaces": {
+                "additive": true,
+                "restored": false
+              },
+              "zero_turn": [
+                {
+                  "canary_read_inside_works": true,
+                  "canary_read_outside_refused": true,
+                  "connections_only_to_the_proxy": true,
+                  "connections_seen": 0,
+                  "device_keys_reach_the_composer": true,
+                  "direct_connection_v4_refused": true,
+                  "direct_connection_v6_refused": true,
+                  "person_copy_cannot_run": true,
+                  "proxy_refused_a_host_it_was_not_given": true,
+                  "proxy_tunnelled_to_a_host_it_was_given": true,
+                  "server_list_complete": true,
+                  "servers_disabled": 5,
+                  "write_outside_refused": true
+                }
+              ]
+            },
+            "control": {
+              "breaks_property": true,
+              "isolated": false,
+              "what": "session B's marker typed into session A"
+            },
+            "conversation": "session_05b68de2-bd60-42da-8a2b-c04ed6e651be",
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "3d1a463c39c14957d412628d17041129cc1ea50508444cbe54ec9eb61351fb06",
+              "plugin_id": "kalareach/kimi-code-cli",
+              "version": "0.2.1"
+            },
+            "login_held": true,
+            "person_files": {
+              "appended": [
+                {
+                  "appended": 2,
+                  "earlier_lines_intact": true,
+                  "file": "~/.kimi-code/session_index.jsonl",
+                  "others": 0,
+                  "own": [
+                    {
+                      "holds_the_mark": false,
+                      "id": "<not published>",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    },
+                    {
+                      "holds_the_mark": false,
+                      "id": "session_05b68de2-bd60-42da-8a2b-c04ed6e651be",
+                      "names_a_conversation_it_created": false,
+                      "names_the_run_directory": true,
+                      "time": null
+                    }
+                  ]
+                }
+              ],
+              "config_directory_removed": null,
+              "files": [
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/config.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/mcp.json",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/AGENTS.md",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "~/.kimi-code/tui.toml",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
+                },
+                {
+                  "changed": true,
+                  "file": "~/.kimi-code/logs/kimi-code.log",
+                  "modified_changed": true,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": true
+                },
+                {
+                  "changed": false,
+                  "file": "<not published>",
+                  "modified_changed": false,
+                  "names_run": false,
+                  "recorded_only": true,
+                  "shared": false,
+                  "size_changed": false
+                }
+              ],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr9e99aac80b45",
+                "run_directory": "<tmp>/krm-21dde0b5"
+              }
+            },
+            "person_home": {
+              "appended": [
+                "~/.kimi-code/logs/kimi-code.log",
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "changed_uncompared": [],
+              "created_and_left": [
+                "~/.kimi-code/sessions/.index-dirty/session_05b68de2-bd60-42da-8a2b-c04ed6e651be.1790880142457",
+                "~/.kimi-code/sessions/.index-dirty/session_05b68de2-bd60-42da-8a2b-c04ed6e651be.1790880142482",
+                "~/.kimi-code/sessions/.index-dirty/session_05b68de2-bd60-42da-8a2b-c04ed6e651be.1790880143299",
+                "~/.kimi-code/sessions/.index-dirty/session_05b68de2-bd60-42da-8a2b-c04ed6e651be.1790880146950",
+                "~/.kimi-code/sessions/.index-dirty/session_05b68de2-bd60-42da-8a2b-c04ed6e651be.1790880151504",
+                "~/.kimi-code/sessions/.index-dirty/session_05b68de2-bd60-42da-8a2b-c04ed6e651be.1790880151539",
+                "~/.kimi-code/sessions/.index-dirty/session_05b68de2-bd60-42da-8a2b-c04ed6e651be.1790880155115"
+              ],
+              "created_and_removed": [],
+              "left_holding_the_part": [
+                "~/.kimi-code/session_index.jsonl"
+              ],
+              "left_unsearched": [],
+              "read_whole_after": true,
+              "removed_by_something_else": [],
+              "rewritten": [],
+              "unread_after": [],
+              "upkeep": [
+                {
+                  "bytes": 11123,
+                  "created": 0,
+                  "modified_ms": 1790880148652,
+                  "path": "workspaces.json",
+                  "rewritten": 1,
+                  "sha256": "dfcca390008dd3b1b22e8a4c62e4094a0cf20aa9aeb97af38874dd8ec85db748"
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "cache",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "search-index",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "updates",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "telemetry",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "file-history",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.1",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.2",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.3",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.4",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 0,
+                  "created": 0,
+                  "modified_ms": null,
+                  "path": "logs/kimi-code.log.5",
+                  "rewritten": 0,
+                  "sha256": null
+                },
+                {
+                  "bytes": 50674,
+                  "created": 0,
+                  "modified_ms": 1790880135474,
+                  "path": "sessions/.index-cache",
+                  "rewritten": 1,
+                  "sha256": "184176a6a4bf6a11035f470127685e647cf40b6713f56246dbcf14b61d43770a"
+                },
+                {
+                  "bytes": 0,
+                  "created": 9,
+                  "modified_ms": null,
+                  "path": "sessions/.index-dirty",
+                  "rewritten": 0,
+                  "sha256": null
+                }
+              ],
+              "others": {
+                "created_and_left": {
+                  "~/.kimi-code/sessions/.index-dirty": 2,
+                  "~/.kimi-code/workspace-trust": 1
+                },
+                "left_holding_the_part": {
+                  "~/.kimi-code/workspace-trust": 1,
+                  "~/.kimi-code/*": 1
+                },
+                "rewritten": {
+                  "~/.kimi-code/sessions/.index-cache": 1,
+                  "~/.kimi-code/*": 1
+                }
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 12560953,
+                  "pid": 49368,
+                  "sha256": "d508f0e1901151843804e4af512d4587ad0e422039e43e14abf22792360ad3d4"
+                },
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "inode": 69651153,
+                  "pid": 49029,
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571355,
+                  "pid": 49167,
+                  "sha256": "16303dedab719ddb63efd9dd68092a0da37b397bfd4fcb856d5f1c86c5ee414b"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571562,
+                  "pid": 49364,
+                  "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9"
+                },
+                {
+                  "device": 16777234,
+                  "from": "system",
+                  "inode": 1152921500312571822,
+                  "pid": 49168,
+                  "sha256": "b636262803922ee1dd0fbf614818473ffa53c811e44fd3278c2270d3af4759d3"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                    "pid": 49029,
+                    "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "launch": "native",
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                },
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                    "pid": 49352,
+                    "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                  },
+                  "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
+                  "launch": "native",
+                  "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
+                }
+              ],
+              "pids": [
+                49029,
+                49167,
+                49168,
+                49352,
+                49364,
+                49368
+              ],
+              "sample_interval_ms": 250,
+              "samples": 87,
+              "session_path": "<tmp>/krm-21dde0b5/agent/current/bin:<tmp>/krm-21dde0b5/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "session_a": {
+              "detected": {
+                "detected": true,
+                "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+                "instance": "bb12ab9a-0db6-4580-ab90-6924bfa56e60"
+              },
+              "detection": {
+                "instances": [
+                  {
+                    "application_instance_id": "bb12ab9a-0db6-4580-ab90-6924bfa56e60",
+                    "bypass": null,
+                    "ended_at": null,
+                    "mode": "native_terminal",
+                    "plugin_id": "kalareach/kimi-code-cli",
+                    "profile_id": "lp-1790880137483-3bfc8fc0-2c48-4f5c-86a4-ce348b2c3376",
+                    "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                    "started_at": "1790880137483"
+                  }
+                ],
+                "waited_ms": 2
+              },
+              "owners": [
+                {
+                  "pid": 49029
+                }
+              ]
+            },
+            "session_b": {
+              "detected": {
+                "detected": true,
+                "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+                "instance": "486e4ba7-5ecb-409f-8221-a74ee36a7ee8"
+              },
+              "detection": {
+                "instances": [
+                  {
+                    "application_instance_id": "486e4ba7-5ecb-409f-8221-a74ee36a7ee8",
+                    "bypass": null,
+                    "ended_at": null,
+                    "mode": "native_terminal",
+                    "plugin_id": "kalareach/kimi-code-cli",
+                    "profile_id": "lp-1790880150815-62334070-98f1-4aed-8a29-98036a3747b5",
+                    "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                    "started_at": "1790880150815"
+                  }
+                ],
+                "waited_ms": 1530
+              },
+              "owners": [
+                {
+                  "pid": 49352
+                }
+              ],
+              "resumed_with": [
+                "-S",
+                "session_05b68de2-bd60-42da-8a2b-c04ed6e651be"
+              ],
+              "same_conversation": true,
+              "wrote_into_a_conversation": true
+            }
+          }
         },
         {
           "test": "kr-e2e-agents --test cases forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged",
@@ -506,12 +3855,26 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 5,
+              "step": 11,
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
+            "binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790880197302-3a9e4e93-d800-4bf2-a25f-fd95e4d48cac",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
             "control": {
               "breaks_property": false,
               "owner": {
@@ -524,6 +3887,21 @@
               "what": "a view-only device's input refused as not permitted where the owner device's is admitted",
               "why_not": "a forgery that changes the host's state needs a registration the host issued, which this host issues to no connector"
             },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "7646fa71-20bc-4b07-abfb-bafa54f9ad76",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790880197302-3a9e4e93-d800-4bf2-a25f-fd95e4d48cac",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790880197302"
+                }
+              ],
+              "waited_ms": 1029
+            },
             "installed": {
               "grant": [
                 "upstream.action"
@@ -532,6 +3910,7 @@
               "plugin_id": "kalareach/kimi-code-cli",
               "version": "0.2.1"
             },
+            "live_bindings": 1,
             "provenance": {
               "ended_before_read": [],
               "executed": [
@@ -541,7 +3920,7 @@
                   "from": "build",
                   "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
                   "inode": 69651153,
-                  "pid": 58645,
+                  "pid": 49962,
                   "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
                 }
               ],
@@ -551,7 +3930,7 @@
                     "command": "kimi",
                     "from": "build",
                     "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
-                    "pid": 58645,
+                    "pid": 49962,
                     "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
                   },
                   "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
@@ -561,24 +3940,28 @@
                   "what": "kimi"
                 }
               ],
+              "pids": [
+                49962
+              ],
               "sample_interval_ms": 250,
-              "samples": 35,
-              "session_path": "<tmp>/krm-06328f74/agent/current/bin:<tmp>/krm-06328f74/agent/runtime:/usr/bin:/bin"
+              "samples": 38,
+              "session_path": "<tmp>/krm-a7a24008/agent/current/bin:<tmp>/krm-a7a24008/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 8c447106-7e54-4f2a-acc5-5a2f7cc73564 approval allow"
+                "title": "kalareach session bd692497-fd66-4350-bec0-267b8457fb3e approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-06328f74/h/.kimi-code/sessions/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-06328f74-w/8c447106-7e54-4f2a-acc5-5a2f7cc73564.jsonl"
+                "path": "<tmp>/krm-a7a24008/h/.kimi-code/sessions/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-a7a24008-w/bd692497-fd66-4350-bec0-267b8457fb3e.jsonl"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
                 "probes": [
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-none-session-start",
                     "stderr_first_line": "",
@@ -586,7 +3969,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 3,
                     "exit": 0,
                     "probe": "hook-none-permission",
                     "stderr_first_line": "",
@@ -602,7 +3985,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 6,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "channel-none",
                     "stderr_first_line": "",
@@ -610,10 +3993,10 @@
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-06328f74/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a7a24008/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -621,28 +4004,28 @@
                     "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-06328f74/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a7a24008/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-06328f74/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a7a24008/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-06328f74/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-a7a24008/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -650,7 +4033,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-worker-permission",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -666,7 +4049,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 6,
                     "exit": 1,
                     "probe": "channel-worker",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -684,9 +4067,9 @@
           "source": "kalareach-plugins:fixtures/agents/README.md",
           "keyed_by": "case_table",
           "outcome": "not_run",
-          "reason": "needs a registration the host issued, to fail a forgery at the endpoint a legitimate one passes (the command integration)",
+          "reason": "waits for the command integration: no launch has a registration the host issued, against which a forgery could fail where it passes (the command integration's landing)",
           "needs": [
-            "launch registration"
+            "command integration"
           ]
         }
       ]
@@ -711,22 +4094,47 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 6,
+              "step": 12,
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/kimi-code-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/kimi-code-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/kimi-code-cli/key-scan.jsonl <target>/debug/deps/cases-90fa24da07d573a9 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "announced": {
-              "instances": [],
-              "more_resources": false,
-              "resources": []
+              "instances": [
+                {
+                  "application_instance_id": "560e3887-17b3-4e70-ba1c-0cef3937ff17",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790880217217-5a78e9e1-3cd1-4903-993d-531a45fd238e",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790880217217"
+                }
+              ],
+              "waited_ms": 0
             },
-            "composer_row": " │ > <tmp>/krm-bf209c0d/w/kalareach-shot.png   │",
+            "composer_row": " │ > <tmp>/krm-3a7ec32c/w/kalareach-shot.png   │",
             "control": {
               "breaks_property": true,
               "refused": "input.write: LEASE_LOST: the input lease has moved on",
               "what": "the same input without the lease"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "560e3887-17b3-4e70-ba1c-0cef3937ff17",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/kimi-code-cli",
+                  "profile_id": "lp-1790880217217-5a78e9e1-3cd1-4903-993d-531a45fd238e",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790880217217"
+                }
+              ],
+              "waited_ms": 1540
             },
             "forwarded_bytes": 90,
             "installed": {
@@ -746,7 +4154,7 @@
                   "from": "build",
                   "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
                   "inode": 69651153,
-                  "pid": 61070,
+                  "pid": 50397,
                   "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
                 }
               ],
@@ -756,7 +4164,7 @@
                     "command": "kimi",
                     "from": "build",
                     "image": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
-                    "pid": 61070,
+                    "pid": 50397,
                     "sha256": "c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11"
                   },
                   "file": "<tools>/kimi-code-cli/2.0.2/bin/kimi",
@@ -766,11 +4174,64 @@
                   "what": "kimi"
                 }
               ],
+              "pids": [
+                50397
+              ],
               "sample_interval_ms": 250,
-              "samples": 14,
-              "session_path": "<tmp>/krm-bf209c0d/agent/current/bin:<tmp>/krm-bf209c0d/agent/runtime:/usr/bin:/bin"
+              "samples": 20,
+              "session_path": "<tmp>/krm-3a7ec32c/agent/current/bin:<tmp>/krm-3a7ec32c/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
             },
-            "typed": "<tmp>/krm-bf209c0d/w/kalareach-shot.png"
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 560e3887-17b3-4e70-ba1c-0cef3937ff17: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 560e3887-17b3-4e70-ba1c-0cef3937ff17: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 560e3887-17b3-4e70-ba1c-0cef3937ff17: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 560e3887-17b3-4e70-ba1c-0cef3937ff17: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "detail": "STALE_SESSION: no pending resource 50df4903-9d7e-4579-b1b0-7aabdd1e2757",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 560e3887-17b3-4e70-ba1c-0cef3937ff17: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                }
+              ],
+              "backend_files": [],
+              "capability_records": [],
+              "resources": 0
+            },
+            "typed": "<tmp>/krm-3a7ec32c/w/kalareach-shot.png"
           }
         },
         {
@@ -801,19 +4262,22 @@
   "warnings": [],
   "summary": {
     "identifiers": 2,
-    "passed": 2,
-    "failed": 0,
+    "passed": 1,
+    "failed": 1,
     "known_difference": 0,
     "not_run": 0,
     "known_differences": 0,
     "tests": {
-      "passed": 4,
-      "failed": 0,
+      "passed": 9,
+      "failed": 2,
       "ignored": 0,
-      "not_run": 11,
+      "not_run": 4,
       "not_built": 0,
       "known_difference": 0
     },
-    "failed_steps": []
+    "failed_steps": [
+      2,
+      3
+    ]
   }
 }
