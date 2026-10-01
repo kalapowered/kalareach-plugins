@@ -440,17 +440,38 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         .expect("the repository has a build list");
     assert_eq!(builds.omitted().len(), list.builds.len());
 
-    let account_parts = "section 12 parts 1, 2a, 2c, 3, 4, 5b, 6b, 7, 8b did not pass";
     let and_upgrade = "section 12 parts 1, 2a, 2c, 3, 4, 5b, 6a, 6b, 7, 8b did not pass";
+    // Claude Code's record is a run with the person's login: every part that ran passed but the
+    // device's upload, and the parts that wait for the command integration did not run.
+    let claude_code: &[&str] = &[
+        "steps 2 did not exit cleanly",
+        "parts 1 failed",
+        "section 12 parts 1, 5b, 6b, 8b did not pass",
+    ];
+    // Codex's record is a run with the person's login: the host detected no launch of a build a
+    // runtime starts, so the parts that need it failed, and the device's upload was refused.
+    let codex: &[&str] = &[
+        "steps 2, 4, 5, 10 did not exit cleanly",
+        "parts 1, 2b, 2c, 7 failed",
+        "section 12 parts 1, 2b, 2c, 5b, 6b, 7, 8b did not pass",
+    ];
+    // Kimi Code's record is a run with the person's login: part 1 failed at the check of the image's
+    // colour in the agent's answer, before the answer to the device's upload was kept, and the agent
+    // was not shown to be running its turn when part 2a's queued prompt was entered.
+    let kimi_code: &[&str] = &[
+        "steps 2, 3 did not exit cleanly",
+        "parts 1, 2a failed",
+        "section 12 parts 1, 2a, 5b, 6b, 8b did not pass",
+    ];
     let script = "the pinned file is a script, whose process is its interpreter, so it names no \
                   executable a host runs";
     let wheel = "the pinned file is a wheel, an archive, so it names no executable a host runs";
     let expected: [(&str, &[&str]); 8] = [
-        ("kalareach/claude-code", &[account_parts]),
-        ("kalareach/codex", &[account_parts]),
+        ("kalareach/claude-code", claude_code),
+        ("kalareach/codex", codex),
         ("kalareach/gemini-cli", &[script, and_upgrade]),
         ("kalareach/kimi-cli", &[wheel, and_upgrade]),
-        ("kalareach/kimi-code-cli", &[and_upgrade]),
+        ("kalareach/kimi-code-cli", kimi_code),
         ("kalareach/opencode", &[and_upgrade]),
         ("kalareach/opencode-attach", &[and_upgrade]),
         ("kalareach/qoder-cli", &[and_upgrade]),
