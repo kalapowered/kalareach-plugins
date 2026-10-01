@@ -1,0 +1,87 @@
+;; The sandbox profile Kimi Code runs in for the parts that use the person's login.
+;;
+;; The agent shares a data directory with the person's own sessions, so everything it, or a tool a
+;; model asks it to run, can reach is limited here, by the kernel, for the agent's whole process
+;; tree. The paths and the proxy's port are parameters (-D name=value); nothing else in this file
+;; varies between runs. The only way out of the machine is the run's proxy on a loopback port.
+;;
+;;   HOME PROXY_PORT ...  see fixtures/agents/README.md, "The sandbox profile".
+(version 1)
+(allow default)
+
+;; Reads: nothing but the run's own places, the agent's data directory, the pinned build, the
+;; managed shell and the system.
+(deny file-read* (subpath "/"))
+(allow file-read-metadata)
+(allow file-read*
+  (literal "/")
+  (subpath "/System") (subpath "/usr") (subpath "/bin") (subpath "/sbin")
+  (subpath "/Library") (subpath "/Applications/Xcode.app")
+  (subpath "/private/etc") (subpath "/private/var/db/timezone")
+  (literal "/dev") (literal "/dev/null") (literal "/dev/zero") (literal "/dev/random")
+  (literal "/dev/urandom") (literal "/dev/tty") (subpath "/dev/fd")
+  (subpath (param "HOME")) (subpath (param "WORK")) (subpath (param "TMP"))
+  (subpath (param "SKILLS")) (subpath (param "AGENT"))
+  (subpath (param "BUILD")) (subpath (param "SHELLS"))
+  (subpath (param "DATA")))
+
+;; Writes: the run's home, folder and temporary directory; the terminal it was started in (it keeps the
+;; one it has open, and no other terminal of the person's is named); and, in the data directory, only
+;; what the agent keeps there while it runs: the run's own sessions and the two indexes beside them, its
+;; history and its file-history record for the run's folder, its log, its cache and search index, its
+;; workspace list and index, and the login slot in use. Its configuration, servers, instructions,
+;; skills and binaries, its trust records, every other session, history and record, its telemetry and
+;; updates, and the login slot that is not in use stay as they are.
+(deny file-write* (subpath "/"))
+(allow file-write*
+  (subpath (param "HOME")) (subpath (param "WORK")) (subpath (param "TMP"))
+  (literal "/dev/null") (literal "/dev/tty")
+  (subpath (param "BUCKET"))
+  (subpath (string-append (param "DATA") "/sessions/.index-cache"))
+  (subpath (string-append (param "DATA") "/sessions/.index-dirty"))
+  (prefix (param "HISTORY"))
+  (prefix (param "FILEHISTORY"))
+  (prefix (string-append (param "DATA") "/logs/kimi-code.log"))
+  (subpath (string-append (param "DATA") "/cache"))
+  (subpath (string-append (param "DATA") "/search-index"))
+  (subpath (string-append (param "DATA") "/oauth"))
+  (prefix (string-append (param "DATA") "/workspaces.json"))
+  (prefix (string-append (param "DATA") "/session_index.jsonl"))
+  (prefix (string-append (param "DATA") "/device_id"))
+  (prefix (string-append (param "DATA") "/region"))
+  (prefix (string-append (param "DATA") "/migrations-effort.json"))
+  (prefix (string-append (param "DATA") "/credentials/" (param "SLOT"))))
+
+;; Programs: none of the person's own, which the data directory holds (the agent's own copy of
+;; itself, fd and rg), and no library of it mapped as code.
+(deny process-exec*
+  (subpath (param "DATA")) (subpath (param "HOME")) (subpath (param "WORK"))
+  (subpath (param "TMP")) (subpath (param "SKILLS")))
+(deny file-map-executable
+  (subpath (param "DATA")) (subpath (param "WORK")) (subpath (param "TMP"))
+  (subpath (param "SKILLS")))
+(deny file-link)
+
+;; Signals and process information: only of the agent's own processes, whose environments and command
+;; lines are the only ones a program of its tree may read.
+(deny signal (target others))
+(deny process-info* (target others))
+(deny ipc-posix-shm*)
+(deny iokit-open)
+
+;; The network: nothing but the run's proxy, on loopback. No other port, no unix socket.
+(deny network*)
+(allow network-outbound (remote ip (string-append "localhost:" (param "PROXY_PORT"))))
+
+;; Services: none registered, and a lookup only of the system services a start needs. Everything
+;; else, the pasteboard, launching other applications and the keychain among it, is refused.
+(deny mach-register)
+(deny mach-lookup)
+(allow mach-lookup
+  (global-name "com.apple.system.opendirectoryd.libinfo")
+  (global-name "com.apple.system.opendirectoryd.membership")
+  (global-name "com.apple.system.notification_center")
+  (global-name "com.apple.cfprefsd.daemon")
+  (global-name "com.apple.logd")
+  (global-name "com.apple.diagnosticd")
+  (global-name "com.apple.FSEvents"))

@@ -50,6 +50,126 @@
         "pinned": "bin/claude",
         "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626",
         "ready": "Quick safety check"
+      },
+      "account": {
+        "login": "vendor subscription login",
+        "stored": "login keychain item",
+        "home": "person",
+        "login_keychain": true,
+        "arguments": [
+          "--model",
+          "haiku",
+          "--strict-mcp-config"
+        ],
+        "status": {
+          "arguments": [
+            "auth",
+            "status",
+            "--json"
+          ],
+          "shows": [
+            "\"loggedIn\":true"
+          ]
+        },
+        "isolated": [
+          {
+            "arguments": [
+              "mcp",
+              "list"
+            ],
+            "shows": [
+              "No MCP servers configured"
+            ]
+          }
+        ],
+        "absent": [
+          "{config}/settings.json",
+          "{config}/settings.local.json",
+          "{work}/.claude/settings.json",
+          "{work}/.claude/settings.local.json",
+          "{work}/.mcp.json",
+          "/Library/Application Support/ClaudeCode/managed-settings.json",
+          "/Library/Application Support/ClaudeCode/managed-mcp.json",
+          "/Library/Application Support/ClaudeCode/managed-settings.d",
+          "/Library/Managed Preferences/com.anthropic.claudecode.plist",
+          "/Library/Managed Preferences/{user}/com.anthropic.claudecode.plist"
+        ],
+        "config_directory": {
+          "variable": "CLAUDE_CONFIG_DIR",
+          "files": {
+            ".claude.json": "{\"hasCompletedOnboarding\":true,\"theme\":\"dark\"}\n"
+          }
+        },
+        "variables": {
+          "CLAUDE_SECURESTORAGE_CONFIG_DIR": "",
+          "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
+        },
+        "cleared": [
+          "ANTHROPIC_*",
+          "CLAUDE_CODE_*",
+          "AWS_BEARER_TOKEN_BEDROCK"
+        ],
+        "keychain_item": "Claude Code-credentials",
+        "guarded": [
+          ".claude/.credentials.json",
+          ".claude/.device-keys.json",
+          ".claude/settings.json"
+        ],
+        "shared": [
+          ".claude.json"
+        ],
+        "signed_out": [
+          "Not logged in",
+          "Please run /login",
+          "Invalid API key",
+          "Select login method"
+        ],
+        "budget": "claude-code",
+        "turns": 50,
+        "directories": [
+          "Library/Caches/claude-cli-nodejs"
+        ],
+        "conversations": "projects",
+        "prompt_line": "\"type\":\"user\"",
+        "reply_line": "\"type\":\"assistant\"",
+        "reply_mark": "⏺",
+        "decision_line": "\"type\":\"tool_result\"",
+        "queued_line": "\"operation\":\"enqueue\"",
+        "ready": "Quick safety check",
+        "prepare": [
+          {
+            "input": "\u001b[B",
+            "shows": "❯ Yes, I trust this folder"
+          },
+          {
+            "input": "\r",
+            "shows": "? for shortcuts"
+          }
+        ],
+        "composer": "? for shortcuts",
+        "submit": "\r",
+        "clear": "\u0015",
+        "busy": "esc to interrupt",
+        "slash": {
+          "input": "/help",
+          "shows": "Shortcuts"
+        },
+        "dismiss": "\u001b",
+        "interrupt": {
+          "input": "\u001b",
+          "shows": "Interrupted"
+        },
+        "steers": false,
+        "approval": {
+          "shows": "Do you want to proceed?",
+          "allow": "1",
+          "deny": "3"
+        },
+        "resume": [
+          "--resume",
+          "{conversation}"
+        ],
+        "image": "paste"
       }
     },
     {
@@ -85,6 +205,272 @@
         "pinned": "lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
         "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a",
         "ready": "Welcome to Codex"
+      },
+      "account": {
+        "login": "vendor subscription login",
+        "stored": "file in the agent's own directory",
+        "home": "person",
+        "arguments": [
+          "-a",
+          "on-request",
+          "-s",
+          "read-only"
+        ],
+        "status": {
+          "arguments": [
+            "login",
+            "status"
+          ],
+          "shows": [
+            "Logged in using ChatGPT"
+          ]
+        },
+        "isolated": [
+          {
+            "arguments": [
+              "mcp",
+              "list"
+            ],
+            "shows": [
+              "disabled"
+            ],
+            "lacks": [
+              "enabled"
+            ]
+          },
+          {
+            "arguments": [
+              "features",
+              "list"
+            ],
+            "lines": [
+              "apps stable false",
+              "browser_use stable false",
+              "computer_use stable false",
+              "goals stable false",
+              "hooks stable false",
+              "image_generation stable false",
+              "memories stable false",
+              "multi_agent stable false",
+              "plugins stable false",
+              "remote_plugin stable false",
+              "shell_snapshot stable false",
+              "skill_mcp_dependency_install stable false",
+              "skill_search stable false",
+              "tool_suggest stable false"
+            ]
+          },
+          {
+            "arguments": [
+              "debug",
+              "prompt-input"
+            ],
+            "shows": [
+              "Network access is restricted",
+              "`sandbox_mode` is `read-only`"
+            ],
+            "lacks": [
+              "{servers}",
+              "## Skills",
+              "### Available skills"
+            ],
+            "accepted": {
+              "starts": "# AGENTS.md instructions",
+              "file": ".codex/AGENTS.md"
+            },
+            "shows_within": "<permissions instructions>"
+          },
+          {
+            "arguments": [
+              "exec",
+              "--ephemeral",
+              "--skip-git-repo-check",
+              "--disable",
+              "enable_request_compression",
+              "-c",
+              "model_provider=\"kr-stub\"",
+              "-c",
+              "model_providers.kr-stub={name=\"kr-stub\", base_url=\"{stub}/v1\", experimental_bearer_token=\"stub\", wire_api=\"responses\", request_max_retries=0, stream_max_retries=0}",
+              "Say nothing."
+            ],
+            "shows": [
+              "custom functions/exec",
+              "nested functions/exec/exec_command"
+            ],
+            "lacks": [
+              "skill",
+              "mcp",
+              "deferred",
+              "{servers}"
+            ]
+          }
+        ],
+        "switches": [
+          "-c",
+          "skills.include_instructions=false",
+          "-c",
+          "approval_policy=\"on-request\"",
+          "-c",
+          "sandbox_mode=\"read-only\"",
+          "-c",
+          "approvals_reviewer=\"user\"",
+          "-c",
+          "check_for_update_on_startup=false",
+          "-c",
+          "tui.show_tooltips=false",
+          "-c",
+          "tui.whimsy=false",
+          "-c",
+          "history.persistence=\"none\"",
+          "-c",
+          "web_search=\"disabled\"",
+          "-c",
+          "model_reasoning_effort=\"low\"",
+          "-c",
+          "notify=[]",
+          "-c",
+          "analytics.enabled=false",
+          "-c",
+          "log_dir=\"{run}/codex-log\"",
+          "-c",
+          "projects={\"{work}\"={trust_level=\"untrusted\"}}",
+          "--disable",
+          "hooks",
+          "--disable",
+          "plugins",
+          "--disable",
+          "apps",
+          "--disable",
+          "computer_use",
+          "--disable",
+          "browser_use",
+          "--disable",
+          "multi_agent",
+          "--disable",
+          "skill_search",
+          "--disable",
+          "skill_mcp_dependency_install",
+          "--disable",
+          "tool_suggest",
+          "--disable",
+          "remote_plugin",
+          "--disable",
+          "shell_snapshot",
+          "--disable",
+          "goals",
+          "--disable",
+          "image_generation",
+          "--disable",
+          "memories"
+        ],
+        "server_switches": {
+          "file": ".codex/config.toml",
+          "table": "mcp_servers",
+          "switch": [
+            "-c",
+            "mcp_servers.{name}.enabled=false"
+          ]
+        },
+        "absent": [
+          "{work}/.codex",
+          "{work}/AGENTS.md",
+          "{work}/AGENTS.override.md",
+          "/etc/codex/config.toml",
+          "/etc/codex/requirements.toml",
+          "/etc/codex/managed_config.toml",
+          "/Library/Managed Preferences/com.openai.codex.plist",
+          "/Library/Managed Preferences/{user}/com.openai.codex.plist",
+          "{home}/.codex/log/codex-tui.log"
+        ],
+        "guarded": [
+          ".codex/config.toml",
+          ".codex/AGENTS.md",
+          ".codex/hooks.json",
+          ".codex/.credentials.json"
+        ],
+        "append_only": [
+          ".codex/session_index.jsonl"
+        ],
+        "recorded": [
+          ".codex/auth.json"
+        ],
+        "line_files": [
+          ".codex/history.jsonl"
+        ],
+        "signed_out": [
+          "Sign in with ChatGPT",
+          "Please log out and sign in again",
+          "Please sign in again"
+        ],
+        "budget": "codex",
+        "turns": 50,
+        "directories": [
+          ".codex/*",
+          ".codex/sessions/{date}",
+          ".codex/shell_snapshots",
+          ".codex/thread-writer-locks",
+          ".codex/tmp",
+          ".codex/.tmp",
+          ".codex/cache",
+          ".codex/plugins",
+          ".codex/skills",
+          ".codex/generated_images",
+          ".codex/mcp-auth",
+          ".codex/mcp-oauth-locks",
+          ".codex/log"
+        ],
+        "removable": [
+          ".codex/sessions/{date}"
+        ],
+        "conversations": ".codex/sessions/{date}",
+        "prompt_line": "\"role\":\"user\"",
+        "reply_line": "\"role\":\"assistant\"",
+        "decision_line": "_call_output\"",
+        "decision_calls": [
+          "require_escalated",
+          "with_additional_permissions"
+        ],
+        "call_lines": [
+          "\"type\":\"function_call\"",
+          "\"type\":\"custom_tool_call\""
+        ],
+        "turn_line": "\"type\":\"task_started\"",
+        "ready": "OpenAI Codex",
+        "composer": "Ask Codex to do anything",
+        "submit": "\r",
+        "queue_key": "\t",
+        "clear": "\u0015",
+        "busy": "esc to interrupt",
+        "slash": {
+          "input": "/pwd",
+          "shows": "Current working directory:"
+        },
+        "interrupt": {
+          "input": "\u001b",
+          "shows": "Conversation interrupted"
+        },
+        "steers": true,
+        "approval": {
+          "shows": "Would you like to run the following command?",
+          "allow": "y",
+          "deny": "n",
+          "command_line": "$ ",
+          "options_start": "Yes, proceed",
+          "others": [
+            "Do you want to approve network access to",
+            "Would you like to send input to",
+            "Would you like to grant these permissions?",
+            "Would you like to make the following edits?",
+            "needs your approval."
+          ],
+          "refuse": "\u001b"
+        },
+        "resume": [
+          "fork",
+          "{conversation}"
+        ],
+        "resume_forks": true,
+        "image": "paste"
       }
     },
     {
@@ -112,7 +498,15 @@
       "composer": null,
       "server": null,
       "transcript": ".gemini/tmp/{cwd_slug}/chats/session-{session}.json",
-      "newer": null
+      "newer": {
+        "version": "0.61.0",
+        "distribution": "npm @google/gemini-cli",
+        "source": "https://registry.npmjs.org/@google/gemini-cli/-/gemini-cli-0.61.0.tgz",
+        "prefix": "gemini-cli/0.61.0",
+        "pinned": "lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+        "sha256": "0b6e283ae88682b0e27e8ef85a608ab74807a1513dc0c053e5aa80d5b80b29ab",
+        "ready": "Do you trust the files in this folder?"
+      }
     },
     {
       "package": "kalareach/kimi-cli",
@@ -126,7 +520,9 @@
       "command": "kimi",
       "launch": "wheel",
       "arguments": [],
-      "runtime": ["python3.12"],
+      "runtime": [
+        "python3.12"
+      ],
       "environment": {
         "KIMI_DISABLE_TELEMETRY": "1",
         "PYTHON_KEYRING_BACKEND": "keyring.backends.null.Keyring"
@@ -142,7 +538,9 @@
       },
       "server": null,
       "transcript": ".kimi/sessions/{cwd_slug}/{session}.jsonl",
-      "newer": null
+      "newer": null,
+      "no_account": "no login on this Mac: Kimi CLI keeps its login in ~/.kimi, which does not exist, and signing in needs the user (the user)",
+      "no_newer": "kimi-cli 1.52.0, the only newer release, starts no agent: it says kimi-cli is no longer maintained and runs the Kimi Code installer, which would change the machine's other kimi executables (the vendor)"
     },
     {
       "package": "kalareach/kimi-code-cli",
@@ -174,7 +572,268 @@
       },
       "server": null,
       "transcript": ".kimi-code/sessions/{cwd_slug}/{session}.jsonl",
-      "newer": null
+      "newer": {
+        "version": "2.1.0",
+        "distribution": "the kimi.com binary release",
+        "source": "https://code.kimi.com/kimi-code/binaries/2.1.0/kimi-code-darwin-arm64",
+        "prefix": "kimi-code-cli/2.1.0",
+        "pinned": "bin/kimi",
+        "sha256": "71f18445f23e061eb88b34bce88245887bdd546c17196a8c4d9959afe8de133a",
+        "ready": "Trust this folder?"
+      },
+      "account": {
+        "login": "vendor subscription login",
+        "stored": "file in the agent's own directory",
+        "home": "person",
+        "arguments": [
+          "-m",
+          "kimi-code/kimi-for-coding-highspeed"
+        ],
+        "switches": [
+          "--skills-dir",
+          "{run}/skills"
+        ],
+        "variables": {
+          "KIMI_DISABLE_TELEMETRY": "1",
+          "KIMI_CODE_NO_AUTO_UPDATE": "1",
+          "KIMI_CODE_BUILTIN_PRODUCT_SKILLS": "false",
+          "KIMI_DISABLE_CRON": "1",
+          "KIMI_WEB_SEARCH_BASE_URL": "http://127.0.0.1:9",
+          "KIMI_WEB_FETCH_BASE_URL": "http://127.0.0.1:9"
+        },
+        "cleared": [
+          "KIMI_*",
+          "OPENAI_*",
+          "ANTHROPIC_*",
+          "MOONSHOT_*"
+        ],
+        "absent": [
+          "{work}/.kimi-code/AGENTS.md",
+          "{work}/.kimi-code/local.toml",
+          "{work}/.kimi-code/skills",
+          "{work}/.kimi-code/agents",
+          "{work}/AGENTS.md",
+          "{work}/agents.md",
+          "{work}/.agents",
+          "{work}/.mcp.json",
+          "{work}/.git",
+          "{home}/.kimi-code",
+          "{home}/.agents",
+          "{home}/.mcp.json",
+          "{person}/.kimi-code/plugins"
+        ],
+        "guarded": [
+          ".kimi-code/config.toml",
+          ".kimi-code/mcp.json",
+          ".kimi-code/AGENTS.md",
+          ".kimi-code/tui.toml"
+        ],
+        "recorded": [
+          ".kimi-code/logs/kimi-code.log"
+        ],
+        "append_only": [
+          ".kimi-code/session_index.jsonl"
+        ],
+        "signed_out": [
+          "Run /login",
+          "OAuth login expired",
+          "Login required",
+          "LLM not set",
+          "No models configured"
+        ],
+        "budget": "kimi-code",
+        "turns": 50,
+        "directories": [
+          ".kimi-code/*",
+          ".kimi-code/sessions/*",
+          ".kimi-code/sessions/.index-cache",
+          ".kimi-code/sessions/.index-dirty",
+          ".kimi-code/workspace-trust",
+          ".kimi-code/user-history",
+          ".kimi-code/logs",
+          ".kimi-code/file-history",
+          ".kimi-code/cache",
+          ".kimi-code/search-index",
+          ".kimi-code/telemetry/*",
+          ".kimi-code/updates",
+          ".kimi-code/bin/*",
+          ".kimi-code/credentials",
+          ".kimi-code/oauth"
+        ],
+        "removable": [
+          ".kimi-code/user-history"
+        ],
+        "stop_on_rewrite": true,
+        "conversations": ".kimi-code/sessions/{bucket}",
+        "prompt_line": "\"type\":\"turn.prompt\"",
+        "reply_line": "\"role\":\"assistant\"",
+        "decision_line": "\"type\":\"permission.record_approval_result\"",
+        "turn_line": "\"type\":\"turn.ended\"",
+        "steer_line": "\"type\":\"turn.steer\"",
+        "steer_key": "\u0013",
+        "steer_ready": "ctrl-s to steer immediately",
+        "steers": true,
+        "ready": "Welcome to Kimi Code!",
+        "composer": "│ >",
+        "submit": "\r",
+        "clear": "\u0015",
+        "busy": "working…",
+        "slash": {
+          "input": "/mcp",
+          "shows": "Configure with /mcp-config"
+        },
+        "dismiss": "\u001b",
+        "interrupt": {
+          "input": "\u001b",
+          "shows": "Interrupted by user"
+        },
+        "approval": {
+          "shows": "Run this command?",
+          "allow": "1",
+          "deny": "3",
+          "command_line": "$ ",
+          "options_start": "1. Approve once",
+          "others": [
+            "Write this file?",
+            "Apply these edits?",
+            "Stop this task?",
+            "Ready to build with this plan?",
+            "Ready to submit your answers?",
+            "Start a goal with approvals on?",
+            "Start a goal in Ask When Needed mode?",
+            "Start a swarm task with approvals on?",
+            "Approve Agent?",
+            "Approve AgentSwarm?",
+            "Approve AskUserQuestion?",
+            "Approve CreateGoal?",
+            "Approve CronCreate?",
+            "Approve CronDelete?",
+            "Approve CronList?",
+            "Approve EnterPlanMode?",
+            "Approve FetchURL?",
+            "Approve GetGoal?",
+            "Approve Glob?",
+            "Approve Grep?",
+            "Approve Read?",
+            "Approve ReadMediaFile?",
+            "Approve SetGoalBudget?",
+            "Approve Skill?",
+            "Approve TaskList?",
+            "Approve TaskOutput?",
+            "Approve TodoList?",
+            "Approve UpdateGoal?",
+            "Approve WaitFor?",
+            "Approve WebSearch?"
+          ],
+          "refuse": "\u001b",
+          "relative_log": true,
+          "request": {
+            "line": "\"type\":\"interaction.request\"",
+            "resolved_line": "\"type\":\"interaction.resolved\"",
+            "tool": "Bash"
+          }
+        },
+        "resume": [
+          "-S",
+          "{conversation}"
+        ],
+        "image": "Look at the image file {path} with your media tool.",
+        "confinement": {
+          "profile": "fixtures/agents/sandbox/kimi-code.sb",
+          "data": ".kimi-code",
+          "variable": "KIMI_CODE_HOME",
+          "hosts": [
+            "api.kimi.ai",
+            "auth.kimi.ai"
+          ],
+          "proxy_variables": [
+            "HTTPS_PROXY",
+            "HTTP_PROXY",
+            "ALL_PROXY"
+          ],
+          "provider": "providers.\"managed:kimi-code\"",
+          "servers": {
+            "source": "mcp.json",
+            "member": "mcpServers",
+            "file": ".kimi-code/mcp.json",
+            "entry": {
+              "command": "/usr/bin/false",
+              "enabled": false
+            }
+          },
+          "new_session": {
+            "input": "/new",
+            "shows": "Started a new session"
+          },
+          "process_names": [
+            "kimi",
+            "kimi-code"
+          ],
+          "unasked_tools": [
+            "Read",
+            "Grep",
+            "Glob",
+            "ReadMediaFile",
+            "SetTodoList",
+            "TodoList",
+            "TaskList",
+            "TaskOutput",
+            "WaitFor",
+            "CronList",
+            "WebSearch",
+            "FetchURL",
+            "Agent",
+            "AgentSwarm",
+            "AskUserQuestion",
+            "NotifyUser",
+            "Skill",
+            "EnterPlanMode",
+            "ExitPlanMode",
+            "CreateGoal",
+            "GetGoal",
+            "SetGoalBudget",
+            "UpdateGoal",
+            "select_tools"
+          ],
+          "reported": [
+            "workspaces.json",
+            "cache",
+            "search-index",
+            "updates",
+            "telemetry",
+            "file-history",
+            "logs/kimi-code.log",
+            "logs/kimi-code.log.1",
+            "logs/kimi-code.log.2",
+            "logs/kimi-code.log.3",
+            "logs/kimi-code.log.4",
+            "logs/kimi-code.log.5",
+            "sessions/.index-cache",
+            "sessions/.index-dirty"
+          ],
+          "title_requests": {
+            "log_mark": "chat_title request failed",
+            "logs": [
+              "logs/kimi-code.log",
+              "logs/kimi-code.log.1",
+              "logs/kimi-code.log.2",
+              "logs/kimi-code.log.3"
+            ],
+            "state_file": "state.json",
+            "state_key": "titleKind",
+            "state_value": "generated"
+          },
+          "residuals": [
+            "A string of the login's files is found by its whole text. One that the screen wraps, that a tool truncates or that an encoding changes is not found by value, and the agent's own record of the conversation is the backstop.",
+            "A request the agent makes before the part stops it, such as a subagent's or a goal's first, has gone out when the part stops. The close charges it.",
+            "The proxy counts tunnels, not requests, and sees no TLS server name. The agent's own record counts the requests.",
+            "The person's own older data in the agent's history and log directories is searched whole, so a login string in it would stop a part and cannot be told from the run's.",
+            "The agent's oauth directory is not searched, because it holds the agent's own credentials.",
+            "A request for a conversation's title is seen in the conversation's own record when it succeeds and in the conversation's own log when it fails, and that log writes the line at debug level, which a run does not enable: a failed request leaves no line at the level a run uses. The pinned terminal makes no such request, and a part that sees one stops and charges it as a turn.",
+            "A launch that resumes a saved conversation runs none of the checks before its first turn, so that no shell line enters the conversation. The checks of the part's first launch, which ran the same profile, cover it."
+          ]
+        }
+      }
     },
     {
       "package": "kalareach/opencode",
@@ -201,7 +860,15 @@
       },
       "server": null,
       "transcript": ".local/share/opencode/storage/session/{session}.json",
-      "newer": null
+      "newer": {
+        "version": "1.18.32",
+        "distribution": "npm opencode-ai",
+        "source": "https://registry.npmjs.org/opencode-ai/-/opencode-ai-1.18.32.tgz",
+        "prefix": "opencode/1.18.32",
+        "pinned": "lib/node_modules/opencode-ai/bin/opencode.exe",
+        "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e",
+        "ready": "Ask anything"
+      }
     },
     {
       "package": "kalareach/opencode-attach",
@@ -237,10 +904,19 @@
           "--port",
           "{port}"
         ],
-        "ready": "opencode server listening"
+        "ready": "opencode server listening",
+        "health": "/config"
       },
       "transcript": ".local/share/opencode/storage/session/{session}.json",
-      "newer": null
+      "newer": {
+        "version": "1.18.32",
+        "distribution": "npm opencode-ai",
+        "source": "https://registry.npmjs.org/opencode-ai/-/opencode-ai-1.18.32.tgz",
+        "prefix": "opencode/1.18.32",
+        "pinned": "lib/node_modules/opencode-ai/bin/opencode.exe",
+        "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e",
+        "ready": "Ask anything"
+      }
     },
     {
       "package": "kalareach/qoder-cli",
@@ -265,7 +941,16 @@
       "composer": null,
       "server": null,
       "transcript": ".qoder/projects/{cwd_slug}/{session}.jsonl",
-      "newer": null
+      "newer": {
+        "version": "1.1.64",
+        "distribution": "the qoder.com release archive",
+        "source": "https://qoder-ide.oss-accelerate.aliyuncs.com/qodercli/releases/1.1.64/qodercli-darwin-arm64.tar.gz",
+        "prefix": "qoder-cli/1.1.64",
+        "pinned": "bin/qodercli",
+        "sha256": "56f350899efd7fe296f197dd4889ae685860da915f958c51a51ac32c0daa224b",
+        "ready": "Do you trust the files in this folder?"
+      },
+      "no_account": "the user approved no login for Qoder CLI (the user)"
     }
   ]
 }
