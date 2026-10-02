@@ -56,6 +56,9 @@
         "stored": "login keychain item",
         "home": "person",
         "login_keychain": true,
+        "installs_off": [
+          { "switch": "variable", "name": "DISABLE_AUTOUPDATER", "value": "1" }
+        ],
         "arguments": [
           "--model",
           "haiku",
@@ -134,7 +137,16 @@
           "*_ACCESS_KEY",
           "*_PASSWORD",
           "*_BASE_URL",
-          "*_API_BASE"
+          "*_API_BASE",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
         ],
         "keychain_item": "Claude Code-credentials",
         "guarded": [
@@ -237,6 +249,9 @@
         "login": "vendor subscription login",
         "stored": "file in the agent's own directory",
         "home": "person",
+        "installs_off": [
+          { "switch": "argument", "text": "check_for_update_on_startup=false" }
+        ],
         "arguments": [
           "-a",
           "on-request",
@@ -527,7 +542,16 @@
           "*_ACCESS_KEY",
           "*_PASSWORD",
           "*_BASE_URL",
-          "*_API_BASE"
+          "*_API_BASE",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
         ]
       }
     },
@@ -564,6 +588,163 @@
         "pinned": "lib/node_modules/@google/gemini-cli/bundle/gemini.js",
         "sha256": "0b6e283ae88682b0e27e8ef85a608ab74807a1513dc0c053e5aa80d5b80b29ab",
         "ready": "Do you trust the files in this folder?"
+      },
+      "account": {
+        "login": "provider API key",
+        "stored": "variable of the person's shell environment",
+        "home": "run",
+        "variable": "GEMINI_API_KEY",
+        "installs_off": [
+          { "switch": "file", "path": ".gemini/settings.json", "contains": "\"enableAutoUpdate\":false" },
+          { "switch": "file", "path": ".gemini/settings.json", "contains": "\"enableAutoUpdateNotification\":false" }
+        ],
+        "arguments": [
+          "-m",
+          "gemini-2.5-flash"
+        ],
+        "isolated": [
+          {
+            "arguments": [
+              "mcp",
+              "list"
+            ],
+            "shows": [
+              "No MCP servers configured"
+            ]
+          },
+          {
+            "arguments": [
+              "extensions",
+              "list"
+            ],
+            "shows": [
+              "No extensions installed"
+            ]
+          },
+          {
+            "arguments": [
+              "skills",
+              "list"
+            ],
+            "shows": [
+              "No skills discovered"
+            ]
+          }
+        ],
+        "variables": {
+          "GEMINI_CLI_TRUST_WORKSPACE": "true"
+        },
+        "cleared": [
+          "OPENAI_*",
+          "ANTHROPIC_*",
+          "CLAUDE_CODE_*",
+          "CODEX_*",
+          "GEMINI_*",
+          "GOOGLE_*",
+          "VERTEX_*",
+          "GCLOUD_*",
+          "CLOUDSDK_*",
+          "CLOUD_ML_*",
+          "CODE_ASSIST_*",
+          "MOONSHOT_*",
+          "KIMI_*",
+          "OPENROUTER_*",
+          "OPENCODE_*",
+          "AWS_*",
+          "AZURE_*",
+          "CLOUDFLARE_*",
+          "*_API_KEY",
+          "*_API_TOKEN",
+          "*_ACCESS_TOKEN",
+          "*_AUTH_TOKEN",
+          "*_TOKEN",
+          "*_SECRET",
+          "*_SECRET_KEY",
+          "*_ACCESS_KEY",
+          "*_PASSWORD",
+          "*_BASE_URL",
+          "*_API_BASE",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
+        ],
+        "config_directory": {
+          "variable": "GEMINI_CLI_HOME",
+          "files": {
+            ".gemini/settings.json": "{\"general\":{\"enableAutoUpdate\":false,\"enableAutoUpdateNotification\":false},\"privacy\":{\"usageStatisticsEnabled\":false},\"telemetry\":{\"enabled\":false},\"security\":{\"auth\":{\"selectedType\":\"gemini-api-key\"}}}\n"
+          }
+        },
+        "absent": [
+          "{work}/GEMINI.md",
+          "{work}/.gemini",
+          "{work}/.agents",
+          "{home}/.gemini",
+          "{home}/.agents",
+          "{config}/.gemini/GEMINI.md",
+          "{config}/.gemini/extensions",
+          "{config}/.gemini/commands",
+          "{config}/.gemini/skills",
+          "{config}/.gemini/agents",
+          "{config}/.gemini/policies",
+          "{config}/.gemini/mcp-oauth-tokens.json",
+          "/Library/Application Support/GeminiCli",
+          "{ancestors}/.env",
+          "{ancestors}/.gemini/.env",
+          "{home}/.env",
+          "{config}/.env",
+          "{config}/.gemini/.env"
+        ],
+        "signed_out": [
+          "API key not valid",
+          "Please set an Auth method",
+          "Failed to login"
+        ],
+        "budget": "gemini-cli",
+        "turns": 50,
+        "conversations": ".gemini/tmp",
+        "prompt_line": "\"type\":\"user\"",
+        "reply_line": "\"type\":\"gemini\"",
+        "reply_mark": "✦",
+        "decision_line": "\"toolCalls\"",
+        "ready": "Type your message or @path/to/file",
+        "composer": "Type your message or @path/to/file",
+        "submit": "\r",
+        "clear": "\u0015",
+        "busy": "esc to cancel",
+        "slash": {
+          "input": "/help",
+          "shows": "For a full list of shortcuts"
+        },
+        "interrupt": {
+          "input": "\u001b",
+          "shows": "Request cancelled."
+        },
+        "steers": false,
+        "approval": {
+          "shows": "Allow execution of [Shell]?",
+          "allow": "1",
+          "deny": "\u001b",
+          "others": [],
+          "options_start": "Allow execution of",
+          "boxed": true,
+          "recorded": {
+            "member": "toolCalls",
+            "tool": "run_shell_command",
+            "command": "command"
+          }
+        },
+        "resume": [
+          "--resume",
+          "{conversation}"
+        ],
+        "image": "@{path}",
+        "conversation_id_member": "sessionId"
       }
     },
     {
@@ -643,6 +824,9 @@
         "login": "vendor subscription login",
         "stored": "file in the agent's own directory",
         "home": "person",
+        "installs_off": [
+          { "switch": "variable", "name": "KIMI_CODE_NO_AUTO_UPDATE", "value": "1" }
+        ],
         "arguments": [
           "-m",
           "kimi-code/kimi-for-coding-highspeed"
@@ -688,7 +872,16 @@
           "*_ACCESS_KEY",
           "*_PASSWORD",
           "*_BASE_URL",
-          "*_API_BASE"
+          "*_API_BASE",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
         ],
         "absent": [
           "{work}/.kimi-code/AGENTS.md",
@@ -951,6 +1144,201 @@
         "pinned": "lib/node_modules/opencode-ai/bin/opencode.exe",
         "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e",
         "ready": "Ask anything"
+      },
+      "account": {
+        "login": "provider API key",
+        "stored": "variable of the person's shell environment",
+        "home": "run",
+        "variable": "OPENROUTER_API_KEY",
+        "installs_off": [
+          { "switch": "variable", "name": "OPENCODE_DISABLE_AUTOUPDATE", "value": "1" },
+          { "switch": "variable", "name": "OPENCODE_DISABLE_LSP_DOWNLOAD", "value": "1" },
+          { "switch": "variable", "name": "npm_config_offline", "value": "true" }
+        ],
+        "arguments": [
+          "-m",
+          "openrouter/google/gemini-2.5-flash-lite"
+        ],
+        "status": {
+          "arguments": [
+            "models",
+            "openrouter"
+          ],
+          "shows": [
+            "openrouter/google/gemini-2.5-flash-lite"
+          ]
+        },
+        "isolated": [
+          {
+            "arguments": [
+              "debug",
+              "config"
+            ],
+            "shows": [
+              "\"autoupdate\": false",
+              "\"share\": \"disabled\"",
+              "\"mcp\": {}",
+              "\"plugin\": []",
+              "\"bash\": \"ask\""
+            ]
+          },
+          {
+            "arguments": [
+              "mcp",
+              "list"
+            ],
+            "shows": [
+              "No MCP servers configured"
+            ]
+          },
+          {
+            "arguments": [
+              "debug",
+              "skill"
+            ],
+            "shows": [
+              "<built-in>"
+            ],
+            "lacks": [
+              "\"location\": \"/"
+            ]
+          }
+        ],
+        "mirror": {
+          "database": ".local/share/opencode/opencode.db",
+          "query": "SELECT session, line FROM ( SELECT m.session_id AS session, json_object('role','user','kind','queued','queued',json('true'),'text',(SELECT json_extract(t.data,'$.text') FROM part t WHERE t.message_id=m.id AND json_extract(t.data,'$.type')='text' LIMIT 1),'message',m.id) AS line, (SELECT a.id FROM message a WHERE a.session_id=m.session_id AND json_extract(a.data,'$.role')='assistant' AND a.time_created<m.time_created AND (json_extract(a.data,'$.time.completed') IS NULL OR json_extract(a.data,'$.time.completed')>m.time_created) ORDER BY a.id DESC LIMIT 1) AS turn, m.time_created AS at, 5 AS rank, m.id AS id, 0 AS sub FROM message m WHERE json_extract(m.data,'$.role')='user' AND (SELECT a.id FROM message a WHERE a.session_id=m.session_id AND json_extract(a.data,'$.role')='assistant' AND a.time_created<m.time_created AND (json_extract(a.data,'$.time.completed') IS NULL OR json_extract(a.data,'$.time.completed')>m.time_created) ORDER BY a.id DESC LIMIT 1) IS NOT NULL UNION ALL SELECT p.session_id, json_object('role','user','kind','text','text',json_extract(p.data,'$.text'),'message',m.id,'part',p.id), COALESCE((SELECT MIN(a.id) FROM message a WHERE a.session_id=m.session_id AND json_extract(a.data,'$.parentID')=m.id), m.id), COALESCE((SELECT MIN(a.time_created) FROM message a WHERE a.session_id=m.session_id AND json_extract(a.data,'$.parentID')=m.id), m.time_created), 1, p.id, 0 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(m.data,'$.role')='user' AND json_extract(p.data,'$.type')='text' UNION ALL SELECT a.session_id, json_object('role','assistant','kind','message','message',a.id,'parent',json_extract(a.data,'$.parentID')), a.id, a.time_created, 2, a.id, 0 FROM message a WHERE json_extract(a.data,'$.role')='assistant' UNION ALL SELECT p.session_id, json_object('role','assistant','kind','text','text',json_extract(p.data,'$.text'),'message',m.id,'part',p.id), m.id, p.time_updated, 4, p.id, 0 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(m.data,'$.role')='assistant' AND json_extract(p.data,'$.type')='text' UNION ALL SELECT p.session_id, json_object('kind','approval','id',p.id,'toolCallId',json_extract(p.data,'$.callID'),'agentId','main','request',json_object('id',p.id,'toolCallId',json_extract(p.data,'$.callID'),'toolName',json_extract(p.data,'$.tool'),'agentId','main','display',json_object('command',json_extract(p.data,'$.state.input.command'),'cwd',COALESCE(json_extract(p.data,'$.state.input.workdir'),(SELECT s.directory FROM session s WHERE s.id=p.session_id))))), m.id, p.time_created, 4, p.id, 0 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(p.data,'$.type')='tool' UNION ALL SELECT p.session_id, json_object('role','assistant','kind','tool','tool',json_extract(p.data,'$.tool'),'call_id',json_extract(p.data,'$.callID'),'status',json_extract(p.data,'$.state.status'),'answered',json(CASE WHEN json_extract(p.data,'$.state.status') IN ('completed','error') THEN 'true' ELSE 'false' END),'command',json_extract(p.data,'$.state.input.command'),'message',m.id,'part',p.id), m.id, p.time_updated, 4, p.id, 1 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(m.data,'$.role')='assistant' AND json_extract(p.data,'$.type')='tool' UNION ALL SELECT p.session_id, json_object('kind','resolved','id',p.id), m.id, p.time_updated, 4, p.id, 2 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(p.data,'$.type')='tool' AND json_extract(p.data,'$.state.status') IN ('completed','error') UNION ALL SELECT a.session_id, json_object('role','assistant','kind','turn_end','message',a.id), a.id, json_extract(a.data,'$.time.completed'), 9, a.id, 0 FROM message a WHERE json_extract(a.data,'$.role')='assistant' AND json_extract(a.data,'$.time.completed') IS NOT NULL) ORDER BY session, turn, at, rank, id, sub"
+        },
+        "interrupt_presses": 2,
+        "variables": {
+          "OPENCODE_DISABLE_AUTOUPDATE": "1",
+          "npm_config_offline": "true",
+          "OPENCODE_DISABLE_CLAUDE_CODE": "1",
+          "OPENCODE_DISABLE_EXTERNAL_SKILLS": "1",
+          "OPENCODE_DISABLE_PROJECT_CONFIG": "1",
+          "OPENCODE_DISABLE_SHARE": "1",
+          "OPENCODE_DISABLE_LSP_DOWNLOAD": "1",
+          "OPENCODE_DISABLE_MODELS_FETCH": "1",
+          "OPENCODE_DISABLE_TERMINAL_TITLE": "1",
+          "OPENCODE_PURE": "1",
+          "OPENCODE_CONFIG_CONTENT": "{\"$schema\":\"https://opencode.ai/config.json\",\"autoupdate\":false,\"share\":\"disabled\",\"snapshot\":false,\"permission\":{\"bash\":\"ask\",\"edit\":\"ask\",\"webfetch\":\"deny\",\"websearch\":\"deny\",\"task\":\"deny\",\"external_directory\":\"deny\",\"doom_loop\":\"deny\"},\"agent\":{\"title\":{\"disable\":true}},\"lsp\":false,\"formatter\":false,\"mcp\":{},\"plugin\":[],\"instructions\":[]}"
+        },
+        "cleared": [
+          "OPENAI_*",
+          "ANTHROPIC_*",
+          "CLAUDE_CODE_*",
+          "CODEX_*",
+          "GEMINI_*",
+          "GOOGLE_*",
+          "VERTEX_*",
+          "GCLOUD_*",
+          "CLOUDSDK_*",
+          "CLOUD_ML_*",
+          "CODE_ASSIST_*",
+          "MOONSHOT_*",
+          "KIMI_*",
+          "OPENROUTER_*",
+          "OPENCODE_*",
+          "AWS_*",
+          "AZURE_*",
+          "CLOUDFLARE_*",
+          "*_API_KEY",
+          "*_API_TOKEN",
+          "*_ACCESS_TOKEN",
+          "*_AUTH_TOKEN",
+          "*_TOKEN",
+          "*_SECRET",
+          "*_SECRET_KEY",
+          "*_ACCESS_KEY",
+          "*_PASSWORD",
+          "*_BASE_URL",
+          "*_API_BASE",
+          "XDG_*",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
+        ],
+        "absent": [
+          "{work}/opencode.json",
+          "{work}/opencode.jsonc",
+          "{work}/.opencode",
+          "{work}/AGENTS.md",
+          "{work}/CLAUDE.md",
+          "{home}/.config/opencode/opencode.json",
+          "{home}/.config/opencode/opencode.jsonc",
+          "{home}/.config/opencode/config.json",
+          "{home}/.config/opencode/tui.json",
+          "{home}/.config/opencode/AGENTS.md",
+          "{home}/.config/opencode/skill",
+          "{home}/.config/opencode/skills",
+          "{home}/.config/opencode/agent",
+          "{home}/.config/opencode/agents",
+          "{home}/.config/opencode/command",
+          "{home}/.config/opencode/commands",
+          "{home}/.config/opencode/plugin",
+          "{home}/.config/opencode/plugins",
+          "{home}/.local/share/opencode/auth.json",
+          "{home}/.local/share/opencode/mcp-auth.json",
+          "{home}/.claude",
+          "{home}/.agents",
+          "/Library/Application Support/opencode",
+          "/Library/Managed Preferences/{user}/ai.opencode.managed.plist",
+          "/Library/Managed Preferences/ai.opencode.managed.plist"
+        ],
+        "signed_out": [
+          "No auth credentials",
+          "Invalid API key",
+          "User not found",
+          "Unauthorized"
+        ],
+        "budget": "opencode",
+        "turns": 50,
+        "conversations": "conversation-mirror",
+        "prompt_line": "\"role\":\"user\",\"kind\":\"text\"",
+        "reply_line": "\"role\":\"assistant\",\"kind\":\"text\"",
+        "decision_line": "\"answered\":true",
+        "queued_line": "\"queued\":true",
+        "turn_line": "\"kind\":\"turn_end\"",
+        "ready": "Ask anything",
+        "composer": "Flash-Lite OpenRouter",
+        "submit": "\r",
+        "clear": "\u0015",
+        "busy": "esc interrupt",
+        "slash": {
+          "input": "/help",
+          "shows": "all available actions"
+        },
+        "dismiss": "\u001b",
+        "interrupt": {
+          "input": "\u001b",
+          "shows": "interrupted"
+        },
+        "steers": false,
+        "approval": {
+          "shows": "Permission required",
+          "allow": "\r",
+          "deny": "\u001b",
+          "command_line": "$ ",
+          "title": "Permission required",
+          "options_start": "Allow once",
+          "others": [],
+          "relative_log": true,
+          "request": {
+            "line": "\"kind\":\"approval\"",
+            "resolved_line": "\"kind\":\"resolved\"",
+            "tool": "bash"
+          }
+        },
+        "resume": [
+          "-s",
+          "{conversation}"
+        ],
+        "image": "paste"
       }
     },
     {
@@ -999,7 +1387,8 @@
         "pinned": "lib/node_modules/opencode-ai/bin/opencode.exe",
         "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e",
         "ready": "Ask anything"
-      }
+      },
+      "no_account": "the account parts need the server this package starts first to be launched with the key and the configuration, and the conversation read from that server's database; the TUI package's parts are recorded in its own record (the next qualification worker)"
     },
     {
       "package": "kalareach/qoder-cli",
