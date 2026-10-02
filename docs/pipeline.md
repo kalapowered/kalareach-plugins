@@ -181,6 +181,9 @@ change which keys are trusted.
 Each role's key is its own. A trust root that named one key for all four would grant whoever holds it
 every role, and the pipeline refuses to build one.
 
+The release owner rotates all four keys. A rotation publishes a new root, signed by the root it
+replaces, and a client carries its verification forward from the root it last ended on.
+
 Keys never live in this repository. Before anything is signed, the pipeline walks the working tree
 and refuses to run if it finds a private key inside it. Inside a checkout, which it recognises by
 finding a `.git` at the tree or above it, it asks Git which files could reach a commit, which is every tracked file wherever it sits plus every untracked file Git would add, and
