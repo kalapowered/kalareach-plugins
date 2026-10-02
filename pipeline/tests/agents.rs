@@ -814,6 +814,51 @@ fn a_part_whose_result_held_a_logins_string_publishes_the_words_of_its_stop() {
     assert_eq!(written(&published, &entry, "someone"), published);
 }
 
+/// A result that held the value of a provider key the person's shell holds stops the agent too, and
+/// the record says so in the writer's words, not in the driver's text, which can name the variable.
+#[test]
+fn a_part_whose_result_held_a_provider_keys_value_publishes_the_words_of_its_stop() {
+    let entry = json!({
+        "package": "kalareach/example",
+        "command": "agent",
+        "prefix": "example/1",
+        "pinned": "bin/agent",
+        "actions": ["prompt.send"],
+        "grants": ["upstream.action"],
+        "account": { "budget": "example", "turns": 50 }
+    });
+    let record = json!({
+        "schema": "kalareach.conformance/1",
+        "run": { "packages": [{ "name": "kalareach/example" }] },
+        "identifiers": { "KR-REQ-12.32": { "tests": [{
+            "part": "3",
+            "outcome": "failed",
+            "reason": "the value of EXAMPLE_API_KEY was found in the part's log",
+            "evidence": {
+                "stop_agent": true,
+                "provenance": { "pids": [41, 42] },
+                "failure_codes": [{ "code": "agent_stops", "class": "provider_key_found" }]
+            }
+        }] } }
+    });
+    let published = written(&record, &entry, "someone");
+    let test = &published["identifiers"]["KR-REQ-12.32"]["tests"][0];
+    assert_eq!(test["outcome"], "failed");
+    let reason = test["reason"].as_str().expect("a reason");
+    assert!(
+        reason.contains(
+            "the value of a provider key the person's shell holds was found in what the run wrote"
+        ),
+        "the stop is said in the writer's words: {reason}"
+    );
+    assert!(
+        !reason.contains("EXAMPLE_API_KEY"),
+        "the driver's own text, which names the variable, is not published: {reason}"
+    );
+    assert_eq!(test["evidence"]["stop_agent"], true);
+    assert_eq!(written(&published, &entry, "someone"), published);
+}
+
 /// The person's servers are published by their identity, and only where the driver put a server's
 /// name: the list, the switches that turn them off, and a control that added one. A server that has
 /// the name of a word of the build list, of a fixed text or of a placeholder changes none of them,
@@ -992,7 +1037,7 @@ fn a_queued_prompt_entered_with_no_turn_shown_running_is_said_by_its_code() {
 /// clears these, so a person's own keys, tokens and base addresses for any provider, and the cloud
 /// accounts an agent can read its model from, reach none of them. An entry adds the names its own
 /// agent documents (the home or configuration it moves) and sets the one variable its login is.
-const EVERY_ENTRY_CLEARS: [&str; 29] = [
+const EVERY_ENTRY_CLEARS: [&str; 38] = [
     "OPENAI_*",
     "ANTHROPIC_*",
     "CLAUDE_CODE_*",
@@ -1011,6 +1056,15 @@ const EVERY_ENTRY_CLEARS: [&str; 29] = [
     "AWS_*",
     "AZURE_*",
     "CLOUDFLARE_*",
+    "*_KEY",
+    "*_PAT",
+    "*_APIKEY",
+    "DATABRICKS_*",
+    "INFOMANIAK_*",
+    "PRIVATEMODE_*",
+    "SNOWFLAKE_*",
+    "WATSONX_*",
+    "*_ENDPOINT",
     "*_API_KEY",
     "*_API_TOKEN",
     "*_ACCESS_TOKEN",
@@ -1083,6 +1137,375 @@ fn every_account_entry_clears_the_variables_that_give_an_agent_another_model_acc
         with_account >= 3,
         "the entries with an account: {with_account}"
     );
+}
+
+/// Every entry of the build list that names an account keeps its agent from updating itself or
+/// installing a package of its own accord, in what its parts give the agent, and names each switch
+/// for the driver's check: an install that ran would change or need what is outside the run's own
+/// directory.
+#[test]
+fn every_account_entry_switches_its_agents_updates_and_installs_off_and_names_each_switch() {
+    let list: Value = serde_json::from_slice(
+        &std::fs::read(root().join("fixtures").join("agents").join("builds.json"))
+            .expect("the build list reads"),
+    )
+    .expect("the build list is JSON");
+    let text = |value: &Value| value.as_str().expect("a string").to_owned();
+    let mut checked = Vec::new();
+    for entry in list["builds"].as_array().expect("the builds") {
+        let package = entry["package"].as_str().expect("a package");
+        let Some(account) = entry.get("account").filter(|account| !account.is_null()) else {
+            continue;
+        };
+        let switches = account
+            .get("installs_off")
+            .and_then(Value::as_array)
+            .filter(|switches| !switches.is_empty())
+            .unwrap_or_else(|| {
+                panic!("{package} names the switches that stop its agent's installs")
+            });
+        let variable = |name: &str| {
+            account["variables"]
+                .get(name)
+                .or_else(|| entry["environment"].get(name))
+                .map(&text)
+        };
+        // The arguments of every launch, the probes' as much as the parts': `switches`.
+        let arguments: Vec<String> = account["switches"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .map(&text)
+            .collect();
+        for switch in switches {
+            let given = match switch["switch"].as_str() {
+                Some("variable") => {
+                    variable(switch["name"].as_str().expect("a name"))
+                        == Some(text(&switch["value"]))
+                }
+                Some("argument") => arguments.contains(&text(&switch["text"])),
+                Some("file") => account["config_directory"]["files"]
+                    .get(switch["path"].as_str().expect("a path"))
+                    .and_then(Value::as_str)
+                    .is_some_and(|file| file.contains(&text(&switch["contains"]))),
+                other => panic!("{package}: a kind of switch the driver does not read: {other:?}"),
+            };
+            assert!(given, "{package} names {switch} and does not give it");
+        }
+        checked.push(package.to_owned());
+    }
+    assert_eq!(
+        checked,
+        [
+            "kalareach/claude-code",
+            "kalareach/codex",
+            "kalareach/gemini-cli",
+            "kalareach/kimi-code-cli",
+            "kalareach/opencode"
+        ],
+        "the entries with an account"
+    );
+}
+
+/// An entry whose agent keeps its conversations in a database names the query the driver reads them
+/// with: a `SELECT` that writes nothing, whose two columns are a conversation's identifier and a
+/// line of JSON, and whose lines carry the members the entry's marks look for, so a mark that
+/// the query does not produce is caught here and not by a part that waits for it.
+#[test]
+fn a_mirror_query_selects_the_lines_the_entrys_marks_look_for() {
+    let list: Value = serde_json::from_slice(
+        &std::fs::read(root().join("fixtures").join("agents").join("builds.json"))
+            .expect("the build list reads"),
+    )
+    .expect("the build list is JSON");
+    let mut mirrored = 0;
+    for entry in list["builds"].as_array().expect("the builds") {
+        let package = entry["package"].as_str().expect("a package");
+        let Some(mirror) = entry["account"]
+            .get("mirror")
+            .filter(|mirror| !mirror.is_null())
+        else {
+            continue;
+        };
+        mirrored += 1;
+        let account = &entry["account"];
+        let query = mirror["query"].as_str().expect("a query");
+        let upper = query.to_uppercase();
+        assert!(
+            upper.trim_start().starts_with("SELECT SESSION, LINE FROM"),
+            "{package}: the query's two columns"
+        );
+        let words: Vec<&str> = upper
+            .split(|character: char| !(character.is_alphanumeric() || character == '_'))
+            .collect();
+        for word in [
+            "INSERT", "UPDATE", "DELETE", "REPLACE", "ATTACH", "PRAGMA", "DROP", "CREATE", "ALTER",
+            "VACUUM",
+        ] {
+            assert!(!words.contains(&word), "{package}: the query holds {word}");
+        }
+        assert!(!query.contains(';'), "{package}: one statement");
+        // Each mark is a run of members of a JSON object as the query's `json_object` writes them:
+        // `"role":"user","kind":"text"` is `'role','user','kind','text'` there.
+        for key in [
+            "prompt_line",
+            "reply_line",
+            "decision_line",
+            "queued_line",
+            "turn_line",
+        ] {
+            let mark = account[key]
+                .as_str()
+                .unwrap_or_else(|| panic!("{package}: {key}"));
+            let pairs: Vec<&str> = mark.split(',').collect();
+            let wanted: Vec<String> = pairs
+                .iter()
+                .map(|pair| {
+                    let (name, value) = pair.split_once(':').expect("a member");
+                    let name = name.trim_matches('"');
+                    match value {
+                        // A flag the query computes (`json(CASE ...)`) or states (`json('true')`).
+                        "true" => format!("'{name}',json("),
+                        text => format!("'{name}','{}'", text.trim_matches('"')),
+                    }
+                })
+                .collect();
+            let in_order = wanted.join(",");
+            assert!(
+                query.contains(&in_order) || wanted.iter().all(|member| query.contains(member)),
+                "{package}: the query writes no line the {key} mark {mark} looks for"
+            );
+        }
+        assert_eq!(account["conversations"], "conversation-mirror", "{package}");
+        assert!(
+            account["interrupt_presses"].as_u64().unwrap_or(1) >= 1,
+            "{package}"
+        );
+    }
+    assert_eq!(
+        mirrored, 1,
+        "the entries that keep their conversations in a database"
+    );
+}
+
+/// The mirror query of an entry that keeps its conversations in a database, run by the `sqlite3`
+/// command on an in-memory database with the agent's tables: the lines come in the order each fact
+/// became true. A prompt entered while a turn runs has its queue record in that turn, after the
+/// parts written before it, before those written after it, and after one written at the same time;
+/// its own text comes with the turn that answers it.
+#[test]
+fn the_mirror_query_orders_the_lines_of_a_conversation_by_when_each_became_true() {
+    let list: Value = serde_json::from_slice(
+        &std::fs::read(root().join("fixtures").join("agents").join("builds.json"))
+            .expect("the build list reads"),
+    )
+    .expect("the build list is JSON");
+    let query = list["builds"]
+        .as_array()
+        .expect("the builds")
+        .iter()
+        .find_map(|entry| entry["account"]["mirror"]["query"].as_str())
+        .expect("an entry with a mirror query");
+    let schema = "CREATE TABLE session (id text PRIMARY KEY, directory text NOT NULL);
+         CREATE TABLE message (id text PRIMARY KEY, session_id text NOT NULL, time_created integer NOT NULL, time_updated integer NOT NULL, data text NOT NULL);
+         CREATE TABLE part (id text PRIMARY KEY, message_id text NOT NULL, session_id text NOT NULL, time_created integer NOT NULL, time_updated integer NOT NULL, data text NOT NULL);
+         INSERT INTO session VALUES ('s', '/work');";
+    let user = |id: &str, at: u32| {
+        format!(
+            "INSERT INTO message VALUES ('{id}', 's', {at}, {at}, '{{\"role\":\"user\"}}');
+             INSERT INTO part VALUES ('p_{id}', '{id}', 's', {at}, {at}, '{{\"type\":\"text\",\"text\":\"prompt {id}\"}}');"
+        )
+    };
+    let assistant = |id: &str, parent: &str, created: u32, completed: u32| {
+        format!(
+            "INSERT INTO message VALUES ('{id}', 's', {created}, {completed}, '{{\"role\":\"assistant\",\"parentID\":\"{parent}\",\"time\":{{\"completed\":{completed}}}}}');"
+        )
+    };
+    let reply = |id: &str, message: &str, written: u32| {
+        format!(
+            "INSERT INTO part VALUES ('{id}', '{message}', 's', {written}, {written}, '{{\"type\":\"text\",\"text\":\"reply {id}\"}}');"
+        )
+    };
+    let tool = |id: &str, message: &str, created: u32, updated: u32| {
+        format!(
+            "INSERT INTO part VALUES ('{id}', '{message}', 's', {created}, {updated}, '{{\"type\":\"tool\",\"tool\":\"bash\",\"callID\":\"c\",\"state\":{{\"status\":\"completed\",\"input\":{{\"command\":\"echo x\"}}}}}}');"
+        )
+    };
+    let order = |facts: &[String]| -> Vec<String> {
+        let mut script = schema.to_owned();
+        script.push_str(&facts.join("\n"));
+        script.push_str(&format!("\n{query};\n"));
+        let mut child = std::process::Command::new("sqlite3")
+            .args(["-json", ":memory:"])
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::piped())
+            .spawn()
+            .expect("the `sqlite3` command runs the mirror query");
+        std::io::Write::write_all(&mut child.stdin.take().expect("stdin"), script.as_bytes())
+            .expect("the script is written");
+        let output = child.wait_with_output().expect("sqlite3 ends");
+        assert!(
+            output.status.success(),
+            "sqlite3: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let rows: Vec<Value> = serde_json::from_slice(&output.stdout).expect("JSON rows");
+        rows.iter()
+            .map(|row| {
+                let line: Value = serde_json::from_str(row["line"].as_str().expect("a line"))
+                    .expect("a JSON line");
+                match (line["kind"].as_str(), line["role"].as_str()) {
+                    (Some("queued"), _) => "queued",
+                    (Some("text"), Some("user")) => "prompt",
+                    (Some("text"), _) => "reply",
+                    (Some("message"), _) => "message",
+                    (Some("approval"), _) => "approval",
+                    (Some("tool"), _) => "tool",
+                    (Some("resolved"), _) => "resolved",
+                    (Some("turn_end"), _) => "end",
+                    other => panic!("a line of a kind the marks do not name: {other:?}"),
+                }
+                .to_owned()
+            })
+            .collect()
+    };
+    let words = |text: &str| -> Vec<String> { text.split(' ').map(str::to_owned).collect() };
+    // A second prompt entered at 175 while the first turn runs (created 110, its reply last written
+    // at 150, completed 200): its record is in the first turn, between the reply and the turn's end,
+    // and its own text starts the turn that answers it.
+    let queued_between = [
+        user("u1", 100),
+        assistant("a1", "u1", 110, 200),
+        reply("r1", "a1", 150),
+        user("u2", 175),
+        assistant("a2", "u2", 210, 230),
+        reply("r2", "a2", 220),
+    ];
+    assert_eq!(
+        order(&queued_between),
+        words("prompt message reply queued end prompt message reply end"),
+        "a prompt entered after the reply's last write and before the turn's end"
+    );
+    // The same prompt entered before the reply's last write (190): its record comes before the reply.
+    let queued_before = [
+        user("u1", 100),
+        assistant("a1", "u1", 110, 200),
+        reply("r1", "a1", 190),
+        user("u2", 175),
+        assistant("a2", "u2", 210, 230),
+        reply("r2", "a2", 220),
+    ];
+    assert_eq!(
+        order(&queued_before),
+        words("prompt message queued reply end prompt message reply end"),
+        "a prompt entered before the reply's last write"
+    );
+    // At the same millisecond as the reply's last write the record comes after the reply, and after
+    // the end of a tool call, the stored times being all the database says.
+    let queued_tied = [
+        user("u1", 100),
+        assistant("a1", "u1", 110, 200),
+        reply("r1", "a1", 175),
+        user("u2", 175),
+        assistant("a2", "u2", 210, 230),
+        reply("r2", "a2", 220),
+    ];
+    assert_eq!(
+        order(&queued_tied),
+        words("prompt message reply queued end prompt message reply end"),
+        "a prompt entered at the time of the reply's last write"
+    );
+    let tool_tied = [
+        user("u1", 100),
+        assistant("a1", "u1", 110, 200),
+        tool("t1", "a1", 120, 175),
+        user("u2", 175),
+        assistant("a2", "u2", 210, 230),
+    ];
+    assert_eq!(
+        order(&tool_tied),
+        words("prompt message approval tool resolved queued end prompt message end"),
+        "a prompt entered at the time a tool call ended"
+    );
+    // A turn with a tool call and a reply, and no prompt behind it.
+    let with_a_tool = [
+        user("u1", 100),
+        assistant("a1", "u1", 110, 200),
+        tool("t1", "a1", 120, 160),
+        reply("r1", "a1", 190),
+    ];
+    assert_eq!(
+        order(&with_a_tool),
+        words("prompt message approval tool resolved reply end"),
+        "a turn's tool call and reply"
+    );
+}
+
+/// What the harness's sorter of tccd and coreauthd entries makes of a log in each form tccd writes a
+/// request in: the older REQUEST, AUTHREQ_CTX and REPLY lines and the REQUEST_MSG and REPLY_MSG
+/// entries the system's tccd writes now. A request about the run's programs is a preflight in both,
+/// one that is not is told apart, and an entry about them outside any request is marked.
+#[test]
+fn the_sorter_of_tccd_entries_reads_both_forms_of_a_request() {
+    let root = root();
+    let script = root.join("scripts").join("e2e-agents.sh");
+    let program = std::process::Command::new("bash")
+        .arg("-c")
+        .arg(r#"eval "$(sed -n "/^tcc_requests=/,/^'$/p" "$0")"; printf '%s' "$tcc_requests""#)
+        .arg(&script)
+        .output()
+        .expect("bash reads the sorter");
+    assert!(program.status.success(), "the sorter is in the script");
+    let directory = std::env::temp_dir().join(format!("kr-sorter-{}", std::process::id()));
+    std::fs::create_dir_all(&directory).expect("a directory");
+    std::fs::write(directory.join("sorter.awk"), &program.stdout).expect("the program");
+    std::fs::write(directory.join("forms"), "/tmp/krm-1\n").expect("the forms");
+    let old = "2026-10-01 14:30:58.694 Df tccd[16382:12ede02a] [com.apple.TCC:access] REQUEST: tccd_uid=501, sender_pid=37624, function=TCCAccessRequest, msgID=37624.1\n\
+               2026-10-01 14:30:58.696 Df tccd[16382:12ede02a] [com.apple.TCC:access] AUTHREQ_CTX: msgID=37624.1, function=<private>, service=kTCCServiceDeveloperTool, preflight=yes, query=1,\n\
+               2026-10-01 14:30:58.697 Df tccd[16382:12ede02a] [com.apple.TCC:access] AttributionChain: binary_path=/tmp/krm-1/b/kr\n\
+               2026-10-01 14:30:58.698 Df tccd[16382:12ede02a] [com.apple.TCC:access] AUTHREQ_RESULT: msgID=37624.1, authValue=0, authReason=5, promptType=1\n\
+               2026-10-01 14:30:58.699 Df tccd[16382:12ede02a] [com.apple.TCC:access] REPLY: tccd_uid=501, msgID=37624.1\n";
+    let new = |id: &str, preflight: &str, program: &str| {
+        format!(
+            "2026-10-02 02:28:39.294 I  tccd[5946:13b96d88] [com.apple.TCC:access] REQUEST_MSG: msgID={id}, msg={{\n\
+             \trequire_purpose=<xpc_null>\n\tservice=\"kTCCServiceDeveloperTool\"\n\tfunction=\"TCCAccessRequest\"\n\tpreflight={preflight}\n\
+             \ttarget_token={{pid:69155, auid:501, euid:501}}\n}}\n\
+             2026-10-02 02:28:39.295 I  tccd[5946:13b96d88] [com.apple.TCC:access] AttributionChain: binary_path={program}\n\
+             2026-10-02 02:28:39.302 I  tccd[5946:13b96d88] [com.apple.TCC:access] REPLY_MSG: msg={{\n\tprompt_type=1 (0x1)\n\tauth_value=0 (0x0)\n\tresult=false\n}}\n"
+        )
+    };
+    let log = format!(
+        "{old}{}{}{}2026-10-02 02:28:40.000 I  tccd[5946:13b96d99] [com.apple.TCC:access] Handling access request from /tmp/krm-1/b/kr-worker\n",
+        new("37624.2", "true", "/tmp/krm-1/b/kr-worker"),
+        new("37624.3", "false", "/tmp/krm-1/b/kr-hook"),
+        new("37624.4", "true", "/usr/bin/other"),
+    );
+    std::fs::write(directory.join("log"), log).expect("the log");
+    let output = std::process::Command::new("awk")
+        .arg("-f")
+        .arg(directory.join("sorter.awk"))
+        .arg(directory.join("forms"))
+        .arg(directory.join("log"))
+        .output()
+        .expect("awk sorts");
+    assert!(output.status.success(), "awk sorts the log");
+    let mut lines: Vec<String> = String::from_utf8_lossy(&output.stdout)
+        .lines()
+        .map(|line| line.split(" 2026-").next().unwrap_or_default().to_owned())
+        .collect();
+    lines.sort();
+    assert_eq!(
+        lines,
+        [
+            "outside",
+            "request 37624.1 preflight=yes kTCCServiceDeveloperTool authValue=0, authReason=5",
+            "request 37624.2 preflight=yes kTCCServiceDeveloperTool authValue=0",
+            "request 37624.3 preflight=no kTCCServiceDeveloperTool authValue=0",
+        ],
+        "a request of either form about the run's programs, the one that is no preflight marked, one about another program left out"
+    );
+    std::fs::remove_dir_all(&directory).expect("removes the directory");
 }
 
 /// Every failure code the harness gives a part it does not run, or fails on the driver's behalf,

@@ -128,7 +128,7 @@ def shapes: {
   run_dir: ["^<tmp>/krm-[0-9a-f]{8}$", ""],
   run_png: ["^<tmp>/krm-[0-9a-f]{8}/w/kr[0-9a-f]{12}\\.png$", ""],
   run_command: ["^echo kr[0-9a-f]{6}(-[0-9]+)? >> (<tmp>/krm-[0-9a-f]{8}/w/)?[a-z0-9._-]{1,20}$", ""],
-  conversation: ["^(session_)?" + uuid_shape + "$", "i"],
+  conversation: ["^((session_)?" + uuid_shape + "|ses_[A-Za-z0-9]{20,40})$", "i"],
   question: ["^What is [0-9]{3} plus [0-9]{3}\\? Reply with only the number\\.$", ""],
   sum: ["^[0-9]{3,4}$", ""],
   sha256: ["^[0-9a-f]{64}$", ""],
@@ -154,6 +154,7 @@ def stop_classes: {
   run_data_left: "what the run left in the person's data directory could not be removed",
   workspace_list_changed: "the person's list of workspaces changed other than by gaining the run's folder",
   secret_found: "a string of the login's files was found in what the run wrote, or the search for it was not complete",
+  provider_key_found: "the value of a provider key the person's shell holds was found in what the run wrote",
   uncharged_turns: "the agent's record holds prompts the part did not charge, or they could not be counted"
 };
 
@@ -389,7 +390,7 @@ def tools_offered_schema: [{
 
 def account_schema: {
   login: "build:account.login", stored: "build:account.stored", home: "build:account.home",
-  variable: "build:account.variable", arguments: ["member:arguments"],
+  variable: "build:account.variable", arguments: ["member:arguments"], mirror: "bool",
   variables_absent: ["member:cleared"], turns: "number", budget_spent: "number",
   budget_limit: "number", declined_requests: "count",
   isolation: {
@@ -523,7 +524,7 @@ def evidence_schema: {
     answering_calls_marked_by: ["member:decision_calls"], calls_marked_by: ["member:call_lines"],
     after_the_race: "number", after_reconnecting: "number", after_the_control: "number"
   },
-  replay: {probe: "probe_mark", typed_again: "bool", checker_control_rejected: "bool"},
+  replay: {probe: "probe_mark", typed_again: "bool", screen_checked: "bool", checker_control_rejected: "bool"},
   resources: "number", conversation: "conversation", session_a: session_schema, session_b: session_schema,
   control: {
     what: "in:control_what", breaks_property: "bool", why_not: "in:control_why_not",

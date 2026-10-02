@@ -322,7 +322,8 @@ look_again() {
 # Sorts what tccd and coreauthd logged about this run's programs into what can ask someone and what
 # cannot. tccd handles a request on one thread from its REQUEST line to its REPLY line, and its
 # AUTHREQ_CTX line names the service and whether the request is a preflight, which answers from the
-# stored decision and never asks anyone. coreauthd asks only while it evaluates a policy or an
+# stored decision and never asks anyone; the system'"'"'s tccd writes the same as a REQUEST_MSG entry,
+# which names the service and preflight itself, and a REPLY_MSG entry. coreauthd asks only while it evaluates a policy or an
 # access control for a context interactively; creating a context (its creation and the proxy
 # returned to the client), setting an option on it, an evaluation made not interactive, releasing
 # it (its deallocation, or the proxy interrupted when the client's connection ends), and a
@@ -365,8 +366,14 @@ function handle(line,   thread, connection, id, context, evaluation, quiet) {
     else print "coreauthd " line
     return
   }
-  if (match(line, /REQUEST: .*msgID=[0-9.]+/)) {
+  # A request opens at a REQUEST line (service and preflight then come on an AUTHREQ_CTX line) or, as
+  # the system'"'"'s tccd writes it, at a REQUEST_MSG entry that states both itself.
+  if (match(line, /REQUEST: .*msgID=[0-9.]+/) || match(line, /REQUEST_MSG: msgID=[0-9.]+/)) {
     id = substr(line, RSTART, RLENGTH); sub(/.*msgID=/, "", id); current[thread] = id
+    if (index(line, "REQUEST_MSG: ") > 0) {
+      if (match(line, /service="[A-Za-z]+"/)) service[id] = substr(line, RSTART + 9, RLENGTH - 10)
+      if (match(line, /preflight=(true|false)/)) preflight[id] = (substr(line, RSTART + 10, RLENGTH - 10) == "true") ? "yes" : "no"
+    }
   }
   id = current[thread]
   if (id == "") { if (ours(line) && !connection) print "outside " line; return }
@@ -380,6 +387,10 @@ function handle(line,   thread, connection, id, context, evaluation, quiet) {
   }
   if (ours(line)) about[id] = 1
   if (match(line, /REPLY: .*msgID=[0-9.]+/)) current[thread] = ""
+  if (index(line, "REPLY_MSG: ") > 0) {
+    if (match(line, /auth_value=[0-9]+/)) result[id] = "authValue=" substr(line, RSTART + 11, RLENGTH - 11)
+    current[thread] = ""
+  }
 }
 /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] / { if (entry != "") handle(entry); entry = $0; next }
 { if (entry != "") entry = entry " " $0 }
@@ -446,7 +457,7 @@ key_not_in() {
 
 # The names of the variables whose values are keys, tokens or secrets: a name of the shell's own
 # environment that one of these globs names, and that is not the product's own (KR_*).
-secret_names=('*_API_KEY' '*_API_TOKEN' '*_ACCESS_TOKEN' '*_AUTH_TOKEN' '*_TOKEN' '*_SECRET' '*_SECRET_KEY'
+secret_names=('*_KEY' '*_PAT' '*_APIKEY' 'AWS_BEARER_TOKEN_*' '*_API_KEY' '*_API_TOKEN' '*_ACCESS_TOKEN' '*_AUTH_TOKEN' '*_TOKEN' '*_SECRET' '*_SECRET_KEY'
   '*_ACCESS_KEY' '*_PASSWORD')
 
 # The values of the keys this shell holds, one on each line, but the one variable $1 names (the
@@ -744,9 +755,10 @@ while IFS= read -r package; do
     done
     if [ "$wants_login" -eq 1 ]; then
       keys_log="$directory/provider-keys.log"
+      # The test must have run: a driver that has no test of that name exits 0 with "0 passed".
       if env -i "${driver_environment[@]}" "KR_AGENTS_BUILD=$directory/build.json" KR_REQUIRE_AGENTS=1 \
         KR_REQUIRE_SHELL_PACKAGES=1 "$driver" --exact "$provider_keys_test" --nocapture --test-threads=1 \
-        >"$keys_log" 2>&1; then
+        >"$keys_log" 2>&1 && grep -q '^test result: ok. 1 passed' "$keys_log"; then
         echo "$package $version: a session made from an environment that holds the keys a person's shell holds exports none of the entry's cleared variables but those the entry sets, a harmless variable passes, and the same environment with nothing taken out is refused by name"
       else
         keys_reason="$(grep -m 1 -A 1 'panicked at' "$keys_log" | tail -1 || true)"
