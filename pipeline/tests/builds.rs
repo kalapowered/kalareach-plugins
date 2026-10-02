@@ -464,6 +464,14 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         "parts 1, 2a failed",
         "section 12 parts 1, 2a, 5b, 6b, 8b did not pass",
     ];
+    // OpenCode's record is a run with a provider's key in the person's shell: every part that ran
+    // passed but the device's upload, and the parts that wait for the command integration did not
+    // run.
+    let opencode: &[&str] = &[
+        "steps 2 did not exit cleanly",
+        "parts 1 failed",
+        "section 12 parts 1, 5b, 6b, 8b did not pass",
+    ];
     let script = "the pinned file is a script, whose process is its interpreter, so it names no \
                   executable a host runs";
     let wheel = "the pinned file is a wheel, an archive, so it names no executable a host runs";
@@ -473,7 +481,7 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         ("kalareach/gemini-cli", &[script, and_upgrade]),
         ("kalareach/kimi-cli", &[wheel, and_upgrade]),
         ("kalareach/kimi-code-cli", kimi_code),
-        ("kalareach/opencode", &[and_upgrade]),
+        ("kalareach/opencode", opencode),
         ("kalareach/opencode-attach", &[and_upgrade]),
         ("kalareach/qoder-cli", &[and_upgrade]),
     ];

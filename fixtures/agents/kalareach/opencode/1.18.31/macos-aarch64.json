@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-26T01:04:06Z",
-    "finished": "2026-09-26T01:11:36Z",
+    "started": "2026-10-02T12:59:41Z",
+    "finished": "2026-10-02T13:08:01Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "f8b2af5eeaabf5c29242aeffcd2d95dd653dd293",
+      "id": "364a6631949dd19708d3f0218f7a386ec166145e",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "56daf033daeac2f5a6a582f3c8c69daed7727ded",
+        "id": "3efe72d7c35371c0b752cae0d7a26f5dceaa07ac",
         "modified": false
       }
     },
@@ -48,21 +48,37 @@
         "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
         "build": "darwin-arm64",
         "reason": "the build the table is pinned to"
+      },
+      {
+        "id": "opencode",
+        "version": "1.18.32",
+        "status": "installed",
+        "url": "https://registry.npmjs.org/opencode-ai/-/opencode-ai-1.18.32.tgz",
+        "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e",
+        "build": "darwin-arm64",
+        "reason": "the newer build the upgrade part moves to"
       }
     ],
     "selection": [
+      "1",
+      "2a",
       "2b",
+      "2c",
+      "3",
+      "4",
       "5a",
       "6a",
+      "7",
       "8a",
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-clZq6J",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-MkeCD4",
     "own_home": {
       "bound_to_a_desktop": true,
-      "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
+      "default_keychain": "the person's login keychain",
       "home": "~",
+      "show_keychain_info_status": 0,
       "worker_profile": "desktop_bound"
     }
   },
@@ -71,7 +87,7 @@
       "number": 1,
       "group": "own-home",
       "what": "a session started with the person's own home names their login keychain",
-      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-053b4ba72b017119 --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
@@ -83,21 +99,86 @@
     {
       "number": 2,
       "group": "agents",
-      "what": "part 2b",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "what": "part 1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 0,
-      "seconds": 12,
-      "log": "opencode/2b.log",
+      "exit": 101,
+      "seconds": 69,
+      "log": "opencode/1.log",
       "error": null
     },
     {
       "number": 3,
       "group": "agents",
+      "what": "part 2a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 67,
+      "log": "opencode/2a.log",
+      "error": null
+    },
+    {
+      "number": 4,
+      "group": "agents",
+      "what": "part 2b",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 15,
+      "log": "opencode/2b.log",
+      "error": null
+    },
+    {
+      "number": 5,
+      "group": "agents",
+      "what": "part 2c",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 16,
+      "log": "opencode/2c.log",
+      "error": null
+    },
+    {
+      "number": 6,
+      "group": "agents",
+      "what": "part 3",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 70,
+      "log": "opencode/3.log",
+      "error": null
+    },
+    {
+      "number": 7,
+      "group": "agents",
+      "what": "part 4",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 64,
+      "log": "opencode/4.log",
+      "error": null
+    },
+    {
+      "number": 8,
+      "group": "agents",
       "what": "part 5a",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
@@ -107,41 +188,54 @@
       "error": null
     },
     {
-      "number": 4,
+      "number": 9,
       "group": "agents",
       "what": "part 6a",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 8,
+      "seconds": 20,
       "log": "opencode/6a.log",
       "error": null
     },
     {
-      "number": 5,
+      "number": 10,
       "group": "agents",
-      "what": "part 8a",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "what": "part 7",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 18,
+      "seconds": 68,
+      "log": "opencode/7.log",
+      "error": null
+    },
+    {
+      "number": 11,
+      "group": "agents",
+      "what": "part 8a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 20,
       "log": "opencode/8a.log",
       "error": null
     },
     {
-      "number": 6,
+      "number": 12,
       "group": "agents",
       "what": "part 14.03a",
-      "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 12,
+      "seconds": 15,
       "log": "opencode/14.03a.log",
       "error": null
     }
@@ -149,37 +243,661 @@
   "identifiers": {
     "KR-REQ-12.32": {
       "family": "requirement",
-      "verdict": "passed",
+      "verdict": "failed",
       "counts": {
-        "passed": 3,
-        "failed": 0,
+        "passed": 9,
+        "failed": 1,
         "ignored": 0,
-        "not_run": 10,
+        "not_run": 3,
         "not_built": 0,
         "known_difference": 0
       },
       "tests": [
         {
-          "test": "part 1",
+          "test": "kr-e2e-agents --test cases a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution",
           "part": "1",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account and a spending bound, then the typed or bridge route (an account from the user)",
-          "needs": [
-            "vendor account"
-          ]
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "failed",
+          "reason": "a paired device's upload.begin is refused on this host (INVALID_ARGUMENT), so the image is not the device's transfer",
+          "runs": [
+            {
+              "step": 2,
+              "outcome": "failed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "openrouter/google/gemini-2.5-flash-lite"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 32,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-96016ebc/w/opencode.json",
+                  "<tmp>/krm-96016ebc/w/opencode.jsonc",
+                  "<tmp>/krm-96016ebc/w/.opencode",
+                  "<tmp>/krm-96016ebc/w/AGENTS.md",
+                  "<tmp>/krm-96016ebc/w/CLAUDE.md",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/opencode.json",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/opencode.jsonc",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/config.json",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/tui.json",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/AGENTS.md",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/skill",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/skills",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/agent",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/agents",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/command",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/commands",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/plugin",
+                  "<tmp>/krm-96016ebc/h/.config/opencode/plugins",
+                  "<tmp>/krm-96016ebc/h/.local/share/opencode/auth.json",
+                  "<tmp>/krm-96016ebc/h/.local/share/opencode/mcp-auth.json",
+                  "<tmp>/krm-96016ebc/h/.claude",
+                  "<tmp>/krm-96016ebc/h/.agents",
+                  "/Library/Application Support/opencode",
+                  "/Library/Managed Preferences/{user}/ai.opencode.managed.plist",
+                  "/Library/Managed Preferences/ai.opencode.managed.plist"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "config"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "\"autoupdate\": false",
+                      "\"share\": \"disabled\"",
+                      "\"mcp\": {}",
+                      "\"plugin\": []",
+                      "\"bash\": \"ask\""
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "skill"
+                    ],
+                    "lacks": [
+                      "\"location\": \"/"
+                    ],
+                    "lines": [],
+                    "shows": [
+                      "<built-in>"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": true,
+              "stored": "variable of the person's shell environment",
+              "turns": 2,
+              "variable": "OPENROUTER_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "XDG_*",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "detected": {
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "cc2213f5-4af6-4b60-90b1-435cb271da26"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "cc2213f5-4af6-4b60-90b1-435cb271da26",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946029735-00b900be-b362-4bfc-9459-563490043213",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946029735"
+                }
+              ],
+              "waited_ms": 789
+            },
+            "device_upload": {
+              "call": "upload.begin",
+              "error": null,
+              "refused": "INVALID_ARGUMENT"
+            },
+            "failure_codes": [
+              {
+                "code": "upload_refused",
+                "refused": "INVALID_ARGUMENT"
+              }
+            ],
+            "image": {
+              "answer": "red",
+              "answered": true,
+              "code": "KR6B60573B96CA",
+              "file": "<tmp>/krm-96016ebc/w/kr6b60573b96ca.png",
+              "syntax": "paste"
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "6aeb8a1758ccfc610ce77da02d63e0e2ed134633eed2a7c6e88bcdb2da1a98c6",
+              "plugin_id": "kalareach/opencode",
+              "version": "0.2.1"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 1,
+              "run_gone": true,
+              "variable": "OPENROUTER_API_KEY"
+            },
+            "local": {
+              "seen": true,
+              "shows": "KR6B60573B96CA"
+            },
+            "login_held": true,
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": null,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr6b60573b96ca",
+                "run_directory": "<tmp>/krm-96016ebc"
+              }
+            },
+            "prompt": {
+              "answer": "1096",
+              "question": "What is 547 plus 549? Reply with only the number."
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "inode": 69650336,
+                  "pid": 17369,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 17369,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "command": "opencode"
+                }
+              ],
+              "pids": [
+                17369
+              ],
+              "sample_interval_ms": 250,
+              "samples": 75,
+              "session_path": "<tmp>/krm-96016ebc/agent/current/bin:<tmp>/krm-96016ebc/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                }
+              ],
+              "backend_files": 0,
+              "capability_records": [],
+              "resources": 0
+            }
+          }
         },
         {
-          "test": "part 2a",
+          "test": "kr-e2e-agents --test cases slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device",
           "part": "2a",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a live conversation, which needs a vendor account (an account from the user)",
-          "needs": [
-            "vendor account"
-          ]
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 3,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "openrouter/google/gemini-2.5-flash-lite"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 35,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-79b9745e/w/opencode.json",
+                  "<tmp>/krm-79b9745e/w/opencode.jsonc",
+                  "<tmp>/krm-79b9745e/w/.opencode",
+                  "<tmp>/krm-79b9745e/w/AGENTS.md",
+                  "<tmp>/krm-79b9745e/w/CLAUDE.md",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/opencode.json",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/opencode.jsonc",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/config.json",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/tui.json",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/AGENTS.md",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/skill",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/skills",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/agent",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/agents",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/command",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/commands",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/plugin",
+                  "<tmp>/krm-79b9745e/h/.config/opencode/plugins",
+                  "<tmp>/krm-79b9745e/h/.local/share/opencode/auth.json",
+                  "<tmp>/krm-79b9745e/h/.local/share/opencode/mcp-auth.json",
+                  "<tmp>/krm-79b9745e/h/.claude",
+                  "<tmp>/krm-79b9745e/h/.agents",
+                  "/Library/Application Support/opencode",
+                  "/Library/Managed Preferences/{user}/ai.opencode.managed.plist",
+                  "/Library/Managed Preferences/ai.opencode.managed.plist"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "config"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "\"autoupdate\": false",
+                      "\"share\": \"disabled\"",
+                      "\"mcp\": {}",
+                      "\"plugin\": []",
+                      "\"bash\": \"ask\""
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "skill"
+                    ],
+                    "lacks": [
+                      "\"location\": \"/"
+                    ],
+                    "lines": [],
+                    "shows": [
+                      "<built-in>"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": true,
+              "stored": "variable of the person's shell environment",
+              "turns": 3,
+              "variable": "OPENROUTER_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "XDG_*",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "agent_reads": [
+              {
+                "call": "agent.capabilities",
+                "error": null,
+                "refused": null
+              },
+              {
+                "call": "agent.commands",
+                "error": null,
+                "refused": null
+              }
+            ],
+            "checker_controls": [
+              {
+                "check": "queued",
+                "rejected": true,
+                "wrong": "entered with no turn running"
+              },
+              {
+                "check": "queued",
+                "rejected": true,
+                "wrong": "the prompt joined before the turn finished"
+              },
+              {
+                "check": "queued",
+                "rejected": true,
+                "wrong": "the agent kept no record of the prompt as queued"
+              },
+              {
+                "check": "queued",
+                "rejected": true,
+                "wrong": "the prompt joined the running turn"
+              }
+            ],
+            "control": {
+              "breaks_property": false,
+              "what": "orders made wrong on purpose, which the queue and steering checks reject",
+              "why_not": "the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead"
+            },
+            "detected": {
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "f5356b1b-93a0-49f1-a098-f32548f1c946"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "f5356b1b-93a0-49f1-a098-f32548f1c946",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946102351-e560cd22-1344-4707-a024-5310675a41c8",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946102351"
+                }
+              ],
+              "waited_ms": 528
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "6aeb8a1758ccfc610ce77da02d63e0e2ed134633eed2a7c6e88bcdb2da1a98c6",
+              "plugin_id": "kalareach/opencode",
+              "version": "0.2.1"
+            },
+            "interrupt": {
+              "key": "\u001b",
+              "seen": true,
+              "shows": "interrupted"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 1,
+              "run_gone": true,
+              "variable": "OPENROUTER_API_KEY"
+            },
+            "login_held": true,
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": null,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr6a1980673d5a",
+                "run_directory": "<tmp>/krm-79b9745e"
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "inode": 69650336,
+                  "pid": 75359,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 75359,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "command": "opencode"
+                }
+              ],
+              "pids": [
+                75359
+              ],
+              "sample_interval_ms": 250,
+              "samples": 53,
+              "session_path": "<tmp>/krm-79b9745e/agent/current/bin:<tmp>/krm-79b9745e/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "queued": {
+              "answer": "1614",
+              "order": {
+                "after": {
+                  "busy": true,
+                  "unfinished": true
+                },
+                "before": {
+                  "busy": true,
+                  "unfinished": true
+                },
+                "busy_at_submission": true,
+                "first_finished": 7,
+                "new_turn": true,
+                "queued_record": 6,
+                "records_queue": true,
+                "second_answered": 11,
+                "second_prompt": 9
+              }
+            },
+            "slash": {
+              "seen": true,
+              "shows": "all available actions",
+              "typed": "/help"
+            },
+            "steering": {
+              "steered": false,
+              "why": "a prompt entered during a turn waits for it, as the queued step shows"
+            },
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                }
+              ],
+              "backend_files": 0,
+              "capability_records": [],
+              "resources": 0
+            }
+          }
         },
         {
           "test": "kr-e2e-agents --test cases an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused",
@@ -189,75 +907,56 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 2,
+              "step": 4,
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
-            "announced_after": {
-              "instances": [],
-              "more_resources": false,
-              "resources": []
+            "after": {
+              "instances": [
+                {
+                  "application_instance_id": "4ce13a17-b887-41fb-9d80-79ac91373cdf",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946170913-27af9588-dde5-47bc-937a-ec30f0387899",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946170913"
+                }
+              ],
+              "waited_ms": 0
             },
-            "announced_before": {
-              "instances": [],
-              "more_resources": false,
-              "resources": []
-            },
-            "answers": [
-              {
-                "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 8764aa8c-70d6-4603-bbbf-402973f80fec",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 8764aa8c-70d6-4603-bbbf-402973f80fec",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 8764aa8c-70d6-4603-bbbf-402973f80fec",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 8764aa8c-70d6-4603-bbbf-402973f80fec",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 91fc1b61-33f1-4c83-970b-3450d752d8dc",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.draft.add_attachment",
-                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
-                "refused": "INVALID_ARGUMENT"
-              },
-              {
-                "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/opencode is not bound to 8764aa8c-70d6-4603-bbbf-402973f80fec",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/opencode is not bound to 8764aa8c-70d6-4603-bbbf-402973f80fec",
-                "refused": "STALE_SESSION"
-              },
+            "agent_reads": [
               {
                 "call": "agent.capabilities",
-                "detail": "INVALID_ARGUMENT: agent.capabilities is not a read this host serves",
-                "refused": "INVALID_ARGUMENT"
+                "detail": "accepted",
+                "error": null,
+                "refused": null
               },
               {
                 "call": "agent.commands",
-                "detail": "INVALID_ARGUMENT: agent.commands is not a read this host serves",
-                "refused": "INVALID_ARGUMENT"
+                "detail": "accepted",
+                "error": null,
+                "refused": null
               }
             ],
             "attachment_request": "refused before any instance is looked at: agent.draft.add_attachment names an application instance in its selectors and carries none in its parameters, so this refusal says nothing about the terminal route",
+            "binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790946170913-27af9588-dde5-47bc-937a-ec30f0387899",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
             "capability_states": [
               [
                 "plugin.metadata.match/1",
@@ -276,6 +975,68 @@
                 "not_tested"
               ]
             ],
+            "checker_controls": [
+              {
+                "check": "detected",
+                "rejected": true,
+                "said": "the instance names Some(PluginId(\"kalareach/not-the-installed-package\")), not the installed package kalareach/opencode",
+                "wrong": "the instance names another package"
+              },
+              {
+                "check": "detected",
+                "rejected": true,
+                "said": "the launched execution has ended and 1 instance(s) are still announced live",
+                "wrong": "the launched execution has ended"
+              },
+              {
+                "check": "ended",
+                "rejected": true,
+                "said": "1 instance(s) are still announced live after the execution ended",
+                "wrong": "an instance is still announced after its execution ended"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "agent.prompt is advertised as usable",
+                "wrong": "agent.prompt is usable"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "agent.prompt.submit was not answered with a refusal: the connection ended",
+                "wrong": "a typed mutation is answered by no refusal"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "agent.prompt.submit was accepted: accepted",
+                "wrong": "a typed mutation is accepted"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "a command backend exists: c0/b0/registration.1.1",
+                "wrong": "a command backend's c0/b0/registration.1.1 exists"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "a command backend exists: c0/b0/launch",
+                "wrong": "a command backend's c0/b0/launch exists"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "a command backend exists: c0/b0/credential",
+                "wrong": "a command backend's c0/b0/credential exists"
+              },
+              {
+                "check": "unchanged",
+                "rejected": true,
+                "said": "the instance and revision were Some(Held { instance: ApplicationInstanceId(Uuid(4ce13a17-b887-41fb-9d80-79ac91373cdf)), revision: AgentBindingRevision(U64(2)) }) and are Some(Held { instance: ApplicationInstanceId(Uuid(4ce13a17-b887-41fb-9d80-79ac91373cdf)), revision: AgentBindingRevision(U64(1)) }) (1 live)",
+                "wrong": "the binding revision moved on"
+              }
+            ],
             "control": {
               "breaks_property": false,
               "result": {
@@ -285,8 +1046,39 @@
                 "screen_shows": "kr-harmless"
               },
               "what": "terminal input under the lease from the same device and connection, which the host accepts where it refuses the typed actions",
-              "why_not": "only a bound connector can advertise a typed capability or accept a typed action, and this host binds none"
+              "why_not": "only a typed route could advertise a typed action or accept one, and a launch the integration did not make has none"
             },
+            "detected": {
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "4ce13a17-b887-41fb-9d80-79ac91373cdf"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "4ce13a17-b887-41fb-9d80-79ac91373cdf",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946170913-27af9588-dde5-47bc-937a-ec30f0387899",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946170913"
+                }
+              ],
+              "waited_ms": 516
+            },
+            "detection_control": {
+              "after": {
+                "instances": [],
+                "waited_ms": 2
+              },
+              "breaks_property": true,
+              "check": "the launched execution has ended and no instance is live",
+              "instance_ended": true,
+              "what": "the agent ended by its recorded identities"
+            },
+            "executable_identity": "no read the host serves names the executable of an adopted instance; the image the agent runs is under provenance",
             "installed": {
               "grant": [
                 "upstream.action"
@@ -295,7 +1087,7 @@
               "plugin_id": "kalareach/opencode",
               "version": "0.2.1"
             },
-            "live_bindings": 0,
+            "live_bindings": 1,
             "provenance": {
               "ended_before_read": [],
               "executed": [
@@ -305,7 +1097,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 62850,
+                  "pid": 31777,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -315,7 +1107,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 62850,
+                    "pid": 31777,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -325,66 +1117,142 @@
                   "what": "opencode"
                 }
               ],
+              "pids": [
+                31777
+              ],
               "sample_interval_ms": 250,
               "samples": 17,
-              "session_path": "<tmp>/krm-16f8c597/agent/current/bin:<tmp>/krm-16f8c597/agent/runtime:/usr/bin:/bin"
+              "session_path": "<tmp>/krm-1cbbdf0c/agent/current/bin:<tmp>/krm-1cbbdf0c/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 4ce13a17-b887-41fb-9d80-79ac91373cdf: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 4ce13a17-b887-41fb-9d80-79ac91373cdf: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 4ce13a17-b887-41fb-9d80-79ac91373cdf: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 4ce13a17-b887-41fb-9d80-79ac91373cdf: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "detail": "STALE_SESSION: no pending resource 0e256a60-93f2-4dd8-844e-89ad10ff3095",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 4ce13a17-b887-41fb-9d80-79ac91373cdf: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                }
+              ],
+              "backend_files": [],
+              "capability_records": [],
+              "resources": 0
             }
           }
         },
         {
-          "test": "part 2c",
+          "test": "kr-e2e-agents --test cases under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused",
           "part": "2c",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a binding, and the host hands no installed connector to a worker (the connector hand-over to workers)",
-          "needs": [
-            "connector binding"
-          ]
-        },
-        {
-          "test": "part 3",
-          "part": "3",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account and an approval a binding serves (an account from the user; the connector hand-over to workers)",
-          "needs": [
-            "vendor account"
-          ]
-        },
-        {
-          "test": "part 4",
-          "part": "4",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account and a typed route (an account from the user; the connector hand-over to workers)",
-          "needs": [
-            "vendor account"
-          ]
-        },
-        {
-          "test": "kr-e2e-agents --test cases a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running",
-          "part": "5a",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
           "outcome": "passed",
           "runs": [
             {
-              "step": 3,
+              "step": 5,
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
           "evidence": {
-            "agent_processes": [
-              "opencode"
-            ],
+            "after": {
+              "instances": [
+                {
+                  "application_instance_id": "6716c069-c033-48ec-ac4f-8da68bb0a60e",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946188070-c7cd73a8-4604-4ef5-b134-37dfbbcdbfb4",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946188070"
+                }
+              ],
+              "waited_ms": 0
+            },
+            "binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790946188070-c7cd73a8-4604-4ef5-b134-37dfbbcdbfb4",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
             "control": {
+              "after": {
+                "instances": [],
+                "waited_ms": 261
+              },
+              "answers": [
+                {
+                  "call": "plugin.action.invoke session.refresh",
+                  "detail": "STALE_SESSION: kalareach/opencode is not bound to 6716c069-c033-48ec-ac4f-8da68bb0a60e",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                }
+              ],
               "breaks_property": true,
-              "check": "these have ended: process 65244 (opencode)",
-              "what": "the agent ended with a second daemon kill"
+              "what": "the agent ended, its binding with it, and the same presentation action sent again as a new action"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "6716c069-c033-48ec-ac4f-8da68bb0a60e",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946188070-c7cd73a8-4604-4ef5-b134-37dfbbcdbfb4",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946188070"
+                }
+              ],
+              "waited_ms": 765
+            },
+            "held": {
+              "instance": "6716c069-c033-48ec-ac4f-8da68bb0a60e",
+              "revision": 1
             },
             "installed": {
               "grant": [
@@ -394,7 +1262,744 @@
               "plugin_id": "kalareach/opencode",
               "version": "0.2.1"
             },
-            "killed_daemon": 65082,
+            "provenance": {
+              "ended_before_read": [],
+              "executed": [
+                {
+                  "command": "opencode",
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "inode": 69650336,
+                  "pid": 49190,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "opencode",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 49190,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode"
+                }
+              ],
+              "pids": [
+                49190
+              ],
+              "sample_interval_ms": 250,
+              "samples": 18,
+              "session_path": "<tmp>/krm-653e3869/agent/current/bin:<tmp>/krm-653e3869/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "supported": [
+              {
+                "call": "plugin.action.invoke session.refresh",
+                "detail": "accepted",
+                "error": null,
+                "refused": null
+              }
+            ],
+            "unsupported": [
+              {
+                "call": "agent.prompt.submit",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 6716c069-c033-48ec-ac4f-8da68bb0a60e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.prompt.queue",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 6716c069-c033-48ec-ac4f-8da68bb0a60e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.turn.steer",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 6716c069-c033-48ec-ac4f-8da68bb0a60e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.turn.cancel",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 6716c069-c033-48ec-ac4f-8da68bb0a60e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.approval.respond",
+                "detail": "STALE_SESSION: no pending resource 09fcb2e6-e63a-4d61-a950-3b92b9aebbf8",
+                "error": null,
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.draft.add_attachment",
+                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                "error": null,
+                "refused": "INVALID_ARGUMENT"
+              },
+              {
+                "call": "plugin.action.invoke turn.cancel",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 6716c069-c033-48ec-ac4f-8da68bb0a60e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              }
+            ]
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once",
+          "part": "3",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 6,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "openrouter/google/gemini-2.5-flash-lite"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 37,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-25eb2764/w/opencode.json",
+                  "<tmp>/krm-25eb2764/w/opencode.jsonc",
+                  "<tmp>/krm-25eb2764/w/.opencode",
+                  "<tmp>/krm-25eb2764/w/AGENTS.md",
+                  "<tmp>/krm-25eb2764/w/CLAUDE.md",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/opencode.json",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/opencode.jsonc",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/config.json",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/tui.json",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/AGENTS.md",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/skill",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/skills",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/agent",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/agents",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/command",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/commands",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/plugin",
+                  "<tmp>/krm-25eb2764/h/.config/opencode/plugins",
+                  "<tmp>/krm-25eb2764/h/.local/share/opencode/auth.json",
+                  "<tmp>/krm-25eb2764/h/.local/share/opencode/mcp-auth.json",
+                  "<tmp>/krm-25eb2764/h/.claude",
+                  "<tmp>/krm-25eb2764/h/.agents",
+                  "/Library/Application Support/opencode",
+                  "/Library/Managed Preferences/{user}/ai.opencode.managed.plist",
+                  "/Library/Managed Preferences/ai.opencode.managed.plist"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "config"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "\"autoupdate\": false",
+                      "\"share\": \"disabled\"",
+                      "\"mcp\": {}",
+                      "\"plugin\": []",
+                      "\"bash\": \"ask\""
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "skill"
+                    ],
+                    "lacks": [
+                      "\"location\": \"/"
+                    ],
+                    "lines": [],
+                    "shows": [
+                      "<built-in>"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": true,
+              "stored": "variable of the person's shell environment",
+              "turns": 2,
+              "variable": "OPENROUTER_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "XDG_*",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "command": "echo kr4df2eb >> a",
+            "control": {
+              "breaks_property": true,
+              "check": true,
+              "command": "echo kr6e721d >> a",
+              "device_refused": "LEASE_LOST",
+              "executions": 0,
+              "what": "a second approval with the local terminal holding the lease: it denied and the device's allow was refused"
+            },
+            "decisions": {
+              "after_reconnecting": 1,
+              "after_the_control": 2,
+              "after_the_race": 1,
+              "answering_calls_marked_by": [],
+              "calls_marked_by": [],
+              "conversation": "ses_f03499725ffeCblA7z0t0kDKeN",
+              "marked_by": "\"answered\":true"
+            },
+            "detected": {
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "e85e5e74-3983-4448-a903-9ea675431e14"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "e85e5e74-3983-4448-a903-9ea675431e14",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946207336-ceaded7e-73e2-41b3-a652-352c69e7acdd",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946207336"
+                }
+              ],
+              "waited_ms": 785
+            },
+            "executions": {
+              "after_reconnecting": 1,
+              "after_the_race": 1
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "6aeb8a1758ccfc610ce77da02d63e0e2ed134633eed2a7c6e88bcdb2da1a98c6",
+              "plugin_id": "kalareach/opencode",
+              "version": "0.2.1"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 1,
+              "run_gone": true,
+              "variable": "OPENROUTER_API_KEY"
+            },
+            "login_held": true,
+            "loser": {
+              "exit_status": 8,
+              "receipt": {
+                "seen": true,
+                "shows": "input lease"
+              },
+              "typed": "\u001b",
+              "who": "the local terminal"
+            },
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": null,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr6e721d4df2eb",
+                "run_directory": "<tmp>/krm-25eb2764"
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "inode": 69650336,
+                  "pid": 67503,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 67503,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "command": "opencode"
+                }
+              ],
+              "pids": [
+                67503
+              ],
+              "sample_interval_ms": 250,
+              "samples": 71,
+              "session_path": "<tmp>/krm-25eb2764/agent/current/bin:<tmp>/krm-25eb2764/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "replay": {
+              "checker_control_rejected": false,
+              "probe": "zqkr6e721d4df2eb",
+              "screen_checked": false,
+              "typed_again": false
+            },
+            "resources": 0,
+            "winner": {
+              "typed": "\r",
+              "who": "the paired device, which held the input lease"
+            }
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work",
+          "part": "4",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 7,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "openrouter/google/gemini-2.5-flash-lite"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 39,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-bcb69b3a/w/opencode.json",
+                  "<tmp>/krm-bcb69b3a/w/opencode.jsonc",
+                  "<tmp>/krm-bcb69b3a/w/.opencode",
+                  "<tmp>/krm-bcb69b3a/w/AGENTS.md",
+                  "<tmp>/krm-bcb69b3a/w/CLAUDE.md",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/opencode.json",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/opencode.jsonc",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/config.json",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/tui.json",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/AGENTS.md",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/skill",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/skills",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/agent",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/agents",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/command",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/commands",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/plugin",
+                  "<tmp>/krm-bcb69b3a/h/.config/opencode/plugins",
+                  "<tmp>/krm-bcb69b3a/h/.local/share/opencode/auth.json",
+                  "<tmp>/krm-bcb69b3a/h/.local/share/opencode/mcp-auth.json",
+                  "<tmp>/krm-bcb69b3a/h/.claude",
+                  "<tmp>/krm-bcb69b3a/h/.agents",
+                  "/Library/Application Support/opencode",
+                  "/Library/Managed Preferences/{user}/ai.opencode.managed.plist",
+                  "/Library/Managed Preferences/ai.opencode.managed.plist"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "config"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "\"autoupdate\": false",
+                      "\"share\": \"disabled\"",
+                      "\"mcp\": {}",
+                      "\"plugin\": []",
+                      "\"bash\": \"ask\""
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "skill"
+                    ],
+                    "lacks": [
+                      "\"location\": \"/"
+                    ],
+                    "lines": [],
+                    "shows": [
+                      "<built-in>"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": true,
+              "stored": "variable of the person's shell environment",
+              "turns": 2,
+              "variable": "OPENROUTER_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "XDG_*",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "admission": "the agent's conversation held the prompt, and no screen the device was sent from the submission until it disconnected showed the reply mark or the code in upper case",
+            "after_reconnect": {
+              "finished_replies": 1,
+              "prompts": 1,
+              "seen": true,
+              "shows": "KREBFDC7A633E4-END"
+            },
+            "control": {
+              "breaks_property": true,
+              "check": true,
+              "finished_replies": 2,
+              "prompts": 2,
+              "what": "the same prompt sent again"
+            },
+            "conversation": "ses_f0348790fffeGuRDUaU1tAzzBn",
+            "cutoff": {
+              "fresh_screens": 0,
+              "reader_stopped": true
+            },
+            "detected": {
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "83943bc3-f2dc-4d33-9839-da326918aecd"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "83943bc3-f2dc-4d33-9839-da326918aecd",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946280463-136219d9-b1ad-4b47-9196-e0012afb9807",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946280463"
+                }
+              ],
+              "waited_ms": 517
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "6aeb8a1758ccfc610ce77da02d63e0e2ed134633eed2a7c6e88bcdb2da1a98c6",
+              "plugin_id": "kalareach/opencode",
+              "version": "0.2.1"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 1,
+              "run_gone": true,
+              "variable": "OPENROUTER_API_KEY"
+            },
+            "login_held": true,
+            "markers": {
+              "looked_for": "KREB",
+              "reply_begins": "KREBFDC7A633E4-START",
+              "reply_ends": "KREBFDC7A633E4-END",
+              "screen_reply_mark": null
+            },
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": null,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "krebfdc7a633e4",
+                "run_directory": "<tmp>/krm-bcb69b3a"
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "inode": 69650336,
+                  "pid": 40377,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 40377,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "command": "opencode"
+                }
+              ],
+              "pids": [
+                40377
+              ],
+              "sample_interval_ms": 250,
+              "samples": 47,
+              "session_path": "<tmp>/krm-bcb69b3a/agent/current/bin:<tmp>/krm-bcb69b3a/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "reconciled": {
+              "attachment": "b3be20d1-9024-4866-b9c6-dd6e985d4a48",
+              "epoch": 2,
+              "next_sequence": 2,
+              "stale_input": "AMBIGUOUS_ATTACHMENT"
+            }
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running",
+          "part": "5a",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 8,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "evidence": {
+            "after_restart": {
+              "detection": {
+                "instances": [
+                  {
+                    "application_instance_id": "6f63370f-86d4-437d-9924-3bc5bee5c50b",
+                    "bypass": "not_integrated",
+                    "ended_at": null,
+                    "mode": "native_terminal",
+                    "plugin_id": "kalareach/opencode",
+                    "profile_id": "lp-1790946343981-4f10e601-048f-41d7-927e-c8cae746e5e0",
+                    "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                    "started_at": "1790946343981"
+                  }
+                ],
+                "waited_ms": 0
+              },
+              "surface": {
+                "answers": [
+                  {
+                    "call": "agent.prompt.submit",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 6f63370f-86d4-437d-9924-3bc5bee5c50b: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.prompt.queue",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 6f63370f-86d4-437d-9924-3bc5bee5c50b: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.turn.steer",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 6f63370f-86d4-437d-9924-3bc5bee5c50b: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.turn.cancel",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 6f63370f-86d4-437d-9924-3bc5bee5c50b: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.approval.respond",
+                    "detail": "STALE_SESSION: no pending resource 70185834-e267-4726-ae69-390f282436b6",
+                    "error": null,
+                    "refused": "STALE_SESSION"
+                  },
+                  {
+                    "call": "agent.draft.add_attachment",
+                    "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                    "error": null,
+                    "refused": "INVALID_ARGUMENT"
+                  },
+                  {
+                    "call": "plugin.action.invoke turn.cancel",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 6f63370f-86d4-437d-9924-3bc5bee5c50b: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  }
+                ],
+                "backend_files": [],
+                "capability_records": [],
+                "resources": 0
+              }
+            },
+            "agent_processes": [
+              "opencode"
+            ],
+            "control": {
+              "breaks_property": true,
+              "check": "these have ended: process 4524 (opencode)",
+              "what": "the agent ended with a second daemon kill"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "6f63370f-86d4-437d-9924-3bc5bee5c50b",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946343981-4f10e601-048f-41d7-927e-c8cae746e5e0",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946343981"
+                }
+              ],
+              "waited_ms": 523
+            },
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "6aeb8a1758ccfc610ce77da02d63e0e2ed134633eed2a7c6e88bcdb2da1a98c6",
+              "plugin_id": "kalareach/opencode",
+              "version": "0.2.1"
+            },
+            "killed_daemon": 2548,
             "local_terminal_input": "kr-harmless",
             "provenance": {
               "ended_before_read": [],
@@ -405,7 +2010,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 65244,
+                  "pid": 4524,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -415,7 +2020,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 65244,
+                    "pid": 4524,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -425,11 +2030,15 @@
                   "what": "opencode"
                 }
               ],
+              "pids": [
+                4524
+              ],
               "sample_interval_ms": 250,
-              "samples": 19,
-              "session_path": "<tmp>/krm-3cce420e/agent/current/bin:<tmp>/krm-3cce420e/agent/runtime:/usr/bin:/bin"
+              "samples": 23,
+              "session_path": "<tmp>/krm-5a195224/agent/current/bin:<tmp>/krm-5a195224/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
             },
-            "restarted_daemon": 65567
+            "restarted_daemon": 7857
           }
         },
         {
@@ -438,9 +2047,9 @@
           "source": "kalareach-plugins:fixtures/agents/README.md",
           "keyed_by": "case_table",
           "outcome": "not_run",
-          "reason": "the terminal route has no gateway, so it holds no gateway request state (the connector hand-over to workers)",
+          "reason": "waits for the command integration: a session made through kr new gets no command integration, so no launch has a gateway holding request state (the command integration's landing)",
           "needs": [
-            "connector binding"
+            "command integration"
           ]
         },
         {
@@ -448,16 +2057,70 @@
           "part": "6a",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
-          "outcome": "not_run",
-          "reason": "the build list names no newer build of this agent (the build list)",
+          "outcome": "passed",
           "runs": [
             {
-              "step": 4,
-              "outcome": "not_run"
+              "step": 9,
+              "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
+            "control": {
+              "breaks_property": true,
+              "check": "process 28332 runs <tools>/opencode/1.18.32/lib/node_modules/opencode-ai/bin/opencode.exe (inode 77277431), not <tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe (inode 69650336)",
+              "relaunched_process": 28332,
+              "relaunched_runs": {
+                "file": "<tools>/opencode/1.18.32/lib/node_modules/opencode-ai/bin/opencode.exe",
+                "inode": 77277431
+              },
+              "what": "the agent relaunched in the first session after the upgrade"
+            },
+            "first_after_upgrade": {
+              "instances": [
+                {
+                  "application_instance_id": "17c8c30d-0007-4309-91cc-7417309ec35f",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946361900-074ec602-ec1e-47dc-a0af-24a698781d8e",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946361900"
+                }
+              ],
+              "waited_ms": 0
+            },
+            "first_agent_process": 22448,
+            "first_binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790946361900-074ec602-ec1e-47dc-a0af-24a698781d8e",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
+            "first_detection": {
+              "instances": [
+                {
+                  "application_instance_id": "17c8c30d-0007-4309-91cc-7417309ec35f",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946361900-074ec602-ec1e-47dc-a0af-24a698781d8e",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946361900"
+                }
+              ],
+              "waited_ms": 775
+            },
             "installed": {
               "grant": [
                 "upstream.action"
@@ -466,13 +2129,171 @@
               "plugin_id": "kalareach/opencode",
               "version": "0.2.1"
             },
+            "launch": "native",
+            "newer": {
+              "mark": {
+                "file": "<tools>/opencode/1.18.32/lib/node_modules/opencode-ai/bin/opencode.exe",
+                "inode": 77277431
+              },
+              "version": "1.18.32"
+            },
+            "pinned": {
+              "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+              "inode": 69650336
+            },
             "provenance": {
               "ended_before_read": [],
-              "executed": [],
-              "launches": [],
+              "executed": [
+                {
+                  "command": "opencode",
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "inode": 69650336,
+                  "pid": 22448,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                },
+                {
+                  "command": "opencode",
+                  "device": 16777234,
+                  "from": "newer build",
+                  "image": "<tools>/opencode/1.18.32/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "inode": 77277431,
+                  "pid": 25543,
+                  "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "opencode",
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 22448,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "what": "opencode"
+                },
+                {
+                  "agent_process": {
+                    "command": "opencode",
+                    "from": "newer build",
+                    "image": "<tools>/opencode/1.18.32/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 25543,
+                    "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e"
+                  },
+                  "file": "<tools>/opencode/1.18.32/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e",
+                  "what": "opencode"
+                },
+                {
+                  "agent_process": {
+                    "command": "opencode",
+                    "from": "newer build",
+                    "image": "<tools>/opencode/1.18.32/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 28332,
+                    "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e"
+                  },
+                  "file": "<tools>/opencode/1.18.32/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
+                  "sha256": "a3c45d4e1d6620b436851f1ef6b25c71befcf06a382e279a1eb1c2196424395e",
+                  "what": "opencode"
+                }
+              ],
+              "pids": [
+                22448,
+                25543,
+                28332
+              ],
               "sample_interval_ms": 250,
-              "samples": 0,
-              "session_path": null
+              "samples": 35,
+              "session_path": "<tmp>/krm-01c52b1c/agent/current/bin:<tmp>/krm-01c52b1c/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "second_binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790946365172-7166345f-1d99-4a3e-be07-8383be84250e",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
+            "second_detection": {
+              "instances": [
+                {
+                  "application_instance_id": "80ec65b9-2edb-47dc-8734-30c26df57170",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946365172-7166345f-1d99-4a3e-be07-8383be84250e",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946365172"
+                }
+              ],
+              "waited_ms": 782
+            },
+            "second_surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 80ec65b9-2edb-47dc-8734-30c26df57170: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 80ec65b9-2edb-47dc-8734-30c26df57170: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 80ec65b9-2edb-47dc-8734-30c26df57170: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 80ec65b9-2edb-47dc-8734-30c26df57170: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "detail": "STALE_SESSION: no pending resource 04920894-749c-4a55-bc5c-ab84a243bd55",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 80ec65b9-2edb-47dc-8734-30c26df57170: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                }
+              ],
+              "backend_files": [],
+              "capability_records": [],
+              "resources": 0
             }
           }
         },
@@ -482,21 +2303,300 @@
           "source": "kalareach-plugins:fixtures/agents/README.md",
           "keyed_by": "case_table",
           "outcome": "not_run",
-          "reason": "needs a binding, to show each process bound to its own adapter and schema (the connector hand-over to workers)",
+          "reason": "waits for the command integration: a build outside the qualified range can be refused only a typed route, and no launch has one without the integration (the command integration's landing)",
           "needs": [
-            "connector binding"
+            "command integration"
           ]
         },
         {
-          "test": "part 7",
+          "test": "kr-e2e-agents --test cases a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged",
           "part": "7",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account, since a saved conversation needs a turn (an account from the user)",
-          "needs": [
-            "vendor account"
-          ]
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 10,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of OPENROUTER_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-053b4ba72b017119 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "openrouter/google/gemini-2.5-flash-lite"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 41,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-0db62204/w/opencode.json",
+                  "<tmp>/krm-0db62204/w/opencode.jsonc",
+                  "<tmp>/krm-0db62204/w/.opencode",
+                  "<tmp>/krm-0db62204/w/AGENTS.md",
+                  "<tmp>/krm-0db62204/w/CLAUDE.md",
+                  "<tmp>/krm-0db62204/h/.config/opencode/opencode.json",
+                  "<tmp>/krm-0db62204/h/.config/opencode/opencode.jsonc",
+                  "<tmp>/krm-0db62204/h/.config/opencode/config.json",
+                  "<tmp>/krm-0db62204/h/.config/opencode/tui.json",
+                  "<tmp>/krm-0db62204/h/.config/opencode/AGENTS.md",
+                  "<tmp>/krm-0db62204/h/.config/opencode/skill",
+                  "<tmp>/krm-0db62204/h/.config/opencode/skills",
+                  "<tmp>/krm-0db62204/h/.config/opencode/agent",
+                  "<tmp>/krm-0db62204/h/.config/opencode/agents",
+                  "<tmp>/krm-0db62204/h/.config/opencode/command",
+                  "<tmp>/krm-0db62204/h/.config/opencode/commands",
+                  "<tmp>/krm-0db62204/h/.config/opencode/plugin",
+                  "<tmp>/krm-0db62204/h/.config/opencode/plugins",
+                  "<tmp>/krm-0db62204/h/.local/share/opencode/auth.json",
+                  "<tmp>/krm-0db62204/h/.local/share/opencode/mcp-auth.json",
+                  "<tmp>/krm-0db62204/h/.claude",
+                  "<tmp>/krm-0db62204/h/.agents",
+                  "/Library/Application Support/opencode",
+                  "/Library/Managed Preferences/{user}/ai.opencode.managed.plist",
+                  "/Library/Managed Preferences/ai.opencode.managed.plist"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "config"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "\"autoupdate\": false",
+                      "\"share\": \"disabled\"",
+                      "\"mcp\": {}",
+                      "\"plugin\": []",
+                      "\"bash\": \"ask\""
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "debug",
+                      "skill"
+                    ],
+                    "lacks": [
+                      "\"location\": \"/"
+                    ],
+                    "lines": [],
+                    "shows": [
+                      "<built-in>"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": true,
+              "stored": "variable of the person's shell environment",
+              "turns": 2,
+              "variable": "OPENROUTER_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "XDG_*",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "control": {
+              "breaks_property": true,
+              "isolated": false,
+              "what": "session B's marker typed into session A"
+            },
+            "conversation": "ses_f0346dbeeffeEpGCsaMD85baBS",
+            "installed": {
+              "grant": [
+                "upstream.action"
+              ],
+              "manifest_digest": "6aeb8a1758ccfc610ce77da02d63e0e2ed134633eed2a7c6e88bcdb2da1a98c6",
+              "plugin_id": "kalareach/opencode",
+              "version": "0.2.1"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 1,
+              "run_gone": true,
+              "variable": "OPENROUTER_API_KEY"
+            },
+            "login_held": true,
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": null,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "krb996d9ed67e2",
+                "run_directory": "<tmp>/krm-0db62204"
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "build",
+                  "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "inode": 69650336,
+                  "pid": 46932,
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 46932,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "command": "opencode"
+                },
+                {
+                  "agent_process": {
+                    "from": "build",
+                    "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                    "pid": 55191,
+                    "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
+                  },
+                  "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
+                  "launch": "native",
+                  "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198",
+                  "command": "opencode"
+                }
+              ],
+              "pids": [
+                46932,
+                55191
+              ],
+              "sample_interval_ms": 250,
+              "samples": 65,
+              "session_path": "<tmp>/krm-0db62204/agent/current/bin:<tmp>/krm-0db62204/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "session_a": {
+              "detected": {
+                "detected": true,
+                "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+                "instance": "f23ac28e-d430-43b6-9614-5fc83649561d"
+              },
+              "detection": {
+                "instances": [
+                  {
+                    "application_instance_id": "f23ac28e-d430-43b6-9614-5fc83649561d",
+                    "bypass": "not_integrated",
+                    "ended_at": null,
+                    "mode": "native_terminal",
+                    "plugin_id": "kalareach/opencode",
+                    "profile_id": "lp-1790946386343-e3c08b2e-49ad-45cc-909f-a6048d772905",
+                    "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                    "started_at": "1790946386343"
+                  }
+                ],
+                "waited_ms": 778
+              },
+              "owners": [
+                {
+                  "pid": 46932
+                }
+              ]
+            },
+            "session_b": {
+              "detected": {
+                "detected": true,
+                "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+                "instance": "ff9ed30a-5629-444c-89be-3fb4cd65e44f"
+              },
+              "detection": {
+                "instances": [
+                  {
+                    "application_instance_id": "ff9ed30a-5629-444c-89be-3fb4cd65e44f",
+                    "bypass": "not_integrated",
+                    "ended_at": null,
+                    "mode": "native_terminal",
+                    "plugin_id": "kalareach/opencode",
+                    "profile_id": "lp-1790946395377-b7b5f146-3639-4bc4-8303-2fe82b6aa166",
+                    "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                    "started_at": "1790946395377"
+                  }
+                ],
+                "waited_ms": 770
+              },
+              "owners": [
+                {
+                  "pid": 55191
+                }
+              ],
+              "resumed_with": [
+                "-s",
+                "<not published>"
+              ],
+              "same_conversation": true,
+              "wrote_into_a_conversation": true
+            }
+          }
         },
         {
           "test": "kr-e2e-agents --test cases forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged",
@@ -506,12 +2606,26 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 5,
+              "step": 11,
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
+            "binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1790946454935-e6c4e459-5c35-4c31-8dda-cea48ff7d49c",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
             "control": {
               "breaks_property": false,
               "owner": {
@@ -524,6 +2638,21 @@
               "what": "a view-only device's input refused as not permitted where the owner device's is admitted",
               "why_not": "a forgery that changes the host's state needs a registration the host issued, which this host issues to no connector"
             },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "eedc0dd4-86a0-4f73-8fa0-73066dafa791",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946454935-e6c4e459-5c35-4c31-8dda-cea48ff7d49c",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946454935"
+                }
+              ],
+              "waited_ms": 512
+            },
             "installed": {
               "grant": [
                 "upstream.action"
@@ -532,6 +2661,7 @@
               "plugin_id": "kalareach/opencode",
               "version": "0.2.1"
             },
+            "live_bindings": 1,
             "provenance": {
               "ended_before_read": [],
               "executed": [
@@ -541,7 +2671,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 67687,
+                  "pid": 17200,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -551,7 +2681,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 67687,
+                    "pid": 17200,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -561,18 +2691,22 @@
                   "what": "opencode"
                 }
               ],
+              "pids": [
+                17200
+              ],
               "sample_interval_ms": 250,
-              "samples": 37,
-              "session_path": "<tmp>/krm-9c544825/agent/current/bin:<tmp>/krm-9c544825/agent/runtime:/usr/bin:/bin"
+              "samples": 38,
+              "session_path": "<tmp>/krm-867ef96e/agent/current/bin:<tmp>/krm-867ef96e/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 96bc0bf9-da89-490b-bdb7-14ee5172ee7f approval allow"
+                "title": "kalareach session 08934420-0437-4bdd-b2ef-853fa42f14f7 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-9c544825/h/.local/share/opencode/storage/session/96bc0bf9-da89-490b-bdb7-14ee5172ee7f.json"
+                "path": "<tmp>/krm-867ef96e/h/.local/share/opencode/storage/session/08934420-0437-4bdd-b2ef-853fa42f14f7.json"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
@@ -602,7 +2736,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "channel-none",
                     "stderr_first_line": "",
@@ -610,39 +2744,39 @@
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-9c544825/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-867ef96e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-9c544825/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-867ef96e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-9c544825/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-867ef96e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-9c544825/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-867ef96e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 6,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -650,7 +2784,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 8,
                     "exit": 0,
                     "probe": "hook-worker-permission",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -666,7 +2800,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 8,
                     "exit": 1,
                     "probe": "channel-worker",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -684,9 +2818,9 @@
           "source": "kalareach-plugins:fixtures/agents/README.md",
           "keyed_by": "case_table",
           "outcome": "not_run",
-          "reason": "needs a registration the host issued, to fail a forgery at the endpoint a legitimate one passes (the command integration)",
+          "reason": "waits for the command integration: no launch has a registration the host issued, against which a forgery could fail where it passes (the command integration's landing)",
           "needs": [
-            "launch registration"
+            "command integration"
           ]
         }
       ]
@@ -711,22 +2845,47 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 6,
+              "step": 12,
               "outcome": "passed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-084220605b4ea32f --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/opencode/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/opencode/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/opencode/key-scan.jsonl <target>/debug/deps/cases-053b4ba72b017119 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "announced": {
-              "instances": [],
-              "more_resources": false,
-              "resources": []
+              "instances": [
+                {
+                  "application_instance_id": "81ad4cd4-6deb-4211-98a4-ed5c57ff5aeb",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946477663-2a2ead65-ac5c-47ad-9fb9-06fb9aca803a",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946477663"
+                }
+              ],
+              "waited_ms": 0
             },
             "composer_row": "             ┃  w/kalareach-shot.png",
             "control": {
               "breaks_property": true,
               "refused": "input.write: LEASE_LOST: the input lease has moved on",
               "what": "the same input without the lease"
+            },
+            "detection": {
+              "instances": [
+                {
+                  "application_instance_id": "81ad4cd4-6deb-4211-98a4-ed5c57ff5aeb",
+                  "bypass": "not_integrated",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/opencode",
+                  "profile_id": "lp-1790946477663-2a2ead65-ac5c-47ad-9fb9-06fb9aca803a",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1790946477663"
+                }
+              ],
+              "waited_ms": 765
             },
             "forwarded_bytes": 90,
             "installed": {
@@ -746,7 +2905,7 @@
                   "from": "build",
                   "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
                   "inode": 69650336,
-                  "pid": 69661,
+                  "pid": 40482,
                   "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                 }
               ],
@@ -756,7 +2915,7 @@
                     "command": "opencode",
                     "from": "build",
                     "image": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
-                    "pid": 69661,
+                    "pid": 40482,
                     "sha256": "16c960ba77421da11b53e785f359b73f328a86118b48feb4af143db5d9afb198"
                   },
                   "file": "<tools>/opencode/1.18.31/lib/node_modules/opencode-ai/bin/opencode.exe",
@@ -766,11 +2925,64 @@
                   "what": "opencode"
                 }
               ],
+              "pids": [
+                40482
+              ],
               "sample_interval_ms": 250,
-              "samples": 15,
-              "session_path": "<tmp>/krm-4df6cfbb/agent/current/bin:<tmp>/krm-4df6cfbb/agent/runtime:/usr/bin:/bin"
+              "samples": 18,
+              "session_path": "<tmp>/krm-df9febd5/agent/current/bin:<tmp>/krm-df9febd5/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
             },
-            "typed": "<tmp>/krm-4df6cfbb/w/kalareach-shot.png"
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 81ad4cd4-6deb-4211-98a4-ed5c57ff5aeb: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 81ad4cd4-6deb-4211-98a4-ed5c57ff5aeb: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 81ad4cd4-6deb-4211-98a4-ed5c57ff5aeb: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 81ad4cd4-6deb-4211-98a4-ed5c57ff5aeb: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "detail": "STALE_SESSION: no pending resource 3a215e1a-3f16-4af1-aa2a-d7e7721d2538",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 81ad4cd4-6deb-4211-98a4-ed5c57ff5aeb: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "error": null,
+                  "refused": "UNSUPPORTED_CAPABILITY"
+                }
+              ],
+              "backend_files": [],
+              "capability_records": [],
+              "resources": 0
+            },
+            "typed": "<tmp>/krm-df9febd5/w/kalareach-shot.png"
           }
         },
         {
@@ -801,19 +3013,21 @@
   "warnings": [],
   "summary": {
     "identifiers": 2,
-    "passed": 2,
-    "failed": 0,
+    "passed": 1,
+    "failed": 1,
     "known_difference": 0,
     "not_run": 0,
     "known_differences": 0,
     "tests": {
-      "passed": 4,
-      "failed": 0,
+      "passed": 10,
+      "failed": 1,
       "ignored": 0,
-      "not_run": 11,
+      "not_run": 4,
       "not_built": 0,
       "known_difference": 0
     },
-    "failed_steps": []
+    "failed_steps": [
+      2
+    ]
   }
 }
