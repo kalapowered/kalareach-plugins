@@ -377,6 +377,45 @@ async fn a_rotation_without_the_signature_of_either_root_is_refused() {
         .expect_err("a rotation that does not carry its own signature is refused");
 }
 
+/// A middle root that does not carry a threshold of its own keys is refused although the highest
+/// root verifies: a host that adopted it would reach a root it cannot itself verify.
+#[tokio::test]
+async fn a_middle_root_without_its_own_signature_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let roots = chain(2).await;
+    let first = generation(temporary.path(), "one", 1, &signing(0, roots[..1].to_vec())).await;
+    let third = generation(temporary.path(), "three", 3, &signing(2, roots.clone())).await;
+    lineage::check_generation_from(&third, &first, "none")
+        .await
+        .expect("the control: the chain as it was signed");
+
+    let first_root: Signed<Root> = serde_json::from_slice(&roots[0]).expect("the root parses");
+    let middle: Signed<Root> = serde_json::from_slice(&roots[1]).expect("the root parses");
+    let under_previous = tough::editor::signed::SignedRole::new(
+        middle.signed,
+        &tough::schema::KeyHolder::Root(first_root.signed),
+        &development::key_sources(0),
+        &aws_lc_rs::rand::SystemRandom::new(),
+    )
+    .await
+    .expect("the root signs");
+    std::fs::write(
+        third.join(METADATA_DIR).join("2.root.json"),
+        canonical::canonical(under_previous.signed()).expect("the root renders"),
+    )
+    .expect("the middle root is replaced");
+
+    let refused = lineage::check_generation_from(&third, &first, "none")
+        .await
+        .expect_err("a middle root without its own signature is refused");
+    assert!(
+        refused
+            .to_string()
+            .contains("2.root.json does not carry a threshold of its own root keys"),
+        "{refused}"
+    );
+}
+
 /// A generation that ships roots up to a version and not one before it is refused: a host that
 /// adopted an earlier root could not follow the chain.
 #[tokio::test]
