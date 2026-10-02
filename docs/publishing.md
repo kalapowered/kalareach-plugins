@@ -25,6 +25,23 @@ The identifier is immutable. It becomes a directory name, a path segment in ever
 catalogue signs, and half of every plugin identifier you publish. Choosing a new one later means
 publishing new packages, not renaming existing ones.
 
+## Free and commercial packages
+
+The catalogue lists free and commercial packages the same way, and KalaReach runs no payment
+marketplace. A publisher record and a package manifest are closed documents with no price, payment,
+licence-key or purchase field, and `kr-plugin-sdk`'s capability vocabulary has no capability that
+takes a payment, so a package cannot ask the host for one and the catalogue cannot carry one. A
+vendor may charge for its own hosted service or its support, and a plugin that checks an entitlement
+of its own does so as its own business: that check is not a KalaReach revenue boundary, and nothing
+in this catalogue or in the host enforces it.
+
+A package that needs terminal text instead of its application's own protocol has to ask for
+`terminal.stream`, `terminal.transcript_tail` or `process.observe`, each of which sits outside a
+repository's default ceiling and needs an explicit grant. No package in this repository asks for any
+of them: each first-party package reads its application's native protocol through
+`broker.semantic_events`, and only the Claude Code package asks to decode and answer that
+application's approvals.
+
 ## Adding a package
 
 Create `plugins/<publisher>/<plugin>/` with `plugin.json`, `presentation.json`, and whatever else
