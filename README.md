@@ -4,6 +4,18 @@ KalaReach plugin catalogue: application plugin sources, declarative manifests, f
 
 Licensed under the BSD 3-Clause License. See [LICENSE](LICENSE).
 
+Every crate in this repository declares the BSD 3-Clause licence with the SPDX identifier
+`BSD-3-Clause`, and the repository holds no third-party source. The pipeline depends on
+`kr-plugin-sdk` by Git revision, and a package pins a vendor's source by repository and revision
+instead of copying it. The first-party packages under `plugins/kalareach/` are BSD 3-Clause like the
+rest of the repository. `.gitignore` excludes assistant instruction files and signing keys at any
+depth.
+
+A clean checkout is enough to set up, build and test. The commands under "Build and test" need only
+the pinned toolchain, and the development signing keys they use are made outside the checkout by
+`scripts/generate-development-keys.sh`. Nothing in the repository holds a private key, and the
+pipeline refuses to sign when it finds one in the tree.
+
 ## Repository layout
 
 | Path | What it holds |
