@@ -1229,7 +1229,7 @@
         "queued_line": "\"queued\":true",
         "turn_line": "\"kind\":\"turn_end\"",
         "ready": "Ask anything",
-        "composer": "ctrl+p commands",
+        "composer": "Flash-Lite OpenRouter",
         "submit": "\r",
         "clear": "\u0015",
         "busy": "esc interrupt",
