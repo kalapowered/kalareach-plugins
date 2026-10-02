@@ -322,7 +322,8 @@ look_again() {
 # Sorts what tccd and coreauthd logged about this run's programs into what can ask someone and what
 # cannot. tccd handles a request on one thread from its REQUEST line to its REPLY line, and its
 # AUTHREQ_CTX line names the service and whether the request is a preflight, which answers from the
-# stored decision and never asks anyone. coreauthd asks only while it evaluates a policy or an
+# stored decision and never asks anyone; the system'"'"'s tccd writes the same as a REQUEST_MSG entry,
+# which names the service and preflight itself, and a REPLY_MSG entry. coreauthd asks only while it evaluates a policy or an
 # access control for a context interactively; creating a context (its creation and the proxy
 # returned to the client), setting an option on it, an evaluation made not interactive, releasing
 # it (its deallocation, or the proxy interrupted when the client's connection ends), and a
@@ -365,8 +366,14 @@ function handle(line,   thread, connection, id, context, evaluation, quiet) {
     else print "coreauthd " line
     return
   }
-  if (match(line, /REQUEST: .*msgID=[0-9.]+/)) {
+  # A request opens at a REQUEST line (service and preflight then come on an AUTHREQ_CTX line) or, as
+  # the system'"'"'s tccd writes it, at a REQUEST_MSG entry that states both itself.
+  if (match(line, /REQUEST: .*msgID=[0-9.]+/) || match(line, /REQUEST_MSG: msgID=[0-9.]+/)) {
     id = substr(line, RSTART, RLENGTH); sub(/.*msgID=/, "", id); current[thread] = id
+    if (index(line, "REQUEST_MSG: ") > 0) {
+      if (match(line, /service="[A-Za-z]+"/)) service[id] = substr(line, RSTART + 9, RLENGTH - 10)
+      if (match(line, /preflight=(true|false)/)) preflight[id] = (substr(line, RSTART + 10, RLENGTH - 10) == "true") ? "yes" : "no"
+    }
   }
   id = current[thread]
   if (id == "") { if (ours(line) && !connection) print "outside " line; return }
@@ -380,6 +387,10 @@ function handle(line,   thread, connection, id, context, evaluation, quiet) {
   }
   if (ours(line)) about[id] = 1
   if (match(line, /REPLY: .*msgID=[0-9.]+/)) current[thread] = ""
+  if (index(line, "REPLY_MSG: ") > 0) {
+    if (match(line, /auth_value=[0-9]+/)) result[id] = "authValue=" substr(line, RSTART + 11, RLENGTH - 11)
+    current[thread] = ""
+  }
 }
 /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] / { if (entry != "") handle(entry); entry = $0; next }
 { if (entry != "") entry = entry " " $0 }

@@ -1082,6 +1082,153 @@ fn every_account_entry_clears_the_variables_that_give_an_agent_another_model_acc
     );
 }
 
+/// An entry whose agent keeps its conversations in a database names the query the driver reads them
+/// with: a `SELECT` that writes nothing, whose two columns are a conversation's identifier and a
+/// line of JSON, and whose lines carry the members the entry's marks look for, so a mark that
+/// the query does not produce is caught here and not by a part that waits for it.
+#[test]
+fn a_mirror_query_selects_the_lines_the_entrys_marks_look_for() {
+    let list: Value = serde_json::from_slice(
+        &std::fs::read(root().join("fixtures").join("agents").join("builds.json"))
+            .expect("the build list reads"),
+    )
+    .expect("the build list is JSON");
+    let mut mirrored = 0;
+    for entry in list["builds"].as_array().expect("the builds") {
+        let package = entry["package"].as_str().expect("a package");
+        let Some(mirror) = entry["account"]
+            .get("mirror")
+            .filter(|mirror| !mirror.is_null())
+        else {
+            continue;
+        };
+        mirrored += 1;
+        let account = &entry["account"];
+        let query = mirror["query"].as_str().expect("a query");
+        let upper = query.to_uppercase();
+        assert!(
+            upper.trim_start().starts_with("SELECT SESSION, LINE FROM"),
+            "{package}: the query's two columns"
+        );
+        let words: Vec<&str> = upper
+            .split(|character: char| !(character.is_alphanumeric() || character == '_'))
+            .collect();
+        for word in [
+            "INSERT", "UPDATE", "DELETE", "REPLACE", "ATTACH", "PRAGMA", "DROP", "CREATE", "ALTER",
+            "VACUUM",
+        ] {
+            assert!(!words.contains(&word), "{package}: the query holds {word}");
+        }
+        assert!(!query.contains(';'), "{package}: one statement");
+        // Each mark is a run of members of a JSON object as the query's `json_object` writes them:
+        // `"role":"user","kind":"text"` is `'role','user','kind','text'` there.
+        for key in [
+            "prompt_line",
+            "reply_line",
+            "decision_line",
+            "queued_line",
+            "turn_line",
+        ] {
+            let mark = account[key]
+                .as_str()
+                .unwrap_or_else(|| panic!("{package}: {key}"));
+            let pairs: Vec<&str> = mark.split(',').collect();
+            let wanted: Vec<String> = pairs
+                .iter()
+                .map(|pair| {
+                    let (name, value) = pair.split_once(':').expect("a member");
+                    let name = name.trim_matches('"');
+                    match value {
+                        // A flag the query computes (`json(CASE ...)`) or states (`json('true')`).
+                        "true" => format!("'{name}',json("),
+                        text => format!("'{name}','{}'", text.trim_matches('"')),
+                    }
+                })
+                .collect();
+            let in_order = wanted.join(",");
+            assert!(
+                query.contains(&in_order) || wanted.iter().all(|member| query.contains(member)),
+                "{package}: the query writes no line the {key} mark {mark} looks for"
+            );
+        }
+        assert_eq!(account["conversations"], "conversation-mirror", "{package}");
+        assert!(
+            account["interrupt_presses"].as_u64().unwrap_or(1) >= 1,
+            "{package}"
+        );
+    }
+    assert_eq!(
+        mirrored, 1,
+        "the entries that keep their conversations in a database"
+    );
+}
+
+/// What the harness's sorter of tccd and coreauthd entries makes of a log in each form tccd writes a
+/// request in: the older REQUEST, AUTHREQ_CTX and REPLY lines and the REQUEST_MSG and REPLY_MSG
+/// entries the system's tccd writes now. A request about the run's programs is a preflight in both,
+/// one that is not is told apart, and an entry about them outside any request is marked.
+#[test]
+fn the_sorter_of_tccd_entries_reads_both_forms_of_a_request() {
+    let root = root();
+    let script = root.join("scripts").join("e2e-agents.sh");
+    let program = std::process::Command::new("bash")
+        .arg("-c")
+        .arg(r#"source <(sed -n "/^tcc_requests=/,/^'$/p" "$0"); printf '%s' "$tcc_requests""#)
+        .arg(&script)
+        .output()
+        .expect("bash reads the sorter");
+    assert!(program.status.success(), "the sorter is in the script");
+    let directory = std::env::temp_dir().join(format!("kr-sorter-{}", std::process::id()));
+    std::fs::create_dir_all(&directory).expect("a directory");
+    std::fs::write(directory.join("sorter.awk"), &program.stdout).expect("the program");
+    std::fs::write(directory.join("forms"), "/tmp/krm-1\n").expect("the forms");
+    let old = "2026-10-01 14:30:58.694 Df tccd[16382:12ede02a] [com.apple.TCC:access] REQUEST: tccd_uid=501, sender_pid=37624, function=TCCAccessRequest, msgID=37624.1\n\
+               2026-10-01 14:30:58.696 Df tccd[16382:12ede02a] [com.apple.TCC:access] AUTHREQ_CTX: msgID=37624.1, function=<private>, service=kTCCServiceDeveloperTool, preflight=yes, query=1,\n\
+               2026-10-01 14:30:58.697 Df tccd[16382:12ede02a] [com.apple.TCC:access] AttributionChain: binary_path=/tmp/krm-1/b/kr\n\
+               2026-10-01 14:30:58.698 Df tccd[16382:12ede02a] [com.apple.TCC:access] AUTHREQ_RESULT: msgID=37624.1, authValue=0, authReason=5, promptType=1\n\
+               2026-10-01 14:30:58.699 Df tccd[16382:12ede02a] [com.apple.TCC:access] REPLY: tccd_uid=501, msgID=37624.1\n";
+    let new = |id: &str, preflight: &str, program: &str| {
+        format!(
+            "2026-10-02 02:28:39.294 I  tccd[5946:13b96d88] [com.apple.TCC:access] REQUEST_MSG: msgID={id}, msg={{\n\
+             \trequire_purpose=<xpc_null>\n\tservice=\"kTCCServiceDeveloperTool\"\n\tfunction=\"TCCAccessRequest\"\n\tpreflight={preflight}\n\
+             \ttarget_token={{pid:69155, auid:501, euid:501}}\n}}\n\
+             2026-10-02 02:28:39.295 I  tccd[5946:13b96d88] [com.apple.TCC:access] AttributionChain: binary_path={program}\n\
+             2026-10-02 02:28:39.302 I  tccd[5946:13b96d88] [com.apple.TCC:access] REPLY_MSG: msg={{\n\tprompt_type=1 (0x1)\n\tauth_value=0 (0x0)\n\tresult=false\n}}\n"
+        )
+    };
+    let log = format!(
+        "{old}{}{}{}2026-10-02 02:28:40.000 I  tccd[5946:13b96d99] [com.apple.TCC:access] Handling access request from /tmp/krm-1/b/kr-worker\n",
+        new("37624.2", "true", "/tmp/krm-1/b/kr-worker"),
+        new("37624.3", "false", "/tmp/krm-1/b/kr-hook"),
+        new("37624.4", "true", "/usr/bin/other"),
+    );
+    std::fs::write(directory.join("log"), log).expect("the log");
+    let output = std::process::Command::new("awk")
+        .arg("-f")
+        .arg(directory.join("sorter.awk"))
+        .arg(directory.join("forms"))
+        .arg(directory.join("log"))
+        .output()
+        .expect("awk sorts");
+    assert!(output.status.success(), "awk sorts the log");
+    let mut lines: Vec<String> = String::from_utf8_lossy(&output.stdout)
+        .lines()
+        .map(|line| line.split(" 2026-").next().unwrap_or_default().to_owned())
+        .collect();
+    lines.sort();
+    assert_eq!(
+        lines,
+        [
+            "outside",
+            "request 37624.1 preflight=yes kTCCServiceDeveloperTool authValue=0, authReason=5",
+            "request 37624.2 preflight=yes kTCCServiceDeveloperTool authValue=0",
+            "request 37624.3 preflight=no kTCCServiceDeveloperTool authValue=0",
+        ],
+        "a request of either form about the run's programs, the one that is no preflight marked, one about another program left out"
+    );
+    std::fs::remove_dir_all(&directory).expect("removes the directory");
+}
+
 /// Every failure code the harness gives a part it does not run, or fails on the driver's behalf,
 /// is one the record's writer knows the words of.
 #[test]
