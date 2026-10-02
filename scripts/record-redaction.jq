@@ -128,7 +128,7 @@ def shapes: {
   run_dir: ["^<tmp>/krm-[0-9a-f]{8}$", ""],
   run_png: ["^<tmp>/krm-[0-9a-f]{8}/w/kr[0-9a-f]{12}\\.png$", ""],
   run_command: ["^echo kr[0-9a-f]{6}(-[0-9]+)? >> (<tmp>/krm-[0-9a-f]{8}/w/)?[a-z0-9._-]{1,20}$", ""],
-  conversation: ["^(session_)?" + uuid_shape + "$", "i"],
+  conversation: ["^((session_)?" + uuid_shape + "|ses_[A-Za-z0-9]{20,40})$", "i"],
   question: ["^What is [0-9]{3} plus [0-9]{3}\\? Reply with only the number\\.$", ""],
   sum: ["^[0-9]{3,4}$", ""],
   sha256: ["^[0-9a-f]{64}$", ""],
@@ -389,7 +389,7 @@ def tools_offered_schema: [{
 
 def account_schema: {
   login: "build:account.login", stored: "build:account.stored", home: "build:account.home",
-  variable: "build:account.variable", arguments: ["member:arguments"],
+  variable: "build:account.variable", arguments: ["member:arguments"], mirror: "bool",
   variables_absent: ["member:cleared"], turns: "number", budget_spent: "number",
   budget_limit: "number", declined_requests: "count",
   isolation: {
