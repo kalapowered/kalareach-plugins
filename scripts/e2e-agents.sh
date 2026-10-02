@@ -457,7 +457,7 @@ key_not_in() {
 
 # The names of the variables whose values are keys, tokens or secrets: a name of the shell's own
 # environment that one of these globs names, and that is not the product's own (KR_*).
-secret_names=('*_API_KEY' '*_API_TOKEN' '*_ACCESS_TOKEN' '*_AUTH_TOKEN' '*_TOKEN' '*_SECRET' '*_SECRET_KEY'
+secret_names=('*_KEY' '*_PAT' '*_APIKEY' 'AWS_BEARER_TOKEN_*' '*_API_KEY' '*_API_TOKEN' '*_ACCESS_TOKEN' '*_AUTH_TOKEN' '*_TOKEN' '*_SECRET' '*_SECRET_KEY'
   '*_ACCESS_KEY' '*_PASSWORD')
 
 # The values of the keys this shell holds, one on each line, but the one variable $1 names (the
@@ -755,9 +755,10 @@ while IFS= read -r package; do
     done
     if [ "$wants_login" -eq 1 ]; then
       keys_log="$directory/provider-keys.log"
+      # The test must have run: a driver that has no test of that name exits 0 with "0 passed".
       if env -i "${driver_environment[@]}" "KR_AGENTS_BUILD=$directory/build.json" KR_REQUIRE_AGENTS=1 \
         KR_REQUIRE_SHELL_PACKAGES=1 "$driver" --exact "$provider_keys_test" --nocapture --test-threads=1 \
-        >"$keys_log" 2>&1; then
+        >"$keys_log" 2>&1 && grep -q '^test result: ok. 1 passed' "$keys_log"; then
         echo "$package $version: a session made from an environment that holds the keys a person's shell holds exports none of the entry's cleared variables but those the entry sets, a harmless variable passes, and the same environment with nothing taken out is refused by name"
       else
         keys_reason="$(grep -m 1 -A 1 'panicked at' "$keys_log" | tail -1 || true)"

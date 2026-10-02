@@ -989,7 +989,7 @@ fn a_queued_prompt_entered_with_no_turn_shown_running_is_said_by_its_code() {
 /// clears these, so a person's own keys, tokens and base addresses for any provider, and the cloud
 /// accounts an agent can read its model from, reach none of them. An entry adds the names its own
 /// agent documents (the home or configuration it moves) and sets the one variable its login is.
-const EVERY_ENTRY_CLEARS: [&str; 29] = [
+const EVERY_ENTRY_CLEARS: [&str; 38] = [
     "OPENAI_*",
     "ANTHROPIC_*",
     "CLAUDE_CODE_*",
@@ -1008,6 +1008,15 @@ const EVERY_ENTRY_CLEARS: [&str; 29] = [
     "AWS_*",
     "AZURE_*",
     "CLOUDFLARE_*",
+    "*_KEY",
+    "*_PAT",
+    "*_APIKEY",
+    "DATABRICKS_*",
+    "INFOMANIAK_*",
+    "PRIVATEMODE_*",
+    "SNOWFLAKE_*",
+    "WATSONX_*",
+    "*_ENDPOINT",
     "*_API_KEY",
     "*_API_TOKEN",
     "*_ACCESS_TOKEN",
@@ -1173,7 +1182,7 @@ fn the_sorter_of_tccd_entries_reads_both_forms_of_a_request() {
     let script = root.join("scripts").join("e2e-agents.sh");
     let program = std::process::Command::new("bash")
         .arg("-c")
-        .arg(r#"source <(sed -n "/^tcc_requests=/,/^'$/p" "$0"); printf '%s' "$tcc_requests""#)
+        .arg(r#"eval "$(sed -n "/^tcc_requests=/,/^'$/p" "$0")"; printf '%s' "$tcc_requests""#)
         .arg(&script)
         .output()
         .expect("bash reads the sorter");

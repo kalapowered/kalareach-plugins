@@ -134,7 +134,16 @@
           "*_ACCESS_KEY",
           "*_PASSWORD",
           "*_BASE_URL",
-          "*_API_BASE"
+          "*_API_BASE",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
         ],
         "keychain_item": "Claude Code-credentials",
         "guarded": [
@@ -527,7 +536,16 @@
           "*_ACCESS_KEY",
           "*_PASSWORD",
           "*_BASE_URL",
-          "*_API_BASE"
+          "*_API_BASE",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
         ]
       }
     },
@@ -635,7 +653,16 @@
           "*_ACCESS_KEY",
           "*_PASSWORD",
           "*_BASE_URL",
-          "*_API_BASE"
+          "*_API_BASE",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
         ],
         "config_directory": {
           "variable": "GEMINI_CLI_HOME",
@@ -656,7 +683,10 @@
           "{config}/.gemini/agents",
           "{config}/.gemini/policies",
           "{config}/.gemini/mcp-oauth-tokens.json",
-          "/Library/Application Support/GeminiCli"
+          "/Library/Application Support/GeminiCli",
+          "{ancestors}/.env",
+          "{ancestors}/.gemini/.env",
+          "{home}/.env"
         ],
         "signed_out": [
           "API key not valid",
@@ -688,7 +718,9 @@
           "shows": "Allow execution of [Shell]?",
           "allow": "1",
           "deny": "\u001b",
-          "others": []
+          "others": [],
+          "options_start": "Allow execution of",
+          "boxed": true
         },
         "resume": [
           "--resume",
@@ -820,7 +852,16 @@
           "*_ACCESS_KEY",
           "*_PASSWORD",
           "*_BASE_URL",
-          "*_API_BASE"
+          "*_API_BASE",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
         ],
         "absent": [
           "{work}/.kimi-code/AGENTS.md",
@@ -1140,7 +1181,7 @@
         ],
         "mirror": {
           "database": ".local/share/opencode/opencode.db",
-          "query": "SELECT session, line FROM ( SELECT m.session_id AS session, json_object('role','user','kind','queued','queued',json('true'),'text',(SELECT json_extract(t.data,'$.text') FROM part t WHERE t.message_id=m.id AND json_extract(t.data,'$.type')='text' LIMIT 1),'message',m.id) AS line, m.time_created AS at, 0 AS rank, m.id AS id FROM message m WHERE json_extract(m.data,'$.role')='user' AND EXISTS (SELECT 1 FROM message a WHERE a.session_id=m.session_id AND json_extract(a.data,'$.role')='assistant' AND a.time_created<m.time_created AND (json_extract(a.data,'$.time.completed') IS NULL OR json_extract(a.data,'$.time.completed')>m.time_created)) UNION ALL SELECT p.session_id, json_object('role','user','kind','text','text',json_extract(p.data,'$.text'),'message',m.id,'part',p.id), COALESCE((SELECT MIN(a.time_created) FROM message a WHERE a.session_id=m.session_id AND json_extract(a.data,'$.parentID')=m.id), m.time_created), 1, p.id FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(m.data,'$.role')='user' AND json_extract(p.data,'$.type')='text' UNION ALL SELECT a.session_id, json_object('role','assistant','kind','message','message',a.id,'parent',json_extract(a.data,'$.parentID')), a.time_created, 2, a.id FROM message a WHERE json_extract(a.data,'$.role')='assistant' UNION ALL SELECT p.session_id, json_object('role','assistant','kind','text','text',json_extract(p.data,'$.text'),'message',m.id,'part',p.id), p.time_updated, 3, p.id FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(m.data,'$.role')='assistant' AND json_extract(p.data,'$.type')='text' UNION ALL SELECT p.session_id, json_object('role','assistant','kind','tool','tool',json_extract(p.data,'$.tool'),'call_id',json_extract(p.data,'$.callID'),'status',json_extract(p.data,'$.state.status'),'answered',json(CASE WHEN json_extract(p.data,'$.state.status') IN ('completed','error') THEN 'true' ELSE 'false' END),'command',json_extract(p.data,'$.state.input.command'),'message',m.id,'part',p.id), p.time_updated, 3, p.id FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(m.data,'$.role')='assistant' AND json_extract(p.data,'$.type')='tool' UNION ALL SELECT a.session_id, json_object('role','assistant','kind','turn_end','message',a.id), json_extract(a.data,'$.time.completed'), 4, a.id FROM message a WHERE json_extract(a.data,'$.role')='assistant' AND json_extract(a.data,'$.time.completed') IS NOT NULL UNION ALL SELECT p.session_id, json_object('kind','approval','id',p.id,'toolCallId',json_extract(p.data,'$.callID'),'agentId','main','request',json_object('id',p.id,'toolCallId',json_extract(p.data,'$.callID'),'toolName',json_extract(p.data,'$.tool'),'agentId','main','display',json_object('command',json_extract(p.data,'$.state.input.command'),'cwd',(SELECT s.directory FROM session s WHERE s.id=p.session_id)))), p.time_created, 3, p.id FROM part p WHERE json_extract(p.data,'$.type')='tool' UNION ALL SELECT p.session_id, json_object('kind','resolved','id',p.id), p.time_updated, 4, p.id FROM part p WHERE json_extract(p.data,'$.type')='tool' AND json_extract(p.data,'$.state.status') IN ('completed','error')) ORDER BY session, at, rank, id"
+          "query": "SELECT session, line FROM ( SELECT m.session_id AS session, json_object('role','user','kind','queued','queued',json('true'),'text',(SELECT json_extract(t.data,'$.text') FROM part t WHERE t.message_id=m.id AND json_extract(t.data,'$.type')='text' LIMIT 1),'message',m.id) AS line, (SELECT a.id FROM message a WHERE a.session_id=m.session_id AND json_extract(a.data,'$.role')='assistant' AND a.time_created<m.time_created AND (json_extract(a.data,'$.time.completed') IS NULL OR json_extract(a.data,'$.time.completed')>m.time_created) ORDER BY a.id DESC LIMIT 1) AS turn, 3 AS rank, m.id AS id, 0 AS sub FROM message m WHERE json_extract(m.data,'$.role')='user' AND (SELECT a.id FROM message a WHERE a.session_id=m.session_id AND json_extract(a.data,'$.role')='assistant' AND a.time_created<m.time_created AND (json_extract(a.data,'$.time.completed') IS NULL OR json_extract(a.data,'$.time.completed')>m.time_created) ORDER BY a.id DESC LIMIT 1) IS NOT NULL UNION ALL SELECT p.session_id, json_object('role','user','kind','text','text',json_extract(p.data,'$.text'),'message',m.id,'part',p.id), COALESCE((SELECT MIN(a.id) FROM message a WHERE a.session_id=m.session_id AND json_extract(a.data,'$.parentID')=m.id), m.id), 1, p.id, 0 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(m.data,'$.role')='user' AND json_extract(p.data,'$.type')='text' UNION ALL SELECT a.session_id, json_object('role','assistant','kind','message','message',a.id,'parent',json_extract(a.data,'$.parentID')), a.id, 2, a.id, 0 FROM message a WHERE json_extract(a.data,'$.role')='assistant' UNION ALL SELECT p.session_id, json_object('role','assistant','kind','text','text',json_extract(p.data,'$.text'),'message',m.id,'part',p.id), m.id, 4, p.id, 0 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(m.data,'$.role')='assistant' AND json_extract(p.data,'$.type')='text' UNION ALL SELECT p.session_id, json_object('kind','approval','id',p.id,'toolCallId',json_extract(p.data,'$.callID'),'agentId','main','request',json_object('id',p.id,'toolCallId',json_extract(p.data,'$.callID'),'toolName',json_extract(p.data,'$.tool'),'agentId','main','display',json_object('command',json_extract(p.data,'$.state.input.command'),'cwd',COALESCE(json_extract(p.data,'$.state.input.workdir'),(SELECT s.directory FROM session s WHERE s.id=p.session_id))))), m.id, 4, p.id, 0 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(p.data,'$.type')='tool' UNION ALL SELECT p.session_id, json_object('role','assistant','kind','tool','tool',json_extract(p.data,'$.tool'),'call_id',json_extract(p.data,'$.callID'),'status',json_extract(p.data,'$.state.status'),'answered',json(CASE WHEN json_extract(p.data,'$.state.status') IN ('completed','error') THEN 'true' ELSE 'false' END),'command',json_extract(p.data,'$.state.input.command'),'message',m.id,'part',p.id), m.id, 4, p.id, 1 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(m.data,'$.role')='assistant' AND json_extract(p.data,'$.type')='tool' UNION ALL SELECT p.session_id, json_object('kind','resolved','id',p.id), m.id, 4, p.id, 2 FROM part p JOIN message m ON m.id=p.message_id WHERE json_extract(p.data,'$.type')='tool' AND json_extract(p.data,'$.state.status') IN ('completed','error') UNION ALL SELECT a.session_id, json_object('role','assistant','kind','turn_end','message',a.id), a.id, 9, a.id, 0 FROM message a WHERE json_extract(a.data,'$.role')='assistant' AND json_extract(a.data,'$.time.completed') IS NOT NULL) ORDER BY session, turn, rank, id, sub"
         },
         "interrupt_presses": 2,
         "variables": {
@@ -1185,7 +1226,16 @@
           "*_PASSWORD",
           "*_BASE_URL",
           "*_API_BASE",
-          "XDG_*"
+          "XDG_*",
+          "*_KEY",
+          "*_PAT",
+          "*_APIKEY",
+          "DATABRICKS_*",
+          "INFOMANIAK_*",
+          "PRIVATEMODE_*",
+          "SNOWFLAKE_*",
+          "WATSONX_*",
+          "*_ENDPOINT"
         ],
         "absent": [
           "{work}/opencode.json",

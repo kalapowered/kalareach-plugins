@@ -154,6 +154,7 @@ def stop_classes: {
   run_data_left: "what the run left in the person's data directory could not be removed",
   workspace_list_changed: "the person's list of workspaces changed other than by gaining the run's folder",
   secret_found: "a string of the login's files was found in what the run wrote, or the search for it was not complete",
+  provider_key_found: "the value of a provider key the person's shell holds was found in what the run wrote",
   uncharged_turns: "the agent's record holds prompts the part did not charge, or they could not be counted"
 };
 
