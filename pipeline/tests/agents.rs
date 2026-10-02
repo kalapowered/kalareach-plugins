@@ -985,6 +985,103 @@ fn a_queued_prompt_entered_with_no_turn_shown_running_is_said_by_its_code() {
     assert_eq!(written(&published, &entry, "someone"), published);
 }
 
+/// The variables no agent's session may export whatever its login is: every approved agent's entry
+/// clears these, so a person's own keys, tokens and base addresses for any provider, and the cloud
+/// accounts an agent can read its model from, reach none of them. An entry adds the names its own
+/// agent documents (the home or configuration it moves) and sets the one variable its login is.
+const EVERY_ENTRY_CLEARS: [&str; 29] = [
+    "OPENAI_*",
+    "ANTHROPIC_*",
+    "CLAUDE_CODE_*",
+    "CODEX_*",
+    "GEMINI_*",
+    "GOOGLE_*",
+    "VERTEX_*",
+    "GCLOUD_*",
+    "CLOUDSDK_*",
+    "CLOUD_ML_*",
+    "CODE_ASSIST_*",
+    "MOONSHOT_*",
+    "KIMI_*",
+    "OPENROUTER_*",
+    "OPENCODE_*",
+    "AWS_*",
+    "AZURE_*",
+    "CLOUDFLARE_*",
+    "*_API_KEY",
+    "*_API_TOKEN",
+    "*_ACCESS_TOKEN",
+    "*_AUTH_TOKEN",
+    "*_TOKEN",
+    "*_SECRET",
+    "*_SECRET_KEY",
+    "*_ACCESS_KEY",
+    "*_PASSWORD",
+    "*_BASE_URL",
+    "*_API_BASE",
+];
+
+/// Whether `pattern` names `name`, as the driver reads a cleared list: a name, a prefix before a
+/// closing `*`, or a suffix after an opening `*`; the product's own names (`KR_`) never.
+fn names(pattern: &str, name: &str) -> bool {
+    if name.starts_with("KR_") {
+        return false;
+    }
+    if let Some(prefix) = pattern.strip_suffix('*') {
+        name.starts_with(prefix)
+    } else if let Some(suffix) = pattern.strip_prefix('*') {
+        name.ends_with(suffix)
+    } else {
+        pattern == name
+    }
+}
+
+/// Every entry of the build list that names an account clears every variable of
+/// [`EVERY_ENTRY_CLEARS`], in patterns of the three forms the driver reads; the one variable its
+/// login is, where it is one, is a name those patterns clear everywhere else.
+#[test]
+fn every_account_entry_clears_the_variables_that_give_an_agent_another_model_account() {
+    let list: Value = serde_json::from_slice(
+        &std::fs::read(root().join("fixtures").join("agents").join("builds.json"))
+            .expect("the build list reads"),
+    )
+    .expect("the build list is JSON");
+    let mut with_account = 0;
+    for entry in list["builds"].as_array().expect("the builds") {
+        let package = entry["package"].as_str().expect("a package");
+        let Some(account) = entry.get("account").filter(|account| !account.is_null()) else {
+            continue;
+        };
+        with_account += 1;
+        let cleared: Vec<&str> = account["cleared"]
+            .as_array()
+            .unwrap_or_else(|| panic!("{package} lists the variables it clears"))
+            .iter()
+            .map(|pattern| pattern.as_str().expect("a pattern"))
+            .collect();
+        for pattern in EVERY_ENTRY_CLEARS {
+            assert!(cleared.contains(&pattern), "{package} clears {pattern}");
+        }
+        for pattern in &cleared {
+            let stars = pattern.matches('*').count();
+            assert!(
+                stars == 0 || (stars == 1 && (pattern.starts_with('*') || pattern.ends_with('*'))),
+                "{package}: {pattern} is a name, a prefix or a suffix"
+            );
+        }
+        if let Some(variable) = account.get("variable").and_then(Value::as_str) {
+            assert!(
+                cleared.iter().any(|pattern| names(pattern, variable)),
+                "{package}: its login's variable {variable} is one the entry's patterns clear everywhere else"
+            );
+        }
+    }
+    assert!(
+        with_account >= 3,
+        "the entries with an account: {with_account}"
+    );
+}
+
 /// Every failure code the harness gives a part it does not run, or fails on the driver's behalf,
 /// is one the record's writer knows the words of.
 #[test]
