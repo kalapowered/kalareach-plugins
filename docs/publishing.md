@@ -28,9 +28,10 @@ publishing new packages, not renaming existing ones.
 ## Free and commercial packages
 
 The catalogue lists free and commercial packages the same way, and KalaReach runs no payment
-marketplace. A publisher record and a package manifest are closed documents with no price, payment,
-licence-key or purchase field, and `kr-plugin-sdk`'s capability vocabulary has no capability that
-takes a payment, so a package cannot ask the host for one and the catalogue cannot carry one. A
+marketplace. A publisher record, a package manifest and a presentation document are closed
+documents with no price, payment, licence-key, purchase or entitlement field, and `kr-plugin-sdk`'s
+capability vocabulary has no capability that takes a payment, so a package cannot ask the host for
+one and the catalogue cannot carry one. A
 vendor may charge for its own hosted service or its support, and a plugin that checks an entitlement
 of its own does so as its own business: that check is not a KalaReach revenue boundary, and nothing
 in this catalogue or in the host enforces it.
@@ -184,11 +185,11 @@ digest.
 
 ## Delegation
 
-Everything in this repository is currently signed by the top-level targets role. The catalogue
-format supports delegated targets roles beneath the root, scoped by publisher path, with snapshot
-pinning, terminating-role semantics, bounded depth and revocation.
+The top-level targets role signs every package in this repository. The catalogue format supports
+delegated targets roles beneath the root, scoped by publisher path, with snapshot pinning,
+terminating-role semantics, bounded depth and revocation.
 
-The plan for a vendor that wants to sign its own packages:
+A vendor that signs its own packages takes these steps:
 
 1. The vendor generates its keys in its own signing environment. The private halves never leave it.
 2. The catalogue adds a delegated role for `packages/<publisher>/*`, holding the vendor's public
@@ -196,7 +197,7 @@ The plan for a vendor that wants to sign its own packages:
 3. The vendor signs its own targets. This repository signs the delegation, not the packages.
 4. Revoking the delegation stops new bindings for everything under that path in one step.
 
-Until a vendor takes that on, its packages are signed here and the review above is what stands
+A vendor without a delegation has its packages signed here, and the review above is what stands
 behind them.
 
 ## What a signature does not mean

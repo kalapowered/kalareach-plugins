@@ -9,10 +9,13 @@
 # assistants, at the root of the tree and below it. The check does two things:
 #
 #   - It puts the .gitignore from HEAD in a new repository of its own, creates each name there and
-#     asks `git check-ignore` whether it is ignored, so nothing the working tree holds, and no
-#     ignore file of this machine, can stand in for what a clone of the commit would have. A name
-#     the file lacks, a pattern that a later negation undoes and a missing .gitignore all refuse.
-#   - It refuses a tracked file under one of those names, which a .gitignore does not stop.
+#     asks `git check-ignore` whether it is ignored. Git runs there with no configuration file, no
+#     ignore file of this machine, an empty template and case-sensitive patterns, so nothing the
+#     working tree or the person running the check holds, and no lower-case pattern on a
+#     case-insensitive file system, can stand in for a pattern the file lacks. A name the file
+#     lacks, a pattern that a later negation undoes and a missing .gitignore all refuse.
+#   - It refuses a tracked file that the patterns of the .gitignore's local workspace section
+#     match, at any depth, which a .gitignore does not stop.
 #
 # It reads the commit, never the working tree: uncommitted changes play no part.
 set -euo pipefail
@@ -33,15 +36,24 @@ say() {
   printf 'check-local-names: %s\n' "$*"
 }
 
-# Runs git without the global or system configuration, so no ignore rule of this machine applies.
+# Runs git without the global or system configuration, without the ignore file Git reads by
+# default and with case-sensitive patterns, so no ignore rule of this machine applies and a
+# lower-case pattern cannot stand in for an upper-case one.
 bare_git() {
-  env GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 git "$@"
+  env GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 git -c core.excludesFile=/dev/null \
+    -c core.ignoreCase=false "$@"
+}
+
+# Prints the local workspace section of a .gitignore: the lines from its "# Local workspace files"
+# heading to the next blank line.
+section_of() {
+  awk '/^# Local workspace files$/ { found = 1 } found && /^[[:space:]]*$/ { exit } found { print }'
 }
 
 # Prints each local name the .gitignore at the given commit does not ignore, and each tracked path
-# under one of them. Returns 1 when there is one of either.
+# that the section's patterns match. Returns 1 when there is one of either.
 check_commit() {
-  local repository="$1" commit="$2" scratch name missing=() tracked=() path status=0
+  local repository="$1" commit="$2" scratch name missing=() tracked status=0
 
   if ! bare_git -C "$repository" rev-parse --verify --quiet "$commit^{commit}" > /dev/null; then
     say "refused: $commit is not a commit of $repository"
@@ -51,7 +63,7 @@ check_commit() {
   scratch="$(mktemp -d "${TMPDIR:-/tmp}/kalareach-plugins-local-names.XXXXXX")"
   # shellcheck disable=SC2064
   trap "rm -rf '${scratch:?}'" EXIT
-  bare_git init -q "$scratch"
+  bare_git init -q --template= "$scratch"
   if bare_git -C "$repository" cat-file -e "$commit:.gitignore" 2> /dev/null; then
     bare_git -C "$repository" show "$commit:.gitignore" > "$scratch/.gitignore"
   fi
@@ -63,27 +75,28 @@ check_commit() {
     fi
   done
 
-  # A path a commit tracks under a local name is not kept out by any .gitignore.
-  while IFS= read -r -d '' path; do
-    for name in "${local_names[@]}"; do
-      if [ "$path" = "$name" ]; then
-        tracked+=("$path")
-      fi
-    done
-  done < <(bare_git -C "$repository" ls-tree -r -z --name-only "$commit")
+  # What the commit tracks that the section's own patterns match, at any depth: only the section
+  # decides this, because a tracked build file is not a local workspace one.
+  section_of < "$scratch/.gitignore" > "$scratch/section.ignore" 2> /dev/null || true
+  tracked=""
+  if [ -s "$scratch/section.ignore" ]; then
+    cp "$scratch/section.ignore" "$scratch/.gitignore"
+    tracked="$(bare_git -C "$repository" ls-tree -r -z --name-only "$commit" \
+      | bare_git -C "$scratch" check-ignore --no-index --stdin -z | tr '\0' '\n' || true)"
+  fi
 
   if [ "${#missing[@]}" -ne 0 ]; then
     say "refused: the .gitignore at $commit does not ignore these local workspace names:"
     printf '  %s\n' "${missing[@]}"
     status=1
   fi
-  if [ "${#tracked[@]}" -ne 0 ]; then
-    say "refused: $commit tracks files under local workspace names:"
-    printf '  %s\n' "${tracked[@]}"
+  if [ -n "$tracked" ]; then
+    say "refused: $commit tracks files that the .gitignore's local workspace section matches:"
+    printf '%s\n' "$tracked" | sed 's/^/  /'
     status=1
   fi
   if [ "$status" -eq 0 ]; then
-    say "the .gitignore at $commit ignores all ${#local_names[@]} local workspace names and none is tracked"
+    say "the .gitignore at $commit ignores all ${#local_names[@]} local workspace names and tracks none"
   fi
   return "$status"
 }
@@ -179,11 +192,30 @@ self_test() {
   fixture_git -C "$directory" commit -q -m "Remove the .gitignore"
   expect "a repository with no .gitignore is refused" refuse "does not ignore these local workspace names"
 
-  make_fixture tracked
-  printf 'notes\n' > "$directory/CLAUDE.md"
-  fixture_git -C "$directory" add -f CLAUDE.md
-  fixture_git -C "$directory" commit -q -m "Track an instruction file"
-  expect "a tracked file under a local workspace name is refused" refuse "tracks files under local workspace names"
+  make_fixture lowercase
+  grep -v -e '^CLAUDE' "$directory/.gitignore" > "$directory/.gitignore.next"
+  mv "$directory/.gitignore.next" "$directory/.gitignore"
+  commit_fixture "Drop the upper-case pattern"
+  expect "a lower-case pattern cannot stand in for the upper-case one" refuse "CLAUDE.md"
+
+  make_fixture machine
+  printf '# nothing\n' > "$directory/.gitignore"
+  commit_fixture "Empty the .gitignore"
+  mkdir -p "$work/xdg/git"
+  printf 'AGENTS.md\nCLAUDE.md\n.claude/\n' > "$work/xdg/git/ignore"
+  XDG_CONFIG_HOME="$work/xdg" expect "an ignore file of the machine cannot stand in" refuse \
+    "  AGENTS.md"
+
+  for planted in "root=AGENTS-project.md" "nested=src/AGENTS.md" "directory=.claude/other.json" \
+    "exact=CLAUDE.md"; do
+    make_fixture "tracked-${planted%%=*}"
+    mkdir -p "$directory/$(dirname "${planted#*=}")"
+    printf 'notes\n' > "$directory/${planted#*=}"
+    fixture_git -C "$directory" add -f "${planted#*=}"
+    fixture_git -C "$directory" commit -q -m "Track an instruction file"
+    expect "a tracked file the section matches (${planted%%=*}) is refused" refuse \
+      "tracks files that the .gitignore's local workspace section matches"
+  done
 
   make_fixture uncommitted
   rm "$directory/.gitignore"

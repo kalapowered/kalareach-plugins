@@ -9,13 +9,15 @@ Every crate in this repository declares the BSD 3-Clause licence with the SPDX i
 `kr-plugin-sdk` by Git revision, and a package pins a vendor's source by repository and revision
 instead of copying it. The first-party packages under `plugins/kalareach/` are BSD 3-Clause like the
 rest of the repository. `.gitignore` excludes assistant instruction files and signing keys at any
-depth, and `scripts/check-local-names.sh` creates each such name in a repository that holds only the
-committed `.gitignore` and asks `git check-ignore` about it. CI runs it on every change.
+depth. `scripts/check-local-names.sh` creates each assistant instruction name in a repository that
+holds only the committed `.gitignore`, asks `git check-ignore` about it and refuses a tracked file
+that the section's patterns match, and CI runs it on every change.
 
-A clean checkout is enough to set up, build and test. The commands under "Build and test" need only
-the pinned toolchain, and the development signing keys they use are made outside the checkout by
-`scripts/generate-development-keys.sh`. Nothing in the repository holds a private key, and the
-pipeline refuses to sign when it finds one in the tree.
+A clean checkout is enough to set up, build and test. It needs the pinned toolchain and `openssl`,
+which `scripts/generate-development-keys.sh` calls to make the development signing keys outside the
+checkout, and `cargo test` reads them through `KALAREACH_SIGNING_DIR`, as "Build and test" shows.
+Nothing in the repository holds a private key, and the pipeline refuses to sign when it finds one in
+the tree.
 
 ## Repository layout
 
@@ -36,11 +38,15 @@ package this repository publishes is a package the pinned host accepts.
 
 ## Build and test
 
-Requirements: the toolchain pinned in `rust-toolchain.toml` (rustup installs it on first use).
+Requirements: the toolchain pinned in `rust-toolchain.toml` (rustup installs it on first use) and
+`openssl`, which makes the development signing keys.
 
 ```bash
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets -- -D warnings
+scripts/generate-development-keys.sh
+export KALAREACH_SIGNING_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/kalareach-plugins/signing"
+cargo run -p kalareach-catalogue -- root --signing-dir "$KALAREACH_SIGNING_DIR"
 cargo test
 cargo run -p kalareach-catalogue -- validate
 cargo run -p kalareach-catalogue -- verify snapshots/development
@@ -54,15 +60,8 @@ reads every target through it.
 ## Building a generation
 
 Signing keys live outside this repository, and the pipeline refuses to run if it finds a private key
-inside it. Generate a development set once:
-
-```bash
-scripts/generate-development-keys.sh
-export KALAREACH_SIGNING_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/kalareach-plugins/signing"
-cargo run -p kalareach-catalogue -- root --signing-dir "$KALAREACH_SIGNING_DIR"
-```
-
-Then build and verify:
+inside it. The development set that "Build and test" makes signs a generation: build it and verify
+it.
 
 ```bash
 cargo run -p kalareach-catalogue -- build --signing-dir "$KALAREACH_SIGNING_DIR" --out /tmp/generation
