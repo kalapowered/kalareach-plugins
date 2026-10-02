@@ -18,9 +18,12 @@
 
 pub mod bench;
 pub mod builds;
+pub mod canonical;
+pub mod development;
 pub mod fixtures;
 pub mod index;
 pub mod keys;
+pub mod lineage;
 pub mod packages;
 pub mod records;
 pub mod tuf;

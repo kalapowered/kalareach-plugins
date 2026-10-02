@@ -102,7 +102,7 @@ async fn the_committed_development_generation_verifies() {
         .expect("the development generation verifies");
     assert!(verified.target_count > 0);
     assert!(!verified.index.entries.is_empty());
-    assert_eq!(verified.index.generation, RepositoryGeneration::new(1));
+    assert_eq!(verified.index.generation, RepositoryGeneration::new(2));
 }
 
 #[tokio::test]

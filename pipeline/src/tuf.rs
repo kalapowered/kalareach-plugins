@@ -31,14 +31,14 @@ use kr_plugin_sdk::digest::PayloadDigest;
 use kr_plugin_sdk::package::MANIFEST_FILE;
 use sha2::{Digest as _, Sha256};
 use tough::editor::RepositoryEditor;
-use tough::schema::Target;
+use tough::schema::{Root, Signed, Snapshot, Target, Targets, Timestamp};
 use tough::{
     ExpirationEnforcement, FilesystemTransport, IntoVec as _, RepositoryLoader, TargetName,
 };
 
-use crate::keys::SigningDirectory;
+use crate::keys::SigningMaterial;
 use crate::packages::Repository;
-use crate::{Error, Result, read, write};
+use crate::{Error, Result, read, read_json, write};
 
 /// The target name of the catalogue index.
 pub const INDEX_TARGET: &str = "index.json";
@@ -138,7 +138,7 @@ pub fn stage_targets(
 pub async fn build(
     repository: &Repository,
     index: &CatalogueIndex,
-    signing: &SigningDirectory,
+    signing: &dyn SigningMaterial,
     expiries: Expiries,
     out_dir: &Path,
     replace: bool,
@@ -159,7 +159,16 @@ pub async fn build(
         });
     }
     let key_sources = signing.key_sources()?;
-    let root_bytes = read(&signing.root_path())?;
+    let roots = signing.roots()?;
+    let root_bytes = roots.last().cloned().ok_or_else(|| Error::Layout {
+        detail: "the signing material holds no root".to_owned(),
+    })?;
+    let root_files = check_root_files(&roots)?;
+    let signed_root: Signed<Root> =
+        serde_json::from_slice(&root_bytes).map_err(|source| Error::Json {
+            path: PathBuf::from("root.json"),
+            source,
+        })?;
 
     // The generation is assembled beside its destination and moved into place once it verifies, so
     // the destination is never a half-written generation and never a mixture of two. The staging
@@ -199,8 +208,33 @@ pub async fn build(
         editor.add_target(target.name.as_str(), built)?;
     }
 
+    // The library signs the targets and writes the three roles. What is kept is the targets role
+    // as it signed it, and the snapshot and the timestamp are made again over the bytes this
+    // pipeline writes, so a rebuild of the same inputs writes the same files.
     let signed = editor.sign(&key_sources).await?;
-    signed.write(&metadata_dir).await?;
+    let scratch = staging.join(".library-metadata");
+    signed.write(&scratch).await?;
+    let targets: Signed<Targets> = read_json(&scratch.join("targets.json"))?;
+    let snapshot: Signed<Snapshot> = read_json(&scratch.join("snapshot.json"))?;
+    let timestamp: Signed<Timestamp> = read_json(&scratch.join("timestamp.json"))?;
+    std::fs::remove_dir_all(&scratch).map_err(|source| Error::Io {
+        path: scratch.clone(),
+        source,
+    })?;
+    let rendered = crate::canonical::render(
+        &signed_root.signed,
+        &key_sources,
+        &targets,
+        snapshot.signed,
+        timestamp.signed,
+    )
+    .await?;
+    write(&metadata_dir.join("targets.json"), &rendered.targets)?;
+    write(&metadata_dir.join("snapshot.json"), &rendered.snapshot)?;
+    write(&metadata_dir.join("timestamp.json"), &rendered.timestamp)?;
+    for (version, bytes) in &root_files {
+        write(&metadata_dir.join(format!("{version}.root.json")), bytes)?;
+    }
     write(&metadata_dir.join("root.json"), &root_bytes)?;
 
     // The generation verifies where it was assembled. Only then does it become the one at the
@@ -214,6 +248,44 @@ pub async fn build(
         targets_dir: out_dir.join(TARGETS_DIR),
         retired: published.retired,
     })
+}
+
+/// Checks the roots a generation ships and returns each with its version.
+///
+/// They run from version 1 with no gap, so a host that adopted any of them can follow the chain to
+/// the last. A signing directory that holds one root is a chain of one only when that root is
+/// version 1.
+fn check_root_files(roots: &[Vec<u8>]) -> Result<Vec<(u64, Vec<u8>)>> {
+    let mut files = Vec::new();
+    for (position, bytes) in roots.iter().enumerate() {
+        let root: Signed<Root> = serde_json::from_slice(bytes).map_err(|source| Error::Json {
+            path: PathBuf::from("root.json"),
+            source,
+        })?;
+        let expected = position as u64 + 1;
+        if root.signed.version.get() != expected {
+            return Err(Error::Layout {
+                detail: format!(
+                    "the roots to ship do not run from version 1 without a gap: the {} root is \
+                     version {}",
+                    ordinal(position + 1),
+                    root.signed.version
+                ),
+            });
+        }
+        files.push((expected, bytes.clone()));
+    }
+    Ok(files)
+}
+
+/// Names a position, for a message.
+fn ordinal(position: usize) -> String {
+    match position {
+        1 => "first".to_owned(),
+        2 => "second".to_owned(),
+        3 => "third".to_owned(),
+        other => format!("{other}th"),
+    }
 }
 
 /// What is already at a build's destination.

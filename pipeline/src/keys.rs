@@ -358,6 +358,94 @@ fn canonical(path: &Path) -> Result<PathBuf> {
     })
 }
 
+/// What signs a generation: the four role keys and the roots a host walks from its own.
+///
+/// A directory of signing keys is one source and the derived development keys are another. The
+/// pipeline asks for nothing else of either.
+pub trait SigningMaterial {
+    /// Returns a key source per role, in the order the roles are listed.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::Signing`] when a key is missing.
+    fn key_sources(&self) -> Result<Vec<Box<dyn KeySource>>>;
+
+    /// Returns every root a generation ships, as the files they are written as, from version 1 to
+    /// the highest. The last is the root the generation is signed under.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when a root cannot be read.
+    fn roots(&self) -> Result<Vec<Vec<u8>>>;
+}
+
+impl SigningMaterial for SigningDirectory {
+    fn key_sources(&self) -> Result<Vec<Box<dyn KeySource>>> {
+        Self::key_sources(self)
+    }
+
+    /// The roots in the directory: `1.root.json` to the highest where the directory holds them,
+    /// and `root.json` alone where it holds one root. `root.json` is the highest in either case.
+    fn roots(&self) -> Result<Vec<Vec<u8>>> {
+        let current = crate::read(&self.root_path())?;
+        let mut numbered: Vec<(u64, PathBuf)> = Vec::new();
+        for entry in std::fs::read_dir(&self.path).map_err(|source| Error::Io {
+            path: self.path.clone(),
+            source,
+        })? {
+            let entry = entry.map_err(|source| Error::Io {
+                path: self.path.clone(),
+                source,
+            })?;
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if let Some(version) = name
+                .strip_suffix(".root.json")
+                .filter(|number| {
+                    !number.starts_with('0') && number.bytes().all(|b| b.is_ascii_digit())
+                })
+                .and_then(|number| number.parse::<u64>().ok())
+            {
+                numbered.push((version, entry.path()));
+            }
+        }
+        if numbered.is_empty() {
+            return Ok(vec![current]);
+        }
+        numbered.sort();
+        let mut roots = Vec::new();
+        for (_, path) in &numbered {
+            roots.push(crate::read(path)?);
+        }
+        if roots.last() != Some(&current) {
+            return Err(Error::Signing {
+                detail: format!(
+                    "{} is not the highest of the numbered roots beside it",
+                    self.root_path().display()
+                ),
+            });
+        }
+        Ok(roots)
+    }
+}
+
+impl SigningDirectory {
+    /// Returns each role's key source, named by the role.
+    #[must_use]
+    pub fn role_sources(&self) -> Vec<(RoleType, Box<dyn KeySource>)> {
+        ROLE_KEY_FILES
+            .iter()
+            .map(|(role, _)| {
+                (
+                    *role,
+                    Box::new(LocalKeySource {
+                        path: self.key_path(*role),
+                    }) as Box<dyn KeySource>,
+                )
+            })
+            .collect()
+    }
+}
+
 /// Builds and signs a trust root over the four role keys.
 ///
 /// Each role gets its own key and a threshold of one. A production root raises the root threshold
@@ -370,6 +458,45 @@ pub async fn build_root(
     directory: &SigningDirectory,
     expires: jiff::Timestamp,
 ) -> Result<SignedRole<Root>> {
+    // Every key is checked present before any is read, so the first missing one is named.
+    directory.key_sources()?;
+    build_root_from(
+        directory.role_sources(),
+        NonZeroU64::new(1).expect("one is not zero"),
+        expires,
+    )
+    .await
+}
+
+/// Builds and signs a trust root of `version` over the four role keys of `sources`.
+///
+/// # Errors
+///
+/// Returns an error when a key cannot be read, two roles share a key, or the root cannot be
+/// signed.
+pub async fn build_root_from(
+    sources: Vec<(RoleType, Box<dyn KeySource>)>,
+    version: NonZeroU64,
+    expires: jiff::Timestamp,
+) -> Result<SignedRole<Root>> {
+    let (roles, keys): (Vec<RoleType>, Vec<Box<dyn KeySource>>) = sources.into_iter().unzip();
+    let root = root_over(&roles, &keys, version, expires).await?;
+    Ok(SignedRole::new(
+        root.clone(),
+        &KeyHolder::Root(root),
+        &keys,
+        &SystemRandom::new(),
+    )
+    .await?)
+}
+
+/// The root object over the four role keys, unsigned.
+async fn root_over(
+    roles_in_order: &[RoleType],
+    sources: &[Box<dyn KeySource>],
+    version: NonZeroU64,
+    expires: jiff::Timestamp,
+) -> Result<Root> {
     let mut keys: HashMap<tough::schema::decoded::Decoded<tough::schema::decoded::Hex>, Key> =
         HashMap::new();
     let mut roles: HashMap<RoleType, RoleKeys> = HashMap::new();
@@ -378,20 +505,16 @@ pub async fn build_root(
     // role, which is exactly what separating them exists to prevent, and a root file cannot say
     // afterwards which of the four it was meant to be.
     let mut seen: HashSet<Vec<u8>> = HashSet::new();
-    for (role, _) in ROLE_KEY_FILES {
-        let source = LocalKeySource {
-            path: directory.key_path(*role),
-        };
+    for (role, source) in roles_in_order.iter().zip(sources) {
         let sign = source.as_sign().await.map_err(|source| Error::Signing {
-            detail: format!("{}: {source}", directory.key_path(*role).display()),
+            detail: format!("the {role} key: {source}"),
         })?;
         let key: Key = sign.tuf_key();
         let key_id = key.key_id()?;
         if !seen.insert(key_id.to_vec()) {
             return Err(Error::Signing {
                 detail: format!(
-                    "{} is the same key as another role's; each role has its own",
-                    directory.key_path(*role).display()
+                    "the {role} key is the same key as another role's; each role has its own"
                 ),
             });
         }
@@ -406,22 +529,76 @@ pub async fn build_root(
         );
     }
 
-    let root = Root {
+    Ok(Root {
         spec_version: "1.0.0".to_owned(),
         consistent_snapshot: false,
-        version: NonZeroU64::new(1).expect("one is not zero"),
+        version,
         expires,
         keys,
         roles,
         _extra: HashMap::new(),
-    };
-    let sources = directory.key_sources()?;
-    let signed = SignedRole::new(
+    })
+}
+
+/// Builds the root that follows `previous`, over the keys of `next`, and signs it under both.
+///
+/// A host that trusts `previous` follows the chain only when the new root carries a threshold of
+/// `previous`'s own root keys, and the new root carries a threshold of its own, so the signatures
+/// of both are in the file. They are written in key identifier order.
+///
+/// # Errors
+///
+/// Returns an error when a key cannot be read, the keys repeat, or either threshold is not met.
+pub async fn rotate_root(
+    previous: &tough::schema::Signed<Root>,
+    previous_sources: &[Box<dyn KeySource>],
+    next: Vec<(RoleType, Box<dyn KeySource>)>,
+    expires: jiff::Timestamp,
+) -> Result<tough::schema::Signed<Root>> {
+    let version = previous
+        .signed
+        .version
+        .checked_add(1)
+        .ok_or_else(|| Error::Signing {
+            detail: "the root's version cannot go higher".to_owned(),
+        })?;
+    let (roles, next_sources): (Vec<RoleType>, Vec<Box<dyn KeySource>>) = next.into_iter().unzip();
+    let root = root_over(&roles, &next_sources, version, expires).await?;
+    let rng = SystemRandom::new();
+    let under_previous = SignedRole::new(
         root.clone(),
-        &KeyHolder::Root(root),
-        &sources,
-        &SystemRandom::new(),
+        &KeyHolder::Root(previous.signed.clone()),
+        previous_sources,
+        &rng,
     )
     .await?;
+    let under_next = SignedRole::new(
+        root.clone(),
+        &KeyHolder::Root(root.clone()),
+        &next_sources,
+        &rng,
+    )
+    .await?;
+    let mut signed = tough::schema::Signed {
+        signed: root,
+        signatures: Vec::new(),
+    };
+    signed
+        .signatures
+        .extend(under_previous.signed().signatures.iter().cloned());
+    for signature in &under_next.signed().signatures {
+        if !signed
+            .signatures
+            .iter()
+            .any(|held| held.keyid == signature.keyid)
+        {
+            signed.signatures.push(signature.clone());
+        }
+    }
+    signed
+        .signatures
+        .sort_by(|left, right| left.keyid[..].cmp(&right.keyid[..]));
+    previous.signed.verify_role(&signed)?;
+    signed.signed.verify_role(&signed)?;
     Ok(signed)
 }

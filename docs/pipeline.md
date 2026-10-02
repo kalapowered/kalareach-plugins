@@ -8,6 +8,9 @@ cargo run -p kalareach-catalogue -- validate
 cargo run -p kalareach-catalogue -- root --signing-dir <dir>
 cargo run -p kalareach-catalogue -- build --signing-dir <dir> --out <dir>
 cargo run -p kalareach-catalogue -- verify <generation>
+cargo run -p kalareach-catalogue -- development-root --out <dir>
+cargo run -p kalareach-catalogue -- rotate-root --development --epoch <n> --roots-dir <dir>
+cargo run -p kalareach-catalogue -- check-generation <new> --previous <old>
 cargo run -p kalareach-catalogue -- bench --entries 10000
 ```
 
@@ -141,6 +144,32 @@ package's, truncated or removed is caught rather than left for a host to find. M
 signature no longer covers it fails before any target is read.
 
 `snapshots/README.md` describes the committed development generation and what it is for.
+
+## The development lineage and the chain of roots
+
+A host that adopts a root follows signed rotations from it, so a generation ships every root from
+version 1 to the highest as `metadata/N.root.json`, and `root.json` is the highest. A rotation is a
+root of the next version, signed under a threshold of the root before it and a threshold of its own.
+
+The committed development generation is signed with keys that anybody can derive. Each role's key is
+an Ed25519 key whose seed is the SHA-256 of `kalareach-plugins development key ` followed by the
+role's name; a later epoch adds ` rotation <n>` after the name. Nothing is written to disk, and no
+private-key block appears in the tree. The keys show that the pipeline works and say nothing about
+who produced a package: a host trusts a release only for the production root key identifiers its own
+build commits.
+
+`development-root` writes the version-1 root. `build --development` signs a generation with the
+derived keys and ships the roots it is given. `rotate-root` writes the root that follows another,
+signed under both sets of keys. Fix `--produced-at` and `--expires-at`, and a rebuild of the same
+packages writes the same bytes: every signed role is written with its members in name order and its
+signatures in key identifier order, and the snapshot and the timestamp pin those bytes.
+
+`check-generation <new> --previous <old>` accepts a generation only when its number is higher and
+its roots continue the previous generation's. They continue when the highest root is the same, or
+when every earlier root is unchanged and each later one carries a threshold of the root before it
+and a threshold of its own. The one exception is the break from the root the development generation
+had before its first Ed25519 root, pinned by its SHA-256, to the version-1 root the phrase derives.
+While the keys are public this is a consistency check and not a trust boundary.
 
 ## Keys
 
