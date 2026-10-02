@@ -185,20 +185,11 @@ digest.
 
 ## Delegation
 
-The top-level targets role signs every package in this repository. The catalogue format supports
-delegated targets roles beneath the root, scoped by publisher path, with snapshot pinning,
-terminating-role semantics, bounded depth and revocation.
-
-A vendor that signs its own packages takes these steps:
-
-1. The vendor generates its keys in its own signing environment. The private halves never leave it.
-2. The catalogue adds a delegated role for `packages/<publisher>/*`, holding the vendor's public
-   keys, with its own threshold and expiry.
-3. The vendor signs its own targets. This repository signs the delegation, not the packages.
-4. Revoking the delegation stops new bindings for everything under that path in one step.
-
-A vendor without a delegation has its packages signed here, and the review above is what stands
-behind them.
+A host verifies delegated targets roles beneath a repository's root, scoped by publisher path, with
+snapshot pinning, terminating-role semantics, bounded depth and revocation. This repository's
+pipeline does not produce them: it signs every package with the top-level targets role and refuses a
+role that pins any other, so a vendor's packages are signed here, and the review above is what
+stands behind them.
 
 ## What a signature does not mean
 

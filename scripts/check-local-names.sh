@@ -14,8 +14,10 @@
 #     working tree or the person running the check holds, and no lower-case pattern on a
 #     case-insensitive file system, can stand in for a pattern the file lacks. A name the file
 #     lacks, a pattern that a later negation undoes and a missing .gitignore all refuse.
-#   - It refuses a tracked file that the patterns of the .gitignore's local workspace section
-#     match, at any depth, which a .gitignore does not stop.
+#   - It requires the local workspace section, from its "# Local workspace files" heading to the
+#     next blank line, and alone it has to ignore every name, so a renamed heading, an empty
+#     section and a pattern moved out of it all refuse. It refuses a tracked file that the
+#     section's patterns match, at any depth, which a .gitignore does not stop.
 #
 # It reads the commit, never the working tree: uncommitted changes play no part.
 set -euo pipefail
@@ -53,7 +55,7 @@ section_of() {
 # Prints each local name the .gitignore at the given commit does not ignore, and each tracked path
 # that the section's patterns match. Returns 1 when there is one of either.
 check_commit() {
-  local repository="$1" commit="$2" scratch name missing=() tracked status=0
+  local repository="$1" commit="$2" scratch name missing=() alone=() tracked status=0
 
   if ! bare_git -C "$repository" rev-parse --verify --quiet "$commit^{commit}" > /dev/null; then
     say "refused: $commit is not a commit of $repository"
@@ -75,16 +77,32 @@ check_commit() {
     fi
   done
 
-  # What the commit tracks that the section's own patterns match, at any depth: only the section
-  # decides this, because a tracked build file is not a local workspace one.
+  # The section has to be there and has to carry every name by itself, and what the commit tracks
+  # that its patterns match, at any depth, is decided by it alone: a tracked build file is not a
+  # local workspace one.
   section_of < "$scratch/.gitignore" > "$scratch/section.ignore" 2> /dev/null || true
   tracked=""
   if [ -s "$scratch/section.ignore" ]; then
     cp "$scratch/section.ignore" "$scratch/.gitignore"
+    for name in "${local_names[@]}"; do
+      if ! bare_git -C "$scratch" check-ignore -q --no-index -- "$name"; then
+        alone+=("$name")
+      fi
+    done
     tracked="$(bare_git -C "$repository" ls-tree -r -z --name-only "$commit" \
       | bare_git -C "$scratch" check-ignore --no-index --stdin -z | tr '\0' '\n' || true)"
   fi
 
+  if [ ! -s "$scratch/section.ignore" ]; then
+    say "refused: the .gitignore at $commit has no \"# Local workspace files\" section, a heading and the"
+    say "lines that follow it up to a blank line"
+    status=1
+  fi
+  if [ "${#alone[@]}" -ne 0 ]; then
+    say "refused: the local workspace section at $commit does not ignore these names by itself:"
+    printf '  %s\n' "${alone[@]}"
+    status=1
+  fi
   if [ "${#missing[@]}" -ne 0 ]; then
     say "refused: the .gitignore at $commit does not ignore these local workspace names:"
     printf '  %s\n' "${missing[@]}"
@@ -197,6 +215,27 @@ self_test() {
   mv "$directory/.gitignore.next" "$directory/.gitignore"
   commit_fixture "Drop the upper-case pattern"
   expect "a lower-case pattern cannot stand in for the upper-case one" refuse "CLAUDE.md"
+
+  make_fixture heading
+  sed 's/^# Local workspace files$/# Files for local use/' "$directory/.gitignore" > "$directory/.gitignore.next"
+  mv "$directory/.gitignore.next" "$directory/.gitignore"
+  printf 'notes\n' > "$directory/CLAUDE.md"
+  fixture_git -C "$directory" add -f CLAUDE.md
+  commit_fixture "Rename the heading and track an instruction file"
+  expect "a renamed heading is refused" refuse "has no \"# Local workspace files\" section"
+
+  make_fixture emptysection
+  { printf '# Local workspace files\n\n'; sed '1d' "$directory/.gitignore"; } > "$directory/.gitignore.next"
+  mv "$directory/.gitignore.next" "$directory/.gitignore"
+  commit_fixture "Leave the section empty"
+  expect "an empty section is refused although its patterns follow" refuse "does not ignore these names by itself"
+
+  make_fixture moved
+  grep -v -e '^\.codex/$' "$directory/.gitignore" > "$directory/.gitignore.next"
+  mv "$directory/.gitignore.next" "$directory/.gitignore"
+  printf '\n# Elsewhere\n.codex/\n' >> "$directory/.gitignore"
+  commit_fixture "Move a pattern out of the section"
+  expect "a pattern moved out of the section is refused" refuse "  .codex/config.toml"
 
   make_fixture machine
   printf '# nothing\n' > "$directory/.gitignore"

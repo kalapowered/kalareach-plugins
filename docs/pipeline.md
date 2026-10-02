@@ -205,10 +205,11 @@ scripts/generate-development-keys.sh
 ```
 
 It writes four RSA keys, mode 600, into `${XDG_DATA_HOME:-$HOME/.local/share}/kalareach-plugins/signing`,
-or into a directory you name, and refuses to write inside this repository. Then write a trust root
-over them:
+or into a directory you name, and refuses to write inside this repository. Then name the directory
+and write a trust root over the keys:
 
 ```bash
+export KALAREACH_SIGNING_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/kalareach-plugins/signing"
 cargo run -p kalareach-catalogue -- root --signing-dir "$KALAREACH_SIGNING_DIR"
 ```
 
