@@ -9,7 +9,8 @@ Every crate in this repository declares the BSD 3-Clause licence with the SPDX i
 `kr-plugin-sdk` by Git revision, and a package pins a vendor's source by repository and revision
 instead of copying it. The first-party packages under `plugins/kalareach/` are BSD 3-Clause like the
 rest of the repository. `.gitignore` excludes assistant instruction files and signing keys at any
-depth.
+depth, and `scripts/check-local-names.sh` creates each such name in a repository that holds only the
+committed `.gitignore` and asks `git check-ignore` about it. CI runs it on every change.
 
 A clean checkout is enough to set up, build and test. The commands under "Build and test" need only
 the pinned toolchain, and the development signing keys they use are made outside the checkout by
@@ -26,7 +27,7 @@ pipeline refuses to sign when it finds one in the tree.
 | `revocations/` | One record per withdrawn release, keyed to its exact version and manifest digest |
 | `fixtures/agents/` | The agent builds each connector is pinned to, and the qualification records the index takes each release's qualified builds from |
 | `snapshots/` | Built generations. `snapshots/development/` is a signed fixture; everything else is build output |
-| `scripts/` | Development key generation, and running the pipeline against a local core checkout |
+| `scripts/` | Development key generation, running the pipeline against a local core checkout, and the check that `.gitignore` keeps the local workspace names out of every commit |
 | `docs/` | How to publish a package, and how the pipeline works |
 
 A package is validated with `kr-plugin-sdk` from the core repository, which is the same code a host
