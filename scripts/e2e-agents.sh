@@ -38,7 +38,11 @@
 # driver on a pipe, the arguments), and each turn they start is charged to the ledger --turns names
 # before it is submitted; the harness holds the agent's budget through the part and does not run a
 # part its budget cannot cover. After such a part it also reads what coreauthd and tccd logged about
-# the run's programs, and searches its evidence for a variable's value. The managed shell is the
+# the run's programs, and searches its evidence for a variable's value and for the values of the
+# other keys its own shell holds (provider_secret_values), which no session is given: the driver is
+# handed those on a pipe too, to search the run's directory for before it removes it, and before a
+# part with a login the driver's check that a launched session exports none of an entry's cleared
+# variables (provider_keys_test) must have passed. The managed shell is the
 # package KR_SHELL_PACKAGES names; scripts/build-shells.sh --zsh in the core checkout builds one.
 #
 # Usage: scripts/e2e-agents.sh --core DIR [--target-dir DIR] [--tools DIR] [--turns FILE]
@@ -440,6 +444,58 @@ key_not_in() {
   echo "$what: the value of $variable is in none of this run's files, the part's log included"
 }
 
+# The names of the variables whose values are keys, tokens or secrets: a name of the shell's own
+# environment that one of these globs names, and that is not the product's own (KR_*).
+secret_names=('*_API_KEY' '*_API_TOKEN' '*_ACCESS_TOKEN' '*_AUTH_TOKEN' '*_TOKEN' '*_SECRET' '*_SECRET_KEY'
+  '*_ACCESS_KEY' '*_PASSWORD')
+
+# The values of the keys this shell holds, one on each line, but the one variable $1 names (the
+# login's own, which is carried and searched for on its own): the variables of its environment that
+# secret_names names and whose value is sixteen characters or more on one line. They go to the
+# caller's pipe and are never printed or kept.
+provider_secret_values() {
+  local skip="${1:-}" name value pattern
+  while IFS= read -r name; do
+    [ "$name" != "$skip" ] || continue
+    case "$name" in KR_*) continue ;; esac
+    for pattern in "${secret_names[@]}"; do
+      # shellcheck disable=SC2254 # the pattern is the glob
+      case "$name" in
+        $pattern)
+          value="${!name}"
+          if [ "${#value}" -ge 16 ] && [[ $value != *$'\n'* ]]; then printf '%s\n' "$value"; fi
+          break
+          ;;
+      esac
+    done
+  done < <(compgen -e)
+}
+
+# After a part with a login: the value of no other key this shell holds is in any file this run has
+# written, the part's log and outcome among them, once the driver has ended. The values go to grep
+# on a pipe; only file names come back. A value found, or a file grep could not read, fails the check
+# (status 1), and the caller stops the run. $3 names the login's own variable, searched for by
+# key_not_in.
+others_not_in() {
+  local directory="$1" what="$2" skip="$3" found rc=0 count
+  count="$(provider_secret_values "$skip" | wc -l | tr -d ' ')"
+  if [ "$count" -eq 0 ]; then
+    echo "$what: this shell holds no other key to search this run's files for"
+    return 0
+  fi
+  found="$(grep -r -l -F -f <(provider_secret_values "$skip") "$directory")" || rc=$?
+  if [ "$rc" -gt 1 ]; then
+    echo "$what: $directory could not be searched whole for the values of the other keys this shell holds (grep exited $rc); stopping" >&2
+    return 1
+  fi
+  if [ "$rc" -eq 0 ]; then
+    echo "$what: the value of a key this shell holds is in these files, which no key may reach; stopping" >&2
+    printf '%s\n' "$found" | sed 's/^/  /' >&2
+    return 1
+  fi
+  echo "$what: the values of the $count other keys this shell holds are in none of this run's files, the part's log included"
+}
+
 # The strings of the credentials files of an agent whose login is kept in files of its own, sixteen
 # characters or more, on one line each: those of every credentials file in its data directory, the
 # login in use and the others. The configuration's key strings and any a second refresh leaves between
@@ -568,6 +624,9 @@ release_budget() {
 }
 trap release_budget EXIT
 
+# The driver's check that a launched session exports no provider key (see the loop below).
+provider_keys_test="a_session_exports_no_provider_key_but_those_the_build_list_sets_and_a_harmless_variable_passes"
+
 # Once per run, before any agent: a session a person starts with their own home, and no agent,
 # names their login keychain as its default. It is the first step of every record.
 own_home_test="a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default"
@@ -670,6 +729,33 @@ while IFS= read -r package; do
   number=1
   stopped=""
   stopped_part=""
+
+  # Before any part with a login of an agent whose entry names an account: a session made from an
+  # environment that holds the keys a person's shell holds exports none of the entry's cleared
+  # variables but those the entry sets itself, a harmless variable passes through the same route, and
+  # the same environment with nothing taken out is refused by name. It starts no agent and no turn.
+  if [ -z "$blocked" ] && [ "$(printf '%s' "$entry" | jq '.account != null')" = "true" ]; then
+    wants_login=0
+    for spec in "${parts[@]}"; do
+      part="${spec%%|*}"
+      rest="${spec#*|}"
+      test_name="${rest%%|*}"
+      if [ -n "$test_name" ] && selected_part "$part" && [ "$(login_turns "$part")" -gt 0 ]; then wants_login=1; fi
+    done
+    if [ "$wants_login" -eq 1 ]; then
+      keys_log="$directory/provider-keys.log"
+      if env -i "${driver_environment[@]}" "KR_AGENTS_BUILD=$directory/build.json" KR_REQUIRE_AGENTS=1 \
+        KR_REQUIRE_SHELL_PACKAGES=1 "$driver" --exact "$provider_keys_test" --nocapture --test-threads=1 \
+        >"$keys_log" 2>&1; then
+        echo "$package $version: a session made from an environment that holds the keys a person's shell holds exports none of the entry's cleared variables but those the entry sets, a harmless variable passes, and the same environment with nothing taken out is refused by name"
+      else
+        keys_reason="$(grep -m 1 -A 1 'panicked at' "$keys_log" | tail -1 || true)"
+        echo "$package $version: the provider-key check failed (${keys_reason:-no reason given}), so no part with a login runs and no turn was spent; stopping" >&2
+        exit 1
+      fi
+      look_again "$package $version provider keys" || exit 3
+    fi
+  fi
   for spec in "${parts[@]}"; do
     part="${spec%%|*}"
     rest="${spec#*|}"
@@ -745,13 +831,21 @@ while IFS= read -r package; do
     rc=0
     variable=""
     [ "$need" -gt 0 ] && variable="$(printf '%s' "$entry" | jq -r '.account.variable // ""')"
+    login_variable_note=""
+    [ "$need" -le 0 ] || login_variable_note=" KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe)"
     inputs=("KR_AGENTS_BUILD=$directory/build.json" "KR_AGENTS_GENERATION=$generation"
       "KR_AGENTS_RESULT=$results" "KR_REQUIRE_AGENTS=1" "KR_REQUIRE_SHELL_PACKAGES=1"
       "KR_AGENTS_TURNS=$turns" "KR_AGENTS_KEY_SCAN=$directory/key-scan.jsonl")
     if [ -n "$variable" ]; then
-      # The login's value goes on a pipe the driver reads once, and nowhere else.
-      env -i "${driver_environment[@]}" "${inputs[@]}" KR_AGENTS_KEY_FD=3 \
-        "$driver" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 3< <(printenv "$variable") || rc=$?
+      # The login's value goes on a pipe the driver reads once, and nowhere else; the values of the
+      # other keys this shell holds go on another, for the driver to search the run's directory for.
+      env -i "${driver_environment[@]}" "${inputs[@]}" KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 \
+        "$driver" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 \
+        3< <(printenv "$variable") 4< <(provider_secret_values "$variable") || rc=$?
+    elif [ "$need" -gt 0 ]; then
+      env -i "${driver_environment[@]}" "${inputs[@]}" KR_AGENTS_SCAN_FD=4 \
+        "$driver" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 \
+        4< <(provider_secret_values "") || rc=$?
     else
       env -i "${driver_environment[@]}" "${inputs[@]}" \
         "$driver" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 || rc=$?
@@ -767,6 +861,7 @@ while IFS= read -r package; do
       if [ -n "$variable" ]; then
         key_not_in "$evidence" "$variable" "$package $version part $part" || checked=1
       fi
+      others_not_in "$evidence" "$package $version part $part" "$variable" || checked=1
       if [ "$(printf '%s' "$entry" | jq '.account.confinement != null')" = "true" ]; then
         secrets_not_in "$evidence" "$package $version part $part" "$entry" "$secrets_before" || checked=1
       fi
@@ -799,7 +894,7 @@ while IFS= read -r package; do
     # The ledger's path is the person's own and says nothing of the part, so the command names it as such.
     shown_inputs="${inputs[*]}"
     [ -z "$turns" ] || shown_inputs="${shown_inputs//"$turns"/<ledger>}"
-    command_run="env -i <driver environment> $shown_inputs${variable:+ KR_AGENTS_KEY_FD=3 (the value of $variable on a pipe)} $driver --exact $test_name --nocapture --test-threads=1"
+    command_run="env -i <driver environment> $shown_inputs${variable:+ KR_AGENTS_KEY_FD=3 (the value of $variable on a pipe)}${login_variable_note} $driver --exact $test_name --nocapture --test-threads=1"
     steps="$(printf '%s' "$steps" | jq --argjson number "$number" --arg part "$part" \
       --arg command "$command_run" --argjson exit "$rc" --argjson seconds "$seconds" \
       --arg log "$plugin/$part.log" \

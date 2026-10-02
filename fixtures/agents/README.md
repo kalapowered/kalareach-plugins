@@ -138,8 +138,8 @@ that would load the person's own settings, hooks or servers into the agent or th
 texts the agent shows when it is signed out, a
 configuration directory of the run's own and the variable that names it, variables the session is
 given as they are, variables that would steer the agent's model or account or move its home and
-that its session must not export (`cleared`, each a name or a prefix that ends in `*`, but for the
-names the entry sets itself: the session's shell writes the names it exports, never a value, before
+that its session must not export (`cleared`, each a name, a prefix that ends in `*` or a suffix that begins with one, never one of the product's own `KR_` names, but for the
+names the entry sets itself, the one variable its login is among them: every entry that names an account clears the same provider variables, the keys, tokens, secrets and base addresses of every provider and the cloud accounts an agent can read its model from, and adds those its own agent documents; the environment a part's session is created with has them taken out whatever put them there, a real session made from an environment that holds them is checked before any part with a login, and the session's shell writes the names it exports, never a value, before
 each prompt and again just before it runs a command line; a part with a login whose shell exports
 one of them, or whose names cannot be read whole, does not go on: the agent is not started, or is
 ended before anything is typed to it, and the part is recorded as not run, or as failed with the
