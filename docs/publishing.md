@@ -35,6 +35,8 @@ vendor may charge for its own hosted service or its support, and a plugin that c
 of its own does so as its own business: that check is not a KalaReach revenue boundary, and nothing
 in this catalogue or in the host enforces it.
 
+## Packages that read terminal text
+
 A package that needs terminal text instead of its application's own protocol has to ask for
 `terminal.stream`, `terminal.transcript_tail` or `process.observe`, each of which sits outside a
 repository's default ceiling and needs an explicit grant. No package in this repository asks for any
