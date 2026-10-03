@@ -22,6 +22,9 @@ fn root() -> PathBuf {
     repository_root(Path::new(env!("CARGO_MANIFEST_DIR"))).expect("the repository root is above us")
 }
 
+/// KR-REQ-27.09: every connector package has a qualification record for the build its table is
+/// pinned to, in the form the records are held to, so that no adapter is left without the record
+/// of its own agent.
 #[test]
 fn every_connector_package_has_a_qualification_record_for_its_pinned_build() {
     let root = root();
