@@ -7,7 +7,7 @@ catalogue, what a review pins, and how a package is withdrawn.
 
 ## What you need first
 
-A publisher record. One JSON file at `publishers/<publisher>.json`, named after the identifier it
+A publisher record is one JSON file at `publishers/<publisher>.json`, named after the identifier it
 declares:
 
 ```json
@@ -51,7 +51,7 @@ Create `plugins/<publisher>/<plugin>/` with `plugin.json`, `presentation.json`, 
 the manifest declares. Declare every file: a file the manifest does not name is a defect, because a
 package whose contents differ from its manifest is a package whose hash does not mean what it says.
 
-Validate before you open a change:
+Run the following to validate the package before submitting a change:
 
 ```bash
 cargo run -p kalareach-catalogue -- validate
@@ -81,8 +81,8 @@ current branch.
 
 ### Fixtures
 
-A package with controls should carry a fixture file. It lists cases, each naming what the host knows
-and which controls that case should show and enable:
+If a package contains controls, it should also contain a fixture file. This is a list of test cases,
+each with a context and a list of controls that should be presented and enabled for that context:
 
 ```json
 {
@@ -104,8 +104,9 @@ and which controls that case should show and enable:
 }
 ```
 
-The pipeline evaluates your own predicates against each context and compares the result. A predicate
-edit that changes what a person sees fails the build instead of shipping.
+The pipeline will evaluate each context against each predicate in the package's controls, and will
+fail the build if any do not match. This prevents a situation where editing a predicate could change
+what is shown to a person, and have that change shipped without that being checked.
 
 `plugins/kalareach/example-declarative/` is a complete working example.
 
@@ -123,7 +124,7 @@ reason. Ask for what you use and nothing more: a capability you requested and ne
 capability a reviewer has to take on trust.
 
 **Effect classes.** Every action declares one, and the broker enforces it. An action labelled
-`observe` that needs to send something upstream will fail at dispatch rather than quietly working,
+`observe` that needs to send something upstream will fail at dispatch rather than silently working,
 so declare the class the action actually has.
 
 **Match rules.** An `exact` rule identifies the application by something that cannot be coincidence:

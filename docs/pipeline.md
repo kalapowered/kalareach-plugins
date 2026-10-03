@@ -173,10 +173,10 @@ While the keys are public this is a consistency check and not a trust boundary.
 
 ## Keys
 
-Four roles, four keys: root, targets, snapshot and timestamp. Separating them is the design. A
-compromised timestamp key lets an attacker hold a client on an old generation; it does not let them
-publish a package. A compromised targets key lets them publish a package; it does not let them
-change which keys are trusted.
+There are four roles with four keys: root, targets, snapshot and timestamp. Separating them is the
+design. A compromised timestamp key lets an attacker hold a client on an old generation; it does not
+let them publish a package. A compromised targets key lets them publish a package; it does not let
+them change which keys are trusted.
 
 Each role's key is its own. A trust root that named one key for all four would grant whoever holds it
 every role, and the pipeline refuses to build one.
