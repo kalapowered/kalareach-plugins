@@ -1,8 +1,11 @@
 # kalareach-plugins
 
-KalaReach plugin catalogue: application plugin sources, declarative manifests, fixtures, publisher records and the catalogue build and signing pipeline.
+This repo contains the catalogue for the KalaReach plugins: plugin application sources, their
+declarative manifests, fixtures, and the records for publishers of plugins. It also contains the
+code for the pipeline that builds and signs the catalogue.
 
-Licensed under the BSD 3-Clause License. See [LICENSE](LICENSE).
+This software is licensed under the terms of the BSD 3-Clause license. A copy of this license can be
+found in [LICENSE](LICENSE).
 
 Every crate in this repository declares the BSD 3-Clause licence with the SPDX identifier
 `BSD-3-Clause`, and the repository holds no third-party source. The pipeline depends on
@@ -38,8 +41,9 @@ package this repository publishes is a package the pinned host accepts.
 
 ## Build and test
 
-Requirements: the toolchain pinned in `rust-toolchain.toml` (rustup installs it on first use) and
-`openssl`, which makes the development signing keys.
+This project requires the rust toolchain specified in the `rust-toolchain.toml` file. If using
+rustup, this will be automatically installed when first used. It also requires `openssl`, as it is
+used to generate the signing keys used in development.
 
 ```bash
 cargo fmt --all -- --check
