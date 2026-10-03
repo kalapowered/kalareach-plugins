@@ -1,6 +1,6 @@
 # kalareach-plugins
 
-This repo contains the catalogue for the KalaReach plugins: plugin application sources, their
+This repo contains the catalogue for the KalaReach plugins: application plugin sources, their
 declarative manifests, fixtures, and the records for publishers of plugins. It also contains the
 code for the pipeline that builds and signs the catalogue.
 
@@ -35,9 +35,10 @@ the tree.
 | `scripts/` | Development key generation, running the pipeline against a local core checkout, and the check that `.gitignore` keeps the local workspace names out of every commit |
 | `docs/` | How to publish a package, and how the pipeline works |
 
-A package is validated with `kr-plugin-sdk` from the core repository, which is the same code a host
-runs before it trusts a package. The dependency is pinned by Git revision in `Cargo.lock`, so a
-package this repository publishes is a package the pinned host accepts.
+The plugin SDK crate `kr-plugin-sdk`, from the core repo, contains the code for validating plugin
+packages. This is used here to run the same code that a host would use to validate packages before
+trusting them. It is pinned to a specific revision in `Cargo.lock`, so packages published from this
+repository are guaranteed to be accepted by a host pinned to the corresponding revision.
 
 ## Build and test
 
@@ -56,10 +57,11 @@ cargo run -p kalareach-catalogue -- validate
 cargo run -p kalareach-catalogue -- verify snapshots/development
 ```
 
-Validation checks every package against the package contract, then evaluates each package's
-fixtures against its own control predicates. Verification runs the TUF client over the committed
-development generation, which is a really signed generation produced with a development key, and
-reads every target through it.
+To validate packages, the pipeline verifies that all packages in the catalogue conform to the
+package contract, and then runs the fixtures for each package against their own control predicates
+to verify that they are correct. To verify the package data, the pipeline runs the TUF client
+against a generation committed in this repository. This generation is "really" signed, but uses a
+development key. All targets are read through the TUF client to verify them.
 
 ## Building a generation
 

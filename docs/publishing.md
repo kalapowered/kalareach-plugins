@@ -7,8 +7,8 @@ catalogue, what a review pins, and how a package is withdrawn.
 
 ## What you need first
 
-A publisher record is one JSON file at `publishers/<publisher>.json`, named after the identifier it
-declares:
+You need a publisher record: one JSON file at `publishers/<publisher>.json`, named after the
+identifier it declares:
 
 ```json
 {
@@ -61,7 +61,7 @@ The same check runs on every change here, and a host runs it again before it tru
 
 ### The source pin
 
-`plugin.json` carries the repository and revision the release was built from:
+Ensure that `plugin.json` contains the repository and revision from which the release was built:
 
 ```json
 "source": {
@@ -81,8 +81,8 @@ current branch.
 
 ### Fixtures
 
-If a package contains controls, it should also contain a fixture file. This is a list of test cases,
-each with a context and a list of controls that should be presented and enabled for that context:
+A package with controls should carry a fixture file. It lists cases, each naming what the host knows
+and which controls that case should show and enable:
 
 ```json
 {
@@ -104,9 +104,8 @@ each with a context and a list of controls that should be presented and enabled 
 }
 ```
 
-The pipeline will evaluate each context against each predicate in the package's controls, and will
-fail the build if any do not match. This prevents a situation where editing a predicate could change
-what is shown to a person, and have that change shipped without that being checked.
+The pipeline evaluates your own predicates against each context and compares the result. A predicate
+edit that changes what a person sees fails the build instead of shipping.
 
 `plugins/kalareach/example-declarative/` is a complete working example.
 
