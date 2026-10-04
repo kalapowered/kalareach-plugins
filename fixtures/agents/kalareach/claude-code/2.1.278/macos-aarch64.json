@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-27T13:15:10Z",
-    "finished": "2026-09-27T13:20:25Z",
+    "started": "2026-10-04T19:51:53Z",
+    "finished": "2026-10-04T20:01:48Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "df30130bb6dd2b75d7dbbc0fd44356c480acadce",
+      "id": "31832d29de082f03a7a4c87e00c4e0dc68778b71",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "5db28a6597edd7fb449eda3654f7342ba1b3bf93",
+        "id": "ee5db1b87ebd971cd2e0898f001cccec351e00f3",
         "modified": false
       }
     },
@@ -34,8 +34,8 @@
     "packages": [
       {
         "name": "kalareach/claude-code",
-        "version": "0.4.0",
-        "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+        "version": "0.5.0",
+        "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
         "generation": "snapshots/development"
       }
     ],
@@ -73,10 +73,10 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-ZKVCsI",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-gbzicY",
     "own_home": {
       "bound_to_a_desktop": true,
-      "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
+      "default_keychain": "the person's login keychain",
       "home": "~",
       "show_keychain_info_status": 0,
       "worker_profile": "desktop_bound"
@@ -87,12 +87,12 @@
       "number": 1,
       "group": "own-home",
       "what": "a session started with the person's own home names their login keychain",
-      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-d4ded216da994890 --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-669dac77dbe63651 --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 11,
+      "seconds": 15,
       "log": "own-home.log",
       "error": null
     },
@@ -100,12 +100,12 @@
       "number": 2,
       "group": "agents",
       "what": "part 1",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 101,
-      "seconds": 28,
+      "seconds": 77,
       "log": "claude-code/1.log",
       "error": null
     },
@@ -113,12 +113,12 @@
       "number": 3,
       "group": "agents",
       "what": "part 2a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 32,
+      "seconds": 75,
       "log": "claude-code/2a.log",
       "error": null
     },
@@ -126,12 +126,12 @@
       "number": 4,
       "group": "agents",
       "what": "part 2b",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 15,
+      "seconds": 21,
       "log": "claude-code/2b.log",
       "error": null
     },
@@ -139,12 +139,12 @@
       "number": 5,
       "group": "agents",
       "what": "part 2c",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 14,
+      "seconds": 18,
       "log": "claude-code/2c.log",
       "error": null
     },
@@ -152,12 +152,12 @@
       "number": 6,
       "group": "agents",
       "what": "part 3",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 36,
+      "seconds": 88,
       "log": "claude-code/3.log",
       "error": null
     },
@@ -165,12 +165,12 @@
       "number": 7,
       "group": "agents",
       "what": "part 4",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 29,
+      "seconds": 76,
       "log": "claude-code/4.log",
       "error": null
     },
@@ -178,12 +178,12 @@
       "number": 8,
       "group": "agents",
       "what": "part 5a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 15,
+      "seconds": 17,
       "log": "claude-code/5a.log",
       "error": null
     },
@@ -191,12 +191,12 @@
       "number": 9,
       "group": "agents",
       "what": "part 6a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 20,
+      "seconds": 15,
       "log": "claude-code/6a.log",
       "error": null
     },
@@ -204,12 +204,12 @@
       "number": 10,
       "group": "agents",
       "what": "part 7",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 41,
+      "seconds": 79,
       "log": "claude-code/7.log",
       "error": null
     },
@@ -217,12 +217,12 @@
       "number": 11,
       "group": "agents",
       "what": "part 8a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 20,
+      "seconds": 26,
       "log": "claude-code/8a.log",
       "error": null
     },
@@ -230,12 +230,12 @@
       "number": 12,
       "group": "agents",
       "what": "part 14.03a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 19,
+      "seconds": 27,
       "log": "claude-code/14.03a.log",
       "error": null
     }
@@ -266,7 +266,7 @@
               "outcome": "failed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -274,65 +274,126 @@
                 "haiku",
                 "--strict-mcp-config"
               ],
-              "budget_limit": 50,
-              "budget_spent": 34,
+              "budget_limit": 100,
+              "budget_spent": 64,
+              "declined_requests": 0,
               "home": "person",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-f773b1c7/agent-config/settings.json",
-                  "<tmp>/krm-f773b1c7/agent-config/settings.local.json",
-                  "<tmp>/krm-f773b1c7/w/.claude/settings.json",
-                  "<tmp>/krm-f773b1c7/w/.claude/settings.local.json",
-                  "<tmp>/krm-f773b1c7/w/.mcp.json",
+                  "<tmp>/krm-2e881fa2/agent-config/settings.json",
+                  "<tmp>/krm-2e881fa2/agent-config/settings.local.json",
+                  "<tmp>/krm-2e881fa2/w/.claude/settings.json",
+                  "<tmp>/krm-2e881fa2/w/.claude/settings.local.json",
+                  "<tmp>/krm-2e881fa2/w/.mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.json",
                   "/Library/Application Support/ClaudeCode/managed-mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.d",
                   "/Library/Managed Preferences/com.anthropic.claudecode.plist",
                   "/Library/Managed Preferences/{user}/com.anthropic.claudecode.plist"
                 ],
-                "servers": {
-                  "command": [
-                    "mcp",
-                    "list"
-                  ]
-                }
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
               },
               "login": "vendor subscription login",
+              "mirror": false,
               "stored": "login keychain item",
               "turns": 2,
-              "variable": null
+              "variable": null,
+              "variables_absent": [
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "AWS_BEARER_TOKEN_BEDROCK",
+                "OPENAI_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
             },
             "detected": {
               "detected": true,
               "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
-              "instance": "4e199d42-e0fd-468a-ba19-912a47c6f362"
+              "instance": "d99bfee1-d1a8-42a0-9457-c78cb8384b50"
             },
             "detection": {
               "instances": [
                 {
-                  "application_instance_id": "4e199d42-e0fd-468a-ba19-912a47c6f362",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "d99bfee1-d1a8-42a0-9457-c78cb8384b50",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790514949314-627f0101-523c-4ed7-87a0-744cda8aeec7",
+                  "profile_id": "lp-1791143569641-ddf86111-d1c1-4891-9d20-11e84fbf5ee4",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790514949314"
+                  "started_at": "1791143569641"
                 }
               ],
-              "waited_ms": 2
+              "waited_ms": 3
             },
             "device_upload": {
               "call": "upload.begin",
               "error": null,
               "refused": "INVALID_ARGUMENT"
             },
+            "failure_codes": [
+              {
+                "code": "upload_refused",
+                "refused": "INVALID_ARGUMENT"
+              }
+            ],
             "image": {
               "answer": "red",
-              "code": "KRC6170652E243",
-              "file": "<tmp>/krm-f773b1c7/w/krc6170652e243.png",
-              "syntax": "paste",
-              "answered": true
+              "answered": true,
+              "code": "KRE4649D192BB4",
+              "file": "<tmp>/krm-2e881fa2/w/kre4649d192bb4.png",
+              "syntax": "paste"
             },
             "installed": {
               "grant": [
@@ -342,43 +403,61 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
+            },
+            "local": {
+              "seen": true,
+              "shows": "KRE4649D192BB4"
             },
             "login_held": true,
             "person_files": {
+              "appended": [],
               "config_directory_removed": true,
               "files": [
                 {
                   "changed": false,
                   "file": "~/.claude/.credentials.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/.device-keys.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/settings.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
-                  "changed": false,
+                  "changed": true,
                   "file": "~/.claude.json",
+                  "modified_changed": true,
                   "names_run": false,
-                  "shared": true
+                  "recorded_only": false,
+                  "shared": true,
+                  "size_changed": false
                 }
               ],
               "keychain_item_rewritten": false,
+              "lines_removed": [],
               "searched_for": {
-                "mark": "krc6170652e243",
-                "run_directory": "<tmp>/krm-f773b1c7"
+                "mark": "kre4649d192bb4",
+                "run_directory": "<tmp>/krm-2e881fa2"
               }
             },
             "person_home": {
@@ -386,31 +465,38 @@
               "changed_uncompared": [],
               "created_and_left": [],
               "created_and_removed": [],
+              "left_holding_the_part": [],
+              "left_unsearched": [],
               "read_whole_after": true,
               "removed_by_something_else": [],
               "rewritten": [],
-              "unread_after": []
+              "unread_after": [],
+              "others": {
+                "appended": {
+                  "~/Library/Caches/claude-cli-nodejs": 1
+                }
+              }
             },
             "prompt": {
-              "answer": "838",
-              "question": "What is 390 plus 448? Reply with only the number."
+              "answer": "1375",
+              "question": "What is 551 plus 824? Reply with only the number."
             },
             "provenance": {
-              "ended_before_read": 1,
+              "ended_before_read": 0,
               "executed": [
                 {
                   "device": 16777234,
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 29731,
+                  "pid": 99994,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
                   "device": 16777234,
                   "from": "system",
                   "inode": 1152921500312571722,
-                  "pid": 30533,
+                  "pid": 240,
                   "sha256": "fdd1c163779f87d667b6a4049293e165f2d30b716ca8bff9bed3fe54bc6d1d07"
                 }
               ],
@@ -419,7 +505,7 @@
                   "agent_process": {
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 29731,
+                    "pid": 99994,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -429,20 +515,13 @@
                 }
               ],
               "pids": [
-                29731,
-                29963,
-                29964,
-                30533
+                240,
+                99994
               ],
               "sample_interval_ms": 250,
-              "samples": 56,
-              "session_path": "<tmp>/krm-f773b1c7/agent/current/bin:<tmp>/krm-f773b1c7/agent/runtime:/usr/bin:/bin",
-              "system_programs_of_another_user": [
-                {
-                  "image": "/bin/ps",
-                  "pid": 29964
-                }
-              ]
+              "samples": 55,
+              "session_path": "<tmp>/krm-2e881fa2/agent/current/bin:<tmp>/krm-2e881fa2/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
             },
             "surface": {
               "answers": [
@@ -485,17 +564,7 @@
               "backend_files": 0,
               "capability_records": [],
               "resources": 0
-            },
-            "local": {
-              "shows": "KRC6170652E243",
-              "seen": true
-            },
-            "failure_codes": [
-              {
-                "code": "upload_refused",
-                "refused": "INVALID_ARGUMENT"
-              }
-            ]
+            }
           }
         },
         {
@@ -510,7 +579,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -518,33 +587,88 @@
                 "haiku",
                 "--strict-mcp-config"
               ],
-              "budget_limit": 50,
-              "budget_spent": 37,
+              "budget_limit": 100,
+              "budget_spent": 67,
+              "declined_requests": 0,
               "home": "person",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-8ac67468/agent-config/settings.json",
-                  "<tmp>/krm-8ac67468/agent-config/settings.local.json",
-                  "<tmp>/krm-8ac67468/w/.claude/settings.json",
-                  "<tmp>/krm-8ac67468/w/.claude/settings.local.json",
-                  "<tmp>/krm-8ac67468/w/.mcp.json",
+                  "<tmp>/krm-ba0f19ed/agent-config/settings.json",
+                  "<tmp>/krm-ba0f19ed/agent-config/settings.local.json",
+                  "<tmp>/krm-ba0f19ed/w/.claude/settings.json",
+                  "<tmp>/krm-ba0f19ed/w/.claude/settings.local.json",
+                  "<tmp>/krm-ba0f19ed/w/.mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.json",
                   "/Library/Application Support/ClaudeCode/managed-mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.d",
                   "/Library/Managed Preferences/com.anthropic.claudecode.plist",
                   "/Library/Managed Preferences/{user}/com.anthropic.claudecode.plist"
                 ],
-                "servers": {
-                  "command": [
-                    "mcp",
-                    "list"
-                  ]
-                }
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
               },
               "login": "vendor subscription login",
+              "mirror": false,
               "stored": "login keychain item",
               "turns": 3,
-              "variable": null
+              "variable": null,
+              "variables_absent": [
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "AWS_BEARER_TOKEN_BEDROCK",
+                "OPENAI_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
             },
             "agent_reads": [
               {
@@ -573,6 +697,11 @@
                 "check": "queued",
                 "rejected": true,
                 "wrong": "the agent kept no record of the prompt as queued"
+              },
+              {
+                "check": "queued",
+                "rejected": true,
+                "wrong": "the prompt joined the running turn"
               }
             ],
             "control": {
@@ -583,19 +712,19 @@
             "detected": {
               "detected": true,
               "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
-              "instance": "0922cad2-770a-448a-b487-3958cd6c5f83"
+              "instance": "c5392f87-e171-4a8d-b340-6074fa920487"
             },
             "detection": {
               "instances": [
                 {
-                  "application_instance_id": "0922cad2-770a-448a-b487-3958cd6c5f83",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "c5392f87-e171-4a8d-b340-6074fa920487",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790514980300-2cbe63b3-f331-4c87-9429-986ce31b5367",
+                  "profile_id": "lp-1791143647634-6e11be26-b681-461d-bbd7-29f9613a7c15",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790514980300"
+                  "started_at": "1791143647634"
                 }
               ],
               "waited_ms": 3
@@ -608,48 +737,62 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "interrupt": {
               "key": "\u001b",
-              "shows": "Interrupted",
-              "seen": true
+              "seen": true,
+              "shows": "Interrupted"
             },
             "login_held": true,
             "person_files": {
+              "appended": [],
               "config_directory_removed": true,
               "files": [
                 {
                   "changed": false,
                   "file": "~/.claude/.credentials.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/.device-keys.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/settings.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
-                  "changed": true,
+                  "changed": false,
                   "file": "~/.claude.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": true
+                  "recorded_only": false,
+                  "shared": true,
+                  "size_changed": false
                 }
               ],
               "keychain_item_rewritten": false,
+              "lines_removed": [],
               "searched_for": {
-                "mark": "kr90078791768e",
-                "run_directory": "<tmp>/krm-8ac67468"
+                "mark": "krd1e33b174c25",
+                "run_directory": "<tmp>/krm-ba0f19ed"
               }
             },
             "person_home": {
@@ -657,27 +800,34 @@
               "changed_uncompared": [],
               "created_and_left": [],
               "created_and_removed": [],
+              "left_holding_the_part": [],
+              "left_unsearched": [],
               "read_whole_after": true,
               "removed_by_something_else": [],
               "rewritten": [],
-              "unread_after": []
+              "unread_after": [],
+              "others": {
+                "appended": {
+                  "~/Library/Caches/claude-cli-nodejs": 1
+                }
+              }
             },
             "provenance": {
-              "ended_before_read": 1,
+              "ended_before_read": 0,
               "executed": [
                 {
                   "device": 16777234,
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 32919,
+                  "pid": 1478,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
                   "device": 16777234,
                   "from": "system",
                   "inode": 1152921500312571722,
-                  "pid": 33835,
+                  "pid": 1560,
                   "sha256": "fdd1c163779f87d667b6a4049293e165f2d30b716ca8bff9bed3fe54bc6d1d07"
                 }
               ],
@@ -686,7 +836,7 @@
                   "agent_process": {
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 32919,
+                    "pid": 1478,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -696,26 +846,19 @@
                 }
               ],
               "pids": [
-                32919,
-                33190,
-                33191,
-                33835
+                1478,
+                1560
               ],
               "sample_interval_ms": 250,
-              "samples": 73,
-              "session_path": "<tmp>/krm-8ac67468/agent/current/bin:<tmp>/krm-8ac67468/agent/runtime:/usr/bin:/bin",
-              "system_programs_of_another_user": [
-                {
-                  "image": "/bin/ps",
-                  "pid": 33191
-                }
-              ]
+              "samples": 50,
+              "session_path": "<tmp>/krm-ba0f19ed/agent/current/bin:<tmp>/krm-ba0f19ed/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
             },
             "queued": {
-              "answer": "1320",
+              "answer": "1474",
               "order": {
                 "after": {
-                  "busy": false,
+                  "busy": true,
                   "unfinished": true
                 },
                 "before": {
@@ -724,6 +867,7 @@
                 },
                 "busy_at_submission": true,
                 "first_finished": 29,
+                "new_turn": null,
                 "queued_record": 26,
                 "records_queue": true,
                 "second_answered": 41,
@@ -731,9 +875,9 @@
               }
             },
             "slash": {
+              "seen": true,
               "shows": "Shortcuts",
-              "typed": "/help",
-              "seen": true
+              "typed": "/help"
             },
             "steering": {
               "steered": false,
@@ -795,19 +939,19 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
             "after": {
               "instances": [
                 {
-                  "application_instance_id": "647f7589-3a99-4d99-8681-390ed45d6921",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "6465fd93-e000-4095-bbc7-88ae98cd6393",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515011930-02442e45-175d-4bb5-96ea-4d9617dd25c3",
+                  "profile_id": "lp-1791143728730-333b726a-adab-43c6-82e9-baea0503010b",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515011930"
+                  "started_at": "1791143728730"
                 }
               ],
               "waited_ms": 0
@@ -831,7 +975,7 @@
               "binding": {
                 "binding_revision": "1",
                 "mode": "native_terminal",
-                "profile_id": "lp-1790515011930-02442e45-175d-4bb5-96ea-4d9617dd25c3",
+                "profile_id": "lp-1791143728730-333b726a-adab-43c6-82e9-baea0503010b",
                 "rich_mutations_suspended": false,
                 "suspension_reason": null,
                 "thread_id": null,
@@ -933,7 +1077,7 @@
               {
                 "check": "unchanged",
                 "rejected": true,
-                "said": "the instance and revision were Some(Held { instance: ApplicationInstanceId(Uuid(647f7589-3a99-4d99-8681-390ed45d6921)), revision: AgentBindingRevision(U64(2)) }) and are Some(Held { instance: ApplicationInstanceId(Uuid(647f7589-3a99-4d99-8681-390ed45d6921)), revision: AgentBindingRevision(U64(1)) }) (1 live)",
+                "said": "the instance and revision were Some(Held { instance: ApplicationInstanceId(Uuid(6465fd93-e000-4095-bbc7-88ae98cd6393)), revision: AgentBindingRevision(U64(2)) }) and are Some(Held { instance: ApplicationInstanceId(Uuid(6465fd93-e000-4095-bbc7-88ae98cd6393)), revision: AgentBindingRevision(U64(1)) }) (1 live)",
                 "wrong": "the binding revision moved on"
               }
             ],
@@ -951,27 +1095,27 @@
             "detected": {
               "detected": true,
               "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
-              "instance": "647f7589-3a99-4d99-8681-390ed45d6921"
+              "instance": "6465fd93-e000-4095-bbc7-88ae98cd6393"
             },
             "detection": {
               "instances": [
                 {
-                  "application_instance_id": "647f7589-3a99-4d99-8681-390ed45d6921",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "6465fd93-e000-4095-bbc7-88ae98cd6393",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515011930-02442e45-175d-4bb5-96ea-4d9617dd25c3",
+                  "profile_id": "lp-1791143728730-333b726a-adab-43c6-82e9-baea0503010b",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515011930"
+                  "started_at": "1791143728730"
                 }
               ],
-              "waited_ms": 1821
+              "waited_ms": 2
             },
             "detection_control": {
               "after": {
                 "instances": [],
-                "waited_ms": 266
+                "waited_ms": 264
               },
               "breaks_property": true,
               "check": "the launched execution has ended and no instance is live",
@@ -987,9 +1131,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "live_bindings": 1,
             "provenance": {
@@ -1001,7 +1145,7 @@
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 36229,
+                  "pid": 3835,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
@@ -1011,7 +1155,7 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 36229,
+                    "pid": 3835,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -1022,42 +1166,42 @@
                 }
               ],
               "pids": [
-                36229
+                3835
               ],
               "sample_interval_ms": 250,
-              "samples": 21,
-              "session_path": "<tmp>/krm-6cbd7e5f/agent/current/bin:<tmp>/krm-6cbd7e5f/agent/runtime:/usr/bin:/bin",
+              "samples": 18,
+              "session_path": "<tmp>/krm-a325c4e6/agent/current/bin:<tmp>/krm-a325c4e6/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "surface": {
               "answers": [
                 {
                   "call": "agent.prompt.submit",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 647f7589-3a99-4d99-8681-390ed45d6921: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 6465fd93-e000-4095-bbc7-88ae98cd6393: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.prompt.queue",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 647f7589-3a99-4d99-8681-390ed45d6921: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 6465fd93-e000-4095-bbc7-88ae98cd6393: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.steer",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 647f7589-3a99-4d99-8681-390ed45d6921: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 6465fd93-e000-4095-bbc7-88ae98cd6393: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.cancel",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 647f7589-3a99-4d99-8681-390ed45d6921: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 6465fd93-e000-4095-bbc7-88ae98cd6393: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.approval.respond",
-                  "detail": "STALE_SESSION: no pending resource bd4e715c-045d-496b-b5eb-4ffd445897f8",
+                  "detail": "STALE_SESSION: no pending resource 8f0295c5-3bcc-4e1e-b1fc-bc38ac991b2a",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
@@ -1069,7 +1213,7 @@
                 },
                 {
                   "call": "plugin.action.invoke prompt.send",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 647f7589-3a99-4d99-8681-390ed45d6921: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 6465fd93-e000-4095-bbc7-88ae98cd6393: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 }
@@ -1092,19 +1236,19 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
           "evidence": {
             "after": {
               "instances": [
                 {
-                  "application_instance_id": "d68f1409-3c60-4ce6-b9ff-31971afad26d",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "b79736b5-7729-41e4-aa86-49c73059c80e",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515027966-6fa0e21b-04a9-4b55-9592-178ad0bfed4a",
+                  "profile_id": "lp-1791143752204-0aaa005a-570c-40f6-abda-6c6c4f59a0e8",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515027966"
+                  "started_at": "1791143752204"
                 }
               ],
               "waited_ms": 0
@@ -1113,7 +1257,7 @@
               "binding": {
                 "binding_revision": "1",
                 "mode": "native_terminal",
-                "profile_id": "lp-1790515027966-6fa0e21b-04a9-4b55-9592-178ad0bfed4a",
+                "profile_id": "lp-1791143752204-0aaa005a-570c-40f6-abda-6c6c4f59a0e8",
                 "rich_mutations_suspended": false,
                 "suspension_reason": null,
                 "thread_id": null,
@@ -1126,12 +1270,12 @@
             "control": {
               "after": {
                 "instances": [],
-                "waited_ms": 1
+                "waited_ms": 260
               },
               "answers": [
                 {
                   "call": "plugin.action.invoke status.refresh",
-                  "detail": "STALE_SESSION: kalareach/claude-code is not bound to d68f1409-3c60-4ce6-b9ff-31971afad26d",
+                  "detail": "STALE_SESSION: kalareach/claude-code is not bound to b79736b5-7729-41e4-aa86-49c73059c80e",
                   "error": null,
                   "refused": "STALE_SESSION"
                 }
@@ -1142,20 +1286,20 @@
             "detection": {
               "instances": [
                 {
-                  "application_instance_id": "d68f1409-3c60-4ce6-b9ff-31971afad26d",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "b79736b5-7729-41e4-aa86-49c73059c80e",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515027966-6fa0e21b-04a9-4b55-9592-178ad0bfed4a",
+                  "profile_id": "lp-1791143752204-0aaa005a-570c-40f6-abda-6c6c4f59a0e8",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515027966"
+                  "started_at": "1791143752204"
                 }
               ],
-              "waited_ms": 1828
+              "waited_ms": 2
             },
             "held": {
-              "instance": "d68f1409-3c60-4ce6-b9ff-31971afad26d",
+              "instance": "b79736b5-7729-41e4-aa86-49c73059c80e",
               "revision": 1
             },
             "installed": {
@@ -1166,9 +1310,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "provenance": {
               "ended_before_read": [],
@@ -1179,7 +1323,7 @@
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 37865,
+                  "pid": 5309,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
@@ -1189,7 +1333,7 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 37865,
+                    "pid": 5309,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -1200,11 +1344,11 @@
                 }
               ],
               "pids": [
-                37865
+                5309
               ],
               "sample_interval_ms": 250,
-              "samples": 20,
-              "session_path": "<tmp>/krm-79838721/agent/current/bin:<tmp>/krm-79838721/agent/runtime:/usr/bin:/bin",
+              "samples": 15,
+              "session_path": "<tmp>/krm-f7da02e3/agent/current/bin:<tmp>/krm-f7da02e3/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "supported": [
@@ -1218,31 +1362,31 @@
             "unsupported": [
               {
                 "call": "agent.prompt.submit",
-                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to d68f1409-3c60-4ce6-b9ff-31971afad26d: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to b79736b5-7729-41e4-aa86-49c73059c80e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                 "error": null,
                 "refused": "UNSUPPORTED_CAPABILITY"
               },
               {
                 "call": "agent.prompt.queue",
-                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to d68f1409-3c60-4ce6-b9ff-31971afad26d: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to b79736b5-7729-41e4-aa86-49c73059c80e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                 "error": null,
                 "refused": "UNSUPPORTED_CAPABILITY"
               },
               {
                 "call": "agent.turn.steer",
-                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to d68f1409-3c60-4ce6-b9ff-31971afad26d: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to b79736b5-7729-41e4-aa86-49c73059c80e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                 "error": null,
                 "refused": "UNSUPPORTED_CAPABILITY"
               },
               {
                 "call": "agent.turn.cancel",
-                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to d68f1409-3c60-4ce6-b9ff-31971afad26d: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to b79736b5-7729-41e4-aa86-49c73059c80e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                 "error": null,
                 "refused": "UNSUPPORTED_CAPABILITY"
               },
               {
                 "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource ea0814c9-de0b-4290-98e0-8a73a384cea5",
+                "detail": "STALE_SESSION: no pending resource 8a552702-2ec5-44c5-a221-32acb4ec4747",
                 "error": null,
                 "refused": "STALE_SESSION"
               },
@@ -1254,7 +1398,7 @@
               },
               {
                 "call": "plugin.action.invoke prompt.send",
-                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to d68f1409-3c60-4ce6-b9ff-31971afad26d: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to b79736b5-7729-41e4-aa86-49c73059c80e: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                 "error": null,
                 "refused": "UNSUPPORTED_CAPABILITY"
               }
@@ -1273,7 +1417,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -1281,37 +1425,94 @@
                 "haiku",
                 "--strict-mcp-config"
               ],
-              "budget_limit": 50,
-              "budget_spent": 39,
+              "budget_limit": 100,
+              "budget_spent": 69,
+              "declined_requests": 0,
               "home": "person",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-22ec943e/agent-config/settings.json",
-                  "<tmp>/krm-22ec943e/agent-config/settings.local.json",
-                  "<tmp>/krm-22ec943e/w/.claude/settings.json",
-                  "<tmp>/krm-22ec943e/w/.claude/settings.local.json",
-                  "<tmp>/krm-22ec943e/w/.mcp.json",
+                  "<tmp>/krm-b8d13321/agent-config/settings.json",
+                  "<tmp>/krm-b8d13321/agent-config/settings.local.json",
+                  "<tmp>/krm-b8d13321/w/.claude/settings.json",
+                  "<tmp>/krm-b8d13321/w/.claude/settings.local.json",
+                  "<tmp>/krm-b8d13321/w/.mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.json",
                   "/Library/Application Support/ClaudeCode/managed-mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.d",
                   "/Library/Managed Preferences/com.anthropic.claudecode.plist",
                   "/Library/Managed Preferences/{user}/com.anthropic.claudecode.plist"
                 ],
-                "servers": {
-                  "command": [
-                    "mcp",
-                    "list"
-                  ]
-                }
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
               },
               "login": "vendor subscription login",
+              "mirror": false,
               "stored": "login keychain item",
               "turns": 2,
-              "variable": null
+              "variable": null,
+              "variables_absent": [
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "AWS_BEARER_TOKEN_BEDROCK",
+                "OPENAI_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
             },
+            "command": "echo krc50046 >> <tmp>/krm-b8d13321/w/a",
             "control": {
               "breaks_property": true,
               "check": true,
+              "command": "echo kr3c7002 >> <tmp>/krm-b8d13321/w/a",
               "device_refused": "LEASE_LOST",
               "executions": 0,
               "what": "a second approval with the local terminal holding the lease: it denied and the device's allow was refused"
@@ -1320,28 +1521,30 @@
               "after_reconnecting": 1,
               "after_the_control": 2,
               "after_the_race": 1,
-              "conversation": "622a7928-c8d9-4518-8120-98cbb64706c9",
+              "answering_calls_marked_by": [],
+              "calls_marked_by": [],
+              "conversation": "b4cbaa20-b889-4a99-a1c4-b0375cded97f",
               "marked_by": "\"type\":\"tool_result\""
             },
             "detected": {
               "detected": true,
               "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
-              "instance": "e42afae6-647b-40c7-bc9b-db141a9332a6"
+              "instance": "440bedb2-1e56-40c1-bb5a-d3a722dc86ef"
             },
             "detection": {
               "instances": [
                 {
-                  "application_instance_id": "e42afae6-647b-40c7-bc9b-db141a9332a6",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "440bedb2-1e56-40c1-bb5a-d3a722dc86ef",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515048924-1e8a75e7-ec31-4b14-abf0-63ca1a454947",
+                  "profile_id": "lp-1791143776419-eea60e3b-5468-4ac1-bd42-3f8838d99582",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515048924"
+                  "started_at": "1791143776419"
                 }
               ],
-              "waited_ms": 2
+              "waited_ms": 3
             },
             "executions": {
               "after_reconnecting": 1,
@@ -1355,52 +1558,66 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "login_held": true,
             "loser": {
               "exit_status": 8,
               "receipt": {
-                "shows": "input lease",
-                "seen": true
+                "seen": true,
+                "shows": "input lease"
               },
               "typed": "3",
               "who": "the local terminal"
             },
             "person_files": {
+              "appended": [],
               "config_directory_removed": true,
               "files": [
                 {
                   "changed": false,
                   "file": "~/.claude/.credentials.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/.device-keys.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/settings.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
-                  "changed": false,
+                  "changed": true,
                   "file": "~/.claude.json",
+                  "modified_changed": true,
                   "names_run": false,
-                  "shared": true
+                  "recorded_only": false,
+                  "shared": true,
+                  "size_changed": false
                 }
               ],
               "keychain_item_rewritten": false,
+              "lines_removed": [],
               "searched_for": {
-                "mark": "kr534508b9c777",
-                "run_directory": "<tmp>/krm-22ec943e"
+                "mark": "kr3c7002c50046",
+                "run_directory": "<tmp>/krm-b8d13321"
               }
             },
             "person_home": {
@@ -1408,27 +1625,34 @@
               "changed_uncompared": [],
               "created_and_left": [],
               "created_and_removed": [],
+              "left_holding_the_part": [],
+              "left_unsearched": [],
               "read_whole_after": true,
               "removed_by_something_else": [],
               "rewritten": [],
-              "unread_after": []
+              "unread_after": [],
+              "others": {
+                "appended": {
+                  "~/Library/Caches/claude-cli-nodejs": 3
+                }
+              }
             },
             "provenance": {
-              "ended_before_read": 1,
+              "ended_before_read": 0,
               "executed": [
                 {
                   "device": 16777234,
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 40065,
+                  "pid": 8296,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
                   "device": 16777234,
                   "from": "system",
                   "inode": 1152921500312571722,
-                  "pid": 40877,
+                  "pid": 8923,
                   "sha256": "fdd1c163779f87d667b6a4049293e165f2d30b716ca8bff9bed3fe54bc6d1d07"
                 }
               ],
@@ -1437,7 +1661,7 @@
                   "agent_process": {
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 40065,
+                    "pid": 8296,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -1447,18 +1671,18 @@
                 }
               ],
               "pids": [
-                40065,
-                40344,
-                40877
+                8296,
+                8923
               ],
               "sample_interval_ms": 250,
-              "samples": 81,
-              "session_path": "<tmp>/krm-22ec943e/agent/current/bin:<tmp>/krm-22ec943e/agent/runtime:/usr/bin:/bin",
+              "samples": 73,
+              "session_path": "<tmp>/krm-b8d13321/agent/current/bin:<tmp>/krm-b8d13321/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "replay": {
               "checker_control_rejected": true,
-              "probe": "zqkr534508b9c777",
+              "probe": "zqkr3c7002c50046",
+              "screen_checked": true,
               "typed_again": false
             },
             "resources": 0,
@@ -1480,7 +1704,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -1488,40 +1712,95 @@
                 "haiku",
                 "--strict-mcp-config"
               ],
-              "budget_limit": 50,
-              "budget_spent": 41,
+              "budget_limit": 100,
+              "budget_spent": 71,
+              "declined_requests": 0,
               "home": "person",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-d925f2c2/agent-config/settings.json",
-                  "<tmp>/krm-d925f2c2/agent-config/settings.local.json",
-                  "<tmp>/krm-d925f2c2/w/.claude/settings.json",
-                  "<tmp>/krm-d925f2c2/w/.claude/settings.local.json",
-                  "<tmp>/krm-d925f2c2/w/.mcp.json",
+                  "<tmp>/krm-75d59807/agent-config/settings.json",
+                  "<tmp>/krm-75d59807/agent-config/settings.local.json",
+                  "<tmp>/krm-75d59807/w/.claude/settings.json",
+                  "<tmp>/krm-75d59807/w/.claude/settings.local.json",
+                  "<tmp>/krm-75d59807/w/.mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.json",
                   "/Library/Application Support/ClaudeCode/managed-mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.d",
                   "/Library/Managed Preferences/com.anthropic.claudecode.plist",
                   "/Library/Managed Preferences/{user}/com.anthropic.claudecode.plist"
                 ],
-                "servers": {
-                  "command": [
-                    "mcp",
-                    "list"
-                  ]
-                }
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
               },
               "login": "vendor subscription login",
+              "mirror": false,
               "stored": "login keychain item",
               "turns": 2,
-              "variable": null
+              "variable": null,
+              "variables_absent": [
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "AWS_BEARER_TOKEN_BEDROCK",
+                "OPENAI_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
             },
             "admission": "the agent's conversation held the prompt, and no screen the device was sent from the submission until it disconnected showed the reply mark or the code in upper case",
             "after_reconnect": {
               "finished_replies": 1,
               "prompts": 1,
-              "shows": "KRA01DB3C27EDE-END",
-              "seen": true
+              "seen": true,
+              "shows": "KRC0FB7B731886-END"
             },
             "control": {
               "breaks_property": true,
@@ -1530,7 +1809,7 @@
               "prompts": 2,
               "what": "the same prompt sent again"
             },
-            "conversation": "4a6758a7-29f5-4a84-a4b0-12968e34f581",
+            "conversation": "28d95ab2-8549-43ab-acba-b95dee87e074",
             "cutoff": {
               "fresh_screens": 0,
               "reader_stopped": true
@@ -1538,19 +1817,19 @@
             "detected": {
               "detected": true,
               "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
-              "instance": "38a47b36-e8a5-4ca3-b03d-3474897a66b8"
+              "instance": "a5b645fb-db60-4fb3-be98-aad71ff8bf2e"
             },
             "detection": {
               "instances": [
                 {
-                  "application_instance_id": "38a47b36-e8a5-4ca3-b03d-3474897a66b8",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "a5b645fb-db60-4fb3-be98-aad71ff8bf2e",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515086790-60a4d1b3-61b0-4bf1-85cf-db31a1e331db",
+                  "profile_id": "lp-1791143867370-9f672336-3222-4095-8b3f-46f861e66dce",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515086790"
+                  "started_at": "1791143867370"
                 }
               ],
               "waited_ms": 3
@@ -1563,49 +1842,63 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "login_held": true,
             "markers": {
-              "looked_for": "KRA0",
-              "reply_begins": "KRA01DB3C27EDE-START",
-              "reply_ends": "KRA01DB3C27EDE-END",
+              "looked_for": "KRC0",
+              "reply_begins": "KRC0FB7B731886-START",
+              "reply_ends": "KRC0FB7B731886-END",
               "screen_reply_mark": "⏺"
             },
             "person_files": {
+              "appended": [],
               "config_directory_removed": true,
               "files": [
                 {
                   "changed": false,
                   "file": "~/.claude/.credentials.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/.device-keys.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/settings.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
-                  "changed": false,
+                  "changed": true,
                   "file": "~/.claude.json",
+                  "modified_changed": true,
                   "names_run": false,
-                  "shared": true
+                  "recorded_only": false,
+                  "shared": true,
+                  "size_changed": false
                 }
               ],
               "keychain_item_rewritten": false,
+              "lines_removed": [],
               "searched_for": {
-                "mark": "kra01db3c27ede",
-                "run_directory": "<tmp>/krm-d925f2c2"
+                "mark": "krc0fb7b731886",
+                "run_directory": "<tmp>/krm-75d59807"
               }
             },
             "person_home": {
@@ -1613,10 +1906,17 @@
               "changed_uncompared": [],
               "created_and_left": [],
               "created_and_removed": [],
+              "left_holding_the_part": [],
+              "left_unsearched": [],
               "read_whole_after": true,
               "removed_by_something_else": [],
               "rewritten": [],
-              "unread_after": []
+              "unread_after": [],
+              "others": {
+                "appended": {
+                  "~/Library/Caches/claude-cli-nodejs": 1
+                }
+              }
             },
             "provenance": {
               "ended_before_read": 0,
@@ -1626,14 +1926,14 @@
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 44271,
+                  "pid": 29779,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
                   "device": 16777234,
                   "from": "system",
                   "inode": 1152921500312571722,
-                  "pid": 45152,
+                  "pid": 29859,
                   "sha256": "fdd1c163779f87d667b6a4049293e165f2d30b716ca8bff9bed3fe54bc6d1d07"
                 }
               ],
@@ -1642,7 +1942,7 @@
                   "agent_process": {
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 44271,
+                    "pid": 29779,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -1652,16 +1952,16 @@
                 }
               ],
               "pids": [
-                44271,
-                45152
+                29779,
+                29859
               ],
               "sample_interval_ms": 250,
-              "samples": 60,
-              "session_path": "<tmp>/krm-d925f2c2/agent/current/bin:<tmp>/krm-d925f2c2/agent/runtime:/usr/bin:/bin",
+              "samples": 43,
+              "session_path": "<tmp>/krm-75d59807/agent/current/bin:<tmp>/krm-75d59807/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "reconciled": {
-              "attachment": "ca18a559-4179-4f4b-8890-2fdbd030621e",
+              "attachment": "01b29f86-cf85-4b6a-90a3-16f6f0a3ee44",
               "epoch": 2,
               "next_sequence": 4,
               "stale_input": "AMBIGUOUS_ATTACHMENT"
@@ -1680,20 +1980,20 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "after_restart": {
               "detection": {
                 "instances": [
                   {
-                    "application_instance_id": "ee0f7f43-07dc-44ad-80f6-b2e4de04fc51",
-                    "bypass": "not_integrated",
+                    "application_instance_id": "9b30b264-e85f-416b-9ff0-3c6b0ff47e24",
+                    "bypass": "disabled",
                     "ended_at": null,
                     "mode": "native_terminal",
                     "plugin_id": "kalareach/claude-code",
-                    "profile_id": "lp-1790515114649-2628e502-1e92-44b2-8bdf-0f3fcceb3cb0",
+                    "profile_id": "lp-1791143943400-0af3490b-4f3c-4694-85c0-a3f1b848a33b",
                     "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                    "started_at": "1790515114649"
+                    "started_at": "1791143943400"
                   }
                 ],
                 "waited_ms": 0
@@ -1702,31 +2002,31 @@
                 "answers": [
                   {
                     "call": "agent.prompt.submit",
-                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to ee0f7f43-07dc-44ad-80f6-b2e4de04fc51: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 9b30b264-e85f-416b-9ff0-3c6b0ff47e24: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                     "error": null,
                     "refused": "UNSUPPORTED_CAPABILITY"
                   },
                   {
                     "call": "agent.prompt.queue",
-                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to ee0f7f43-07dc-44ad-80f6-b2e4de04fc51: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 9b30b264-e85f-416b-9ff0-3c6b0ff47e24: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                     "error": null,
                     "refused": "UNSUPPORTED_CAPABILITY"
                   },
                   {
                     "call": "agent.turn.steer",
-                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to ee0f7f43-07dc-44ad-80f6-b2e4de04fc51: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 9b30b264-e85f-416b-9ff0-3c6b0ff47e24: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                     "error": null,
                     "refused": "UNSUPPORTED_CAPABILITY"
                   },
                   {
                     "call": "agent.turn.cancel",
-                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to ee0f7f43-07dc-44ad-80f6-b2e4de04fc51: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 9b30b264-e85f-416b-9ff0-3c6b0ff47e24: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                     "error": null,
                     "refused": "UNSUPPORTED_CAPABILITY"
                   },
                   {
                     "call": "agent.approval.respond",
-                    "detail": "STALE_SESSION: no pending resource 3a155b18-4d03-4eb3-b786-e0c2f1d87dbd",
+                    "detail": "STALE_SESSION: no pending resource 937cd878-5d21-43e2-9287-20f5c78cefde",
                     "error": null,
                     "refused": "STALE_SESSION"
                   },
@@ -1738,7 +2038,7 @@
                   },
                   {
                     "call": "plugin.action.invoke prompt.send",
-                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to ee0f7f43-07dc-44ad-80f6-b2e4de04fc51: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 9b30b264-e85f-416b-9ff0-3c6b0ff47e24: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                     "error": null,
                     "refused": "UNSUPPORTED_CAPABILITY"
                   }
@@ -1753,23 +2053,23 @@
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 47235 (claude)",
+              "check": "these have ended: process 33233 (claude)",
               "what": "the agent ended with a second daemon kill"
             },
             "detection": {
               "instances": [
                 {
-                  "application_instance_id": "ee0f7f43-07dc-44ad-80f6-b2e4de04fc51",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "9b30b264-e85f-416b-9ff0-3c6b0ff47e24",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515114649-2628e502-1e92-44b2-8bdf-0f3fcceb3cb0",
+                  "profile_id": "lp-1791143943400-0af3490b-4f3c-4694-85c0-a3f1b848a33b",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515114649"
+                  "started_at": "1791143943400"
                 }
               ],
-              "waited_ms": 1557
+              "waited_ms": 1
             },
             "installed": {
               "grant": [
@@ -1779,11 +2079,11 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
-            "killed_daemon": 47082,
+            "killed_daemon": 33159,
             "local_terminal_input": "❯ Yes, I trust this folder",
             "provenance": {
               "ended_before_read": [],
@@ -1794,7 +2094,7 @@
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 47235,
+                  "pid": 33233,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
@@ -1804,7 +2104,7 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 47235,
+                    "pid": 33233,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -1815,14 +2115,14 @@
                 }
               ],
               "pids": [
-                47235
+                33233
               ],
               "sample_interval_ms": 250,
-              "samples": 24,
-              "session_path": "<tmp>/krm-53ed5216/agent/current/bin:<tmp>/krm-53ed5216/agent/runtime:/usr/bin:/bin",
+              "samples": 19,
+              "session_path": "<tmp>/krm-8015ea55/agent/current/bin:<tmp>/krm-8015ea55/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
-            "restarted_daemon": 47698
+            "restarted_daemon": 33295
           }
         },
         {
@@ -1848,12 +2148,12 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
             "control": {
               "breaks_property": true,
-              "check": "process 49718 runs <tools>/claude-code/2.1.281/bin/claude (inode 69651059), not <tools>/claude-code/2.1.278/bin/claude (inode 69649374)",
-              "relaunched_process": 49718,
+              "check": "process 33730 runs <tools>/claude-code/2.1.281/bin/claude (inode 69651059), not <tools>/claude-code/2.1.278/bin/claude (inode 69649374)",
+              "relaunched_process": 33730,
               "relaunched_runs": {
                 "file": "<tools>/claude-code/2.1.281/bin/claude",
                 "inode": 69651059
@@ -1863,24 +2163,24 @@
             "first_after_upgrade": {
               "instances": [
                 {
-                  "application_instance_id": "930bcb76-81f6-4625-9f0f-260abe3c1abd",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "1fb4988c-9dcb-4629-9195-afaa058eae5e",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515130998-98ffe517-9a2a-41c2-a8da-06fa5188cfa3",
+                  "profile_id": "lp-1791143958583-ccf7bae4-0d64-40ca-a153-ed4f5f3bbeb4",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515130998"
+                  "started_at": "1791143958583"
                 }
               ],
               "waited_ms": 0
             },
-            "first_agent_process": 48850,
+            "first_agent_process": 33640,
             "first_binding": {
               "binding": {
                 "binding_revision": "1",
                 "mode": "native_terminal",
-                "profile_id": "lp-1790515130998-98ffe517-9a2a-41c2-a8da-06fa5188cfa3",
+                "profile_id": "lp-1791143958583-ccf7bae4-0d64-40ca-a153-ed4f5f3bbeb4",
                 "rich_mutations_suspended": false,
                 "suspension_reason": null,
                 "thread_id": null,
@@ -1893,17 +2193,17 @@
             "first_detection": {
               "instances": [
                 {
-                  "application_instance_id": "930bcb76-81f6-4625-9f0f-260abe3c1abd",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "1fb4988c-9dcb-4629-9195-afaa058eae5e",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515130998-98ffe517-9a2a-41c2-a8da-06fa5188cfa3",
+                  "profile_id": "lp-1791143958583-ccf7bae4-0d64-40ca-a153-ed4f5f3bbeb4",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515130998"
+                  "started_at": "1791143958583"
                 }
               ],
-              "waited_ms": 1808
+              "waited_ms": 3
             },
             "installed": {
               "grant": [
@@ -1913,9 +2213,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "launch": "native",
             "newer": {
@@ -1938,7 +2238,7 @@
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 48850,
+                  "pid": 33640,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
@@ -1947,7 +2247,7 @@
                   "from": "newer build",
                   "image": "<tools>/claude-code/2.1.281/bin/claude",
                   "inode": 69651059,
-                  "pid": 49275,
+                  "pid": 33688,
                   "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626"
                 }
               ],
@@ -1957,7 +2257,7 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 48850,
+                    "pid": 33640,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -1971,7 +2271,7 @@
                     "command": "claude",
                     "from": "newer build",
                     "image": "<tools>/claude-code/2.1.281/bin/claude",
-                    "pid": 49275,
+                    "pid": 33688,
                     "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626"
                   },
                   "file": "<tools>/claude-code/2.1.281/bin/claude",
@@ -1985,7 +2285,7 @@
                     "command": "claude",
                     "from": "newer build",
                     "image": "<tools>/claude-code/2.1.281/bin/claude",
-                    "pid": 49718,
+                    "pid": 33730,
                     "sha256": "a922981f6f3b55a251ef9f9dbaa0621a5f99cbcb5ca67f8a797476ccfc83f626"
                   },
                   "file": "<tools>/claude-code/2.1.281/bin/claude",
@@ -1996,20 +2296,20 @@
                 }
               ],
               "pids": [
-                48850,
-                49275,
-                49718
+                33640,
+                33688,
+                33730
               ],
               "sample_interval_ms": 250,
-              "samples": 33,
-              "session_path": "<tmp>/krm-9822c0ed/agent/current/bin:<tmp>/krm-9822c0ed/agent/runtime:/usr/bin:/bin",
+              "samples": 22,
+              "session_path": "<tmp>/krm-7968f44f/agent/current/bin:<tmp>/krm-7968f44f/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "second_binding": {
               "binding": {
                 "binding_revision": "1",
                 "mode": "native_terminal",
-                "profile_id": "lp-1790515135226-6fcfd3c0-2ef9-4ab6-90f8-767ae47507c4",
+                "profile_id": "lp-1791143959590-9d769558-7a87-46e1-8184-688d7669621a",
                 "rich_mutations_suspended": false,
                 "suspension_reason": null,
                 "thread_id": null,
@@ -2022,47 +2322,47 @@
             "second_detection": {
               "instances": [
                 {
-                  "application_instance_id": "56756bd5-5280-4482-9957-437d3beb7505",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "f7fa05e3-ad3b-4ee3-b074-cb0e819bf330",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515135226-6fcfd3c0-2ef9-4ab6-90f8-767ae47507c4",
+                  "profile_id": "lp-1791143959590-9d769558-7a87-46e1-8184-688d7669621a",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515135226"
+                  "started_at": "1791143959590"
                 }
               ],
-              "waited_ms": 1814
+              "waited_ms": 14
             },
             "second_surface": {
               "answers": [
                 {
                   "call": "agent.prompt.submit",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 56756bd5-5280-4482-9957-437d3beb7505: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to f7fa05e3-ad3b-4ee3-b074-cb0e819bf330: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.prompt.queue",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 56756bd5-5280-4482-9957-437d3beb7505: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to f7fa05e3-ad3b-4ee3-b074-cb0e819bf330: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.steer",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 56756bd5-5280-4482-9957-437d3beb7505: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to f7fa05e3-ad3b-4ee3-b074-cb0e819bf330: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.cancel",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 56756bd5-5280-4482-9957-437d3beb7505: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to f7fa05e3-ad3b-4ee3-b074-cb0e819bf330: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.approval.respond",
-                  "detail": "STALE_SESSION: no pending resource 2c74cdaa-4f4f-4bdb-a146-6302c368fb3a",
+                  "detail": "STALE_SESSION: no pending resource 41dcda01-c584-448f-8261-b1a3da6228e6",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
@@ -2074,7 +2374,7 @@
                 },
                 {
                   "call": "plugin.action.invoke prompt.send",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 56756bd5-5280-4482-9957-437d3beb7505: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to f7fa05e3-ad3b-4ee3-b074-cb0e819bf330: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 }
@@ -2108,7 +2408,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -2116,40 +2416,95 @@
                 "haiku",
                 "--strict-mcp-config"
               ],
-              "budget_limit": 50,
-              "budget_spent": 43,
+              "budget_limit": 100,
+              "budget_spent": 73,
+              "declined_requests": 0,
               "home": "person",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-95b1ae74/agent-config/settings.json",
-                  "<tmp>/krm-95b1ae74/agent-config/settings.local.json",
-                  "<tmp>/krm-95b1ae74/w/.claude/settings.json",
-                  "<tmp>/krm-95b1ae74/w/.claude/settings.local.json",
-                  "<tmp>/krm-95b1ae74/w/.mcp.json",
+                  "<tmp>/krm-1f4a96ee/agent-config/settings.json",
+                  "<tmp>/krm-1f4a96ee/agent-config/settings.local.json",
+                  "<tmp>/krm-1f4a96ee/w/.claude/settings.json",
+                  "<tmp>/krm-1f4a96ee/w/.claude/settings.local.json",
+                  "<tmp>/krm-1f4a96ee/w/.mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.json",
                   "/Library/Application Support/ClaudeCode/managed-mcp.json",
                   "/Library/Application Support/ClaudeCode/managed-settings.d",
                   "/Library/Managed Preferences/com.anthropic.claudecode.plist",
                   "/Library/Managed Preferences/{user}/com.anthropic.claudecode.plist"
                 ],
-                "servers": {
-                  "command": [
-                    "mcp",
-                    "list"
-                  ]
-                }
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
               },
               "login": "vendor subscription login",
+              "mirror": false,
               "stored": "login keychain item",
               "turns": 2,
-              "variable": null
+              "variable": null,
+              "variables_absent": [
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "AWS_BEARER_TOKEN_BEDROCK",
+                "OPENAI_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
             },
             "control": {
               "breaks_property": true,
               "isolated": false,
               "what": "session B's marker typed into session A"
             },
-            "conversation": "9a88e0c9-be68-4b1c-b3ce-a86915310871",
+            "conversation": "4d087462-d306-40be-a190-3afd429d13a2",
             "installed": {
               "grant": [
                 "approval.decode",
@@ -2158,43 +2513,57 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "login_held": true,
             "person_files": {
+              "appended": [],
               "config_directory_removed": true,
               "files": [
                 {
                   "changed": false,
                   "file": "~/.claude/.credentials.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/.device-keys.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
                   "changed": false,
                   "file": "~/.claude/settings.json",
+                  "modified_changed": false,
                   "names_run": false,
-                  "shared": false
+                  "recorded_only": false,
+                  "shared": false,
+                  "size_changed": false
                 },
                 {
-                  "changed": false,
+                  "changed": true,
                   "file": "~/.claude.json",
+                  "modified_changed": true,
                   "names_run": false,
-                  "shared": true
+                  "recorded_only": false,
+                  "shared": true,
+                  "size_changed": false
                 }
               ],
               "keychain_item_rewritten": false,
+              "lines_removed": [],
               "searched_for": {
-                "mark": "krb28c7c6ec8ad",
-                "run_directory": "<tmp>/krm-95b1ae74"
+                "mark": "kr5a2ece84fab4",
+                "run_directory": "<tmp>/krm-1f4a96ee"
               }
             },
             "person_home": {
@@ -2202,27 +2571,34 @@
               "changed_uncompared": [],
               "created_and_left": [],
               "created_and_removed": [],
+              "left_holding_the_part": [],
+              "left_unsearched": [],
               "read_whole_after": true,
               "removed_by_something_else": [],
               "rewritten": [],
-              "unread_after": []
+              "unread_after": [],
+              "others": {
+                "appended": {
+                  "~/Library/Caches/claude-cli-nodejs": 1
+                }
+              }
             },
             "provenance": {
-              "ended_before_read": 1,
+              "ended_before_read": 0,
               "executed": [
                 {
                   "device": 16777234,
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 51312,
+                  "pid": 34101,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
                   "device": 16777234,
                   "from": "system",
                   "inode": 1152921500312571722,
-                  "pid": 52093,
+                  "pid": 34172,
                   "sha256": "fdd1c163779f87d667b6a4049293e165f2d30b716ca8bff9bed3fe54bc6d1d07"
                 }
               ],
@@ -2231,7 +2607,7 @@
                   "agent_process": {
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 51312,
+                    "pid": 34101,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -2243,7 +2619,7 @@
                   "agent_process": {
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 53471,
+                    "pid": 34393,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -2253,41 +2629,40 @@
                 }
               ],
               "pids": [
-                51312,
-                51566,
-                52093,
-                53471,
-                53968
+                34101,
+                34172,
+                34393,
+                34454
               ],
               "sample_interval_ms": 250,
-              "samples": 109,
-              "session_path": "<tmp>/krm-95b1ae74/agent/current/bin:<tmp>/krm-95b1ae74/agent/runtime:/usr/bin:/bin",
+              "samples": 68,
+              "session_path": "<tmp>/krm-1f4a96ee/agent/current/bin:<tmp>/krm-1f4a96ee/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "session_a": {
               "detected": {
                 "detected": true,
                 "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
-                "instance": "36484828-3825-42e9-aac3-d2c5af34e005"
+                "instance": "0a5862a8-1c0b-4081-b57d-9bdf15f71230"
               },
               "detection": {
                 "instances": [
                   {
-                    "application_instance_id": "36484828-3825-42e9-aac3-d2c5af34e005",
-                    "bypass": "not_integrated",
+                    "application_instance_id": "0a5862a8-1c0b-4081-b57d-9bdf15f71230",
+                    "bypass": "disabled",
                     "ended_at": null,
                     "mode": "native_terminal",
                     "plugin_id": "kalareach/claude-code",
-                    "profile_id": "lp-1790515155197-83cb8300-9d66-4229-8d87-f2eeea17cf21",
+                    "profile_id": "lp-1791143981115-1de755b9-0ce2-47a2-b6f3-35f7c9119479",
                     "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                    "started_at": "1790515155197"
+                    "started_at": "1791143981115"
                   }
                 ],
-                "waited_ms": 3
+                "waited_ms": 2
               },
               "owners": [
                 {
-                  "pid": 51312
+                  "pid": 34101
                 }
               ]
             },
@@ -2295,32 +2670,34 @@
               "detected": {
                 "detected": true,
                 "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
-                "instance": "d9bf2a44-b651-4945-ab24-c4c24cd0270c"
+                "instance": "1f1653ac-d1f9-411b-9017-ca4a96db9eb9"
               },
               "detection": {
                 "instances": [
                   {
-                    "application_instance_id": "d9bf2a44-b651-4945-ab24-c4c24cd0270c",
-                    "bypass": "not_integrated",
+                    "application_instance_id": "1f1653ac-d1f9-411b-9017-ca4a96db9eb9",
+                    "bypass": "disabled",
                     "ended_at": null,
                     "mode": "native_terminal",
                     "plugin_id": "kalareach/claude-code",
-                    "profile_id": "lp-1790515176285-0a9e1115-65be-4d93-9899-421d69adfa47",
+                    "profile_id": "lp-1791143991848-88f75cda-ead7-4155-a44a-a375b3847741",
                     "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                    "started_at": "1790515176285"
+                    "started_at": "1791143991848"
                   }
                 ],
-                "waited_ms": 3360
+                "waited_ms": 1
               },
               "owners": [
                 {
-                  "pid": 53471
+                  "pid": 34393
                 }
               ],
               "resumed_with": [
                 "--resume",
-                "9a88e0c9-be68-4b1c-b3ce-a86915310871"
-              ]
+                "4d087462-d306-40be-a190-3afd429d13a2"
+              ],
+              "same_conversation": true,
+              "wrote_into_a_conversation": true
             }
           }
         },
@@ -2336,13 +2713,13 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
             "binding": {
               "binding": {
                 "binding_revision": "1",
                 "mode": "native_terminal",
-                "profile_id": "lp-1790515195180-4eb646cd-ba67-4cba-8f85-c321e9564f36",
+                "profile_id": "lp-1791144065662-1a5a5a52-2b19-4b0e-a9bb-dda88732905b",
                 "rich_mutations_suspended": false,
                 "suspension_reason": null,
                 "thread_id": null,
@@ -2367,17 +2744,17 @@
             "detection": {
               "instances": [
                 {
-                  "application_instance_id": "cc8fb68e-6d93-487b-8a67-9ebaa71c4902",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "60f4fd78-dbbd-41b5-9011-60dff1ce75f6",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515195180-4eb646cd-ba67-4cba-8f85-c321e9564f36",
+                  "profile_id": "lp-1791144065662-1a5a5a52-2b19-4b0e-a9bb-dda88732905b",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515195180"
+                  "started_at": "1791144065662"
                 }
               ],
-              "waited_ms": 1549
+              "waited_ms": 3
             },
             "installed": {
               "grant": [
@@ -2387,9 +2764,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "live_bindings": 1,
             "provenance": {
@@ -2401,7 +2778,7 @@
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 55502,
+                  "pid": 55396,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 }
               ],
@@ -2411,7 +2788,7 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 55502,
+                    "pid": 55396,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -2422,27 +2799,27 @@
                 }
               ],
               "pids": [
-                55502
+                55396
               ],
               "sample_interval_ms": 250,
               "samples": 40,
-              "session_path": "<tmp>/krm-1fb39bda/agent/current/bin:<tmp>/krm-1fb39bda/agent/runtime:/usr/bin:/bin",
+              "session_path": "<tmp>/krm-0c6b563c/agent/current/bin:<tmp>/krm-0c6b563c/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session d9ef30a1-86f3-4108-820c-7e99da816aac approval allow"
+                "title": "kalareach session b86ba01d-a9d6-4535-8a21-881823150c3c approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-1fb39bda/h/.claude/projects/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-1fb39bda-w/d9ef30a1-86f3-4108-820c-7e99da816aac.jsonl"
+                "path": "<tmp>/krm-0c6b563c/h/.claude/projects/<tmp>-krm-0c6b563c-w/b86ba01d-a9d6-4535-8a21-881823150c3c.jsonl"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
                 "probes": [
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 20,
                     "exit": 0,
                     "probe": "hook-none-session-start",
                     "stderr_first_line": "",
@@ -2450,7 +2827,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-none-permission",
                     "stderr_first_line": "",
@@ -2458,7 +2835,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-none-tool",
                     "stderr_first_line": "",
@@ -2466,7 +2843,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 6,
+                    "elapsed_ms": 17,
                     "exit": 0,
                     "probe": "channel-none",
                     "stderr_first_line": "",
@@ -2474,39 +2851,39 @@
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 5,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-1fb39bda/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-0c6b563c/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 8,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-1fb39bda/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-0c6b563c/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-1fb39bda/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-0c6b563c/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 6,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-1fb39bda/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-0c6b563c/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 9,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -2514,7 +2891,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 12,
                     "exit": 0,
                     "probe": "hook-worker-permission",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -2522,7 +2899,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 9,
                     "exit": 0,
                     "probe": "hook-worker-tool",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -2530,7 +2907,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 10,
                     "exit": 1,
                     "probe": "channel-worker",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -2579,24 +2956,24 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/claude-code/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/claude-code/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/claude-code/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "announced": {
               "instances": [
                 {
-                  "application_instance_id": "df57b65b-3801-47b9-97c9-b6b07954dbc4",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "7d6da858-682c-4b26-8114-cd2028058c27",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515216744-80c958cf-8fb3-4d26-94ab-da870170ea38",
+                  "profile_id": "lp-1791144092884-17a0b91a-b9cf-467b-8880-1e8fe1c1056e",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515216744"
+                  "started_at": "1791144092884"
                 }
               ],
               "waited_ms": 0
             },
-            "composer_row": "❯ <tmp>/krm-c037e230/w/kalareach-shot.png",
+            "composer_row": "❯ <tmp>/krm-61b2f987/w/kalareach-shot.png",
             "control": {
               "breaks_property": true,
               "refused": "input.write: LEASE_LOST: the input lease has moved on",
@@ -2605,19 +2982,19 @@
             "detection": {
               "instances": [
                 {
-                  "application_instance_id": "df57b65b-3801-47b9-97c9-b6b07954dbc4",
-                  "bypass": "not_integrated",
+                  "application_instance_id": "7d6da858-682c-4b26-8114-cd2028058c27",
+                  "bypass": "disabled",
                   "ended_at": null,
                   "mode": "native_terminal",
                   "plugin_id": "kalareach/claude-code",
-                  "profile_id": "lp-1790515216744-80c958cf-8fb3-4d26-94ab-da870170ea38",
+                  "profile_id": "lp-1791144092884-17a0b91a-b9cf-467b-8880-1e8fe1c1056e",
                   "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
-                  "started_at": "1790515216744"
+                  "started_at": "1791144092884"
                 }
               ],
-              "waited_ms": 1546
+              "waited_ms": 17
             },
-            "forwarded_bytes": 90,
+            "forwarded_bytes": 63,
             "installed": {
               "grant": [
                 "approval.decode",
@@ -2626,20 +3003,20 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88",
+              "manifest_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff",
               "plugin_id": "kalareach/claude-code",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "provenance": {
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c gc.auto=0 -c maintenance.auto=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never clone --depth 1 --recurse-submodules --shallow-submodules -- git@github.com:anthropics/claude-plugins-official.git <tmp>/krm-c037e230/h/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone",
+                  "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/git -c core.fsmonitor= -c core.hooksPath=/dev/null -c core.askPass= -c submodule.recurse=false -c log.showSignature=false -c gc.auto=0 -c maintenance.auto=false -c core.sshCommand=ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -c protocol.ext.allow=never -c protocol.fd.allow=never -c protocol.git.allow=never -c protocol.ftp.allow=never -c protocol.ftps.allow=never clone --depth 1 --recurse-submodules --shallow-submodules -- git@github.com:anthropics/claude-plugins-official.git <tmp>/krm-61b2f987/h/.claude/plugins/marketplaces/anthropics-claude-plugins-official..clone",
                   "device": 16777234,
                   "from": "system",
                   "image": "/Applications/Xcode.app/Contents/Developer/usr/bin/git",
                   "inode": 12560984,
-                  "pid": 58567,
+                  "pid": 56806,
                   "sha256": "10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
                 },
                 {
@@ -2648,7 +3025,7 @@
                   "from": "build",
                   "image": "<tools>/claude-code/2.1.278/bin/claude",
                   "inode": 69649374,
-                  "pid": 57932,
+                  "pid": 56667,
                   "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                 },
                 {
@@ -2657,7 +3034,7 @@
                   "from": "system",
                   "image": "/usr/bin/ssh",
                   "inode": 1152921500312572825,
-                  "pid": 58347,
+                  "pid": 56720,
                   "sha256": "17542914a3fb55e7efeb35a90d594a21c84bf6a4cfe1fc8ddff5606dc2658fc3"
                 }
               ],
@@ -2667,7 +3044,7 @@
                     "command": "claude",
                     "from": "build",
                     "image": "<tools>/claude-code/2.1.278/bin/claude",
-                    "pid": 57932,
+                    "pid": 56667,
                     "sha256": "bd245662fb8a0e321b3bf133e930371d6563c387527885f30b2613aef3ba14d6"
                   },
                   "file": "<tools>/claude-code/2.1.278/bin/claude",
@@ -2678,45 +3055,45 @@
                 }
               ],
               "pids": [
-                57932,
-                58347,
-                58567,
-                58571
+                56667,
+                56720,
+                56806,
+                56809
               ],
               "sample_interval_ms": 250,
-              "samples": 38,
-              "session_path": "<tmp>/krm-c037e230/agent/current/bin:<tmp>/krm-c037e230/agent/runtime:/usr/bin:/bin",
+              "samples": 52,
+              "session_path": "<tmp>/krm-61b2f987/agent/current/bin:<tmp>/krm-61b2f987/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "surface": {
               "answers": [
                 {
                   "call": "agent.prompt.submit",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to df57b65b-3801-47b9-97c9-b6b07954dbc4: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to 7d6da858-682c-4b26-8114-cd2028058c27: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.prompt.queue",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to df57b65b-3801-47b9-97c9-b6b07954dbc4: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to 7d6da858-682c-4b26-8114-cd2028058c27: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.steer",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to df57b65b-3801-47b9-97c9-b6b07954dbc4: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to 7d6da858-682c-4b26-8114-cd2028058c27: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.cancel",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to df57b65b-3801-47b9-97c9-b6b07954dbc4: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to 7d6da858-682c-4b26-8114-cd2028058c27: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.approval.respond",
-                  "detail": "STALE_SESSION: no pending resource 90b41a03-4b11-4e0e-9994-96830780dbb1",
+                  "detail": "STALE_SESSION: no pending resource 7adabe83-2302-46c4-8107-2777323cb328",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
@@ -2728,7 +3105,7 @@
                 },
                 {
                   "call": "plugin.action.invoke prompt.send",
-                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to df57b65b-3801-47b9-97c9-b6b07954dbc4: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a plugin.action to 7d6da858-682c-4b26-8114-cd2028058c27: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
                   "refused": "UNSUPPORTED_CAPABILITY"
                 }
@@ -2737,7 +3114,7 @@
               "capability_records": [],
               "resources": 0
             },
-            "typed": "<tmp>/krm-c037e230/w/kalareach-shot.png"
+            "typed": "<tmp>/krm-61b2f987/w/kalareach-shot.png"
           }
         },
         {
@@ -2759,21 +3136,19 @@
       "operation": "prompt.send",
       "declared": null,
       "source": "plugin.json",
-      "package_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88"
+      "package_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff"
     },
     {
       "operation": "terminal",
       "declared": null,
       "source": "plugin.json",
-      "package_digest": "4459b1c66bf63415455dcba780501c7a8771638172acc7218e9472fa58444d88"
+      "package_digest": "836eca7865fbec409b5623f4062c26e44fe3f30e7babdd5eb3bb54130f5963ff"
     }
   ],
   "failures_outside_identifiers": [],
   "known_differences": [],
   "problems": [],
-  "warnings": [
-    "Made before the check that a session exports none of the variables the build list clears. The run used env -i and CLAUDE_CONFIG_DIR, which clear CLAUDE_CODE_SUBAGENT_MODEL and its force flag and keep the person's settings out."
-  ],
+  "warnings": [],
   "summary": {
     "identifiers": 2,
     "passed": 1,
