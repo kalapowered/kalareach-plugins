@@ -234,10 +234,22 @@ selected_agent() {
 # resolved, as the processes that write into it name it.
 evidence="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/kalareach-agents-XXXXXX")" && pwd -P)"
 # The driver's temporary directory, in which it makes every run's folder: an absolute path, since
-# the writer of the records replaces it wherever it appears.
-if [ -z "${run_temp%/}" ] || ! { mkdir -p "$run_temp" && chmod 700 "$run_temp"; }; then
-  refuse "the runs' directory $run_temp cannot be made"
+# the writer of the records replaces it wherever it appears, and a directory of the person's own
+# that is no link: the default lies in a directory every user can write to, where another user
+# could have put a link of that name, so a directory that is a link or is another user's is
+# refused, and the mode is set only on a directory that passed.
+while [ "${run_temp%/}" != "$run_temp" ]; do run_temp="${run_temp%/}"; done
+[ -n "$run_temp" ] || refuse "the runs' directory names no directory"
+case "$run_temp" in /*) ;; *) run_temp="$PWD/$run_temp" ;; esac
+case "${run_temp##*/}" in
+  . | ..) refuse "the runs' directory $run_temp ends in a dot name, not in a directory's own name" ;;
+esac
+mkdir -p "$(dirname "$run_temp")" || refuse "the runs' directory $run_temp cannot be made"
+mkdir -m 700 "$run_temp" 2>/dev/null || true
+if [ -L "$run_temp" ] || [ ! -d "$run_temp" ] || [ ! -O "$run_temp" ]; then
+  refuse "the runs' directory $run_temp is a link, is not a directory or is not yours"
 fi
+chmod 700 "$run_temp" || refuse "the runs' directory $run_temp cannot be made private"
 temporary="$(cd "$run_temp" && pwd)"
 temporary_real="$(cd "$run_temp" && pwd -P)"
 driver_environment+=("TMPDIR=$temporary")
