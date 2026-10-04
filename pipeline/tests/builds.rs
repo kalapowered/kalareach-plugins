@@ -483,6 +483,9 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         "parts 1, 2b, 2c, 7 failed",
         "section 12 parts 1, 2b, 2c, 5b, 6b, 7, 8b did not pass",
     ];
+    // Qoder CLI's record is a run with no login, which the user did not approve for it: the parts
+    // that need none passed, and the parts that need one were not run.
+    let qoder_cli: &[&str] = &["section 12 parts 1, 2a, 3, 4, 5b, 6b, 7, 8b did not pass"];
     let expected: [(&str, &[&str]); 8] = [
         ("kalareach/claude-code", claude_code),
         ("kalareach/codex", codex),
@@ -491,7 +494,7 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         ("kalareach/kimi-code-cli", kimi_code),
         ("kalareach/opencode", opencode),
         ("kalareach/opencode-attach", &[and_upgrade]),
-        ("kalareach/qoder-cli", &[and_upgrade]),
+        ("kalareach/qoder-cli", qoder_cli),
     ];
     for pinned in &list.builds {
         let reasons = expected
@@ -1170,7 +1173,7 @@ async fn the_pipeline_refuses_too_many_builds_and_two_versions_of_one_executable
     assert_eq!(
         refusal.to_string(),
         format!(
-            "kalareach/claude-code 0.4.0: the entry names {} builds, and one entry names at most \
+            "kalareach/claude-code 0.5.0: the entry names {} builds, and one entry names at most \
              {MAX_QUALIFIED_BUILDS}",
             MAX_QUALIFIED_BUILDS + 1
         )
@@ -1190,7 +1193,7 @@ async fn the_pipeline_refuses_too_many_builds_and_two_versions_of_one_executable
     assert_eq!(
         refusal.to_string(),
         format!(
-            "kalareach/claude-code 0.4.0: the executable {CLAUDE_CODE_SHA256} is named as version \
+            "kalareach/claude-code 0.5.0: the executable {CLAUDE_CODE_SHA256} is named as version \
              2.1.278 and as version 2.1.281"
         )
     );
@@ -1233,7 +1236,7 @@ async fn the_pipeline_refuses_a_build_on_a_platform_the_release_does_not_list_be
         refused_before_signing(&loaded.repository, &index, &signing, temporary.path()).await;
     assert_eq!(
         refusal.to_string(),
-        "kalareach/claude-code 0.4.0: a build runs on mac_os aarch64, which the entry does not \
+        "kalareach/claude-code 0.5.0: a build runs on mac_os aarch64, which the entry does not \
          list among its platforms"
     );
 }
@@ -1308,7 +1311,7 @@ async fn verification_refuses_a_signed_generation_whose_builds_the_sdk_refuses()
         .expect_err("the generation is refused");
     assert_eq!(
         refusal.to_string(),
-        "kalareach/claude-code 0.4.0: a build runs on windows aarch64, which the entry does not \
+        "kalareach/claude-code 0.5.0: a build runs on windows aarch64, which the entry does not \
          list among its platforms"
     );
 }
