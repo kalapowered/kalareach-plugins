@@ -609,12 +609,13 @@ const REVIEWED_GRANTS: &[(&str, &str)] = &[
         "kalareach/claude-code",
         "Installs three registration files under your own Claude Code directory, where they apply \
          to every project and every later session, and adds one settings key that enables them. \
-         Claude Code then starts the KalaReach forwarder itself, so the forwarder runs under Claude \
-         Code's own permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees \
-         the session's SessionStart, SessionEnd, PostToolUse, PostToolUseFailure and Notification \
-         events, and every Channels tool approval relayed to it. Removal takes the key back out and \
-         deletes exactly those three files, each only while it still holds the bytes that were \
-         installed.",
+         Each file names the KalaReach forwarder by the full path of the copy KalaReach installed, \
+         which KalaReach writes into the file when it installs it. Claude Code then starts the \
+         KalaReach forwarder itself, so the forwarder runs under Claude Code's own permissions and \
+         outside the KalaReach plugin sandbox, outside Wasmtime. It sees the session's \
+         SessionStart, SessionEnd, PostToolUse, PostToolUseFailure and Notification events, and \
+         every Channels tool approval relayed to it. Removal takes the key back out and deletes \
+         exactly those three files, each only while it still holds the bytes that were installed.",
     ),
     (
         "kalareach/gemini-cli",
@@ -622,13 +623,14 @@ const REVIEWED_GRANTS: &[(&str, &str)] = &[
          named kalareach, its hooks, and the record of where it is installed. Gemini CLI loads the \
          extension for every project and every later session, whether or not you trust the folder, \
          beside your own hooks; where your settings allow only listed extensions, it loads it only \
-         when one of your patterns matches the source that record names. Gemini CLI then starts the \
-         KalaReach forwarder itself, through bash, so the forwarder runs under Gemini CLI's own \
-         permissions and outside the KalaReach plugin sandbox, outside Wasmtime. It sees each \
-         session's SessionStart, SessionEnd and Notification events and no tool events, because \
-         Gemini CLI reads a failing hook's error text as a refusal of a finished tool's result. \
-         Removal deletes exactly those three files, each only while it still holds the bytes that \
-         were installed, and the record last, only once nothing else is left beside it.",
+         when one of your patterns matches the source that record names. Gemini CLI then starts \
+         the KalaReach forwarder itself, through bash, by the full path KalaReach writes in, so \
+         the forwarder runs under Gemini CLI's own permissions and outside the KalaReach plugin \
+         sandbox, outside Wasmtime. It sees each session's SessionStart, SessionEnd and \
+         Notification events and no tool events, because Gemini CLI reads a failing hook's error \
+         text as a refusal of a finished tool's result. Removal deletes exactly those three files, \
+         each only while it still holds the bytes that were installed, and the record last, only \
+         once nothing else is left beside it.",
     ),
 ];
 
@@ -762,31 +764,34 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
         // `fixtures/bridges/qoder-cli/flags.json`.
         flags: ReviewedFlags::Pinned {
             count: 2,
-            sha256: "d867f03b41f63a11688ee1c6e0a79455ffbaca09d2c38150b6f8d4b4c269261f",
+            sha256: "4a23ebef3076b3d7f5aaa817d3f4f78561c48db869c6147b92a503e0c3fb6c23",
         },
         variables: &[],
         grant_statement: "When you run qodercli in a KalaReach session with this integration on, \
              KalaReach adds --settings with inline settings that register the KalaReach forwarder, \
-             kr-hook qoder-cli hook, for SessionStart, SessionEnd, PostToolUse, PostToolUseFailure \
-             and Notification, with a timeout of one second for SessionEnd and five for the \
-             others. Qoder CLI runs these hooks beside your own, and nothing is written to your \
-             Qoder CLI settings. Qoder CLI starts the forwarder itself, so the forwarder runs \
-             under Qoder CLI's own permissions and outside the KalaReach plugin sandbox, outside \
-             Wasmtime. It sees those five events of that session.",
+             by the full path of the copy KalaReach installed, with the arguments qoder-cli hook, \
+             for SessionStart, SessionEnd, PostToolUse, PostToolUseFailure and Notification, with \
+             a timeout of one second for SessionEnd and five for the others. Qoder CLI runs these \
+             hooks beside your own, and nothing is written to your Qoder CLI settings. Qoder CLI \
+             starts the forwarder itself, so the forwarder runs under Qoder CLI's own permissions \
+             and outside the KalaReach plugin sandbox, outside Wasmtime. It sees those five events \
+             of that session.",
         // The inline settings are one argument, so they are written as one JSON string, their own
         // quotes escaped.
         listed: concat!(
             r#"Runs "qodercli" in KalaReach sessions with these arguments added,"#,
             r#" in this order: "--settings" "{\"hooks\":{\"SessionStart\":["#,
-            r#"{\"hooks\":[{\"type\":\"command\",\"command\":\"kr-hook\",\"args\":["#,
+            r#"{\"hooks\":[{\"type\":\"command\",\"command\":\"{kr_hook}\",\"args\":["#,
             r#"\"qoder-cli\",\"hook\"],\"timeout\":5}]}],\"SessionEnd\":[{\"hooks\":["#,
-            r#"{\"type\":\"command\",\"command\":\"kr-hook\",\"args\":[\"qoder-cli\","#,
+            r#"{\"type\":\"command\",\"command\":\"{kr_hook}\",\"args\":[\"qoder-cli\","#,
             r#"\"hook\"],\"timeout\":1}]}],\"PostToolUse\":[{\"hooks\":[{\"type\":\"command\","#,
-            r#"\"command\":\"kr-hook\",\"args\":[\"qoder-cli\",\"hook\"],\"timeout\":5}]}],"#,
-            r#"\"PostToolUseFailure\":[{\"hooks\":[{\"type\":\"command\",\"command\":\"kr-hook\","#,
+            r#"\"command\":\"{kr_hook}\",\"args\":[\"qoder-cli\",\"hook\"],\"timeout\":5}]}],"#,
+            r#"\"PostToolUseFailure\":[{\"hooks\":[{\"type\":\"command\",\"command\":\"{kr_hook}\","#,
             r#"\"args\":[\"qoder-cli\",\"hook\"],\"timeout\":5}]}],\"Notification\":["#,
-            r#"{\"hooks\":[{\"type\":\"command\",\"command\":\"kr-hook\",\"args\":["#,
-            r#"\"qoder-cli\",\"hook\"],\"timeout\":5}]}]}}". It sets no environment variables."#,
+            r#"{\"hooks\":[{\"type\":\"command\",\"command\":\"{kr_hook}\",\"args\":["#,
+            r#"\"qoder-cli\",\"hook\"],\"timeout\":5}]}]}}". {kr_hook} is replaced by the full path"#,
+            r#" of the KalaReach forwarder installed on this machine, written as the path of a"#,
+            r#" program the application starts. It sets no environment variables."#,
         ),
     },
 ];
@@ -1035,7 +1040,7 @@ fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly(
         // by its range rather than by a member it does not know.
         assert_eq!(
             manifest.sdk_range.to_string(),
-            ">=0.1.2, <0.2.0",
+            ">=0.1.3, <0.2.0",
             "{}",
             reviewed.plugin
         );
@@ -1253,6 +1258,10 @@ fn hook_registrations(file: &serde_json::Value) -> Vec<(&str, &serde_json::Value
     registrations
 }
 
+/// What a registration names the forwarder by: the host writes the installed forwarder's full path
+/// in its place when it installs the registration.
+const FORWARDER_PLACEHOLDER: &str = "{kr_hook}";
+
 /// Why one hook registration is not the forwarder's hook for `application` started in exec form,
 /// or nothing when it is.
 ///
@@ -1278,10 +1287,11 @@ fn hook_registration_refusal(application: &str, handler: &serde_json::Value) -> 
     let Some(command) = handler.get("command").and_then(serde_json::Value::as_str) else {
         return Some("the registration names no command".to_owned());
     };
-    if command.is_empty()
-        || command.chars().any(|character| {
-            character.is_whitespace() || "\"'`$;&|<>(){}[]*?~#!\\".contains(character)
-        })
+    if command != FORWARDER_PLACEHOLDER
+        && (command.is_empty()
+            || command.chars().any(|character| {
+                character.is_whitespace() || "\"'`$;&|<>(){}[]*?~#!\\".contains(character)
+            }))
     {
         return Some(format!("the command {command:?} is a shell string"));
     }
@@ -1295,7 +1305,7 @@ fn hook_registration_refusal(application: &str, handler: &serde_json::Value) -> 
     else {
         return Some("an argument is not text".to_owned());
     };
-    if command != "kr-hook" || args != [application, "hook"] {
+    if command != FORWARDER_PLACEHOLDER || args != [application, "hook"] {
         return Some(format!(
             "the registration starts {command} {args:?}, not the forwarder's hook for {application}"
         ));
@@ -1502,7 +1512,12 @@ fn gemini_hook_registration_refusal(handler: &serde_json::Value) -> Option<Strin
     let Some(command) = handler.get("command").and_then(serde_json::Value::as_str) else {
         return Some("the registration names no command".to_owned());
     };
-    let plain = command.split(' ').all(|word| {
+    // The words after the placeholder are the shell's to read, so they are plain; the placeholder is
+    // the forwarder's full path, written in by the host and quoted for the shell.
+    let words = command
+        .strip_prefix(&format!("{FORWARDER_PLACEHOLDER} "))
+        .unwrap_or(command);
+    let plain = words.split(' ').all(|word| {
         !word.is_empty()
             && word
                 .chars()
@@ -1511,7 +1526,7 @@ fn gemini_hook_registration_refusal(handler: &serde_json::Value) -> Option<Strin
     if !plain {
         return Some(format!("the command {command:?} is not plain words"));
     }
-    if command != "kr-hook gemini-cli hook" {
+    if command != format!("{FORWARDER_PLACEHOLDER} gemini-cli hook") {
         return Some(format!(
             "the registration starts {command:?}, not the forwarder's hook"
         ));
