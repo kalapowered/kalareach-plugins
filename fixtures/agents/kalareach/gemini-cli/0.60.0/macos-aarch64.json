@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-26T11:01:32Z",
-    "finished": "2026-09-26T11:05:45Z",
+    "started": "2026-10-04T14:49:03Z",
+    "finished": "2026-10-04T15:06:08Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "68c9818afb6d35e7200b67f43949f40dc19a40f9",
+      "id": "4ae7d347348bb6eed1d3b9c7ee90c79b76e1aa3e",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "28d6c4b19a3027e32ebd14f5b1252cf6e8effbff",
+        "id": "4dc0e25116bd057c676b5f49c2b1680bbebe61d5",
         "modified": false
       }
     },
@@ -48,21 +48,37 @@
         "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
         "build": "darwin-arm64",
         "reason": "the build the table is pinned to"
+      },
+      {
+        "id": "gemini-cli",
+        "version": "0.61.0",
+        "status": "installed",
+        "url": "https://registry.npmjs.org/@google/gemini-cli/-/gemini-cli-0.61.0.tgz",
+        "sha256": "0b6e283ae88682b0e27e8ef85a608ab74807a1513dc0c053e5aa80d5b80b29ab",
+        "build": "darwin-arm64",
+        "reason": "the newer build the upgrade part moves to"
       }
     ],
     "selection": [
+      "1",
+      "2a",
       "2b",
+      "2c",
+      "3",
+      "4",
       "5a",
       "6a",
+      "7",
       "8a",
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-4Lhg65",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-NQKlyM",
     "own_home": {
       "bound_to_a_desktop": true,
-      "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
+      "default_keychain": "the person's login keychain",
       "home": "~",
+      "show_keychain_info_status": 0,
       "worker_profile": "desktop_bound"
     }
   },
@@ -71,77 +87,155 @@
       "number": 1,
       "group": "own-home",
       "what": "a session started with the person's own home names their login keychain",
-      "command": "KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-d69514b669c616ed --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 19,
+      "seconds": 13,
       "log": "own-home.log",
       "error": null
     },
     {
       "number": 2,
       "group": "agents",
-      "what": "part 2b",
-      "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "what": "part 1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 0,
-      "seconds": 13,
-      "log": "gemini-cli/2b.log",
+      "exit": 101,
+      "seconds": 124,
+      "log": "gemini-cli/1.log",
       "error": null
     },
     {
       "number": 3,
       "group": "agents",
-      "what": "part 5a",
-      "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "what": "part 2a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 16,
-      "log": "gemini-cli/5a.log",
+      "seconds": 115,
+      "log": "gemini-cli/2a.log",
       "error": null
     },
     {
       "number": 4,
       "group": "agents",
-      "what": "part 6a",
-      "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "what": "part 2b",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 0,
-      "seconds": 26,
-      "log": "gemini-cli/6a.log",
+      "exit": 101,
+      "seconds": 54,
+      "log": "gemini-cli/2b.log",
       "error": null
     },
     {
       "number": 5,
       "group": "agents",
-      "what": "part 8a",
-      "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "what": "part 2c",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 0,
-      "seconds": 47,
-      "log": "gemini-cli/8a.log",
+      "exit": 101,
+      "seconds": 73,
+      "log": "gemini-cli/2c.log",
       "error": null
     },
     {
       "number": 6,
       "group": "agents",
-      "what": "part 14.03a",
-      "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "what": "part 3",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 18,
+      "seconds": 126,
+      "log": "gemini-cli/3.log",
+      "error": null
+    },
+    {
+      "number": 7,
+      "group": "agents",
+      "what": "part 4",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 104,
+      "log": "gemini-cli/4.log",
+      "error": null
+    },
+    {
+      "number": 8,
+      "group": "agents",
+      "what": "part 5a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 47,
+      "log": "gemini-cli/5a.log",
+      "error": null
+    },
+    {
+      "number": 9,
+      "group": "agents",
+      "what": "part 6a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 86,
+      "log": "gemini-cli/6a.log",
+      "error": null
+    },
+    {
+      "number": 10,
+      "group": "agents",
+      "what": "part 7",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 101,
+      "seconds": 164,
+      "log": "gemini-cli/7.log",
+      "error": null
+    },
+    {
+      "number": 11,
+      "group": "agents",
+      "what": "part 8a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 50,
+      "log": "gemini-cli/8a.log",
+      "error": null
+    },
+    {
+      "number": 12,
+      "group": "agents",
+      "what": "part 14.03a",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 13,
       "log": "gemini-cli/14.03a.log",
       "error": null
     }
@@ -149,115 +243,651 @@
   "identifiers": {
     "KR-REQ-12.32": {
       "family": "requirement",
-      "verdict": "passed",
+      "verdict": "failed",
       "counts": {
-        "passed": 3,
-        "failed": 0,
+        "passed": 6,
+        "failed": 4,
         "ignored": 0,
-        "not_run": 10,
+        "not_run": 3,
         "not_built": 0,
         "known_difference": 0
       },
       "tests": [
         {
-          "test": "part 1",
+          "test": "kr-e2e-agents --test cases a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution",
           "part": "1",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account and a spending bound, then the typed or bridge route (an account from the user)",
-          "needs": [
-            "vendor account"
-          ]
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "failed",
+          "reason": "a paired device's upload.begin is refused on this host (INVALID_ARGUMENT), so the image is not the device's transfer; the host did not detect the manual launch as section 12 requires: the host did not announce exactly one live instance for the launched execution (it announced 0 live instance(s))",
+          "runs": [
+            {
+              "step": 2,
+              "outcome": "failed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "gemini-2.5-flash"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 23,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-7787f092/w/GEMINI.md",
+                  "<tmp>/krm-7787f092/w/.gemini",
+                  "<tmp>/krm-7787f092/w/.agents",
+                  "<tmp>/krm-7787f092/h/.gemini",
+                  "<tmp>/krm-7787f092/h/.agents",
+                  "<tmp>/krm-7787f092/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-7787f092/agent-config/.gemini/extensions",
+                  "<tmp>/krm-7787f092/agent-config/.gemini/commands",
+                  "<tmp>/krm-7787f092/agent-config/.gemini/skills",
+                  "<tmp>/krm-7787f092/agent-config/.gemini/agents",
+                  "<tmp>/krm-7787f092/agent-config/.gemini/policies",
+                  "<tmp>/krm-7787f092/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "/Library/Application Support/GeminiCli",
+                  "{ancestors}/.env",
+                  "{ancestors}/.gemini/.env",
+                  "<tmp>/krm-7787f092/h/.env",
+                  "<tmp>/krm-7787f092/agent-config/.env",
+                  "<tmp>/krm-7787f092/agent-config/.gemini/.env"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "extensions",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No extensions installed"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "skills",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No skills discovered"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": false,
+              "stored": "variable of the person's shell environment",
+              "turns": 2,
+              "variable": "GEMINI_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "detected": {
+              "detected": false
+            },
+            "detection": {
+              "instances": [],
+              "waited_ms": 30098
+            },
+            "device_upload": {
+              "call": "upload.begin",
+              "error": null,
+              "refused": "INVALID_ARGUMENT"
+            },
+            "failure_codes": [
+              {
+                "code": "upload_refused",
+                "refused": "INVALID_ARGUMENT"
+              },
+              {
+                "announced": 0,
+                "cause": "not_one_instance",
+                "code": "launch_not_detected",
+                "session": null
+              }
+            ],
+            "image": {
+              "answer": "red",
+              "answered": true,
+              "code": "KR589B1330708B",
+              "file": "<tmp>/krm-7787f092/w/kr589b1330708b.png",
+              "syntax": "@{path}"
+            },
+            "installed": {
+              "grant": [
+                "command_integration.launch",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "plugin_id": "kalareach/gemini-cli",
+              "version": "0.4.0"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 0,
+              "run_gone": true,
+              "variable": "GEMINI_API_KEY"
+            },
+            "local": {
+              "seen": true,
+              "shows": "KR589B1330708B"
+            },
+            "login_held": true,
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": true,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr589b1330708b",
+                "run_directory": "<tmp>/krm-7787f092"
+              }
+            },
+            "prompt": {
+              "answer": "1654",
+              "question": "What is 829 plus 825? Reply with only the number."
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "runtime",
+                  "inode": 54188627,
+                  "pid": 38507,
+                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "runtime",
+                    "pid": 38507,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "command": "gemini"
+                }
+              ],
+              "pids": [
+                38507,
+                38515
+              ],
+              "sample_interval_ms": 250,
+              "samples": 214,
+              "session_path": "<tmp>/krm-7787f092/agent/current/bin:<tmp>/krm-7787f092/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                }
+              ],
+              "backend_files": 0,
+              "capability_records": [],
+              "resources": 0
+            }
+          }
         },
         {
-          "test": "part 2a",
+          "test": "kr-e2e-agents --test cases slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device",
           "part": "2a",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a live conversation, which needs a vendor account (an account from the user)",
-          "needs": [
-            "vendor account"
-          ]
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 3,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "gemini-2.5-flash"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 26,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-c9fcb137/w/GEMINI.md",
+                  "<tmp>/krm-c9fcb137/w/.gemini",
+                  "<tmp>/krm-c9fcb137/w/.agents",
+                  "<tmp>/krm-c9fcb137/h/.gemini",
+                  "<tmp>/krm-c9fcb137/h/.agents",
+                  "<tmp>/krm-c9fcb137/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-c9fcb137/agent-config/.gemini/extensions",
+                  "<tmp>/krm-c9fcb137/agent-config/.gemini/commands",
+                  "<tmp>/krm-c9fcb137/agent-config/.gemini/skills",
+                  "<tmp>/krm-c9fcb137/agent-config/.gemini/agents",
+                  "<tmp>/krm-c9fcb137/agent-config/.gemini/policies",
+                  "<tmp>/krm-c9fcb137/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "/Library/Application Support/GeminiCli",
+                  "{ancestors}/.env",
+                  "{ancestors}/.gemini/.env",
+                  "<tmp>/krm-c9fcb137/h/.env",
+                  "<tmp>/krm-c9fcb137/agent-config/.env",
+                  "<tmp>/krm-c9fcb137/agent-config/.gemini/.env"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "extensions",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No extensions installed"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "skills",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No skills discovered"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": false,
+              "stored": "variable of the person's shell environment",
+              "turns": 3,
+              "variable": "GEMINI_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "agent_reads": [
+              {
+                "call": "agent.capabilities",
+                "error": null,
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.commands",
+                "error": null,
+                "refused": "STALE_SESSION"
+              }
+            ],
+            "checker_controls": [
+              {
+                "check": "queued",
+                "rejected": true,
+                "wrong": "entered with no turn running"
+              },
+              {
+                "check": "queued",
+                "rejected": true,
+                "wrong": "the prompt joined before the turn finished"
+              },
+              {
+                "check": "queued",
+                "rejected": true,
+                "wrong": "the agent kept no record of the prompt as queued"
+              },
+              {
+                "check": "queued",
+                "rejected": true,
+                "wrong": "the prompt joined the running turn"
+              }
+            ],
+            "control": {
+              "breaks_property": false,
+              "what": "orders made wrong on purpose, which the queue and steering checks reject",
+              "why_not": "the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead"
+            },
+            "detected": {
+              "detected": false
+            },
+            "detection": {
+              "instances": [],
+              "waited_ms": 30050
+            },
+            "installed": {
+              "grant": [
+                "command_integration.launch",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "plugin_id": "kalareach/gemini-cli",
+              "version": "0.4.0"
+            },
+            "interrupt": {
+              "key": "\u001b",
+              "seen": true,
+              "shows": "Request cancelled."
+            },
+            "key": {
+              "complete": true,
+              "held_by": 0,
+              "run_gone": true,
+              "variable": "GEMINI_API_KEY"
+            },
+            "login_held": true,
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": true,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr9f06a7a36c11",
+                "run_directory": "<tmp>/krm-c9fcb137"
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "runtime",
+                  "inode": 54188627,
+                  "pid": 43959,
+                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "runtime",
+                    "pid": 43959,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "command": "gemini"
+                }
+              ],
+              "pids": [
+                43959,
+                43973
+              ],
+              "sample_interval_ms": 250,
+              "samples": 217,
+              "session_path": "<tmp>/krm-c9fcb137/agent/current/bin:<tmp>/krm-c9fcb137/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "queued": {
+              "answer": "1206",
+              "order": {
+                "after": {
+                  "busy": true,
+                  "unfinished": true
+                },
+                "before": {
+                  "busy": true,
+                  "unfinished": true
+                },
+                "busy_at_submission": true,
+                "first_finished": 9,
+                "new_turn": null,
+                "queued_record": null,
+                "records_queue": false,
+                "second_answered": 13,
+                "second_prompt": 11
+              }
+            },
+            "slash": {
+              "seen": true,
+              "shows": "For a full list of shortcuts",
+              "typed": "/help"
+            },
+            "steering": {
+              "steered": false,
+              "why": "a prompt entered during a turn waits for it, as the queued step shows"
+            },
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                }
+              ],
+              "backend_files": 0,
+              "capability_records": [],
+              "resources": 0
+            }
+          }
         },
         {
           "test": "kr-e2e-agents --test cases an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused",
           "part": "2b",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
-          "outcome": "passed",
+          "outcome": "failed",
+          "reason": "the host did not detect the manual launch as section 12 requires: the host announced 0 live instance(s) for the launched execution, not one: section 12 keeps a manual launch valid through the same detection and capability process",
           "runs": [
             {
-              "step": 2,
-              "outcome": "passed"
+              "step": 4,
+              "outcome": "failed"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
-            "announced_after": {
+            "after": {
               "instances": [],
-              "more_resources": false,
-              "resources": []
+              "waited_ms": 0
             },
-            "announced_before": {
-              "instances": [],
-              "more_resources": false,
-              "resources": []
-            },
-            "answers": [
-              {
-                "call": "agent.prompt.submit",
-                "detail": "STALE_SESSION: no application instance 8affba72-2755-44c5-bed3-2767ea1bfc0b",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.prompt.queue",
-                "detail": "STALE_SESSION: no application instance 8affba72-2755-44c5-bed3-2767ea1bfc0b",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.turn.steer",
-                "detail": "STALE_SESSION: no application instance 8affba72-2755-44c5-bed3-2767ea1bfc0b",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.turn.cancel",
-                "detail": "STALE_SESSION: no application instance 8affba72-2755-44c5-bed3-2767ea1bfc0b",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.approval.respond",
-                "detail": "STALE_SESSION: no pending resource 13f1c43c-6e3c-4068-8293-b7b35b97d072",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "agent.draft.add_attachment",
-                "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
-                "refused": "INVALID_ARGUMENT"
-              },
-              {
-                "call": "plugin.action.invoke turn.cancel",
-                "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 8affba72-2755-44c5-bed3-2767ea1bfc0b",
-                "refused": "STALE_SESSION"
-              },
-              {
-                "call": "plugin.action.invoke session.refresh",
-                "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 8affba72-2755-44c5-bed3-2767ea1bfc0b",
-                "refused": "STALE_SESSION"
-              },
+            "agent_reads": [
               {
                 "call": "agent.capabilities",
-                "detail": "STALE_SESSION: no application instance 8affba72-2755-44c5-bed3-2767ea1bfc0b",
+                "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                "error": null,
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.commands",
-                "detail": "STALE_SESSION: no application instance 8affba72-2755-44c5-bed3-2767ea1bfc0b",
+                "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                "error": null,
                 "refused": "STALE_SESSION"
               }
             ],
             "attachment_request": "refused before any instance is looked at: agent.draft.add_attachment names an application instance in its selectors and carries none in its parameters, so this refusal says nothing about the terminal route",
+            "binding": null,
             "capability_states": [
               [
                 "plugin.metadata.match/1",
@@ -284,6 +914,68 @@
                 "not_tested"
               ]
             ],
+            "checker_controls": [
+              {
+                "check": "detected",
+                "rejected": true,
+                "said": "the instance names Some(PluginId(\"kalareach/not-the-installed-package\")), not the installed package kalareach/gemini-cli",
+                "wrong": "the instance names another package"
+              },
+              {
+                "check": "detected",
+                "rejected": true,
+                "said": "the launched execution has ended and no instance is live",
+                "wrong": "the launched execution has ended"
+              },
+              {
+                "check": "ended",
+                "rejected": true,
+                "said": "1 instance(s) are still announced live after the execution ended",
+                "wrong": "an instance is still announced after its execution ended"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "agent.prompt is advertised as usable",
+                "wrong": "agent.prompt is usable"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "agent.prompt.submit was not answered with a refusal: the connection ended",
+                "wrong": "a typed mutation is answered by no refusal"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "agent.prompt.submit was accepted: accepted",
+                "wrong": "a typed mutation is accepted"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "a command backend exists: c0/b0/registration.1.1",
+                "wrong": "a command backend's c0/b0/registration.1.1 exists"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "a command backend exists: c0/b0/launch",
+                "wrong": "a command backend's c0/b0/launch exists"
+              },
+              {
+                "check": "observation_only",
+                "rejected": true,
+                "said": "a command backend exists: c0/b0/credential",
+                "wrong": "a command backend's c0/b0/credential exists"
+              },
+              {
+                "check": "unchanged",
+                "rejected": true,
+                "said": "the instance and revision were Some(Held { instance: ApplicationInstanceId(Uuid(ed3fad46-fdfc-49ce-b517-5ee555cd37e6)), revision: AgentBindingRevision(U64(2)) }) and are None (0 live)",
+                "wrong": "the binding revision moved on"
+              }
+            ],
             "control": {
               "breaks_property": false,
               "result": {
@@ -293,7 +985,1404 @@
                 "screen_shows": "● 2. Trust parent folder"
               },
               "what": "terminal input under the lease from the same device and connection, which the host accepts where it refuses the typed actions",
-              "why_not": "only a bound connector can advertise a typed capability or accept a typed action, and this host binds none"
+              "why_not": "only a typed route could advertise a typed action or accept one, and a launch the integration did not make has none"
+            },
+            "detected": {
+              "announced": 0,
+              "cause": "not_one_instance",
+              "detected": false,
+              "why": "the host announced 0 live instance(s) for the launched execution, not one: section 12 keeps a manual launch valid through the same detection and capability process"
+            },
+            "detection": {
+              "instances": [],
+              "waited_ms": 30217
+            },
+            "detection_control": {
+              "after": {
+                "instances": [],
+                "waited_ms": 2
+              },
+              "breaks_property": true,
+              "check": "the launched execution has ended and no instance is live",
+              "instance_ended": true,
+              "what": "the agent ended by its recorded identities"
+            },
+            "executable_identity": "no read the host serves names the executable of an adopted instance; the image the agent runs is under provenance",
+            "installed": {
+              "grant": [
+                "command_integration.launch",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "plugin_id": "kalareach/gemini-cli",
+              "version": "0.4.0"
+            },
+            "live_bindings": 0,
+            "provenance": {
+              "ended_before_read": [
+                "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -license check"
+              ],
+              "executed": [
+                {
+                  "command": "node <tmp>/krm-99e637c9/agent/current/bin/gemini",
+                  "device": 16777234,
+                  "from": "runtime",
+                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                  "inode": 54188627,
+                  "pid": 50204,
+                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                },
+                {
+                  "command": "git rev-parse --show-toplevel",
+                  "device": 16777234,
+                  "from": "system",
+                  "image": "/usr/bin/git",
+                  "inode": 1152921500312571562,
+                  "pid": 50259,
+                  "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-99e637c9/agent/current/bin/gemini",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 50204,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-99e637c9/agent/current/bin/gemini",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "what": "gemini"
+                }
+              ],
+              "pids": [
+                50204,
+                50234,
+                50259,
+                50260
+              ],
+              "sample_interval_ms": 250,
+              "samples": 133,
+              "session_path": "<tmp>/krm-99e637c9/agent/current/bin:<tmp>/krm-99e637c9/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "detail": "STALE_SESSION: no pending resource fcda03f9-903a-4b7c-a974-80f4c379f917",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                }
+              ],
+              "backend_files": [],
+              "capability_records": [],
+              "resources": 0
+            }
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused",
+          "part": "2c",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "failed",
+          "reason": "the host did not detect the manual launch, so no binding holds the package: the host announced 0 live instance(s) for the launched execution, not one: section 12 keeps a manual launch valid through the same detection and capability process",
+          "runs": [
+            {
+              "step": 5,
+              "outcome": "failed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
+          "evidence": {
+            "agent_reads": [
+              {
+                "call": "agent.capabilities",
+                "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                "error": null,
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.commands",
+                "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                "error": null,
+                "refused": "STALE_SESSION"
+              }
+            ],
+            "detected": "the host announced 0 live instance(s) for the launched execution, not one: section 12 keeps a manual launch valid through the same detection and capability process",
+            "detection": {
+              "instances": [],
+              "waited_ms": 30210
+            },
+            "installed": {
+              "grant": [
+                "command_integration.launch",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "plugin_id": "kalareach/gemini-cli",
+              "version": "0.4.0"
+            },
+            "provenance": {
+              "ended_before_read": [
+                "git rev-parse --show-toplevel",
+                "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -license check"
+              ],
+              "executed": [
+                {
+                  "command": "node <tmp>/krm-d5a6a59c/agent/current/bin/gemini",
+                  "device": 16777234,
+                  "from": "runtime",
+                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                  "inode": 54188627,
+                  "pid": 71617,
+                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-d5a6a59c/agent/current/bin/gemini",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 71617,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-d5a6a59c/agent/current/bin/gemini",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "what": "gemini"
+                }
+              ],
+              "pids": [
+                71617,
+                71771,
+                71944,
+                71946
+              ],
+              "sample_interval_ms": 250,
+              "samples": 76,
+              "session_path": "<tmp>/krm-d5a6a59c/agent/current/bin:<tmp>/krm-d5a6a59c/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "detail": "STALE_SESSION: no pending resource 2abd3a29-de6d-454c-80ec-cc07a1670c2c",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                }
+              ],
+              "backend_files": [],
+              "capability_records": [],
+              "resources": 0
+            }
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once",
+          "part": "3",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 6,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "gemini-2.5-flash"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 28,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-81df50eb/w/GEMINI.md",
+                  "<tmp>/krm-81df50eb/w/.gemini",
+                  "<tmp>/krm-81df50eb/w/.agents",
+                  "<tmp>/krm-81df50eb/h/.gemini",
+                  "<tmp>/krm-81df50eb/h/.agents",
+                  "<tmp>/krm-81df50eb/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-81df50eb/agent-config/.gemini/extensions",
+                  "<tmp>/krm-81df50eb/agent-config/.gemini/commands",
+                  "<tmp>/krm-81df50eb/agent-config/.gemini/skills",
+                  "<tmp>/krm-81df50eb/agent-config/.gemini/agents",
+                  "<tmp>/krm-81df50eb/agent-config/.gemini/policies",
+                  "<tmp>/krm-81df50eb/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "/Library/Application Support/GeminiCli",
+                  "{ancestors}/.env",
+                  "{ancestors}/.gemini/.env",
+                  "<tmp>/krm-81df50eb/h/.env",
+                  "<tmp>/krm-81df50eb/agent-config/.env",
+                  "<tmp>/krm-81df50eb/agent-config/.gemini/.env"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "extensions",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No extensions installed"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "skills",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No skills discovered"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": false,
+              "stored": "variable of the person's shell environment",
+              "turns": 2,
+              "variable": "GEMINI_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "command": "echo kreb41a8 >> <tmp>/krm-81df50eb/w/a",
+            "control": {
+              "breaks_property": true,
+              "check": true,
+              "command": "echo kr26c01d >> <tmp>/krm-81df50eb/w/a",
+              "device_refused": "LEASE_LOST",
+              "executions": 0,
+              "what": "a second approval with the local terminal holding the lease: it denied and the device's allow was refused"
+            },
+            "decisions": {
+              "after_reconnecting": 1,
+              "after_the_control": 2,
+              "after_the_race": 1,
+              "answering_calls_marked_by": [],
+              "calls_marked_by": [],
+              "conversation": "2e8845c0-df0c-4a54-9b1f-6c6afccd9062",
+              "marked_by": "\"toolCalls\""
+            },
+            "detected": {
+              "detected": false
+            },
+            "detection": {
+              "instances": [],
+              "waited_ms": 30146
+            },
+            "executions": {
+              "after_reconnecting": 1,
+              "after_the_race": 1
+            },
+            "installed": {
+              "grant": [
+                "command_integration.launch",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "plugin_id": "kalareach/gemini-cli",
+              "version": "0.4.0"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 0,
+              "run_gone": true,
+              "variable": "GEMINI_API_KEY"
+            },
+            "login_held": true,
+            "loser": {
+              "exit_status": 8,
+              "receipt": {
+                "seen": true,
+                "shows": "input lease"
+              },
+              "typed": "\u001b",
+              "who": "the local terminal"
+            },
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": true,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr26c01deb41a8",
+                "run_directory": "<tmp>/krm-81df50eb"
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "runtime",
+                  "inode": 54188627,
+                  "pid": 85739,
+                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "runtime",
+                    "pid": 85739,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "command": "gemini"
+                }
+              ],
+              "pids": [
+                85739,
+                85761
+              ],
+              "sample_interval_ms": 250,
+              "samples": 202,
+              "session_path": "<tmp>/krm-81df50eb/agent/current/bin:<tmp>/krm-81df50eb/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "replay": {
+              "checker_control_rejected": true,
+              "probe": "zqkr26c01deb41a8",
+              "screen_checked": true,
+              "typed_again": false
+            },
+            "resources": 0,
+            "winner": {
+              "typed": "1",
+              "who": "the paired device, which held the input lease"
+            }
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work",
+          "part": "4",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 7,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "gemini-2.5-flash"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 30,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-ef6175a0/w/GEMINI.md",
+                  "<tmp>/krm-ef6175a0/w/.gemini",
+                  "<tmp>/krm-ef6175a0/w/.agents",
+                  "<tmp>/krm-ef6175a0/h/.gemini",
+                  "<tmp>/krm-ef6175a0/h/.agents",
+                  "<tmp>/krm-ef6175a0/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-ef6175a0/agent-config/.gemini/extensions",
+                  "<tmp>/krm-ef6175a0/agent-config/.gemini/commands",
+                  "<tmp>/krm-ef6175a0/agent-config/.gemini/skills",
+                  "<tmp>/krm-ef6175a0/agent-config/.gemini/agents",
+                  "<tmp>/krm-ef6175a0/agent-config/.gemini/policies",
+                  "<tmp>/krm-ef6175a0/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "/Library/Application Support/GeminiCli",
+                  "{ancestors}/.env",
+                  "{ancestors}/.gemini/.env",
+                  "<tmp>/krm-ef6175a0/h/.env",
+                  "<tmp>/krm-ef6175a0/agent-config/.env",
+                  "<tmp>/krm-ef6175a0/agent-config/.gemini/.env"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "extensions",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No extensions installed"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "skills",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No skills discovered"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": false,
+              "stored": "variable of the person's shell environment",
+              "turns": 2,
+              "variable": "GEMINI_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "admission": "the agent's conversation held the prompt, and no screen the device was sent from the submission until it disconnected showed the reply mark or the code in upper case",
+            "after_reconnect": {
+              "finished_replies": 1,
+              "prompts": 1,
+              "seen": true,
+              "shows": "KR6430B3C8EEEE-END"
+            },
+            "control": {
+              "breaks_property": true,
+              "check": true,
+              "finished_replies": 2,
+              "prompts": 2,
+              "what": "the same prompt sent again"
+            },
+            "conversation": "f6a011dd-0f22-43a6-9b0a-02448515efa0",
+            "cutoff": {
+              "fresh_screens": 0,
+              "reader_stopped": true
+            },
+            "detected": {
+              "detected": false
+            },
+            "detection": {
+              "instances": [],
+              "waited_ms": 30001
+            },
+            "installed": {
+              "grant": [
+                "command_integration.launch",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "plugin_id": "kalareach/gemini-cli",
+              "version": "0.4.0"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 0,
+              "run_gone": true,
+              "variable": "GEMINI_API_KEY"
+            },
+            "login_held": true,
+            "markers": {
+              "looked_for": "KR64",
+              "reply_begins": "KR6430B3C8EEEE-START",
+              "reply_ends": "KR6430B3C8EEEE-END",
+              "screen_reply_mark": "✦"
+            },
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": true,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "kr6430b3c8eeee",
+                "run_directory": "<tmp>/krm-ef6175a0"
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "runtime",
+                  "inode": 54188627,
+                  "pid": 92378,
+                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "runtime",
+                    "pid": 92378,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "command": "gemini"
+                }
+              ],
+              "pids": [
+                92378,
+                92434
+              ],
+              "sample_interval_ms": 250,
+              "samples": 166,
+              "session_path": "<tmp>/krm-ef6175a0/agent/current/bin:<tmp>/krm-ef6175a0/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "reconciled": {
+              "attachment": "58e7b1a2-16ae-43af-92af-96b101f9cfb9",
+              "epoch": 2,
+              "next_sequence": 2,
+              "stale_input": "AMBIGUOUS_ATTACHMENT"
+            }
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running",
+          "part": "5a",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 8,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "evidence": {
+            "after_restart": {
+              "detection": {
+                "instances": [],
+                "waited_ms": 0
+              },
+              "surface": {
+                "answers": [
+                  {
+                    "call": "agent.prompt.submit",
+                    "detail": "STALE_SESSION: no application instance 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "error": null,
+                    "refused": "STALE_SESSION"
+                  },
+                  {
+                    "call": "agent.prompt.queue",
+                    "detail": "STALE_SESSION: no application instance 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "error": null,
+                    "refused": "STALE_SESSION"
+                  },
+                  {
+                    "call": "agent.turn.steer",
+                    "detail": "STALE_SESSION: no application instance 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "error": null,
+                    "refused": "STALE_SESSION"
+                  },
+                  {
+                    "call": "agent.turn.cancel",
+                    "detail": "STALE_SESSION: no application instance 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "error": null,
+                    "refused": "STALE_SESSION"
+                  },
+                  {
+                    "call": "agent.approval.respond",
+                    "detail": "STALE_SESSION: no pending resource 17b99579-e58a-4b0f-8a1d-cc1d65c75941",
+                    "error": null,
+                    "refused": "STALE_SESSION"
+                  },
+                  {
+                    "call": "agent.draft.add_attachment",
+                    "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                    "error": null,
+                    "refused": "INVALID_ARGUMENT"
+                  },
+                  {
+                    "call": "plugin.action.invoke turn.cancel",
+                    "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "error": null,
+                    "refused": "STALE_SESSION"
+                  }
+                ],
+                "backend_files": [],
+                "capability_records": [],
+                "resources": 0
+              }
+            },
+            "agent_processes": [
+              "node <tmp>/krm-685e3209/agent/current/bin/gemini",
+              "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-685e3209/agent/current/bin/gemini"
+            ],
+            "control": {
+              "breaks_property": true,
+              "check": "these have ended: process 97040 (node <tmp>/krm-685e3209/agent/current/bin/gemini), process 97048 (/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-685e3209/agent/current/bin/gemini)",
+              "what": "the agent ended with a second daemon kill"
+            },
+            "detection": {
+              "instances": [],
+              "waited_ms": 30256
+            },
+            "installed": {
+              "grant": [
+                "command_integration.launch",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "plugin_id": "kalareach/gemini-cli",
+              "version": "0.4.0"
+            },
+            "killed_daemon": 96961,
+            "local_terminal_input": "● 2. Trust parent folder",
+            "provenance": {
+              "ended_before_read": [],
+              "executed": [
+                {
+                  "command": "node <tmp>/krm-685e3209/agent/current/bin/gemini",
+                  "device": 16777234,
+                  "from": "runtime",
+                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                  "inode": 54188627,
+                  "pid": 97040,
+                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-685e3209/agent/current/bin/gemini",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 97040,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-685e3209/agent/current/bin/gemini",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "what": "gemini"
+                }
+              ],
+              "pids": [
+                97040,
+                97048
+              ],
+              "sample_interval_ms": 250,
+              "samples": 135,
+              "session_path": "<tmp>/krm-685e3209/agent/current/bin:<tmp>/krm-685e3209/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "restarted_daemon": 98490
+          }
+        },
+        {
+          "test": "part 5b",
+          "part": "5b",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "waits for the command integration: a session made through kr new gets no command integration, so no launch has a gateway holding request state (the command integration's landing)",
+          "needs": [
+            "command integration"
+          ]
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route",
+          "part": "6a",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 9,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+          "evidence": {
+            "control": {
+              "breaks_property": true,
+              "check": "process 3411 runs <tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js (inode 77276751), not <tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js (inode 69649850)",
+              "relaunched_process": 3411,
+              "relaunched_runs": {
+                "file": "<tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                "inode": 77276751
+              },
+              "what": "the agent relaunched in the first session after the upgrade"
+            },
+            "first_after_upgrade": {
+              "instances": [],
+              "waited_ms": 0
+            },
+            "first_agent_process": 99338,
+            "first_binding": null,
+            "first_detection": {
+              "instances": [],
+              "waited_ms": 30209
+            },
+            "installed": {
+              "grant": [
+                "command_integration.launch",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "plugin_id": "kalareach/gemini-cli",
+              "version": "0.4.0"
+            },
+            "launch": "script",
+            "newer": {
+              "mark": {
+                "file": "<tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                "inode": 77276751
+              },
+              "version": "0.61.0"
+            },
+            "pinned": {
+              "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+              "inode": 69649850
+            },
+            "provenance": {
+              "ended_before_read": [],
+              "executed": [
+                {
+                  "command": "node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                  "device": 16777234,
+                  "from": "runtime",
+                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                  "inode": 54188627,
+                  "pid": 99338,
+                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 99338,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "what": "gemini"
+                },
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 986,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                  "sha256": "0b6e283ae88682b0e27e8ef85a608ab74807a1513dc0c053e5aa80d5b80b29ab",
+                  "what": "gemini"
+                },
+                {
+                  "agent_process": {
+                    "command": "node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                    "from": "runtime",
+                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
+                    "pid": 3411,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                  "sha256": "0b6e283ae88682b0e27e8ef85a608ab74807a1513dc0c053e5aa80d5b80b29ab",
+                  "what": "gemini"
+                }
+              ],
+              "pids": [
+                986,
+                999,
+                3411,
+                3422,
+                99338,
+                99425
+              ],
+              "sample_interval_ms": 250,
+              "samples": 260,
+              "session_path": "<tmp>/krm-282b14d1/agent/current/bin:<tmp>/krm-282b14d1/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "second_binding": null,
+            "second_detection": {
+              "instances": [],
+              "waited_ms": 30013
+            },
+            "second_surface": {
+              "answers": [
+                {
+                  "call": "agent.prompt.submit",
+                  "detail": "STALE_SESSION: no application instance 275ce733-15bd-4860-9820-97a37fe95677",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.prompt.queue",
+                  "detail": "STALE_SESSION: no application instance 275ce733-15bd-4860-9820-97a37fe95677",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.steer",
+                  "detail": "STALE_SESSION: no application instance 275ce733-15bd-4860-9820-97a37fe95677",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.turn.cancel",
+                  "detail": "STALE_SESSION: no application instance 275ce733-15bd-4860-9820-97a37fe95677",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.approval.respond",
+                  "detail": "STALE_SESSION: no pending resource 8358ec96-972d-4f89-ae21-3c570d274349",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                },
+                {
+                  "call": "agent.draft.add_attachment",
+                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "error": null,
+                  "refused": "INVALID_ARGUMENT"
+                },
+                {
+                  "call": "plugin.action.invoke turn.cancel",
+                  "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 275ce733-15bd-4860-9820-97a37fe95677",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                }
+              ],
+              "backend_files": [],
+              "capability_records": [],
+              "resources": 0
+            }
+          }
+        },
+        {
+          "test": "part 6b",
+          "part": "6b",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "waits for the command integration: a build outside the qualified range can be refused only a typed route, and no launch has one without the integration (the command integration's landing)",
+          "needs": [
+            "command integration"
+          ]
+        },
+        {
+          "test": "kr-e2e-agents --test cases a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged",
+          "part": "7",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "failed",
+          "reason": "the host did not detect launch A as section 12 requires: the host did not announce exactly one live instance for the launched execution (it announced 0 live instance(s)); the host did not detect launch B as section 12 requires: the host did not announce exactly one live instance for the launched execution (it announced 0 live instance(s))",
+          "runs": [
+            {
+              "step": 10,
+              "outcome": "failed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
+          "evidence": {
+            "account": {
+              "arguments": [
+                "-m",
+                "gemini-2.5-flash"
+              ],
+              "budget_limit": 50,
+              "budget_spent": 32,
+              "declined_requests": 0,
+              "home": "run",
+              "isolation": {
+                "absent_before_start": [
+                  "<tmp>/krm-90def3cb/w/GEMINI.md",
+                  "<tmp>/krm-90def3cb/w/.gemini",
+                  "<tmp>/krm-90def3cb/w/.agents",
+                  "<tmp>/krm-90def3cb/h/.gemini",
+                  "<tmp>/krm-90def3cb/h/.agents",
+                  "<tmp>/krm-90def3cb/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-90def3cb/agent-config/.gemini/extensions",
+                  "<tmp>/krm-90def3cb/agent-config/.gemini/commands",
+                  "<tmp>/krm-90def3cb/agent-config/.gemini/skills",
+                  "<tmp>/krm-90def3cb/agent-config/.gemini/agents",
+                  "<tmp>/krm-90def3cb/agent-config/.gemini/policies",
+                  "<tmp>/krm-90def3cb/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "/Library/Application Support/GeminiCli",
+                  "{ancestors}/.env",
+                  "{ancestors}/.gemini/.env",
+                  "<tmp>/krm-90def3cb/h/.env",
+                  "<tmp>/krm-90def3cb/agent-config/.env",
+                  "<tmp>/krm-90def3cb/agent-config/.gemini/.env"
+                ],
+                "probes": [
+                  {
+                    "accepted": null,
+                    "command": [
+                      "mcp",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No MCP servers configured"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "extensions",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No extensions installed"
+                    ],
+                    "shows_within": null
+                  },
+                  {
+                    "accepted": null,
+                    "command": [
+                      "skills",
+                      "list"
+                    ],
+                    "lacks": [],
+                    "lines": [],
+                    "shows": [
+                      "No skills discovered"
+                    ],
+                    "shows_within": null
+                  }
+                ],
+                "servers_switched_off": [],
+                "switches": [],
+                "tools_offered": []
+              },
+              "login": "provider API key",
+              "mirror": false,
+              "stored": "variable of the person's shell environment",
+              "turns": 2,
+              "variable": "GEMINI_API_KEY",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
+            },
+            "control": {
+              "breaks_property": true,
+              "isolated": false,
+              "what": "session B's marker typed into session A"
+            },
+            "conversation": "0ca0739a-7589-44d7-a6b4-961e6b291e9e",
+            "failure_codes": [
+              {
+                "announced": 0,
+                "cause": "not_one_instance",
+                "code": "launch_not_detected",
+                "session": "A"
+              },
+              {
+                "announced": 0,
+                "cause": "not_one_instance",
+                "code": "launch_not_detected",
+                "session": "B"
+              }
+            ],
+            "installed": {
+              "grant": [
+                "command_integration.launch",
+                "native_bridge.install",
+                "upstream.action"
+              ],
+              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "plugin_id": "kalareach/gemini-cli",
+              "version": "0.4.0"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 0,
+              "run_gone": true,
+              "variable": "GEMINI_API_KEY"
+            },
+            "login_held": true,
+            "person_files": {
+              "appended": [],
+              "config_directory_removed": true,
+              "files": [],
+              "keychain_item_rewritten": null,
+              "lines_removed": [],
+              "searched_for": {
+                "mark": "krfb83aee1b5d5",
+                "run_directory": "<tmp>/krm-90def3cb"
+              }
+            },
+            "provenance": {
+              "ended_before_read": 0,
+              "executed": [
+                {
+                  "device": 16777234,
+                  "from": "runtime",
+                  "inode": 54188627,
+                  "pid": 9468,
+                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                }
+              ],
+              "launches": [
+                {
+                  "agent_process": {
+                    "from": "runtime",
+                    "pid": 9468,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "command": "gemini"
+                },
+                {
+                  "agent_process": {
+                    "from": "runtime",
+                    "pid": 18882,
+                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                  },
+                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
+                  "launch": "script",
+                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
+                  "command": "gemini"
+                }
+              ],
+              "pids": [
+                9468,
+                9491,
+                18882,
+                18899
+              ],
+              "sample_interval_ms": 250,
+              "samples": 304,
+              "session_path": "<tmp>/krm-90def3cb/agent/current/bin:<tmp>/krm-90def3cb/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
+            },
+            "session_a": {
+              "detected": {
+                "detected": false
+              },
+              "detection": {
+                "instances": [],
+                "waited_ms": 30257
+              },
+              "owners": [
+                {
+                  "pid": 9468
+                },
+                {
+                  "pid": 9491
+                }
+              ]
+            },
+            "session_b": {
+              "detected": {
+                "detected": false
+              },
+              "detection": {
+                "instances": [],
+                "waited_ms": 30166
+              },
+              "owners": [
+                {
+                  "pid": 18882
+                },
+                {
+                  "pid": 18899
+                }
+              ],
+              "resumed_with": [
+                "--resume",
+                "0ca0739a-7589-44d7-a6b4-961e6b291e9e"
+              ],
+              "same_conversation": true,
+              "wrote_into_a_conversation": true
+            }
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test cases forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged",
+          "part": "8a",
+          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 11,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+          "evidence": {
+            "binding": null,
+            "control": {
+              "breaks_property": false,
+              "owner": {
+                "forwarded_bytes": 3,
+                "input_bytes": 3,
+                "keyboard": "ghostty",
+                "screen_shows": "● 2. Trust parent folder"
+              },
+              "viewer": "PERMISSION_DENIED: this grant does not carry terminal.input",
+              "what": "a view-only device's input refused as not permitted where the owner device's is admitted",
+              "why_not": "a forgery that changes the host's state needs a registration the host issued, which this host issues to no connector"
+            },
+            "detection": {
+              "instances": [],
+              "waited_ms": 30051
             },
             "installed": {
               "grant": [
@@ -307,304 +2396,60 @@
             },
             "live_bindings": 0,
             "provenance": {
-              "ended_before_read": [],
+              "ended_before_read": [
+                "git rev-parse --show-toplevel"
+              ],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-fc7e81fe/agent/current/bin/gemini",
+                  "command": "node <tmp>/krm-79051f0e/agent/current/bin/gemini",
                   "device": 16777234,
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
                   "inode": 54188627,
-                  "pid": 53344,
+                  "pid": 25222,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-fc7e81fe/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-79051f0e/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 53344,
+                    "pid": 25222,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-fc7e81fe/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-79051f0e/agent/current/bin/gemini",
                   "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
                   "what": "gemini"
                 }
               ],
-              "sample_interval_ms": 250,
-              "samples": 22,
-              "session_path": "<tmp>/krm-fc7e81fe/agent/current/bin:<tmp>/krm-fc7e81fe/agent/runtime:/usr/bin:/bin"
-            }
-          }
-        },
-        {
-          "test": "part 2c",
-          "part": "2c",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a binding, and the host hands no installed connector to a worker (the connector hand-over to workers)",
-          "needs": [
-            "connector binding"
-          ]
-        },
-        {
-          "test": "part 3",
-          "part": "3",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account and an approval a binding serves (an account from the user; the connector hand-over to workers)",
-          "needs": [
-            "vendor account"
-          ]
-        },
-        {
-          "test": "part 4",
-          "part": "4",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account and a typed route (an account from the user; the connector hand-over to workers)",
-          "needs": [
-            "vendor account"
-          ]
-        },
-        {
-          "test": "kr-e2e-agents --test cases a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running",
-          "part": "5a",
-          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
-          "keyed_by": "attached_comment",
-          "outcome": "passed",
-          "runs": [
-            {
-              "step": 3,
-              "outcome": "passed"
-            }
-          ],
-          "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
-          "evidence": {
-            "agent_processes": [
-              "node <tmp>/krm-cf78e29e/agent/current/bin/gemini",
-              "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-cf78e29e/agent/current/bin/gemini"
-            ],
-            "control": {
-              "breaks_property": true,
-              "check": "these have ended: process 55222 (node <tmp>/krm-cf78e29e/agent/current/bin/gemini), process 55271 (/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-cf78e29e/agent/current/bin/gemini)",
-              "what": "the agent ended with a second daemon kill"
-            },
-            "installed": {
-              "grant": [
-                "command_integration.launch",
-                "native_bridge.install",
-                "upstream.action"
-              ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
-              "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
-            },
-            "killed_daemon": 55016,
-            "local_terminal_input": "● 2. Trust parent folder",
-            "provenance": {
-              "ended_before_read": [],
-              "executed": [
-                {
-                  "command": "node <tmp>/krm-cf78e29e/agent/current/bin/gemini",
-                  "device": 16777234,
-                  "from": "runtime",
-                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "inode": 54188627,
-                  "pid": 55222,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                }
-              ],
-              "launches": [
-                {
-                  "agent_process": {
-                    "command": "node <tmp>/krm-cf78e29e/agent/current/bin/gemini",
-                    "from": "runtime",
-                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 55222,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                  },
-                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
-                  "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-cf78e29e/agent/current/bin/gemini",
-                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
-                  "what": "gemini"
-                }
+              "pids": [
+                25222,
+                25228,
+                25243
               ],
               "sample_interval_ms": 250,
-              "samples": 27,
-              "session_path": "<tmp>/krm-cf78e29e/agent/current/bin:<tmp>/krm-cf78e29e/agent/runtime:/usr/bin:/bin"
-            },
-            "restarted_daemon": 55673
-          }
-        },
-        {
-          "test": "part 5b",
-          "part": "5b",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "the terminal route has no gateway, so it holds no gateway request state (the connector hand-over to workers)",
-          "needs": [
-            "connector binding"
-          ]
-        },
-        {
-          "test": "kr-e2e-agents --test cases a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route",
-          "part": "6a",
-          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
-          "keyed_by": "attached_comment",
-          "outcome": "not_run",
-          "reason": "the build list names no newer build of this agent (the build list)",
-          "runs": [
-            {
-              "step": 4,
-              "outcome": "not_run"
-            }
-          ],
-          "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
-          "evidence": {
-            "installed": {
-              "grant": [
-                "command_integration.launch",
-                "native_bridge.install",
-                "upstream.action"
-              ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
-              "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
-            },
-            "provenance": {
-              "ended_before_read": [],
-              "executed": [],
-              "launches": [],
-              "sample_interval_ms": 250,
-              "samples": 0,
-              "session_path": null
-            }
-          }
-        },
-        {
-          "test": "part 6b",
-          "part": "6b",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a binding, to show each process bound to its own adapter and schema (the connector hand-over to workers)",
-          "needs": [
-            "connector binding"
-          ]
-        },
-        {
-          "test": "part 7",
-          "part": "7",
-          "source": "kalareach-plugins:fixtures/agents/README.md",
-          "keyed_by": "case_table",
-          "outcome": "not_run",
-          "reason": "needs a vendor account, since a saved conversation needs a turn (an account from the user)",
-          "needs": [
-            "vendor account"
-          ]
-        },
-        {
-          "test": "kr-e2e-agents --test cases forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged",
-          "part": "8a",
-          "source": "kalareach:tests/e2e/agents/tests/cases.rs",
-          "keyed_by": "attached_comment",
-          "outcome": "passed",
-          "runs": [
-            {
-              "step": 5,
-              "outcome": "passed"
-            }
-          ],
-          "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
-          "evidence": {
-            "control": {
-              "breaks_property": false,
-              "owner": {
-                "forwarded_bytes": 3,
-                "input_bytes": 3,
-                "keyboard": "ghostty",
-                "screen_shows": "● 2. Trust parent folder"
-              },
-              "viewer": "PERMISSION_DENIED: this grant does not carry terminal.input",
-              "what": "a view-only device's input refused as not permitted where the owner device's is admitted",
-              "why_not": "a forgery that changes the host's state needs a registration the host issued, which this host issues to no connector"
-            },
-            "installed": {
-              "grant": [
-                "command_integration.launch",
-                "native_bridge.install",
-                "upstream.action"
-              ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
-              "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
-            },
-            "provenance": {
-              "ended_before_read": [],
-              "executed": [
-                {
-                  "command": "node <tmp>/krm-087defb4/agent/current/bin/gemini",
-                  "device": 16777234,
-                  "from": "runtime",
-                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "inode": 54188627,
-                  "pid": 62074,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "command": "git rev-parse --show-toplevel",
-                  "device": 16777234,
-                  "from": "system",
-                  "image": "/usr/bin/git",
-                  "inode": 1152921500312571562,
-                  "pid": 62171,
-                  "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9"
-                }
-              ],
-              "launches": [
-                {
-                  "agent_process": {
-                    "command": "node <tmp>/krm-087defb4/agent/current/bin/gemini",
-                    "from": "runtime",
-                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 62074,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                  },
-                  "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
-                  "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-087defb4/agent/current/bin/gemini",
-                  "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
-                  "what": "gemini"
-                }
-              ],
-              "sample_interval_ms": 250,
-              "samples": 88,
-              "session_path": "<tmp>/krm-087defb4/agent/current/bin:<tmp>/krm-087defb4/agent/runtime:/usr/bin:/bin"
+              "samples": 155,
+              "session_path": "<tmp>/krm-79051f0e/agent/current/bin:<tmp>/krm-79051f0e/agent/runtime:/usr/bin:/bin",
+              "system_programs_of_another_user": []
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 8a0e7a81-a0ed-4d50-b248-e9790c37d5cb approval allow"
+                "title": "kalareach session 874374c1-51ae-4214-8b8f-592f9c9f3f87 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-087defb4/h/.gemini/tmp/-private-var-folders-55-mtcsh3xj5nd2qnl5_c7d5yk00000gn-T-krm-087defb4-w/chats/session-8a0e7a81-a0ed-4d50-b248-e9790c37d5cb.json"
+                "path": "<tmp>/krm-79051f0e/h/.gemini/tmp/-Users-r-Library-Caches-kalareach-agents-runs-krm-79051f0e-w/chats/session-874374c1-51ae-4214-8b8f-592f9c9f3f87.json"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
                 "probes": [
                   {
-                    "elapsed_ms": 12,
+                    "elapsed_ms": 14,
                     "exit": 0,
                     "probe": "hook-none-session-start",
                     "stderr_first_line": "",
@@ -612,7 +2457,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 14,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-none-permission",
                     "stderr_first_line": "",
@@ -620,7 +2465,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 6,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-none-tool",
                     "stderr_first_line": "",
@@ -636,39 +2481,39 @@
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 10,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-087defb4/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-79051f0e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 9,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-087defb4/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-79051f0e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 10,
+                    "elapsed_ms": 4,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-087defb4/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-79051f0e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 14,
+                    "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-087defb4/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-79051f0e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 17,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -676,7 +2521,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 18,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-permission",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -684,7 +2529,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 15,
+                    "elapsed_ms": 8,
                     "exit": 0,
                     "probe": "hook-worker-tool",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -692,7 +2537,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 12,
+                    "elapsed_ms": 7,
                     "exit": 1,
                     "probe": "channel-worker",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -710,9 +2555,9 @@
           "source": "kalareach-plugins:fixtures/agents/README.md",
           "keyed_by": "case_table",
           "outcome": "not_run",
-          "reason": "needs a registration the host issued, to fail a forgery at the endpoint a legitimate one passes (the command integration)",
+          "reason": "waits for the command integration: no launch has a registration the host issued, against which a forgery could fail where it passes (the command integration's landing)",
           "needs": [
-            "launch registration"
+            "command integration"
           ]
         }
       ]
@@ -738,11 +2583,11 @@
           "reason": "the build shows no composer without an account (an account from the user)",
           "runs": [
             {
-              "step": 6,
+              "step": 12,
               "outcome": "not_run"
             }
           ],
-          "command": "KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-3c3901abd33f3d3e --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "installed": {
               "grant": [
@@ -758,9 +2603,11 @@
               "ended_before_read": [],
               "executed": [],
               "launches": [],
+              "pids": [],
               "sample_interval_ms": 250,
               "samples": 0,
-              "session_path": null
+              "session_path": null,
+              "system_programs_of_another_user": []
             }
           }
         },
@@ -792,19 +2639,24 @@
   "warnings": [],
   "summary": {
     "identifiers": 2,
-    "passed": 1,
-    "failed": 0,
+    "passed": 0,
+    "failed": 1,
     "known_difference": 0,
     "not_run": 1,
     "known_differences": 0,
     "tests": {
-      "passed": 3,
-      "failed": 0,
+      "passed": 6,
+      "failed": 4,
       "ignored": 0,
-      "not_run": 12,
+      "not_run": 5,
       "not_built": 0,
       "known_difference": 0
     },
-    "failed_steps": []
+    "failed_steps": [
+      2,
+      4,
+      5,
+      10
+    ]
   }
 }

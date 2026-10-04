@@ -475,10 +475,18 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
     let script = "the pinned file is a script, whose process is its interpreter, so it names no \
                   executable a host runs";
     let wheel = "the pinned file is a wheel, an archive, so it names no executable a host runs";
+    // Gemini CLI's record is a run with a provider's key in the person's shell: a node-run build,
+    // so the host detected no launch of it, and the parts that need that failed, as for Codex.
+    let gemini_cli: &[&str] = &[
+        script,
+        "steps 2, 4, 5, 10 did not exit cleanly",
+        "parts 1, 2b, 2c, 7 failed",
+        "section 12 parts 1, 2b, 2c, 5b, 6b, 7, 8b did not pass",
+    ];
     let expected: [(&str, &[&str]); 8] = [
         ("kalareach/claude-code", claude_code),
         ("kalareach/codex", codex),
-        ("kalareach/gemini-cli", &[script, and_upgrade]),
+        ("kalareach/gemini-cli", gemini_cli),
         ("kalareach/kimi-cli", &[wheel, and_upgrade]),
         ("kalareach/kimi-code-cli", kimi_code),
         ("kalareach/opencode", opencode),
