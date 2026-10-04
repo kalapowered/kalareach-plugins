@@ -232,12 +232,13 @@ selected_agent() {
 # Every artefact of this run goes into a new directory on the internal disk, named with its links
 # resolved, as the processes that write into it name it.
 evidence="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/kalareach-agents-XXXXXX")" && pwd -P)"
-# The driver's temporary directory, in which it makes every run's folder.
-temporary="${run_temp%/}"
-if ! { mkdir -p "$temporary" && chmod 700 "$temporary"; }; then
-  refuse "the runs' directory $temporary cannot be made"
+# The driver's temporary directory, in which it makes every run's folder: an absolute path, since
+# the writer of the records replaces it wherever it appears.
+if [ -z "${run_temp%/}" ] || ! { mkdir -p "$run_temp" && chmod 700 "$run_temp"; }; then
+  refuse "the runs' directory $run_temp cannot be made"
 fi
-temporary_real="$(cd "$temporary" && pwd -P)"
+temporary="$(cd "$run_temp" && pwd)"
+temporary_real="$(cd "$run_temp" && pwd -P)"
 driver_environment+=("TMPDIR=$temporary")
 started="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 # When the run began, as `log show` reads a time.
@@ -1011,17 +1012,20 @@ while IFS= read -r package; do
       ({}; . + {($o): ([$tests[] | select(.outcome == $o)] | length)});
     # A path in the evidence directory, the temporary directory, the build'"'"'s target directory, the
     # managed shell'"'"'s packages, the tools directory or the home directory of whoever ran this is
-    # written relative to it; a system or runtime executable is named as it is, since which one ran
-    # is the evidence.
+    # written relative to it, and so is the name an agent gives a folder after such a path (the
+    # slashes joined by dashes, or every character that is not a letter or a digit turned into a
+    # dash); a system or runtime executable is named as it is, since which one ran is the evidence.
     def local_paths: if type == "string" then
         (split($evidence_real) | join("<evidence>"))
         | (split($temporary_real) | join("<tmp>")) | (split($temporary) | join("<tmp>"))
+        | hide_folder_named_after($temporary_real; "<tmp>") | hide_folder_named_after($temporary; "<tmp>")
         | (split($target_real) | join("<target>")) | (split($target) | join("<target>"))
         | (if $shells == "" then . else split($shells) | join("<shells>") end)
         | (split($tools_real) | join("<tools>")) | (split($tools) | join("<tools>"))
         | (if $home == "" then . elif . == $home then "~"
            else split($home + "/") | join("~/")
-             | gsub(($home | literal_pattern) + "(?![A-Za-z0-9._-])"; "~") end)
+             | gsub(($home | literal_pattern) + "(?![A-Za-z0-9._-])"; "~")
+             | hide_folder_named_after($home; "~") end)
       else . end;
     def verdict($tests): if any($tests[]; .outcome == "failed") then "failed"
       elif any($tests[]; .outcome == "passed") then "passed" else "not_run" end;

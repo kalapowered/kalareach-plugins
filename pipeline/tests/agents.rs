@@ -197,8 +197,8 @@ fn every_record_is_as_the_record_writer_publishes_it() {
 }
 
 /// What a record names of the person beyond what the run needs, where `entry` is the build list's
-/// entry for its agent: a managed-preferences path with an account name in it; a change in the
-/// person's home named though it names no conversation of the record's own and is none of the
+/// entry for its agent: a managed-preferences path with an account name in it; a home directory,
+/// as a path or as an agent names a folder after one; a change in the person's home named though it names no conversation of the record's own and is none of the
 /// files the entry names, or names another conversation; a text whose part naming a path in the
 /// home ([`home_region`]) names an identifier that is not one of the record's own conversations;
 /// and, in a part that ran with the login where the entry names one, a text of several lines, a
@@ -215,6 +215,11 @@ fn named_beyond_the_run(record: &Value, entry: &Value) -> Vec<String> {
             && !rest.starts_with("{user}/")
         {
             problems.push(format!("the account name: {text}"));
+        }
+        // A person's home directory, as a path and as an agent names a folder after one, with the
+        // slashes joined by dashes.
+        if text.contains("/Users/") || text.contains("-Users-") {
+            problems.push(format!("a home directory: {text}"));
         }
     }
     let tests: Vec<&Value> = record["identifiers"]
@@ -1585,5 +1590,59 @@ fn the_harness_keeps_the_drivers_failed_and_named_not_run_lines_and_no_other() {
             "\"not_run environment_not_clear\"",
             "\"not_run part_failed,environment_not_read\""
         ]
+    );
+}
+
+/// A folder an agent names after a path (the slashes of the path joined by dashes, or every
+/// character that is not a letter or a digit turned into a dash) is written relative to the path,
+/// wherever it is the name of a folder, so a record never names the account in it; a text that only
+/// holds the same letters, an option or a word, is left as it is.
+#[test]
+fn a_folder_named_after_a_path_is_written_relative_to_it_and_no_other_text_changes() {
+    let mut child = std::process::Command::new("jq")
+        .arg("-L")
+        .arg(root().join("scripts"))
+        .args(["-c", "--arg", "home", "/Users/sample.name", "--arg", "run"])
+        .arg("/tmp/run")
+        .arg(
+            r#"include "record-redaction";
+               map(hide_folder_named_after($run; "<tmp>") | hide_folder_named_after($home; "~"))"#,
+        )
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .spawn()
+        .expect("jq runs");
+    let input = serde_json::json!([
+        "<tmp>/krm-1/h/.gemini/tmp/-tmp-run-krm-1-w/chats/session-1.json",
+        "x/.claude/projects/-Users-sample-name-Library-Caches-other/y",
+        "x/.gemini/tmp/-Users-sample.name-Library/y",
+        "-Users-sample-name",
+        "--tmp-runtime",
+        "--tmp-runner",
+        "-tmp-runtime",
+        "see /Users/sample.name/x and tmp-run",
+        "a-tmp-run-b"
+    ]);
+    std::io::Write::write_all(
+        child.stdin.as_mut().expect("jq's input"),
+        input.to_string().as_bytes(),
+    )
+    .expect("the texts go to jq");
+    let output = child.wait_with_output().expect("jq ends");
+    assert!(output.status.success(), "jq rewrites the texts");
+    let written: Value = serde_json::from_slice(&output.stdout).expect("jq writes JSON");
+    assert_eq!(
+        written,
+        serde_json::json!([
+            "<tmp>/krm-1/h/.gemini/tmp/<tmp>-krm-1-w/chats/session-1.json",
+            "x/.claude/projects/~-Library-Caches-other/y",
+            "x/.gemini/tmp/~-Library/y",
+            "~",
+            "--tmp-runtime",
+            "--tmp-runner",
+            "-tmp-runtime",
+            "see /Users/sample.name/x and tmp-run",
+            "a-tmp-run-b"
+        ])
     );
 }

@@ -2443,7 +2443,7 @@
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-79051f0e/h/.gemini/tmp/-Users-r-Library-Caches-kalareach-agents-runs-krm-79051f0e-w/chats/session-874374c1-51ae-4214-8b8f-592f9c9f3f87.json"
+                "path": "<tmp>/krm-79051f0e/h/.gemini/tmp/<tmp>-krm-79051f0e-w/chats/session-874374c1-51ae-4214-8b8f-592f9c9f3f87.json"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",

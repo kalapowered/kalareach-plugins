@@ -30,6 +30,17 @@ def conversation_ids: [scan(uuid_shape; "i") | ascii_downcase];
 # The text as a regular expression that matches it alone.
 def literal_pattern: gsub("(?<c>[.+*?()\\[\\]{}^$|\\\\])"; "\\\(.c)");
 
+# The names an agent gives a folder after the path given as input: its slashes joined by dashes, or
+# every character that is not a letter or a digit turned into a dash.
+def folder_names: [gsub("/"; "-"), gsub("[^A-Za-z0-9]"; "-")] | unique;
+
+# The text with each folder name of the path $path written as $to, where it is the name of a folder
+# (after a slash or at the start of the text, and followed by a dash, a slash or the end of it), so
+# that a text which only holds the same letters is left as it is.
+def hide_folder_named_after($path; $to):
+  reduce ($path | folder_names)[] as $name (.;
+    gsub("(?<lead>^|/)" + ($name | literal_pattern) + "(?=$|[/-])"; "\(.lead)" + $to));
+
 # The listed directory a "~/..." path lies in: the longest of $roots (the build list's directories
 # under "~/", "{date}" standing for a YYYY/MM/DD date and a trailing "/*" for the files directly in
 # the directory) that is the path or holds it, or "~/<unlisted>".
