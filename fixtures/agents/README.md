@@ -286,7 +286,7 @@ directory inside the run's own directory on the internal disk, every proxy varia
 port nothing listens on, and a keychain of the run's own as that home's default, so a secret an
 agent writes when it starts stays in the run and the system never asks anyone to create a keychain.
 
-The driver makes each run's folder under `--run-temp` (default `~/Library/Caches/kalareach-agents/runs`): a path of words, because an agent asked to run a command that names a file in its folder can copy a random-looking path wrongly.
+The driver makes each run's folder under `--run-temp` (default `/private/tmp/kalareach-agents`), a short path of words: an agent can copy a random-looking path wrongly, or take a path in a cache directory for a doubtful command.
 
 A part with a login runs the agent as its entry's `account` says, with no proxy variable. The
 driver always runs with a cleared environment that names only the home, the user, the temporary

@@ -55,9 +55,10 @@
 #   --turns FILE      the ledger the parts with a login charge their turns to, kept across runs
 #                     (default: KR_AGENTS_TURNS); without it those parts do not run
 #   --run-temp DIR    where the driver makes the runs' folders (default: KR_AGENTS_RUN_TEMP, or
-#                     ~/Library/Caches/kalareach-agents/runs): a path of words, because a part asks
-#                     the agent to run a command that names a file in its folder, and a model copies
-#                     the system's random-looking temporary path wrongly now and then
+#                     /private/tmp/kalareach-agents): a short path of words in a scratch directory,
+#                     because a part asks the agent to run a command that names a file in its folder,
+#                     and a model copies the system's random-looking temporary path wrongly now and
+#                     then, and takes a path in a cache directory for a doubtful command
 #   --agent PACKAGE   run this package only, as publisher/plugin; repeat for several
 #   --case PART       run this part only, such as 2b or 14.03a; repeat for several
 #   --write           write the records into fixtures/agents
@@ -128,7 +129,7 @@ core=""
 target_dir="${CARGO_TARGET_DIR:-}"
 tools="${KR_AGENTS_TOOLS:-}"
 turns="${KR_AGENTS_TURNS:-}"
-run_temp="${KR_AGENTS_RUN_TEMP:-${HOME:-}/Library/Caches/kalareach-agents/runs}"
+run_temp="${KR_AGENTS_RUN_TEMP:-/private/tmp/kalareach-agents}"
 write=0
 agents=()
 cases=()
