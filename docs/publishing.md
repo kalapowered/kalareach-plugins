@@ -176,12 +176,12 @@ A revoked release stops new bindings. An active binding receives a warning and f
 administrator's explicit disable policy; it does not change under a live request, because changing a
 binding mid-request is how a person ends up approving something other than what they read.
 
-The executable builds an index entry names are not part of the package either. They come from the
-build list and the qualification records in `fixtures/agents`, and a build is named only when its
-record shows every part of the qualification cases passed. A build is added by committing a record
-that qualifies it, and withdrawn by removing its pin or by a newly measured record that no longer
-qualifies; the next generation names it or leaves it out, and the release keeps its version and
-digest.
+The executable builds that an index entry names are not part of the package either. They come from
+the build list and the qualification records in `fixtures/agents`, and a build is named only when
+its record shows every part of the qualification cases passed. A build is added by committing a
+record that qualifies it, and withdrawn by removing its pin or by a newly measured record that no
+longer qualifies; the next generation names it or leaves it out, and the release keeps its version
+and digest.
 
 ## Delegation
 
