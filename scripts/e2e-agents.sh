@@ -46,7 +46,7 @@
 # package KR_SHELL_PACKAGES names; scripts/build-shells.sh --zsh in the core checkout builds one.
 #
 # Usage: scripts/e2e-agents.sh --core DIR [--target-dir DIR] [--tools DIR] [--turns FILE]
-#                              [--agent PACKAGE]... [--case PART]... [--write]
+#                              [--run-temp DIR] [--agent PACKAGE]... [--case PART]... [--write]
 #
 #   --core DIR        the core repository checkout whose host and driver are built and run
 #   --target-dir DIR  the Cargo target directory to build in (default: CARGO_TARGET_DIR, or the
@@ -54,6 +54,10 @@
 #   --tools DIR       where the agent builds are installed (default: KR_AGENTS_TOOLS)
 #   --turns FILE      the ledger the parts with a login charge their turns to, kept across runs
 #                     (default: KR_AGENTS_TURNS); without it those parts do not run
+#   --run-temp DIR    where the driver makes the runs' folders (default: KR_AGENTS_RUN_TEMP, or
+#                     ~/Library/Caches/kalareach-agents/runs): a path of words, because a part asks
+#                     the agent to run a command that names a file in its folder, and a model copies
+#                     the system's random-looking temporary path wrongly now and then
 #   --agent PACKAGE   run this package only, as publisher/plugin; repeat for several
 #   --case PART       run this part only, such as 2b or 14.03a; repeat for several
 #   --write           write the records into fixtures/agents
@@ -109,7 +113,7 @@ login_parts='["1", "2a", "3", "4", "7"]'
 # The environment the driver runs with, and nothing else (env -i): whatever else this shell
 # holds, a key among it, reaches no program the driver starts. A login's one variable goes to the
 # driver on a pipe instead, which is empty once the driver has read it.
-driver_environment=("HOME=${HOME:-}" "USER=${USER:-}" "LOGNAME=${LOGNAME:-}" "TMPDIR=${TMPDIR:-/tmp}"
+driver_environment=("HOME=${HOME:-}" "USER=${USER:-}" "LOGNAME=${LOGNAME:-}"
   "PATH=/usr/bin:/bin:/usr/sbin:/sbin" "LANG=en_US.UTF-8")
 for name in KR_SHELL_PACKAGES KR_SHELL_PREFIX RUST_BACKTRACE XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS; do
   if [ -n "${!name:-}" ]; then driver_environment+=("$name=${!name}"); fi
@@ -124,6 +128,7 @@ core=""
 target_dir="${CARGO_TARGET_DIR:-}"
 tools="${KR_AGENTS_TOOLS:-}"
 turns="${KR_AGENTS_TURNS:-}"
+run_temp="${KR_AGENTS_RUN_TEMP:-${HOME:-}/Library/Caches/kalareach-agents/runs}"
 write=0
 agents=()
 cases=()
@@ -147,6 +152,11 @@ while [ "$#" -gt 0 ]; do
     --turns)
       [ "$#" -ge 2 ] || usage
       turns="$2"
+      shift 2
+      ;;
+    --run-temp)
+      [ "$#" -ge 2 ] || usage
+      run_temp="$2"
       shift 2
       ;;
     --agent)
@@ -222,9 +232,13 @@ selected_agent() {
 # Every artefact of this run goes into a new directory on the internal disk, named with its links
 # resolved, as the processes that write into it name it.
 evidence="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/kalareach-agents-XXXXXX")" && pwd -P)"
-temporary="${TMPDIR:-/tmp}"
-temporary="${temporary%/}"
+# The driver's temporary directory, in which it makes every run's folder.
+temporary="${run_temp%/}"
+if ! { mkdir -p "$temporary" && chmod 700 "$temporary"; }; then
+  refuse "the runs' directory $temporary cannot be made"
+fi
 temporary_real="$(cd "$temporary" && pwd -P)"
+driver_environment+=("TMPDIR=$temporary")
 started="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 # When the run began, as `log show` reads a time.
 run_began="$(date '+%Y-%m-%d %H:%M:%S')"

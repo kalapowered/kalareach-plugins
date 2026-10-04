@@ -277,7 +277,7 @@ failed one keeps the build out. `docs/pipeline.md` describes the rest.
 ```bash
 KR_SHELL_PACKAGES=<managed shell prefix> \
   scripts/e2e-agents.sh --core <core checkout> --tools <agent builds> [--turns <ledger>] \
-    [--agent kalareach/codex] [--case 2b] [--write]
+    [--run-temp <directory>] [--agent kalareach/codex] [--case 2b] [--write]
 ```
 
 The managed shell is built in the core checkout with `scripts/build-shells.sh --zsh`. A part that
@@ -285,6 +285,8 @@ needs no login signs in nowhere and starts no turn: the agent runs with its home
 directory inside the run's own directory on the internal disk, every proxy variable at a loopback
 port nothing listens on, and a keychain of the run's own as that home's default, so a secret an
 agent writes when it starts stays in the run and the system never asks anyone to create a keychain.
+
+The driver makes each run's folder under `--run-temp` (default `~/Library/Caches/kalareach-agents/runs`): a path of words, because an agent asked to run a command that names a file in its folder can copy a random-looking path wrongly.
 
 A part with a login runs the agent as its entry's `account` says, with no proxy variable. The
 driver always runs with a cleared environment that names only the home, the user, the temporary
