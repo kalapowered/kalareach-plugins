@@ -164,7 +164,7 @@
           "Select login method"
         ],
         "budget": "claude-code",
-        "turns": 50,
+        "turns": 100,
         "directories": [
           "Library/Caches/claude-cli-nodejs"
         ],
