@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-10-04T14:49:03Z",
-    "finished": "2026-10-04T15:06:08Z",
+    "started": "2026-10-04T19:01:35Z",
+    "finished": "2026-10-04T19:18:34Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "4ae7d347348bb6eed1d3b9c7ee90c79b76e1aa3e",
+      "id": "557a136f10506468a4b1dc8c3289d64dc0d6a2e5",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "4dc0e25116bd057c676b5f49c2b1680bbebe61d5",
+        "id": "ee5db1b87ebd971cd2e0898f001cccec351e00f3",
         "modified": false
       }
     },
@@ -34,8 +34,8 @@
     "packages": [
       {
         "name": "kalareach/gemini-cli",
-        "version": "0.4.0",
-        "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+        "version": "0.5.0",
+        "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
         "generation": "snapshots/development"
       }
     ],
@@ -73,7 +73,7 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-NQKlyM",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-Bgv8mG",
     "own_home": {
       "bound_to_a_desktop": true,
       "default_keychain": "the person's login keychain",
@@ -87,12 +87,12 @@
       "number": 1,
       "group": "own-home",
       "what": "a session started with the person's own home names their login keychain",
-      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-d69514b669c616ed --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-669dac77dbe63651 --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 13,
+      "seconds": 15,
       "log": "own-home.log",
       "error": null
     },
@@ -100,12 +100,12 @@
       "number": 2,
       "group": "agents",
       "what": "part 1",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 101,
-      "seconds": 124,
+      "seconds": 102,
       "log": "gemini-cli/1.log",
       "error": null
     },
@@ -113,12 +113,12 @@
       "number": 3,
       "group": "agents",
       "what": "part 2a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 115,
+      "seconds": 112,
       "log": "gemini-cli/2a.log",
       "error": null
     },
@@ -126,12 +126,12 @@
       "number": 4,
       "group": "agents",
       "what": "part 2b",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 101,
-      "seconds": 54,
+      "seconds": 46,
       "log": "gemini-cli/2b.log",
       "error": null
     },
@@ -139,12 +139,12 @@
       "number": 5,
       "group": "agents",
       "what": "part 2c",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 101,
-      "seconds": 73,
+      "seconds": 46,
       "log": "gemini-cli/2c.log",
       "error": null
     },
@@ -152,12 +152,12 @@
       "number": 6,
       "group": "agents",
       "what": "part 3",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 126,
+      "seconds": 139,
       "log": "gemini-cli/3.log",
       "error": null
     },
@@ -165,12 +165,12 @@
       "number": 7,
       "group": "agents",
       "what": "part 4",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 104,
+      "seconds": 126,
       "log": "gemini-cli/4.log",
       "error": null
     },
@@ -178,12 +178,12 @@
       "number": 8,
       "group": "agents",
       "what": "part 5a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 47,
+      "seconds": 50,
       "log": "gemini-cli/5a.log",
       "error": null
     },
@@ -191,12 +191,12 @@
       "number": 9,
       "group": "agents",
       "what": "part 6a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 86,
+      "seconds": 85,
       "log": "gemini-cli/6a.log",
       "error": null
     },
@@ -204,12 +204,12 @@
       "number": 10,
       "group": "agents",
       "what": "part 7",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 101,
-      "seconds": 164,
+      "seconds": 160,
       "log": "gemini-cli/7.log",
       "error": null
     },
@@ -217,12 +217,12 @@
       "number": 11,
       "group": "agents",
       "what": "part 8a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 50,
+      "seconds": 66,
       "log": "gemini-cli/8a.log",
       "error": null
     },
@@ -230,12 +230,12 @@
       "number": 12,
       "group": "agents",
       "what": "part 14.03a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 13,
+      "seconds": 12,
       "log": "gemini-cli/14.03a.log",
       "error": null
     }
@@ -266,7 +266,7 @@
               "outcome": "failed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -274,29 +274,29 @@
                 "gemini-2.5-flash"
               ],
               "budget_limit": 50,
-              "budget_spent": 23,
+              "budget_spent": 34,
               "declined_requests": 0,
               "home": "run",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-7787f092/w/GEMINI.md",
-                  "<tmp>/krm-7787f092/w/.gemini",
-                  "<tmp>/krm-7787f092/w/.agents",
-                  "<tmp>/krm-7787f092/h/.gemini",
-                  "<tmp>/krm-7787f092/h/.agents",
-                  "<tmp>/krm-7787f092/agent-config/.gemini/GEMINI.md",
-                  "<tmp>/krm-7787f092/agent-config/.gemini/extensions",
-                  "<tmp>/krm-7787f092/agent-config/.gemini/commands",
-                  "<tmp>/krm-7787f092/agent-config/.gemini/skills",
-                  "<tmp>/krm-7787f092/agent-config/.gemini/agents",
-                  "<tmp>/krm-7787f092/agent-config/.gemini/policies",
-                  "<tmp>/krm-7787f092/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "<tmp>/krm-4d430735/w/GEMINI.md",
+                  "<tmp>/krm-4d430735/w/.gemini",
+                  "<tmp>/krm-4d430735/w/.agents",
+                  "<tmp>/krm-4d430735/h/.gemini",
+                  "<tmp>/krm-4d430735/h/.agents",
+                  "<tmp>/krm-4d430735/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-4d430735/agent-config/.gemini/extensions",
+                  "<tmp>/krm-4d430735/agent-config/.gemini/commands",
+                  "<tmp>/krm-4d430735/agent-config/.gemini/skills",
+                  "<tmp>/krm-4d430735/agent-config/.gemini/agents",
+                  "<tmp>/krm-4d430735/agent-config/.gemini/policies",
+                  "<tmp>/krm-4d430735/agent-config/.gemini/mcp-oauth-tokens.json",
                   "/Library/Application Support/GeminiCli",
                   "{ancestors}/.env",
                   "{ancestors}/.gemini/.env",
-                  "<tmp>/krm-7787f092/h/.env",
-                  "<tmp>/krm-7787f092/agent-config/.env",
-                  "<tmp>/krm-7787f092/agent-config/.gemini/.env"
+                  "<tmp>/krm-4d430735/h/.env",
+                  "<tmp>/krm-4d430735/agent-config/.env",
+                  "<tmp>/krm-4d430735/agent-config/.gemini/.env"
                 ],
                 "probes": [
                   {
@@ -394,7 +394,7 @@
             },
             "detection": {
               "instances": [],
-              "waited_ms": 30098
+              "waited_ms": 30097
             },
             "device_upload": {
               "call": "upload.begin",
@@ -416,8 +416,8 @@
             "image": {
               "answer": "red",
               "answered": true,
-              "code": "KR589B1330708B",
-              "file": "<tmp>/krm-7787f092/w/kr589b1330708b.png",
+              "code": "KR4FC14CE04AE7",
+              "file": "<tmp>/krm-4d430735/w/kr4fc14ce04ae7.png",
               "syntax": "@{path}"
             },
             "installed": {
@@ -426,9 +426,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "key": {
               "complete": true,
@@ -438,7 +438,7 @@
             },
             "local": {
               "seen": true,
-              "shows": "KR589B1330708B"
+              "shows": "KR4FC14CE04AE7"
             },
             "login_held": true,
             "person_files": {
@@ -448,13 +448,13 @@
               "keychain_item_rewritten": null,
               "lines_removed": [],
               "searched_for": {
-                "mark": "kr589b1330708b",
-                "run_directory": "<tmp>/krm-7787f092"
+                "mark": "kr4fc14ce04ae7",
+                "run_directory": "<tmp>/krm-4d430735"
               }
             },
             "prompt": {
-              "answer": "1654",
-              "question": "What is 829 plus 825? Reply with only the number."
+              "answer": "1280",
+              "question": "What is 503 plus 777? Reply with only the number."
             },
             "provenance": {
               "ended_before_read": 0,
@@ -463,7 +463,7 @@
                   "device": 16777234,
                   "from": "runtime",
                   "inode": 54188627,
-                  "pid": 38507,
+                  "pid": 97196,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
@@ -471,7 +471,7 @@
                 {
                   "agent_process": {
                     "from": "runtime",
-                    "pid": 38507,
+                    "pid": 97196,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
@@ -481,12 +481,12 @@
                 }
               ],
               "pids": [
-                38507,
-                38515
+                97196,
+                97234
               ],
               "sample_interval_ms": 250,
-              "samples": 214,
-              "session_path": "<tmp>/krm-7787f092/agent/current/bin:<tmp>/krm-7787f092/agent/runtime:/usr/bin:/bin",
+              "samples": 166,
+              "session_path": "<tmp>/krm-4d430735/agent/current/bin:<tmp>/krm-4d430735/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "surface": {
@@ -545,7 +545,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -553,29 +553,29 @@
                 "gemini-2.5-flash"
               ],
               "budget_limit": 50,
-              "budget_spent": 26,
+              "budget_spent": 37,
               "declined_requests": 0,
               "home": "run",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-c9fcb137/w/GEMINI.md",
-                  "<tmp>/krm-c9fcb137/w/.gemini",
-                  "<tmp>/krm-c9fcb137/w/.agents",
-                  "<tmp>/krm-c9fcb137/h/.gemini",
-                  "<tmp>/krm-c9fcb137/h/.agents",
-                  "<tmp>/krm-c9fcb137/agent-config/.gemini/GEMINI.md",
-                  "<tmp>/krm-c9fcb137/agent-config/.gemini/extensions",
-                  "<tmp>/krm-c9fcb137/agent-config/.gemini/commands",
-                  "<tmp>/krm-c9fcb137/agent-config/.gemini/skills",
-                  "<tmp>/krm-c9fcb137/agent-config/.gemini/agents",
-                  "<tmp>/krm-c9fcb137/agent-config/.gemini/policies",
-                  "<tmp>/krm-c9fcb137/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "<tmp>/krm-e28cc1af/w/GEMINI.md",
+                  "<tmp>/krm-e28cc1af/w/.gemini",
+                  "<tmp>/krm-e28cc1af/w/.agents",
+                  "<tmp>/krm-e28cc1af/h/.gemini",
+                  "<tmp>/krm-e28cc1af/h/.agents",
+                  "<tmp>/krm-e28cc1af/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-e28cc1af/agent-config/.gemini/extensions",
+                  "<tmp>/krm-e28cc1af/agent-config/.gemini/commands",
+                  "<tmp>/krm-e28cc1af/agent-config/.gemini/skills",
+                  "<tmp>/krm-e28cc1af/agent-config/.gemini/agents",
+                  "<tmp>/krm-e28cc1af/agent-config/.gemini/policies",
+                  "<tmp>/krm-e28cc1af/agent-config/.gemini/mcp-oauth-tokens.json",
                   "/Library/Application Support/GeminiCli",
                   "{ancestors}/.env",
                   "{ancestors}/.gemini/.env",
-                  "<tmp>/krm-c9fcb137/h/.env",
-                  "<tmp>/krm-c9fcb137/agent-config/.env",
-                  "<tmp>/krm-c9fcb137/agent-config/.gemini/.env"
+                  "<tmp>/krm-e28cc1af/h/.env",
+                  "<tmp>/krm-e28cc1af/agent-config/.env",
+                  "<tmp>/krm-e28cc1af/agent-config/.gemini/.env"
                 ],
                 "probes": [
                   {
@@ -712,7 +712,7 @@
             },
             "detection": {
               "instances": [],
-              "waited_ms": 30050
+              "waited_ms": 30128
             },
             "installed": {
               "grant": [
@@ -720,9 +720,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "interrupt": {
               "key": "\u001b",
@@ -743,8 +743,8 @@
               "keychain_item_rewritten": null,
               "lines_removed": [],
               "searched_for": {
-                "mark": "kr9f06a7a36c11",
-                "run_directory": "<tmp>/krm-c9fcb137"
+                "mark": "kr6d4de9718956",
+                "run_directory": "<tmp>/krm-e28cc1af"
               }
             },
             "provenance": {
@@ -754,7 +754,7 @@
                   "device": 16777234,
                   "from": "runtime",
                   "inode": 54188627,
-                  "pid": 43959,
+                  "pid": 8635,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
@@ -762,7 +762,7 @@
                 {
                   "agent_process": {
                     "from": "runtime",
-                    "pid": 43959,
+                    "pid": 8635,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
@@ -772,16 +772,16 @@
                 }
               ],
               "pids": [
-                43959,
-                43973
+                8635,
+                8647
               ],
               "sample_interval_ms": 250,
-              "samples": 217,
-              "session_path": "<tmp>/krm-c9fcb137/agent/current/bin:<tmp>/krm-c9fcb137/agent/runtime:/usr/bin:/bin",
+              "samples": 206,
+              "session_path": "<tmp>/krm-e28cc1af/agent/current/bin:<tmp>/krm-e28cc1af/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "queued": {
-              "answer": "1206",
+              "answer": "1426",
               "order": {
                 "after": {
                   "busy": true,
@@ -866,7 +866,7 @@
               "outcome": "failed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
             "after": {
               "instances": [],
@@ -875,13 +875,13 @@
             "agent_reads": [
               {
                 "call": "agent.capabilities",
-                "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                "detail": "STALE_SESSION: no application instance a54aba9e-4ae4-4328-88bc-a84cde72074f",
                 "error": null,
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.commands",
-                "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                "detail": "STALE_SESSION: no application instance a54aba9e-4ae4-4328-88bc-a84cde72074f",
                 "error": null,
                 "refused": "STALE_SESSION"
               }
@@ -972,7 +972,7 @@
               {
                 "check": "unchanged",
                 "rejected": true,
-                "said": "the instance and revision were Some(Held { instance: ApplicationInstanceId(Uuid(ed3fad46-fdfc-49ce-b517-5ee555cd37e6)), revision: AgentBindingRevision(U64(2)) }) and are None (0 live)",
+                "said": "the instance and revision were Some(Held { instance: ApplicationInstanceId(Uuid(617c78c5-06b2-468e-94f1-a23972b072b9)), revision: AgentBindingRevision(U64(2)) }) and are None (0 live)",
                 "wrong": "the binding revision moved on"
               }
             ],
@@ -995,12 +995,12 @@
             },
             "detection": {
               "instances": [],
-              "waited_ms": 30217
+              "waited_ms": 30049
             },
             "detection_control": {
               "after": {
                 "instances": [],
-                "waited_ms": 2
+                "waited_ms": 4
               },
               "breaks_property": true,
               "check": "the launched execution has ended and no instance is live",
@@ -1014,91 +1014,78 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "live_bindings": 0,
             "provenance": {
-              "ended_before_read": [
-                "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -license check"
-              ],
+              "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-99e637c9/agent/current/bin/gemini",
+                  "command": "node <tmp>/krm-b31309be/agent/current/bin/gemini",
                   "device": 16777234,
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
                   "inode": 54188627,
-                  "pid": 50204,
+                  "pid": 15606,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "command": "git rev-parse --show-toplevel",
-                  "device": 16777234,
-                  "from": "system",
-                  "image": "/usr/bin/git",
-                  "inode": 1152921500312571562,
-                  "pid": 50259,
-                  "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-99e637c9/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-b31309be/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 50204,
+                    "pid": 15606,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-99e637c9/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-b31309be/agent/current/bin/gemini",
                   "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
                   "what": "gemini"
                 }
               ],
               "pids": [
-                50204,
-                50234,
-                50259,
-                50260
+                15606,
+                15613
               ],
               "sample_interval_ms": 250,
-              "samples": 133,
-              "session_path": "<tmp>/krm-99e637c9/agent/current/bin:<tmp>/krm-99e637c9/agent/runtime:/usr/bin:/bin",
+              "samples": 132,
+              "session_path": "<tmp>/krm-b31309be/agent/current/bin:<tmp>/krm-b31309be/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "surface": {
               "answers": [
                 {
                   "call": "agent.prompt.submit",
-                  "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "detail": "STALE_SESSION: no application instance a54aba9e-4ae4-4328-88bc-a84cde72074f",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.prompt.queue",
-                  "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "detail": "STALE_SESSION: no application instance a54aba9e-4ae4-4328-88bc-a84cde72074f",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.turn.steer",
-                  "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "detail": "STALE_SESSION: no application instance a54aba9e-4ae4-4328-88bc-a84cde72074f",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.turn.cancel",
-                  "detail": "STALE_SESSION: no application instance 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "detail": "STALE_SESSION: no application instance a54aba9e-4ae4-4328-88bc-a84cde72074f",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.approval.respond",
-                  "detail": "STALE_SESSION: no pending resource fcda03f9-903a-4b7c-a974-80f4c379f917",
+                  "detail": "STALE_SESSION: no pending resource e8725478-8f01-430d-adb7-fc6b057709eb",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
@@ -1110,7 +1097,7 @@
                 },
                 {
                   "call": "plugin.action.invoke turn.cancel",
-                  "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 5fe2abfd-7d5b-4c96-8d95-9adbb1bd6430",
+                  "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to a54aba9e-4ae4-4328-88bc-a84cde72074f",
                   "error": null,
                   "refused": "STALE_SESSION"
                 }
@@ -1134,18 +1121,18 @@
               "outcome": "failed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
           "evidence": {
             "agent_reads": [
               {
                 "call": "agent.capabilities",
-                "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                "detail": "STALE_SESSION: no application instance b8dc771b-24e3-4cc2-bfe8-57a1f79dc623",
                 "error": null,
                 "refused": "STALE_SESSION"
               },
               {
                 "call": "agent.commands",
-                "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                "detail": "STALE_SESSION: no application instance b8dc771b-24e3-4cc2-bfe8-57a1f79dc623",
                 "error": null,
                 "refused": "STALE_SESSION"
               }
@@ -1153,7 +1140,7 @@
             "detected": "the host announced 0 live instance(s) for the launched execution, not one: section 12 keeps a manual launch valid through the same detection and capability process",
             "detection": {
               "instances": [],
-              "waited_ms": 30210
+              "waited_ms": 30053
             },
             "installed": {
               "grant": [
@@ -1161,82 +1148,97 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "provenance": {
-              "ended_before_read": [
-                "git rev-parse --show-toplevel",
-                "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -license check"
-              ],
+              "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-d5a6a59c/agent/current/bin/gemini",
+                  "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -license check",
+                  "device": 16777234,
+                  "from": "system",
+                  "image": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild",
+                  "inode": 12560953,
+                  "pid": 16634,
+                  "sha256": "d508f0e1901151843804e4af512d4587ad0e422039e43e14abf22792360ad3d4"
+                },
+                {
+                  "command": "node <tmp>/krm-f9da5c9a/agent/current/bin/gemini",
                   "device": 16777234,
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
                   "inode": 54188627,
-                  "pid": 71617,
+                  "pid": 16613,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                },
+                {
+                  "command": "git rev-parse --show-toplevel",
+                  "device": 16777234,
+                  "from": "system",
+                  "image": "/usr/bin/git",
+                  "inode": 1152921500312571562,
+                  "pid": 16633,
+                  "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-d5a6a59c/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-f9da5c9a/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 71617,
+                    "pid": 16613,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-d5a6a59c/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-f9da5c9a/agent/current/bin/gemini",
                   "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
                   "what": "gemini"
                 }
               ],
               "pids": [
-                71617,
-                71771,
-                71944,
-                71946
+                16613,
+                16622,
+                16633,
+                16634
               ],
               "sample_interval_ms": 250,
-              "samples": 76,
-              "session_path": "<tmp>/krm-d5a6a59c/agent/current/bin:<tmp>/krm-d5a6a59c/agent/runtime:/usr/bin:/bin",
+              "samples": 131,
+              "session_path": "<tmp>/krm-f9da5c9a/agent/current/bin:<tmp>/krm-f9da5c9a/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "surface": {
               "answers": [
                 {
                   "call": "agent.prompt.submit",
-                  "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "detail": "STALE_SESSION: no application instance b8dc771b-24e3-4cc2-bfe8-57a1f79dc623",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.prompt.queue",
-                  "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "detail": "STALE_SESSION: no application instance b8dc771b-24e3-4cc2-bfe8-57a1f79dc623",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.turn.steer",
-                  "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "detail": "STALE_SESSION: no application instance b8dc771b-24e3-4cc2-bfe8-57a1f79dc623",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.turn.cancel",
-                  "detail": "STALE_SESSION: no application instance b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "detail": "STALE_SESSION: no application instance b8dc771b-24e3-4cc2-bfe8-57a1f79dc623",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.approval.respond",
-                  "detail": "STALE_SESSION: no pending resource 2abd3a29-de6d-454c-80ec-cc07a1670c2c",
+                  "detail": "STALE_SESSION: no pending resource b9c12241-c44a-4af1-8f8a-f3c247ca3f80",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
@@ -1248,7 +1250,7 @@
                 },
                 {
                   "call": "plugin.action.invoke turn.cancel",
-                  "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to b9f17119-570e-4fa4-b588-e77be856e7bc",
+                  "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to b8dc771b-24e3-4cc2-bfe8-57a1f79dc623",
                   "error": null,
                   "refused": "STALE_SESSION"
                 }
@@ -1271,7 +1273,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -1279,29 +1281,29 @@
                 "gemini-2.5-flash"
               ],
               "budget_limit": 50,
-              "budget_spent": 28,
+              "budget_spent": 39,
               "declined_requests": 0,
               "home": "run",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-81df50eb/w/GEMINI.md",
-                  "<tmp>/krm-81df50eb/w/.gemini",
-                  "<tmp>/krm-81df50eb/w/.agents",
-                  "<tmp>/krm-81df50eb/h/.gemini",
-                  "<tmp>/krm-81df50eb/h/.agents",
-                  "<tmp>/krm-81df50eb/agent-config/.gemini/GEMINI.md",
-                  "<tmp>/krm-81df50eb/agent-config/.gemini/extensions",
-                  "<tmp>/krm-81df50eb/agent-config/.gemini/commands",
-                  "<tmp>/krm-81df50eb/agent-config/.gemini/skills",
-                  "<tmp>/krm-81df50eb/agent-config/.gemini/agents",
-                  "<tmp>/krm-81df50eb/agent-config/.gemini/policies",
-                  "<tmp>/krm-81df50eb/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "<tmp>/krm-7cfaed76/w/GEMINI.md",
+                  "<tmp>/krm-7cfaed76/w/.gemini",
+                  "<tmp>/krm-7cfaed76/w/.agents",
+                  "<tmp>/krm-7cfaed76/h/.gemini",
+                  "<tmp>/krm-7cfaed76/h/.agents",
+                  "<tmp>/krm-7cfaed76/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-7cfaed76/agent-config/.gemini/extensions",
+                  "<tmp>/krm-7cfaed76/agent-config/.gemini/commands",
+                  "<tmp>/krm-7cfaed76/agent-config/.gemini/skills",
+                  "<tmp>/krm-7cfaed76/agent-config/.gemini/agents",
+                  "<tmp>/krm-7cfaed76/agent-config/.gemini/policies",
+                  "<tmp>/krm-7cfaed76/agent-config/.gemini/mcp-oauth-tokens.json",
                   "/Library/Application Support/GeminiCli",
                   "{ancestors}/.env",
                   "{ancestors}/.gemini/.env",
-                  "<tmp>/krm-81df50eb/h/.env",
-                  "<tmp>/krm-81df50eb/agent-config/.env",
-                  "<tmp>/krm-81df50eb/agent-config/.gemini/.env"
+                  "<tmp>/krm-7cfaed76/h/.env",
+                  "<tmp>/krm-7cfaed76/agent-config/.env",
+                  "<tmp>/krm-7cfaed76/agent-config/.gemini/.env"
                 ],
                 "probes": [
                   {
@@ -1394,11 +1396,11 @@
                 "*_ENDPOINT"
               ]
             },
-            "command": "echo kreb41a8 >> <tmp>/krm-81df50eb/w/a",
+            "command": "echo kr424e17 >> <tmp>/krm-7cfaed76/w/a",
             "control": {
               "breaks_property": true,
               "check": true,
-              "command": "echo kr26c01d >> <tmp>/krm-81df50eb/w/a",
+              "command": "echo krdf0ab4 >> <tmp>/krm-7cfaed76/w/a",
               "device_refused": "LEASE_LOST",
               "executions": 0,
               "what": "a second approval with the local terminal holding the lease: it denied and the device's allow was refused"
@@ -1409,7 +1411,7 @@
               "after_the_race": 1,
               "answering_calls_marked_by": [],
               "calls_marked_by": [],
-              "conversation": "2e8845c0-df0c-4a54-9b1f-6c6afccd9062",
+              "conversation": "c4efea40-05ae-467f-9f65-a2084c115f71",
               "marked_by": "\"toolCalls\""
             },
             "detected": {
@@ -1417,7 +1419,7 @@
             },
             "detection": {
               "instances": [],
-              "waited_ms": 30146
+              "waited_ms": 30072
             },
             "executions": {
               "after_reconnecting": 1,
@@ -1429,9 +1431,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "key": {
               "complete": true,
@@ -1456,8 +1458,8 @@
               "keychain_item_rewritten": null,
               "lines_removed": [],
               "searched_for": {
-                "mark": "kr26c01deb41a8",
-                "run_directory": "<tmp>/krm-81df50eb"
+                "mark": "krdf0ab4424e17",
+                "run_directory": "<tmp>/krm-7cfaed76"
               }
             },
             "provenance": {
@@ -1467,7 +1469,7 @@
                   "device": 16777234,
                   "from": "runtime",
                   "inode": 54188627,
-                  "pid": 85739,
+                  "pid": 17655,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
@@ -1475,7 +1477,7 @@
                 {
                   "agent_process": {
                     "from": "runtime",
-                    "pid": 85739,
+                    "pid": 17655,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
@@ -1485,17 +1487,17 @@
                 }
               ],
               "pids": [
-                85739,
-                85761
+                17655,
+                17663
               ],
               "sample_interval_ms": 250,
-              "samples": 202,
-              "session_path": "<tmp>/krm-81df50eb/agent/current/bin:<tmp>/krm-81df50eb/agent/runtime:/usr/bin:/bin",
+              "samples": 210,
+              "session_path": "<tmp>/krm-7cfaed76/agent/current/bin:<tmp>/krm-7cfaed76/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "replay": {
               "checker_control_rejected": true,
-              "probe": "zqkr26c01deb41a8",
+              "probe": "zqkrdf0ab4424e17",
               "screen_checked": true,
               "typed_again": false
             },
@@ -1518,7 +1520,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -1526,29 +1528,29 @@
                 "gemini-2.5-flash"
               ],
               "budget_limit": 50,
-              "budget_spent": 30,
+              "budget_spent": 41,
               "declined_requests": 0,
               "home": "run",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-ef6175a0/w/GEMINI.md",
-                  "<tmp>/krm-ef6175a0/w/.gemini",
-                  "<tmp>/krm-ef6175a0/w/.agents",
-                  "<tmp>/krm-ef6175a0/h/.gemini",
-                  "<tmp>/krm-ef6175a0/h/.agents",
-                  "<tmp>/krm-ef6175a0/agent-config/.gemini/GEMINI.md",
-                  "<tmp>/krm-ef6175a0/agent-config/.gemini/extensions",
-                  "<tmp>/krm-ef6175a0/agent-config/.gemini/commands",
-                  "<tmp>/krm-ef6175a0/agent-config/.gemini/skills",
-                  "<tmp>/krm-ef6175a0/agent-config/.gemini/agents",
-                  "<tmp>/krm-ef6175a0/agent-config/.gemini/policies",
-                  "<tmp>/krm-ef6175a0/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "<tmp>/krm-d5cb5655/w/GEMINI.md",
+                  "<tmp>/krm-d5cb5655/w/.gemini",
+                  "<tmp>/krm-d5cb5655/w/.agents",
+                  "<tmp>/krm-d5cb5655/h/.gemini",
+                  "<tmp>/krm-d5cb5655/h/.agents",
+                  "<tmp>/krm-d5cb5655/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-d5cb5655/agent-config/.gemini/extensions",
+                  "<tmp>/krm-d5cb5655/agent-config/.gemini/commands",
+                  "<tmp>/krm-d5cb5655/agent-config/.gemini/skills",
+                  "<tmp>/krm-d5cb5655/agent-config/.gemini/agents",
+                  "<tmp>/krm-d5cb5655/agent-config/.gemini/policies",
+                  "<tmp>/krm-d5cb5655/agent-config/.gemini/mcp-oauth-tokens.json",
                   "/Library/Application Support/GeminiCli",
                   "{ancestors}/.env",
                   "{ancestors}/.gemini/.env",
-                  "<tmp>/krm-ef6175a0/h/.env",
-                  "<tmp>/krm-ef6175a0/agent-config/.env",
-                  "<tmp>/krm-ef6175a0/agent-config/.gemini/.env"
+                  "<tmp>/krm-d5cb5655/h/.env",
+                  "<tmp>/krm-d5cb5655/agent-config/.env",
+                  "<tmp>/krm-d5cb5655/agent-config/.gemini/.env"
                 ],
                 "probes": [
                   {
@@ -1646,7 +1648,7 @@
               "finished_replies": 1,
               "prompts": 1,
               "seen": true,
-              "shows": "KR6430B3C8EEEE-END"
+              "shows": "KR2C6E8B054491-END"
             },
             "control": {
               "breaks_property": true,
@@ -1655,7 +1657,7 @@
               "prompts": 2,
               "what": "the same prompt sent again"
             },
-            "conversation": "f6a011dd-0f22-43a6-9b0a-02448515efa0",
+            "conversation": "6aa39318-50e6-4c46-bd88-e150555b4c62",
             "cutoff": {
               "fresh_screens": 0,
               "reader_stopped": true
@@ -1665,7 +1667,7 @@
             },
             "detection": {
               "instances": [],
-              "waited_ms": 30001
+              "waited_ms": 30202
             },
             "installed": {
               "grant": [
@@ -1673,9 +1675,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "key": {
               "complete": true,
@@ -1685,9 +1687,9 @@
             },
             "login_held": true,
             "markers": {
-              "looked_for": "KR64",
-              "reply_begins": "KR6430B3C8EEEE-START",
-              "reply_ends": "KR6430B3C8EEEE-END",
+              "looked_for": "KR2C",
+              "reply_begins": "KR2C6E8B054491-START",
+              "reply_ends": "KR2C6E8B054491-END",
               "screen_reply_mark": "✦"
             },
             "person_files": {
@@ -1697,8 +1699,8 @@
               "keychain_item_rewritten": null,
               "lines_removed": [],
               "searched_for": {
-                "mark": "kr6430b3c8eeee",
-                "run_directory": "<tmp>/krm-ef6175a0"
+                "mark": "kr2c6e8b054491",
+                "run_directory": "<tmp>/krm-d5cb5655"
               }
             },
             "provenance": {
@@ -1708,7 +1710,7 @@
                   "device": 16777234,
                   "from": "runtime",
                   "inode": 54188627,
-                  "pid": 92378,
+                  "pid": 34586,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
@@ -1716,7 +1718,7 @@
                 {
                   "agent_process": {
                     "from": "runtime",
-                    "pid": 92378,
+                    "pid": 34586,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
@@ -1726,16 +1728,16 @@
                 }
               ],
               "pids": [
-                92378,
-                92434
+                34586,
+                34601
               ],
               "sample_interval_ms": 250,
-              "samples": 166,
-              "session_path": "<tmp>/krm-ef6175a0/agent/current/bin:<tmp>/krm-ef6175a0/agent/runtime:/usr/bin:/bin",
+              "samples": 182,
+              "session_path": "<tmp>/krm-d5cb5655/agent/current/bin:<tmp>/krm-d5cb5655/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "reconciled": {
-              "attachment": "58e7b1a2-16ae-43af-92af-96b101f9cfb9",
+              "attachment": "d7ade5e9-4a15-46fb-ae18-aca18a029001",
               "epoch": 2,
               "next_sequence": 2,
               "stale_input": "AMBIGUOUS_ATTACHMENT"
@@ -1754,7 +1756,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "after_restart": {
               "detection": {
@@ -1765,31 +1767,31 @@
                 "answers": [
                   {
                     "call": "agent.prompt.submit",
-                    "detail": "STALE_SESSION: no application instance 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "detail": "STALE_SESSION: no application instance 5f2ff354-118d-4178-8cc5-fedb77fd8845",
                     "error": null,
                     "refused": "STALE_SESSION"
                   },
                   {
                     "call": "agent.prompt.queue",
-                    "detail": "STALE_SESSION: no application instance 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "detail": "STALE_SESSION: no application instance 5f2ff354-118d-4178-8cc5-fedb77fd8845",
                     "error": null,
                     "refused": "STALE_SESSION"
                   },
                   {
                     "call": "agent.turn.steer",
-                    "detail": "STALE_SESSION: no application instance 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "detail": "STALE_SESSION: no application instance 5f2ff354-118d-4178-8cc5-fedb77fd8845",
                     "error": null,
                     "refused": "STALE_SESSION"
                   },
                   {
                     "call": "agent.turn.cancel",
-                    "detail": "STALE_SESSION: no application instance 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "detail": "STALE_SESSION: no application instance 5f2ff354-118d-4178-8cc5-fedb77fd8845",
                     "error": null,
                     "refused": "STALE_SESSION"
                   },
                   {
                     "call": "agent.approval.respond",
-                    "detail": "STALE_SESSION: no pending resource 17b99579-e58a-4b0f-8a1d-cc1d65c75941",
+                    "detail": "STALE_SESSION: no pending resource 1a5f63fb-40c6-4ca9-90d6-5f99aaeea675",
                     "error": null,
                     "refused": "STALE_SESSION"
                   },
@@ -1801,7 +1803,7 @@
                   },
                   {
                     "call": "plugin.action.invoke turn.cancel",
-                    "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 44cdfa4e-2dfd-496e-a993-cf89275177ed",
+                    "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 5f2ff354-118d-4178-8cc5-fedb77fd8845",
                     "error": null,
                     "refused": "STALE_SESSION"
                   }
@@ -1812,17 +1814,17 @@
               }
             },
             "agent_processes": [
-              "node <tmp>/krm-685e3209/agent/current/bin/gemini",
-              "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-685e3209/agent/current/bin/gemini"
+              "node <tmp>/krm-c30eda68/agent/current/bin/gemini",
+              "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-c30eda68/agent/current/bin/gemini"
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 97040 (node <tmp>/krm-685e3209/agent/current/bin/gemini), process 97048 (/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-685e3209/agent/current/bin/gemini)",
+              "check": "these have ended: process 37912 (node <tmp>/krm-c30eda68/agent/current/bin/gemini), process 37922 (/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node --max-old-space-size=12288 <tmp>/krm-c30eda68/agent/current/bin/gemini)",
               "what": "the agent ended with a second daemon kill"
             },
             "detection": {
               "instances": [],
-              "waited_ms": 30256
+              "waited_ms": 30064
             },
             "installed": {
               "grant": [
@@ -1830,51 +1832,51 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
-            "killed_daemon": 96961,
+            "killed_daemon": 37865,
             "local_terminal_input": "● 2. Trust parent folder",
             "provenance": {
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-685e3209/agent/current/bin/gemini",
+                  "command": "node <tmp>/krm-c30eda68/agent/current/bin/gemini",
                   "device": 16777234,
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
                   "inode": 54188627,
-                  "pid": 97040,
+                  "pid": 37912,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-685e3209/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-c30eda68/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 97040,
+                    "pid": 37912,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-685e3209/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-c30eda68/agent/current/bin/gemini",
                   "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
                   "what": "gemini"
                 }
               ],
               "pids": [
-                97040,
-                97048
+                37912,
+                37922
               ],
               "sample_interval_ms": 250,
-              "samples": 135,
-              "session_path": "<tmp>/krm-685e3209/agent/current/bin:<tmp>/krm-685e3209/agent/runtime:/usr/bin:/bin",
+              "samples": 140,
+              "session_path": "<tmp>/krm-c30eda68/agent/current/bin:<tmp>/krm-c30eda68/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
-            "restarted_daemon": 98490
+            "restarted_daemon": 38910
           }
         },
         {
@@ -1900,12 +1902,12 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
             "control": {
               "breaks_property": true,
-              "check": "process 3411 runs <tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js (inode 77276751), not <tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js (inode 69649850)",
-              "relaunched_process": 3411,
+              "check": "process 41583 runs <tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js (inode 77276751), not <tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js (inode 69649850)",
+              "relaunched_process": 41583,
               "relaunched_runs": {
                 "file": "<tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                 "inode": 77276751
@@ -1916,11 +1918,11 @@
               "instances": [],
               "waited_ms": 0
             },
-            "first_agent_process": 99338,
+            "first_agent_process": 39865,
             "first_binding": null,
             "first_detection": {
               "instances": [],
-              "waited_ms": 30209
+              "waited_ms": 30057
             },
             "installed": {
               "grant": [
@@ -1928,9 +1930,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "launch": "script",
             "newer": {
@@ -1948,106 +1950,126 @@
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                  "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -license check",
+                  "device": 16777234,
+                  "from": "system",
+                  "image": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild",
+                  "inode": 12560953,
+                  "pid": 39890,
+                  "sha256": "d508f0e1901151843804e4af512d4587ad0e422039e43e14abf22792360ad3d4"
+                },
+                {
+                  "command": "node <tmp>/krm-47e14a49/agent/current/bin/gemini",
                   "device": 16777234,
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
                   "inode": 54188627,
-                  "pid": 99338,
+                  "pid": 39865,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                },
+                {
+                  "command": "git rev-parse --show-toplevel",
+                  "device": 16777234,
+                  "from": "system",
+                  "image": "/usr/bin/git",
+                  "inode": 1152921500312571562,
+                  "pid": 39888,
+                  "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-47e14a49/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 99338,
+                    "pid": 39865,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-47e14a49/agent/current/bin/gemini",
                   "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
                   "what": "gemini"
                 },
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-47e14a49/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 986,
+                    "pid": 40865,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-47e14a49/agent/current/bin/gemini",
                   "sha256": "0b6e283ae88682b0e27e8ef85a608ab74807a1513dc0c053e5aa80d5b80b29ab",
                   "what": "gemini"
                 },
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-47e14a49/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 3411,
+                    "pid": 41583,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.61.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-282b14d1/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-47e14a49/agent/current/bin/gemini",
                   "sha256": "0b6e283ae88682b0e27e8ef85a608ab74807a1513dc0c053e5aa80d5b80b29ab",
                   "what": "gemini"
                 }
               ],
               "pids": [
-                986,
-                999,
-                3411,
-                3422,
-                99338,
-                99425
+                39865,
+                39873,
+                39888,
+                39890,
+                40865,
+                40878,
+                41583,
+                41590
               ],
               "sample_interval_ms": 250,
-              "samples": 260,
-              "session_path": "<tmp>/krm-282b14d1/agent/current/bin:<tmp>/krm-282b14d1/agent/runtime:/usr/bin:/bin",
+              "samples": 264,
+              "session_path": "<tmp>/krm-47e14a49/agent/current/bin:<tmp>/krm-47e14a49/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "second_binding": null,
             "second_detection": {
               "instances": [],
-              "waited_ms": 30013
+              "waited_ms": 30236
             },
             "second_surface": {
               "answers": [
                 {
                   "call": "agent.prompt.submit",
-                  "detail": "STALE_SESSION: no application instance 275ce733-15bd-4860-9820-97a37fe95677",
+                  "detail": "STALE_SESSION: no application instance 4afe5b0b-637b-459e-939d-94b833312ae3",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.prompt.queue",
-                  "detail": "STALE_SESSION: no application instance 275ce733-15bd-4860-9820-97a37fe95677",
+                  "detail": "STALE_SESSION: no application instance 4afe5b0b-637b-459e-939d-94b833312ae3",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.turn.steer",
-                  "detail": "STALE_SESSION: no application instance 275ce733-15bd-4860-9820-97a37fe95677",
+                  "detail": "STALE_SESSION: no application instance 4afe5b0b-637b-459e-939d-94b833312ae3",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.turn.cancel",
-                  "detail": "STALE_SESSION: no application instance 275ce733-15bd-4860-9820-97a37fe95677",
+                  "detail": "STALE_SESSION: no application instance 4afe5b0b-637b-459e-939d-94b833312ae3",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.approval.respond",
-                  "detail": "STALE_SESSION: no pending resource 8358ec96-972d-4f89-ae21-3c570d274349",
+                  "detail": "STALE_SESSION: no pending resource a644ea59-6b3d-49b0-a995-6184eafcd8ee",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
@@ -2059,7 +2081,7 @@
                 },
                 {
                   "call": "plugin.action.invoke turn.cancel",
-                  "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 275ce733-15bd-4860-9820-97a37fe95677",
+                  "detail": "STALE_SESSION: kalareach/gemini-cli is not bound to 4afe5b0b-637b-459e-939d-94b833312ae3",
                   "error": null,
                   "refused": "STALE_SESSION"
                 }
@@ -2094,7 +2116,7 @@
               "outcome": "failed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-d69514b669c616ed --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of GEMINI_API_KEY on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-669dac77dbe63651 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -2102,29 +2124,29 @@
                 "gemini-2.5-flash"
               ],
               "budget_limit": 50,
-              "budget_spent": 32,
+              "budget_spent": 43,
               "declined_requests": 0,
               "home": "run",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-90def3cb/w/GEMINI.md",
-                  "<tmp>/krm-90def3cb/w/.gemini",
-                  "<tmp>/krm-90def3cb/w/.agents",
-                  "<tmp>/krm-90def3cb/h/.gemini",
-                  "<tmp>/krm-90def3cb/h/.agents",
-                  "<tmp>/krm-90def3cb/agent-config/.gemini/GEMINI.md",
-                  "<tmp>/krm-90def3cb/agent-config/.gemini/extensions",
-                  "<tmp>/krm-90def3cb/agent-config/.gemini/commands",
-                  "<tmp>/krm-90def3cb/agent-config/.gemini/skills",
-                  "<tmp>/krm-90def3cb/agent-config/.gemini/agents",
-                  "<tmp>/krm-90def3cb/agent-config/.gemini/policies",
-                  "<tmp>/krm-90def3cb/agent-config/.gemini/mcp-oauth-tokens.json",
+                  "<tmp>/krm-4769fc4d/w/GEMINI.md",
+                  "<tmp>/krm-4769fc4d/w/.gemini",
+                  "<tmp>/krm-4769fc4d/w/.agents",
+                  "<tmp>/krm-4769fc4d/h/.gemini",
+                  "<tmp>/krm-4769fc4d/h/.agents",
+                  "<tmp>/krm-4769fc4d/agent-config/.gemini/GEMINI.md",
+                  "<tmp>/krm-4769fc4d/agent-config/.gemini/extensions",
+                  "<tmp>/krm-4769fc4d/agent-config/.gemini/commands",
+                  "<tmp>/krm-4769fc4d/agent-config/.gemini/skills",
+                  "<tmp>/krm-4769fc4d/agent-config/.gemini/agents",
+                  "<tmp>/krm-4769fc4d/agent-config/.gemini/policies",
+                  "<tmp>/krm-4769fc4d/agent-config/.gemini/mcp-oauth-tokens.json",
                   "/Library/Application Support/GeminiCli",
                   "{ancestors}/.env",
                   "{ancestors}/.gemini/.env",
-                  "<tmp>/krm-90def3cb/h/.env",
-                  "<tmp>/krm-90def3cb/agent-config/.env",
-                  "<tmp>/krm-90def3cb/agent-config/.gemini/.env"
+                  "<tmp>/krm-4769fc4d/h/.env",
+                  "<tmp>/krm-4769fc4d/agent-config/.env",
+                  "<tmp>/krm-4769fc4d/agent-config/.gemini/.env"
                 ],
                 "probes": [
                   {
@@ -2222,7 +2244,7 @@
               "isolated": false,
               "what": "session B's marker typed into session A"
             },
-            "conversation": "0ca0739a-7589-44d7-a6b4-961e6b291e9e",
+            "conversation": "12f2a87a-f84e-4aa2-ad67-9c877c8d4e7b",
             "failure_codes": [
               {
                 "announced": 0,
@@ -2243,9 +2265,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "key": {
               "complete": true,
@@ -2261,8 +2283,8 @@
               "keychain_item_rewritten": null,
               "lines_removed": [],
               "searched_for": {
-                "mark": "krfb83aee1b5d5",
-                "run_directory": "<tmp>/krm-90def3cb"
+                "mark": "krdd537dd4e761",
+                "run_directory": "<tmp>/krm-4769fc4d"
               }
             },
             "provenance": {
@@ -2272,7 +2294,7 @@
                   "device": 16777234,
                   "from": "runtime",
                   "inode": 54188627,
-                  "pid": 9468,
+                  "pid": 42149,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                 }
               ],
@@ -2280,7 +2302,7 @@
                 {
                   "agent_process": {
                     "from": "runtime",
-                    "pid": 9468,
+                    "pid": 42149,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
@@ -2291,7 +2313,7 @@
                 {
                   "agent_process": {
                     "from": "runtime",
-                    "pid": 18882,
+                    "pid": 43556,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
@@ -2301,14 +2323,14 @@
                 }
               ],
               "pids": [
-                9468,
-                9491,
-                18882,
-                18899
+                42149,
+                42156,
+                43556,
+                43576
               ],
               "sample_interval_ms": 250,
-              "samples": 304,
-              "session_path": "<tmp>/krm-90def3cb/agent/current/bin:<tmp>/krm-90def3cb/agent/runtime:/usr/bin:/bin",
+              "samples": 346,
+              "session_path": "<tmp>/krm-4769fc4d/agent/current/bin:<tmp>/krm-4769fc4d/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "session_a": {
@@ -2317,14 +2339,14 @@
               },
               "detection": {
                 "instances": [],
-                "waited_ms": 30257
+                "waited_ms": 30209
               },
               "owners": [
                 {
-                  "pid": 9468
+                  "pid": 42149
                 },
                 {
-                  "pid": 9491
+                  "pid": 42156
                 }
               ]
             },
@@ -2334,19 +2356,19 @@
               },
               "detection": {
                 "instances": [],
-                "waited_ms": 30166
+                "waited_ms": 30182
               },
               "owners": [
                 {
-                  "pid": 18882
+                  "pid": 43556
                 },
                 {
-                  "pid": 18899
+                  "pid": 43576
                 }
               ],
               "resumed_with": [
                 "--resume",
-                "0ca0739a-7589-44d7-a6b4-961e6b291e9e"
+                "12f2a87a-f84e-4aa2-ad67-9c877c8d4e7b"
               ],
               "same_conversation": true,
               "wrote_into_a_conversation": true
@@ -2365,7 +2387,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
             "binding": null,
             "control": {
@@ -2382,7 +2404,7 @@
             },
             "detection": {
               "instances": [],
-              "waited_ms": 30051
+              "waited_ms": 30083
             },
             "installed": {
               "grant": [
@@ -2390,66 +2412,83 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "live_bindings": 0,
             "provenance": {
-              "ended_before_read": [
-                "git rev-parse --show-toplevel"
-              ],
+              "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-79051f0e/agent/current/bin/gemini",
+                  "command": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -license check",
+                  "device": 16777234,
+                  "from": "system",
+                  "image": "/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild",
+                  "inode": 12560953,
+                  "pid": 45913,
+                  "sha256": "d508f0e1901151843804e4af512d4587ad0e422039e43e14abf22792360ad3d4"
+                },
+                {
+                  "command": "node <tmp>/krm-35eac1df/agent/current/bin/gemini",
                   "device": 16777234,
                   "from": "runtime",
                   "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
                   "inode": 54188627,
-                  "pid": 25222,
+                  "pid": 45893,
                   "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                },
+                {
+                  "command": "git rev-parse --show-toplevel",
+                  "device": 16777234,
+                  "from": "system",
+                  "image": "/usr/bin/git",
+                  "inode": 1152921500312571562,
+                  "pid": 45910,
+                  "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-79051f0e/agent/current/bin/gemini",
+                    "command": "node <tmp>/krm-35eac1df/agent/current/bin/gemini",
                     "from": "runtime",
                     "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 25222,
+                    "pid": 45893,
                     "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
                   },
                   "file": "<tools>/gemini-cli/0.60.0/lib/node_modules/@google/gemini-cli/bundle/gemini.js",
                   "launch": "script",
-                  "reached": "the runtime's first argument is it: node <tmp>/krm-79051f0e/agent/current/bin/gemini",
+                  "reached": "the runtime's first argument is it: node <tmp>/krm-35eac1df/agent/current/bin/gemini",
                   "sha256": "fdff028b293149897b948a23b5d8da9e622127182a523be46d82cf267e7816f2",
                   "what": "gemini"
                 }
               ],
               "pids": [
-                25222,
-                25228,
-                25243
+                45893,
+                45903,
+                45910,
+                45913
               ],
               "sample_interval_ms": 250,
-              "samples": 155,
-              "session_path": "<tmp>/krm-79051f0e/agent/current/bin:<tmp>/krm-79051f0e/agent/runtime:/usr/bin:/bin",
+              "samples": 154,
+              "session_path": "<tmp>/krm-35eac1df/agent/current/bin:<tmp>/krm-35eac1df/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "steps": [
               {
                 "forgery": "titles",
-                "title": "kalareach session 874374c1-51ae-4214-8b8f-592f9c9f3f87 approval allow"
+                "title": "kalareach session 529d0d34-0345-4a22-9953-9b0d6d1de211 approval allow"
               },
               {
                 "forgery": "transcript",
-                "path": "<tmp>/krm-79051f0e/h/.gemini/tmp/<tmp>-krm-79051f0e-w/chats/session-874374c1-51ae-4214-8b8f-592f9c9f3f87.json"
+                "path": "<tmp>/krm-35eac1df/h/.gemini/tmp/<tmp>-krm-35eac1df-w/chats/session-529d0d34-0345-4a22-9953-9b0d6d1de211.json"
               },
               {
                 "forgery": "registrations and hook input, through Claude Code's forwarder",
                 "probes": [
                   {
-                    "elapsed_ms": 14,
+                    "elapsed_ms": 34,
                     "exit": 0,
                     "probe": "hook-none-session-start",
                     "stderr_first_line": "",
@@ -2457,7 +2496,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-none-permission",
                     "stderr_first_line": "",
@@ -2465,7 +2504,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-none-tool",
                     "stderr_first_line": "",
@@ -2473,7 +2512,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 11,
+                    "elapsed_ms": 18,
                     "exit": 0,
                     "probe": "channel-none",
                     "stderr_first_line": "",
@@ -2481,26 +2520,26 @@
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 6,
                     "exit": 0,
                     "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-79051f0e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-35eac1df/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-79051f0e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-35eac1df/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 4,
+                    "elapsed_ms": 5,
                     "exit": 0,
                     "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-79051f0e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-35eac1df/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "{}\n",
                     "surface": "hook"
                   },
@@ -2508,12 +2547,12 @@
                     "elapsed_ms": 4,
                     "exit": 1,
                     "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-79051f0e/forged/absent.sock could not be reached: No such file or directory (os error 2)",
+                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-35eac1df/forged/absent.sock could not be reached: No such file or directory (os error 2)",
                     "stdout": "",
                     "surface": "channel"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 8,
                     "exit": 0,
                     "probe": "hook-worker-session-start",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -2521,7 +2560,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 8,
                     "exit": 0,
                     "probe": "hook-worker-permission",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -2529,7 +2568,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 8,
+                    "elapsed_ms": 7,
                     "exit": 0,
                     "probe": "hook-worker-tool",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -2537,7 +2576,7 @@
                     "surface": "hook"
                   },
                   {
-                    "elapsed_ms": 7,
+                    "elapsed_ms": 11,
                     "exit": 1,
                     "probe": "channel-worker",
                     "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
@@ -2587,7 +2626,7 @@
               "outcome": "not_run"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-d69514b669c616ed --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/gemini-cli/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/gemini-cli/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/gemini-cli/key-scan.jsonl <target>/debug/deps/cases-669dac77dbe63651 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "installed": {
               "grant": [
@@ -2595,9 +2634,9 @@
                 "native_bridge.install",
                 "upstream.action"
               ],
-              "manifest_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b",
+              "manifest_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1",
               "plugin_id": "kalareach/gemini-cli",
-              "version": "0.4.0"
+              "version": "0.5.0"
             },
             "provenance": {
               "ended_before_read": [],
@@ -2630,7 +2669,7 @@
       "operation": "terminal",
       "declared": null,
       "source": "plugin.json",
-      "package_digest": "4022d82656b5fbb7ad4e380978194ef3c2fa08aa669ff1890559e2b57a5e567b"
+      "package_digest": "fee5ede173ebfa22f9cab27f1f9a06185a01aa24d0575ca893cdfe51a02308d1"
     }
   ],
   "failures_outside_identifiers": [],
