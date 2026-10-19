@@ -456,16 +456,20 @@ def cases(scratch, expect):
     status, output = consumer.run()
     expect("a paths override in the Cargo configuration is refused", status == 1 and "`paths`" in output, output)
 
-    for name, old, new in [
-        ("a branch", f'rev = "{pinned}"', 'branch = "main"'),
-        ("a tag", f'rev = "{pinned}"', 'tag = "packages/v0.64.0"'),
-        ("an abbreviated revision", f'rev = "{pinned}"', f'rev = "{pinned[:12]}"'),
-        ("no revision", f', rev = "{pinned}"', ""),
+    for name, old, new, said in [
+        ("a branch", f'rev = "{pinned}"', 'branch = "main"', "follows a branch or a tag"),
+        ("a tag", f'rev = "{pinned}"', 'tag = "packages/v0.64.0"', "follows a branch or a tag"),
+        ("an abbreviated revision", f'rev = "{pinned}"', f'rev = "{pinned[:12]}"', "full 40-digit"),
+        ("no revision", f', rev = "{pinned}"', "", "full 40-digit"),
     ]:
         consumer = Consumer(scratch, world)
         consumer.edit("Cargo.toml", old, new)
         status, output = consumer.run()
-        expect(f"{name} is not a pin", status == 1 and "kr-plugin-sdk" in output, output)
+        expect(
+            f"{name} is not a pin",
+            status == 1 and "kr-plugin-sdk" in output and said in output,
+            output,
+        )
 
     consumer = Consumer(scratch, world)
     consumer.edit("Cargo.toml", f'{{ git = "{CORE_URL}.git", rev = "{pinned}" }}', '"0.1.0"')
@@ -487,10 +491,16 @@ def cases(scratch, expect):
 
     # A tag that carries the first digits of a commit but sits on another one is no release of it.
     liar = World(os.path.join(scratch, "liar"))
-    git(liar.core, "tag", f"packages/v9.9.9+{liar.unreleased[:12]}", liar.released)
+    liar_tag = f"packages/v9.9.9+{liar.unreleased[:12]}"
+    git(liar.core, "tag", liar_tag, liar.released)
+    liar.publish(liar_tag, liar.unreleased)
     consumer = Consumer(scratch, liar, revision=liar.unreleased)
     status, output = consumer.run()
-    expect("a release tag on another commit does not release the revision", status == 1, output)
+    expect(
+        "a release tag on another commit does not release the revision, whatever its sums say",
+        status == 1 and "not the commit of any package release tag" in output,
+        output,
+    )
 
     unpublished = World(os.path.join(scratch, "unpublished"))
     shutil.rmtree(unpublished.releases)
