@@ -79,16 +79,25 @@ def same_repository(url):
     it. The reading is close to Cargo's, not the same: control characters at the ends and tabs and
     line breaks vanish; a web scheme takes any number of slashes and backslashes for slashes; a
     host is percent-decoded and put through NFKC, lower case and IDNA, and loses a trailing dot, a
-    port and user information; dot segments are resolved as a browser resolves
-    them and empty ones dropped; a trailing `.git` or slash does not count; the scp-like form is
-    read too. Cargo writes a source into `Cargo.lock` in its own canonical form, which the lock
-    rule reads, and that is what holds any spelling this misses."""
-    text = re.sub(r"[\t\r\n]", "", url).strip("".join(map(chr, range(0x21)))).removeprefix("git+")
+    port and user information; dot segments are resolved as a browser resolves them and empty ones
+    dropped; a trailing `.git` or slash does not count; the scp-like form is read too. Git decodes
+    a whole URL before it splits it, so a URL that is not a web one is read again after a
+    percent-decoding of all of it. Cargo writes a source into `Cargo.lock` in its own canonical
+    form, which the lock rule reads, and that is what holds any spelling this misses."""
+    text = re.sub(r"[\t\r\n]", "", url).strip("".join(map(chr, range(0x21))))
     scheme = re.match(r"\A([A-Za-z][A-Za-z0-9+.-]*):", text)
     web = scheme is not None and scheme.group(1).lower() in ("http", "https")
     if web:
         text = re.sub(r"\A[A-Za-z]+:[/\\]*", lambda found: found.group().split(":")[0].lower() + "://", text)
         text = text.replace("\\", "/")
+    return names_core(text) or (not web and names_core(urllib.parse.unquote(text)))
+
+
+# Code points that a browser's host mapping drops and IDNA 2003 does not know.
+IGNORED_IN_HOSTS = re.compile("[\u180f\u2064\U0001bca0-\U0001bca3\U000e0100-\U000e01ef]")
+
+
+def names_core(text):
     if "://" in text:
         try:
             parts = urllib.parse.urlsplit(text)
@@ -100,7 +109,7 @@ def same_repository(url):
         if match is None:
             return False
         host, path = match.groups()
-    host = unicodedata.normalize("NFKC", urllib.parse.unquote(host)).lower()
+    host = IGNORED_IN_HOSTS.sub("", unicodedata.normalize("NFKC", urllib.parse.unquote(host))).lower()
     try:
         host = host.encode("idna").decode("ascii")
     except UnicodeError:
@@ -487,7 +496,7 @@ def self_test():
     results = []
 
     def expect(name, condition, detail=""):
-        print(("ok    " if condition else "FAIL  ") + f"{KEY}: {name}")
+        print(("ok    " if condition else "FAIL  ") + f"{KEY}: {name}".encode("ascii", "backslashreplace").decode())
         if not condition and detail:
             print(textwrap.indent(detail.rstrip(), "      "))
         results.append(bool(condition))
@@ -620,6 +629,12 @@ def cases(scratch, expect):
         "https://github\u3002com/kalapowered/kalareach",
         "HTTPS:github.com/kalapowered/kalareach",
         "ssh://git@%67ithub.com/kalapowered/kalareach.git",
+        "ssh://git%40github.com/kalapowered/kalareach.git",
+        "ssh://git@github.com%2Fkalapowered%2Fkalareach.git",
+        "ssh://git@github.com%3A22/kalapowered/kalareach.git",
+        "git+ssh://git%40github.com/kalapowered/kalareach.git",
+        "https://git\u2064hub.com/kalapowered/kalareach",
+        "https://github.com/kalapowered/./kalareach",
     ]:
         consumer = Consumer(scratch, world)
         consumer.edit("Cargo.toml", f"{CORE_URL}.git", toml_text(form))
@@ -658,6 +673,52 @@ def cases(scratch, expect):
             status == 1 and "not fetched from the core repository" in output,
             output,
         )
+
+    for url in (
+        "\\u0001" + f"{CORE_URL}.git",
+        f"{CORE_URL}.git" + "\\u001f",
+        "\\u0001https:\\\\github.com\\\\kalapowered\\\\kalareach",
+    ):
+        consumer = Consumer(scratch, world)
+        consumer.edit("Cargo.toml", f"{CORE_URL}.git", url)
+        status, output = consumer.run()
+        expect("a control character at an end of the core URL is ignored, as it is by Cargo", status == 0, output)
+
+    consumer = Consumer(scratch, world)
+    consumer.edit(
+        "pipeline/Cargo.toml",
+        "serde.workspace = true",
+        'serde.workspace = true\nkr-fork = { git = "https://a]@evil.example/kalapowered/kalareach.git", branch = "main" }',
+    )
+    status, output = consumer.run()
+    expect(
+        "a URL that cannot be parsed is taken for the core repository's and held to a revision",
+        status == 1 and "follows a branch or a tag" in output,
+        output,
+    )
+
+    consumer = Consumer(scratch, world)
+    consumer.put("extra/Cargo.toml", '[package]\nname = "kr_extra"\nversion = "0.1.0"\n')
+    consumer.edit(
+        "Cargo.lock",
+        '[[package]]\nname = "kr-plugin-sdk"',
+        '[[package]]\nname = "kr_extra"\nversion = "0.1.0"\n\n[[package]]\nname = "kr-plugin-sdk"',
+    )
+    status, output = consumer.run()
+    expect(
+        "a package named kr_ that the lock file holds from no source is refused, although a manifest declares it",
+        status == 1 and "locks the core crate kr_extra from no source" in output,
+        output,
+    )
+
+    consumer = Consumer(scratch, world)
+    consumer.edit("Cargo.lock", f"rev={pinned}#{pinned}", f"rev={world.unreleased}#{pinned}")
+    status, output = consumer.run()
+    expect(
+        "a lock file entry whose query names another revision than the pin is refused, although its commit is the pin",
+        status == 1 and "not to the pinned revision" in output,
+        output,
+    )
 
     for key, entry in [
         ("kr_plugin_sdk", '{ git = "https://example.invalid/fork.git", branch = "main" }'),
