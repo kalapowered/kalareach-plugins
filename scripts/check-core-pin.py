@@ -25,7 +25,8 @@ packages for a contract nobody else can reproduce. So this reads every tracked `
     `SHA512SUMS` says which commit it was packed from, so both are read.
 
 It reads the files Git tracks in this repository. A Cargo configuration outside it (a parent
-directory, `CARGO_HOME`) is not read, and a hosted runner has none.
+directory, `CARGO_HOME`) is not read, and a hosted runner has none; a tracked link or submodule
+named `.cargo` hides one inside the tree, so it is refused.
 
 Reading the tags and the release needs the network, and a source that cannot be read is a failure,
 never a pass. `--source` and `--releases` name another place to read them from, which is how
@@ -37,6 +38,7 @@ in the consumer: the check must refuse every one and pass the pin as it should b
 
 import argparse
 import os
+import posixpath
 import re
 import shutil
 import subprocess
@@ -63,12 +65,19 @@ FETCH_SECONDS = 30
 
 
 def same_repository(url):
-    """Whether a Git URL names the core repository, in its https, ssh or scp-like form."""
-    text = url.lower().strip().rstrip("/").removesuffix(".git")
-    text = re.sub(r"\A(?:git\+)?(?:https?|ssh|git)://", "", text)
-    text = text.removeprefix("git@").replace("github.com:", "github.com/", 1)
-    text = text.removeprefix("www.")
-    return text == CORE_URL.removeprefix("https://")
+    """Whether a Git URL names the core repository, as Cargo reads it: https, ssh or the scp-like
+    form, any port, any case, with a trailing `.git` or slash and `.` and `..` parts resolved."""
+    text = url.strip().removeprefix("git+")
+    if "://" in text:
+        parts = urllib.parse.urlsplit(text)
+        host, path = parts.hostname or "", parts.path
+    else:
+        match = re.match(r"\A(?:[^@/\s]+@)?([^:/\s]+):(.+)\Z", text)
+        if match is None:
+            return False
+        host, path = match.groups()
+    path = posixpath.normpath("/" + path.lstrip("/")).lower().removesuffix(".git")
+    return host.lower() == "github.com" and path == "/kalapowered/kalareach"
 
 
 def tracked(root):
@@ -108,6 +117,10 @@ def read_pin(root, findings):
     configs = [path for path in files if path.endswith((".cargo/config.toml", ".cargo/config"))]
     revisions = set()
     members = set()
+    # Git lists a link or a submodule as one entry and never looks through it, and Cargo does.
+    for path in files:
+        if os.path.basename(path) == ".cargo":
+            findings.append(f"{path} is a link or a submodule, so the configuration under it is not read")
 
     def load(path):
         try:
@@ -189,7 +202,9 @@ def check_lock(root, files, revision, members, findings):
         name = package.get("name", "?")
         source = package.get("source")
         if source is None:
-            if name not in members:
+            if name.startswith("kr-"):
+                findings.append(f"Cargo.lock locks the core crate {name} from no source")
+            elif name not in members:
                 findings.append(f"Cargo.lock holds {name} from no source, and no manifest here declares it")
             continue
         core = False
@@ -403,7 +418,7 @@ class Consumer:
         git(self.directory, "add", "-A")
         done = subprocess.run(
             [
-                sys.executable, SCRIPT, "check",
+                sys.executable, "-I", SCRIPT, "check",
                 "--source", source or self.world.core,
                 "--releases", self.world.releases_url(),
             ],
@@ -499,15 +514,66 @@ def cases(scratch, expect):
     status, output = consumer.run()
     expect("a [replace] entry is refused", status == 1 and "uses `[replace]`" in output, output)
 
+    for form in [
+        "ssh://git@github.com/kalapowered/kalareach.git",
+        "git@github.com:kalapowered/kalareach.git",
+        "https://github.com:443/kalapowered/kalareach.git",
+        "https://GitHub.com/KalaPowered/KalaReach/",
+        "https://github.com/kalapowered/other/../kalareach.git",
+    ]:
+        consumer = Consumer(scratch, world)
+        consumer.edit(
+            "Cargo.toml",
+            'serde = "=1.0.0"\n',
+            f'serde = "=1.0.0"\n\n[patch."{form}"]\n'
+            'companion-platform = { git = "https://example.invalid/fork.git", branch = "main" }\n',
+        )
+        status, output = consumer.run()
+        expect(
+            f"a patch of the core repository's own source is refused when it is written {form}",
+            status == 1 and "patches the core repository's own source" in output,
+            output,
+        )
+
     consumer = Consumer(scratch, world)
     consumer.edit(
-        "Cargo.toml",
-        'serde = "=1.0.0"\n',
-        'serde = "=1.0.0"\n\n[patch."ssh://git@github.com/kalapowered/kalareach.git"]\n'
-        'companion-platform = { git = "https://example.invalid/fork.git", branch = "main" }\n',
+        "pipeline/Cargo.toml",
+        "serde.workspace = true",
+        'serde.workspace = true\nother = { git = "https://github.com/someone/kalareach.git", rev = "' + "1" * 40 + '" }',
     )
     status, output = consumer.run()
-    expect("a patch of the core repository's own source is refused, in any form of its URL", status == 1 and "patches the core repository's own source" in output, output)
+    expect("a dependency from another repository with a similar name is not a core dependency", status == 0, output)
+
+    consumer = Consumer(scratch, world)
+    ssh = "ssh://git@github.com/kalapowered/kalareach.git"
+    consumer.edit("Cargo.toml", f"{CORE_URL}.git", ssh)
+    consumer.edit("Cargo.lock", f"git+{CORE_URL}.git", f"git+{ssh}")
+    status, output = consumer.run()
+    expect("the core repository in its ssh form is held to the same pin and passes at it", status == 0, output)
+
+    consumer = Consumer(scratch, world)
+    os.symlink("tools/cargo", os.path.join(consumer.directory, ".cargo"))
+    consumer.put("tools/cargo/config.toml", 'paths = ["../kalareach"]\n')
+    status, output = consumer.run()
+    expect(
+        "a link named .cargo, which hides the configuration under it, is refused",
+        status == 1 and ".cargo is a link or a submodule" in output,
+        output,
+    )
+
+    consumer = Consumer(scratch, world)
+    consumer.put("extra/Cargo.toml", '[package]\nname = "kr-extra"\nversion = "0.1.0"\n')
+    consumer.edit(
+        "Cargo.lock",
+        '[[package]]\nname = "kr-plugin-sdk"',
+        '[[package]]\nname = "kr-extra"\nversion = "0.1.0"\n\n[[package]]\nname = "kr-plugin-sdk"',
+    )
+    status, output = consumer.run()
+    expect(
+        "a core crate that the lock file holds from no source is refused, although a manifest declares it",
+        status == 1 and "locks the core crate kr-extra from no source" in output,
+        output,
+    )
 
     consumer = Consumer(scratch, world)
     consumer.edit("pipeline/Cargo.toml", "serde.workspace = true", 'serde.workspace = true\nsdk = { package = "kr-plugin-sdk", version = "0.1.0" }')
