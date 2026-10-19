@@ -92,8 +92,11 @@ jobs:
   # local-only record, credential or build-agent instruction file, including one added in a commit
   # and deleted in a later commit of the same push. The history comes whole because a push names
   # the commit it replaced and a pull request the branch it merges into.
+  #
+  # KR-REQ-04.18: the catalogue consumes the core repository's SDK at one revision that a package
+  # release was packed from, through no path dependency.
   records:
-    name: outgoing records
+    name: outgoing records and the core pin
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -103,7 +106,9 @@ jobs:
           fetch-depth: 0
 
       - name: Test the refusals
-        run: python3 scripts/check-outgoing-records.py self-test
+        run: |
+          python3 scripts/check-outgoing-records.py self-test
+          python3 scripts/check-core-pin.py self-test
 
       - name: Check the commits and the packages
         env:
@@ -112,3 +117,6 @@ jobs:
           python3 scripts/check-outgoing-records.py check
           --package-dir 'plugins/*/*'
           --package-dir 'snapshots/development/targets/packages/*/*/*'
+
+      - name: Hold the core dependency to a release
+        run: python3 scripts/check-core-pin.py check
