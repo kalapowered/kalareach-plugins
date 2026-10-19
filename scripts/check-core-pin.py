@@ -9,16 +9,23 @@ built against a checkout on somebody's disk, or against a revision no release na
 packages for a contract nobody else can reproduce. So this reads every tracked `Cargo.toml`,
 `Cargo.lock` and Cargo configuration file and refuses:
 
-  * a path dependency, in any dependency table, in a `[patch]` or `[replace]` entry, and a
-    configuration file's `paths` override. A path names a directory of the machine that built it;
+  * a path dependency, in any dependency table or `[patch]` entry, and a configuration file's
+    `paths` override. A path names a directory of the machine that built it. `[replace]`, a
+    `[patch]` of the core repository's own source, and a configuration file's `[source]` table or
+    `include` are refused outright: each moves what Cargo builds away from the pinned revision
+    while the manifests and the lock file still name it;
   * a core dependency (a crate named `kr-*`, or one fetched from the core repository) that is not a
     Git dependency on that repository at a full 40-digit revision. A branch, a tag, an abbreviated
     revision and a registry version can each move or name something else;
-  * more than one revision, and a lock file that names another revision than the manifests do, or
-    holds a package from no source that no manifest here declares, or is not tracked;
+  * more than one revision, and a lock file that is not tracked, that locks any package from the
+    core repository (or any crate named `kr-*`, whatever its source) to another revision, or that
+    holds a package from no source that no manifest here declares;
   * a revision that no package release of the core repository was packed from. A release is a tag
     `packages/v<version>+<first 12 digits of the commit>` on that very commit, and its published
     `SHA512SUMS` says which commit it was packed from, so both are read.
+
+It reads the files Git tracks in this repository. A Cargo configuration outside it (a parent
+directory, `CARGO_HOME`) is not read, and a hosted runner has none.
 
 Reading the tags and the release needs the network, and a source that cannot be read is a failure,
 never a pass. `--source` and `--releases` name another place to read them from, which is how
@@ -56,7 +63,12 @@ FETCH_SECONDS = 30
 
 
 def same_repository(url):
-    return url.lower().rstrip("/").removesuffix(".git") == CORE_URL
+    """Whether a Git URL names the core repository, in its https, ssh or scp-like form."""
+    text = url.lower().strip().rstrip("/").removesuffix(".git")
+    text = re.sub(r"\A(?:git\+)?(?:https?|ssh|git)://", "", text)
+    text = text.removeprefix("git@").replace("github.com:", "github.com/", 1)
+    text = text.removeprefix("www.")
+    return text == CORE_URL.removeprefix("https://")
 
 
 def tracked(root):
@@ -80,7 +92,7 @@ def entries(document):
                     if isinstance(table, dict):
                         yield f"patch.{source}", table
             elif key == "replace":
-                yield "replace", value
+                continue
             else:
                 yield from tables(value, here)
 
@@ -114,6 +126,17 @@ def read_pin(root, findings):
             members.add(package["name"])
         if path in configs and "paths" in document:
             findings.append(f"{path} overrides dependencies with the directories in `paths`")
+        if path in configs and "source" in document:
+            findings.append(f"{path} replaces where Cargo fetches a source from, in `source`")
+        if path in configs and "include" in document:
+            findings.append(f"{path} includes other configuration files, which are not read")
+        if "replace" in document:
+            findings.append(f"{path} uses `[replace]`, which redirects a package away from its pin")
+        patches = document.get("patch")
+        if isinstance(patches, dict):
+            for source in patches:
+                if same_repository(source):
+                    findings.append(f"{path} patches the core repository's own source")
         for table, name, specification in entries(document):
             where = f"{path}: {table}.{name}"
             if not isinstance(specification, dict):
@@ -169,28 +192,35 @@ def check_lock(root, files, revision, members, findings):
             if name not in members:
                 findings.append(f"Cargo.lock holds {name} from no source, and no manifest here declares it")
             continue
-        if not isinstance(source, str) or not source.startswith("git+"):
-            continue
-        url, _, fragment = source[len("git+"):].partition("#")
-        base, _, query = url.partition("?")
-        if not same_repository(base):
-            continue
-        from_core += 1
-        if query != f"rev={revision}" or fragment != revision:
-            findings.append(f"Cargo.lock locks {name} to {source}, not to the pinned revision")
+        core = False
+        if isinstance(source, str) and source.startswith("git+"):
+            url, _, fragment = source[len("git+"):].partition("#")
+            base, _, query = url.partition("?")
+            core = same_repository(base)
+        if core:
+            from_core += 1
+            if query != f"rev={revision}" or fragment != revision:
+                findings.append(f"Cargo.lock locks {name} to {source}, not to the pinned revision")
+        elif name.startswith("kr-"):
+            findings.append(f"Cargo.lock locks the core crate {name} from {source}, not from the core repository")
     if from_core == 0:
         findings.append("Cargo.lock locks no package from the core repository")
 
 
 def read_release(root, revision, source, releases, findings):
     """Holds the revision to a package release: a tag on that commit, and the release's own sums."""
-    done = subprocess.run(
-        ["git", "ls-remote", "--tags", source, "refs/tags/packages/v*"],
-        cwd=root,
-        capture_output=True,
-        text=True,
-        env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
-    )
+    try:
+        done = subprocess.run(
+            ["git", "ls-remote", "--tags", source, "refs/tags/packages/v*"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+            timeout=FETCH_SECONDS * 4,
+        )
+    except subprocess.TimeoutExpired:
+        findings.append(f"the tags of {source} could not be read in time")
+        return None
     if done.returncode != 0:
         findings.append(f"the tags of {source} could not be read: {done.stderr.strip()}")
         return None
@@ -434,8 +464,6 @@ def cases(scratch, expect):
          'serde.workspace = true\n\n[target.\'cfg(unix)\'.dependencies]\nhelper = { path = "../helper" }'),
         ("in a patch", "Cargo.toml",
          'serde = "=1.0.0"\n', f'serde = "=1.0.0"\n\n[patch.crates-io]\nserde = {{ path = "../serde" }}\n'),
-        ("in a dependency written as its own table", "pipeline/Cargo.toml",
-         "serde.workspace = true", 'serde.workspace = true\n\n[dependencies.helper]\npath = "../helper"'),
     ]:
         consumer = Consumer(scratch, world)
         consumer.edit(path, old, new)
@@ -450,6 +478,41 @@ def cases(scratch, expect):
     consumer.put(".cargo/config.toml", '[patch."https://github.com/kalapowered/kalareach.git"]\nkr-plugin-sdk = { path = "../kalareach/crates/kr-plugin-sdk" }\n')
     status, output = consumer.run()
     expect("a path patch in the Cargo configuration is refused", status == 1 and "is a path dependency" in output, output)
+
+    consumer = Consumer(scratch, world)
+    consumer.put(
+        ".cargo/config.toml",
+        '[source.core]\ngit = "https://github.com/kalapowered/kalareach.git"\n'
+        f'rev = "{pinned}"\nreplace-with = "elsewhere"\n\n'
+        '[source.elsewhere]\ngit = "https://example.invalid/fork.git"\nbranch = "main"\n',
+    )
+    status, output = consumer.run()
+    expect("a source replacement in the Cargo configuration is refused", status == 1 and "replaces where Cargo fetches" in output, output)
+
+    consumer = Consumer(scratch, world)
+    consumer.put(".cargo/config.toml", 'include = "elsewhere.toml"\n')
+    status, output = consumer.run()
+    expect("an included Cargo configuration file, which is not read, is refused", status == 1 and "includes other configuration" in output, output)
+
+    consumer = Consumer(scratch, world)
+    consumer.edit("Cargo.toml", 'serde = "=1.0.0"\n', 'serde = "=1.0.0"\n\n[replace]\n"serde:1.0.0" = { git = "https://example.invalid/serde.git", branch = "main" }\n')
+    status, output = consumer.run()
+    expect("a [replace] entry is refused", status == 1 and "uses `[replace]`" in output, output)
+
+    consumer = Consumer(scratch, world)
+    consumer.edit(
+        "Cargo.toml",
+        'serde = "=1.0.0"\n',
+        'serde = "=1.0.0"\n\n[patch."ssh://git@github.com/kalapowered/kalareach.git"]\n'
+        'companion-platform = { git = "https://example.invalid/fork.git", branch = "main" }\n',
+    )
+    status, output = consumer.run()
+    expect("a patch of the core repository's own source is refused, in any form of its URL", status == 1 and "patches the core repository's own source" in output, output)
+
+    consumer = Consumer(scratch, world)
+    consumer.edit("pipeline/Cargo.toml", "serde.workspace = true", 'serde.workspace = true\nsdk = { package = "kr-plugin-sdk", version = "0.1.0" }')
+    status, output = consumer.run()
+    expect("a core crate renamed on import is still a core crate", status == 1 and "not fetched from the core repository" in output, output)
 
     consumer = Consumer(scratch, world)
     consumer.put(".cargo/config.toml", 'paths = ["../kalareach"]\n')
@@ -502,6 +565,18 @@ def cases(scratch, expect):
         output,
     )
 
+    # A release-shaped tag whose digits are not the first of the commit it sits on.
+    digits = World(os.path.join(scratch, "digits"))
+    git(digits.core, "tag", "-d", digits.tag)
+    git(digits.core, "tag", f"packages/v0.64.0+{'0' * 12}", digits.released)
+    consumer = Consumer(scratch, digits)
+    status, output = consumer.run()
+    expect(
+        "a release tag that carries other digits than its commit's is no release of it",
+        status == 1 and "not the commit of any package release tag" in output,
+        output,
+    )
+
     unpublished = World(os.path.join(scratch, "unpublished"))
     shutil.rmtree(unpublished.releases)
     consumer = Consumer(scratch, unpublished)
@@ -522,6 +597,19 @@ def cases(scratch, expect):
         output,
     )
 
+    renamed = World(os.path.join(scratch, "renamed"))
+    renamed.publish(renamed.tag, renamed.released)
+    sums = os.path.join(renamed.releases, *renamed.tag.split("/"), "SHA512SUMS")
+    with open(sums, "w", encoding="utf-8") as handle:
+        handle.write(f"# The generated packages, packed from commit {renamed.released}.\n# Release tag packages/v9.9.9+{renamed.released[:12]}.\n")
+    consumer = Consumer(scratch, renamed)
+    status, output = consumer.run()
+    expect(
+        "sums that name the commit but another tag are refused",
+        status == 1 and "does not say it was packed from" in output,
+        output,
+    )
+
     consumer = Consumer(scratch, world)
     consumer.edit("Cargo.lock", f"rev={pinned}#{pinned}", f"rev={world.unreleased}#{world.unreleased}")
     status, output = consumer.run()
@@ -536,6 +624,23 @@ def cases(scratch, expect):
     os.remove(os.path.join(consumer.directory, "Cargo.lock"))
     status, output = consumer.run()
     expect("a pin without a tracked lock file is refused", status == 1 and "Cargo.lock is not tracked" in output, output)
+
+    for name, source in [
+        ("a registry", "registry+https://github.com/rust-lang/crates.io-index"),
+        ("a fork", "git+https://example.invalid/fork.git?branch=main#" + "0" * 40),
+    ]:
+        consumer = Consumer(scratch, world)
+        consumer.edit(
+            "Cargo.lock",
+            '[[package]]\nname = "kr-plugin-sdk"',
+            f'[[package]]\nname = "kr-transitive"\nversion = "0.1.0"\nsource = "{source}"\n\n[[package]]\nname = "kr-plugin-sdk"',
+        )
+        status, output = consumer.run()
+        expect(
+            f"a core crate that the lock file takes from {name} is refused",
+            status == 1 and "locks the core crate kr-transitive" in output,
+            output,
+        )
 
     consumer = Consumer(scratch, world)
     consumer.edit("pipeline/Cargo.toml", "serde.workspace = true", f'serde.workspace = true\nkr-extra = {{ git = "{CORE_URL}.git", rev = "{world.unreleased}" }}')
