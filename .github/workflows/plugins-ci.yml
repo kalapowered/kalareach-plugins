@@ -87,3 +87,28 @@ jobs:
 
       - name: Measure a ten thousand entry catalogue
         run: cargo run --locked --release -p kalareach-catalogue -- bench --entries 10000
+
+  # KR-GOAL-32: the commits being sent, and the files each published package carries, hold no
+  # local-only record, credential or build-agent instruction file, including one added in a commit
+  # and deleted in a later commit of the same push. The history comes whole because a push names
+  # the commit it replaced and a pull request the branch it merges into.
+  records:
+    name: outgoing records
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out the whole history
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
+
+      - name: Test the refusals
+        run: python3 scripts/check-outgoing-records.py self-test
+
+      - name: Check the commits and the packages
+        env:
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+        run: >-
+          python3 scripts/check-outgoing-records.py check
+          --package-dir 'plugins/*/*'
+          --package-dir 'snapshots/development/targets/packages/*/*/*'
