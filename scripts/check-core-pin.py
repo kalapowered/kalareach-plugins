@@ -77,9 +77,9 @@ def same_repository(url):
     """Whether a Git URL may name the core repository. It errs towards yes: a URL taken for the core
     repository is held to a pinned revision, and a revision is a content hash whatever host serves
     it. The reading is close to Cargo's, not the same: control characters at the ends and tabs and
-    line breaks vanish; a web scheme takes any number of slashes and backslashes for slashes and a
-    host that is percent-decoded; a host is put through NFKC and lower case, and loses a
-    trailing dot, a port and user information; dot segments are resolved as a browser resolves
+    line breaks vanish; a web scheme takes any number of slashes and backslashes for slashes; a
+    host is percent-decoded and put through NFKC, lower case and IDNA, and loses a trailing dot, a
+    port and user information; dot segments are resolved as a browser resolves
     them and empty ones dropped; a trailing `.git` or slash does not count; the scp-like form is
     read too. Cargo writes a source into `Cargo.lock` in its own canonical form, which the lock
     rule reads, and that is what holds any spelling this misses."""
@@ -100,9 +100,12 @@ def same_repository(url):
         if match is None:
             return False
         host, path = match.groups()
-    if web:
-        host = urllib.parse.unquote(host)
-    host = unicodedata.normalize("NFKC", host).lower().removesuffix(".")
+    host = unicodedata.normalize("NFKC", urllib.parse.unquote(host)).lower()
+    try:
+        host = host.encode("idna").decode("ascii")
+    except UnicodeError:
+        pass
+    host = host.removesuffix(".")
     segments = []
     for segment in urllib.parse.unquote(path).split("/"):
         if segment == "..":
@@ -614,6 +617,9 @@ def cases(scratch, expect):
         "https://github.com./kalapowered/kalareach",
         "https://github.com/kalapowered//kalareach",
         "https://\u1d4dithub.com/kalapowered/kalareach",
+        "https://github\u3002com/kalapowered/kalareach",
+        "HTTPS:github.com/kalapowered/kalareach",
+        "ssh://git@%67ithub.com/kalapowered/kalareach.git",
     ]:
         consumer = Consumer(scratch, world)
         consumer.edit("Cargo.toml", f"{CORE_URL}.git", toml_text(form))
@@ -726,6 +732,41 @@ def cases(scratch, expect):
             status == 1 and "a lock file other than the root Cargo.lock" in output,
             output,
         )
+
+    consumer = Consumer(scratch, world)
+    consumer.edit(
+        "pipeline/Cargo.toml",
+        "serde.workspace = true",
+        f'serde.workspace = true\ncompanion-platform = {{ git = "{CORE_URL}.git", branch = "main" }}',
+    )
+    status, output = consumer.run()
+    expect(
+        "a crate of the core repository whose name does not start like a core crate is held to a revision too",
+        status == 1 and "follows a branch or a tag" in output,
+        output,
+    )
+
+    consumer = Consumer(scratch, world)
+    consumer.edit("Cargo.lock", f"rev={pinned}#{pinned}", f"rev={pinned}#{world.unreleased}")
+    status, output = consumer.run()
+    expect(
+        "a lock file entry whose commit is not the pinned one is refused, although its query names the pin",
+        status == 1 and "not to the pinned revision" in output,
+        output,
+    )
+
+    consumer = Consumer(scratch, world)
+    consumer.edit(
+        "Cargo.lock",
+        f'source = "git+{CORE_URL}.git?rev={pinned}#{pinned}"',
+        'source = "registry+https://github.com/rust-lang/crates.io-index"',
+    )
+    status, output = consumer.run()
+    expect(
+        "a lock file that takes nothing from the core repository does not hold the pin",
+        status == 1 and "locks no package from the core repository" in output,
+        output,
+    )
 
     for name in [".cargo", ".Cargo"]:
         consumer = Consumer(scratch, world)
