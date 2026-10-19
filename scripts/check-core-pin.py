@@ -11,12 +11,15 @@ packages for a contract nobody else can reproduce. So this reads every tracked `
 
   * a path dependency, in any dependency table or `[patch]` entry, and a configuration file's
     `paths` override. A path names a directory of the machine that built it. `[replace]`, a
-    `[patch]` of the core repository's own source, and a configuration file's `[source]` table or
-    `include` are refused outright: each moves what Cargo builds away from the pinned revision
-    while the manifests and the lock file still name it;
-  * a core dependency (a crate named `kr-*`, or one fetched from the core repository) that is not a
-    Git dependency on that repository at a full 40-digit revision. A branch, a tag, an abbreviated
-    revision and a registry version can each move or name something else;
+    `[patch]` of any source but crates.io, and a configuration file's `[source]` table or `include`
+    are refused outright: each moves what Cargo builds away from the pinned revision while the
+    manifests and the lock file still name it, and a patch is named by a URL or a registry name
+    that Cargo reads in more ways than a check can list;
+  * a core dependency (a crate named `kr-*` or `kr_*`, under its key or its `package`, or one
+    fetched from what reads as the core repository) that is not a Git dependency on that
+    repository at a full 40-digit revision. A branch, a tag, an abbreviated revision and a registry
+    version can each move or name something else. A URL is taken for the core repository when it
+    may be one, since a revision is a content hash whatever host serves it;
   * more than one revision, and a lock file that is not tracked, that locks any package from the
     core repository (or any crate named `kr-*`, whatever its source) to another revision, or that
     holds a package from no source that no manifest here declares;
@@ -26,7 +29,9 @@ packages for a contract nobody else can reproduce. So this reads every tracked `
 
 It reads the files Git tracks in this repository. A Cargo configuration outside it (a parent
 directory, `CARGO_HOME`) is not read, and a hosted runner has none; a tracked link or submodule
-named `.cargo` hides one inside the tree, so it is refused.
+named `.cargo`, in any case, hides one inside the tree, so it is refused. A dependency on another
+crate that a person publishes under a name that does not start with `kr-`, from a repository of
+their own, is a dependency like any other and is not the core repository's.
 
 Reading the tags and the release needs the network, and a source that cannot be read is a failure,
 never a pass. `--source` and `--releases` name another place to read them from, which is how
@@ -57,6 +62,7 @@ SCRIPT = os.path.abspath(__file__)
 CORE_URL = "https://github.com/kalapowered/kalareach"
 DEFAULT_SOURCE = CORE_URL + ".git"
 DEFAULT_RELEASES = CORE_URL + "/releases/download"
+CORE_HOSTS = ("github.com", "www.github.com", "ssh.github.com")
 REVISION = re.compile(r"\A[0-9a-f]{40}\Z")
 RELEASE_TAG = re.compile(r"\Apackages/v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?\+([0-9a-f]{12})\Z")
 DEPENDENCY_TABLES = ("dependencies", "dev-dependencies", "build-dependencies",
@@ -65,19 +71,36 @@ FETCH_SECONDS = 30
 
 
 def same_repository(url):
-    """Whether a Git URL names the core repository, as Cargo reads it: https, ssh or the scp-like
-    form, any port, any case, with a trailing `.git` or slash and `.` and `..` parts resolved."""
-    text = url.strip().removeprefix("git+")
+    """Whether a Git URL may name the core repository. It errs towards yes: a URL taken for the core
+    repository is held to a pinned revision, and a revision is a content hash whatever host serves
+    it. The URL is read the way Cargo's parser reads it: a backslash is a slash, tabs and line
+    breaks vanish, any number of slashes follow a web scheme, a host is lower-cased and put through
+    IDNA, dot segments (also written %2e) are resolved, a port and user information are dropped,
+    and a trailing `.git` or slash does not count. The scp-like form is read too."""
+    text = re.sub(r"[\t\r\n]", "", url).strip().replace("\\", "/").removeprefix("git+")
+    text = re.sub(r"\A(https?):/*", r"\1://", text, flags=re.IGNORECASE)
     if "://" in text:
-        parts = urllib.parse.urlsplit(text)
-        host, path = parts.hostname or "", parts.path
+        try:
+            parts = urllib.parse.urlsplit(text)
+            host, path = parts.hostname or "", parts.path
+        except ValueError:
+            return False
     else:
         match = re.match(r"\A(?:[^@/\s]+@)?([^:/\s]+):(.+)\Z", text)
         if match is None:
             return False
         host, path = match.groups()
-    path = posixpath.normpath("/" + path.lstrip("/")).lower().removesuffix(".git")
-    return host.lower() == "github.com" and path == "/kalapowered/kalareach"
+    try:
+        host = host.encode("idna").decode("ascii")
+    except UnicodeError:
+        pass
+    path = posixpath.normpath("/" + urllib.parse.unquote(path).lstrip("/")).lower().removesuffix(".git")
+    return host.lower() in CORE_HOSTS and path == "/kalapowered/kalareach"
+
+
+def core_name(name):
+    """Whether a crate or a dependency key is named like a core crate, in either spelling."""
+    return isinstance(name, str) and name.lower().replace("_", "-").startswith("kr-")
 
 
 def tracked(root):
@@ -114,12 +137,13 @@ def read_pin(root, findings):
     """The revision every manifest pins the core repository at, or None."""
     files = tracked(root)
     manifests = [path for path in files if os.path.basename(path) == "Cargo.toml"]
-    configs = [path for path in files if path.endswith((".cargo/config.toml", ".cargo/config"))]
+    # A file system that ignores case reads `.CARGO/Config.toml` as the configuration.
+    configs = [path for path in files if path.lower().endswith((".cargo/config.toml", ".cargo/config"))]
     revisions = set()
     members = set()
     # Git lists a link or a submodule as one entry and never looks through it, and Cargo does.
     for path in files:
-        if os.path.basename(path) == ".cargo":
+        if os.path.basename(path).lower() == ".cargo":
             findings.append(f"{path} is a link or a submodule, so the configuration under it is not read")
 
     def load(path):
@@ -148,12 +172,12 @@ def read_pin(root, findings):
         patches = document.get("patch")
         if isinstance(patches, dict):
             for source in patches:
-                if same_repository(source):
-                    findings.append(f"{path} patches the core repository's own source")
+                if source != "crates-io":
+                    findings.append(f"{path} patches the source {source}, and only crates-io may be patched")
         for table, name, specification in entries(document):
             where = f"{path}: {table}.{name}"
             if not isinstance(specification, dict):
-                if name.startswith("kr-"):
+                if core_name(name):
                     findings.append(f"{where} is a registry version of a core crate, not a pinned revision")
                 continue
             if "path" in specification:
@@ -164,7 +188,7 @@ def read_pin(root, findings):
             core = isinstance(git, str) and same_repository(git)
             if specification.get("workspace") is True:
                 continue
-            if not (core or (isinstance(crate, str) and crate.startswith("kr-"))):
+            if not (core or core_name(crate) or core_name(name)):
                 continue
             if not core:
                 findings.append(f"{where} is a core crate that is not fetched from the core repository")
@@ -202,7 +226,7 @@ def check_lock(root, files, revision, members, findings):
         name = package.get("name", "?")
         source = package.get("source")
         if source is None:
-            if name.startswith("kr-"):
+            if core_name(name):
                 findings.append(f"Cargo.lock locks the core crate {name} from no source")
             elif name not in members:
                 findings.append(f"Cargo.lock holds {name} from no source, and no manifest here declares it")
@@ -216,7 +240,7 @@ def check_lock(root, files, revision, members, findings):
             from_core += 1
             if query != f"rev={revision}" or fragment != revision:
                 findings.append(f"Cargo.lock locks {name} to {source}, not to the pinned revision")
-        elif name.startswith("kr-"):
+        elif core_name(name):
             findings.append(f"Cargo.lock locks the core crate {name} from {source}, not from the core repository")
     if from_core == 0:
         findings.append("Cargo.lock locks no package from the core repository")
@@ -316,6 +340,11 @@ def git(directory, *arguments):
     if done.returncode != 0:
         raise RuntimeError(f"git {' '.join(arguments)} failed: {done.stderr.decode().strip()}")
     return done.stdout.decode().strip()
+
+
+def toml_text(text):
+    """Text as it is written inside a TOML basic string."""
+    return text.replace("\\", "\\\\")
 
 
 def write(directory, path, content):
@@ -514,24 +543,61 @@ def cases(scratch, expect):
     status, output = consumer.run()
     expect("a [replace] entry is refused", status == 1 and "uses `[replace]`" in output, output)
 
+    for source in [
+        "ssh://git@github.com/kalapowered/kalareach.git",
+        "https://github.com:443/kalapowered/kalareach.git",
+        "https://github.com/kalapowered/other/%2e%2e/kalareach.git",
+        "https:\\\\github.com\\kalapowered\\kalareach.git",
+        "https://github.com/rust-lang/crates.io-index",
+        "myreg",
+    ]:
+        consumer = Consumer(scratch, world)
+        consumer.edit(
+            "Cargo.toml",
+            'serde = "=1.0.0"\n',
+            f'serde = "=1.0.0"\n\n[patch."{toml_text(source)}"]\n'
+            'companion-platform = { git = "https://example.invalid/fork.git", branch = "main" }\n',
+        )
+        status, output = consumer.run()
+        expect(
+            f"a patch of the source {source}, whatever it names, is refused",
+            status == 1 and "only crates-io may be patched" in output,
+            output,
+        )
+
+    consumer = Consumer(scratch, world)
+    consumer.edit(
+        "Cargo.toml",
+        'serde = "=1.0.0"\n',
+        'serde = "=1.0.0"\n\n[patch.crates-io]\nkr-extra = { git = "https://example.invalid/fork.git", branch = "main" }\n',
+    )
+    status, output = consumer.run()
+    expect("a patch of crates.io is held to the rules for a core crate", status == 1 and "not fetched from the core repository" in output, output)
+
     for form in [
         "ssh://git@github.com/kalapowered/kalareach.git",
         "git@github.com:kalapowered/kalareach.git",
         "https://github.com:443/kalapowered/kalareach.git",
         "https://GitHub.com/KalaPowered/KalaReach/",
         "https://github.com/kalapowered/other/../kalareach.git",
+        "https://github.com/kalapowered/other/%2e%2E/kalareach",
+        "https:/github.com/kalapowered/kalareach",
+        "https:\\\\github.com\\kalapowered\\kalareach.git",
+        "https://www.github.com/kalapowered/kalareach",
+        "https://\uff47ithub.com/kalapowered/kalareach",
+        "git@GitHub.com:KalaPowered/KalaReach.git",
     ]:
         consumer = Consumer(scratch, world)
-        consumer.edit(
-            "Cargo.toml",
-            'serde = "=1.0.0"\n',
-            f'serde = "=1.0.0"\n\n[patch."{form}"]\n'
-            'companion-platform = { git = "https://example.invalid/fork.git", branch = "main" }\n',
-        )
+        consumer.edit("Cargo.toml", f"{CORE_URL}.git", toml_text(form))
+        status, output = consumer.run()
+        expect(f"the core repository written {form} is held to the pin and passes at it", status == 0, output)
+        consumer = Consumer(scratch, world)
+        consumer.edit("Cargo.toml", f"{CORE_URL}.git", toml_text(form))
+        consumer.edit("Cargo.toml", f'rev = "{pinned}"', f'branch = "main"')
         status, output = consumer.run()
         expect(
-            f"a patch of the core repository's own source is refused when it is written {form}",
-            status == 1 and "patches the core repository's own source" in output,
+            f"the core repository written {form} is refused on a branch",
+            status == 1 and "follows a branch or a tag" in output,
             output,
         )
 
@@ -539,27 +605,54 @@ def cases(scratch, expect):
     consumer.edit(
         "pipeline/Cargo.toml",
         "serde.workspace = true",
-        'serde.workspace = true\nother = { git = "https://github.com/someone/kalareach.git", rev = "' + "1" * 40 + '" }',
+        'serde.workspace = true\nother = { git = "https://github.com/someone/kalareach.git", branch = "main" }',
     )
     status, output = consumer.run()
     expect("a dependency from another repository with a similar name is not a core dependency", status == 0, output)
 
-    consumer = Consumer(scratch, world)
-    ssh = "ssh://git@github.com/kalapowered/kalareach.git"
-    consumer.edit("Cargo.toml", f"{CORE_URL}.git", ssh)
-    consumer.edit("Cargo.lock", f"git+{CORE_URL}.git", f"git+{ssh}")
-    status, output = consumer.run()
-    expect("the core repository in its ssh form is held to the same pin and passes at it", status == 0, output)
+    for url in [
+        "https://example.invalid/kalapowered/kalareach.git",
+        "https://example.invalid\\@github.com/kalapowered/kalareach.git",
+        "https://github.com.example.invalid/kalapowered/kalareach.git",
+    ]:
+        consumer = Consumer(scratch, world)
+        consumer.edit("pipeline/Cargo.toml", "serde.workspace = true", f'serde.workspace = true\nkr-fork = {{ git = "{toml_text(url)}", branch = "main" }}')
+        status, output = consumer.run()
+        expect(
+            f"a core crate from {url} is not from the core repository",
+            status == 1 and "not fetched from the core repository" in output,
+            output,
+        )
+
+    for key, entry in [
+        ("kr_plugin_sdk", '{ git = "https://example.invalid/fork.git", branch = "main" }'),
+        ("sdk", '{ package = "KR_plugin_sdk", git = "https://example.invalid/fork.git", branch = "main" }'),
+        ("kr-other", '{ package = "sdk-fork", git = "https://example.invalid/fork.git", branch = "main" }'),
+    ]:
+        consumer = Consumer(scratch, world)
+        consumer.edit("pipeline/Cargo.toml", "serde.workspace = true", f"serde.workspace = true\n{key} = {entry}")
+        status, output = consumer.run()
+        expect(
+            f"a core crate named {key} or renamed to look like another is still a core crate",
+            status == 1 and "not fetched from the core repository" in output,
+            output,
+        )
+
+    for name in [".cargo", ".Cargo"]:
+        consumer = Consumer(scratch, world)
+        os.symlink("tools/cargo", os.path.join(consumer.directory, name))
+        consumer.put("tools/cargo/config.toml", 'paths = ["../kalareach"]\n')
+        status, output = consumer.run()
+        expect(
+            f"a link named {name}, which hides the configuration under it, is refused",
+            status == 1 and "is a link or a submodule" in output,
+            output,
+        )
 
     consumer = Consumer(scratch, world)
-    os.symlink("tools/cargo", os.path.join(consumer.directory, ".cargo"))
-    consumer.put("tools/cargo/config.toml", 'paths = ["../kalareach"]\n')
+    consumer.put(".CARGO/Config.toml", 'paths = ["../kalareach"]\n')
     status, output = consumer.run()
-    expect(
-        "a link named .cargo, which hides the configuration under it, is refused",
-        status == 1 and ".cargo is a link or a submodule" in output,
-        output,
-    )
+    expect("a configuration file is found whatever the case of its name", status == 1 and "`paths`" in output, output)
 
     consumer = Consumer(scratch, world)
     consumer.put("extra/Cargo.toml", '[package]\nname = "kr-extra"\nversion = "0.1.0"\n')
