@@ -54,6 +54,7 @@ KEY = "KR-GOAL-32"
 
 SCRIPT = os.path.abspath(__file__)
 MAX_CONTENT_BYTES = 32 * 1024 * 1024
+PACK_SECONDS = 600
 NPM_ROOTS = ("packages", "apps", "workers")
 EMPTY = "0" * 40
 
@@ -280,17 +281,23 @@ def npm_packages(root):
             if not isinstance(parsed, dict) or parsed.get("private") is True:
                 continue
             label = parsed.get("name") if isinstance(parsed.get("name"), str) else f"{base}/{name}"
+            reason = ""
             try:
                 done = subprocess.run(
                     ["npm", "pack", "--dry-run", "--json"],
                     cwd=directory,
                     capture_output=True,
                     text=True,
+                    timeout=PACK_SECONDS,
                 )
                 files = pack_listing(done.stdout) if done.returncode == 0 else None
-            except OSError:
+                if files is None:
+                    lines = done.stderr.strip().splitlines()
+                    reason = lines[-1][:200] if lines else f"npm exited {done.returncode}"
+            except (OSError, subprocess.TimeoutExpired) as problem:
                 files = None
-            packages.append({"name": label, "directory": directory, "files": files})
+                reason = type(problem).__name__
+            packages.append({"name": label, "directory": directory, "files": files, "reason": reason})
     return packages
 
 
@@ -322,7 +329,8 @@ def directory_packages(patterns, root):
 def package_findings(held):
     """What one package would carry that is not the product."""
     if held["files"] is None:
-        return [f"{held['name']} could not be packed, so what it would carry is unknown"]
+        reason = f" ({held['reason']})" if held.get("reason") else ""
+        return [f"{held['name']} could not be packed{reason}, so what it would carry is unknown"]
     findings = [
         f"{path} in the package {held['name']} is a link, so what it points at was not inspected"
         for path in held.get("links", [])
@@ -358,7 +366,7 @@ def run_check(range_argument, package_patterns):
         print("\nThe outgoing commit range could not be worked out. Pass --range <base>..<head>.")
         return 1
     try:
-        commits = git("rev-list", resolved, root=root).decode().split()
+        commits = git("rev-list", "--end-of-options", resolved, root=root).decode().split()
     except GitFailed:
         print(f"\nThe range {resolved} could not be read.")
         return 1
