@@ -27,9 +27,11 @@ packages for a contract nobody else can reproduce. So this reads every tracked `
     `packages/v<version>+<first 12 digits of the commit>` on that very commit, and its published
     `SHA512SUMS` says which commit it was packed from, so both are read.
 
-It reads the files Git tracks in this repository. A Cargo configuration outside it (a parent
-directory, `CARGO_HOME`) is not read, and a hosted runner has none; a tracked link or submodule
-named `.cargo`, in any case, hides one inside the tree, so it is refused. A dependency on another
+It reads the files Git tracks in this repository: a `Cargo.toml` in any case, and the root
+`Cargo.lock`; any other tracked lock file is refused, since nothing holds it to the pin. A Cargo
+configuration outside the repository (a parent directory, `CARGO_HOME`) is not read, and a hosted
+runner has none; a tracked link or submodule named `.cargo`, in any case, hides one inside the
+tree, so it is refused. A dependency on another
 crate that a person publishes under a name that does not start with `kr-`, from a repository of
 their own, is a dependency like any other and is not the core repository's.
 
@@ -51,6 +53,7 @@ import sys
 import tempfile
 import textwrap
 import tomllib
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -73,29 +76,42 @@ FETCH_SECONDS = 30
 def same_repository(url):
     """Whether a Git URL may name the core repository. It errs towards yes: a URL taken for the core
     repository is held to a pinned revision, and a revision is a content hash whatever host serves
-    it. The URL is read the way Cargo's parser reads it: a backslash is a slash, tabs and line
-    breaks vanish, any number of slashes follow a web scheme, a host is lower-cased and put through
-    IDNA, dot segments (also written %2e) are resolved, a port and user information are dropped,
-    and a trailing `.git` or slash does not count. The scp-like form is read too."""
-    text = re.sub(r"[\t\r\n]", "", url).strip().replace("\\", "/").removeprefix("git+")
-    text = re.sub(r"\A(https?):/*", r"\1://", text, flags=re.IGNORECASE)
+    it. The reading is close to Cargo's, not the same: control characters at the ends and tabs and
+    line breaks vanish; a web scheme takes any number of slashes and backslashes for slashes and a
+    host that is percent-decoded; a host is put through NFKC and lower case, and loses a
+    trailing dot, a port and user information; dot segments are resolved as a browser resolves
+    them and empty ones dropped; a trailing `.git` or slash does not count; the scp-like form is
+    read too. Cargo writes a source into `Cargo.lock` in its own canonical form, which the lock
+    rule reads, and that is what holds any spelling this misses."""
+    text = re.sub(r"[\t\r\n]", "", url).strip("".join(map(chr, range(0x21)))).removeprefix("git+")
+    scheme = re.match(r"\A([A-Za-z][A-Za-z0-9+.-]*):", text)
+    web = scheme is not None and scheme.group(1).lower() in ("http", "https")
+    if web:
+        text = re.sub(r"\A[A-Za-z]+:[/\\]*", lambda found: found.group().split(":")[0].lower() + "://", text)
+        text = text.replace("\\", "/")
     if "://" in text:
         try:
             parts = urllib.parse.urlsplit(text)
             host, path = parts.hostname or "", parts.path
         except ValueError:
-            return False
+            return True
     else:
         match = re.match(r"\A(?:[^@/\s]+@)?([^:/\s]+):(.+)\Z", text)
         if match is None:
             return False
         host, path = match.groups()
-    try:
-        host = host.encode("idna").decode("ascii")
-    except UnicodeError:
-        pass
-    path = posixpath.normpath("/" + urllib.parse.unquote(path).lstrip("/")).lower().removesuffix(".git")
-    return host.lower() in CORE_HOSTS and path == "/kalapowered/kalareach"
+    if web:
+        host = urllib.parse.unquote(host)
+    host = unicodedata.normalize("NFKC", host).lower().removesuffix(".")
+    segments = []
+    for segment in urllib.parse.unquote(path).split("/"):
+        if segment == "..":
+            if segments:
+                segments.pop()
+        elif segment != ".":
+            segments.append(segment)
+    path = ("/" + "/".join(part for part in segments if part)).lower().removesuffix(".git")
+    return host in CORE_HOSTS and path == "/kalapowered/kalareach"
 
 
 def core_name(name):
@@ -136,11 +152,16 @@ def entries(document):
 def read_pin(root, findings):
     """The revision every manifest pins the core repository at, or None."""
     files = tracked(root)
-    manifests = [path for path in files if os.path.basename(path) == "Cargo.toml"]
+    manifests = [path for path in files if os.path.basename(path).lower() == "cargo.toml"]
     # A file system that ignores case reads `.CARGO/Config.toml` as the configuration.
     configs = [path for path in files if path.lower().endswith((".cargo/config.toml", ".cargo/config"))]
     revisions = set()
     members = set()
+    # A lock file other than the root's is held to nothing, and on a file system that ignores case
+    # `cargo.lock` is `Cargo.lock`.
+    for path in files:
+        if os.path.basename(path).lower() == "cargo.lock" and path != "Cargo.lock":
+            findings.append(f"{path} is a lock file other than the root Cargo.lock, which is the one held to the pin")
     # Git lists a link or a submodule as one entry and never looks through it, and Cargo does.
     for path in files:
         if os.path.basename(path).lower() == ".cargo":
@@ -586,6 +607,13 @@ def cases(scratch, expect):
         "https://www.github.com/kalapowered/kalareach",
         "https://\uff47ithub.com/kalapowered/kalareach",
         "git@GitHub.com:KalaPowered/KalaReach.git",
+        "HTTPS:\t//github.com/kalapowered/kalareach",
+        "https://%67ithub.com/kalapowered/kalareach.git",
+        "https://github.com/kalapowered//../kalareach.git",
+        "ssh://git@ssh.github.com/kalapowered/kalareach.git",
+        "https://github.com./kalapowered/kalareach",
+        "https://github.com/kalapowered//kalareach",
+        "https://\u1d4dithub.com/kalapowered/kalareach",
     ]:
         consumer = Consumer(scratch, world)
         consumer.edit("Cargo.toml", f"{CORE_URL}.git", toml_text(form))
@@ -614,6 +642,7 @@ def cases(scratch, expect):
         "https://example.invalid/kalapowered/kalareach.git",
         "https://example.invalid\\@github.com/kalapowered/kalareach.git",
         "https://github.com.example.invalid/kalapowered/kalareach.git",
+        "ssh://github.com\\user@elsewhere.invalid/../kalapowered/kalareach.git",
     ]:
         consumer = Consumer(scratch, world)
         consumer.edit("pipeline/Cargo.toml", "serde.workspace = true", f'serde.workspace = true\nkr-fork = {{ git = "{toml_text(url)}", branch = "main" }}')
@@ -635,6 +664,66 @@ def cases(scratch, expect):
         expect(
             f"a core crate named {key} or renamed to look like another is still a core crate",
             status == 1 and "not fetched from the core repository" in output,
+            output,
+        )
+
+    consumer = Consumer(scratch, world)
+    consumer.edit(
+        "Cargo.toml",
+        'serde = "=1.0.0"\n',
+        'serde = "=1.0.0"\n\n[patch.crates-io]\nserde = { git = "https://example.invalid/serde.git", branch = "main" }\n',
+    )
+    status, output = consumer.run()
+    expect("a patch of crates.io that names no core crate passes", status == 0, output)
+
+    consumer = Consumer(scratch, world)
+    ssh = "ssh://git@github.com/kalapowered/kalareach.git"
+    consumer.edit("Cargo.toml", f"{CORE_URL}.git", ssh)
+    consumer.edit("Cargo.lock", f"git+{CORE_URL}.git", f"git+{ssh}")
+    status, output = consumer.run()
+    expect("a pin written in ssh form, in the manifest and in the lock, passes at the revision", status == 0, output)
+
+    # The lock file is Cargo's own account of where each package came from, in one canonical
+    # spelling, so it holds a core package whatever the manifest called its source.
+    consumer = Consumer(scratch, world)
+    consumer.edit(
+        "Cargo.lock",
+        '[[package]]\nname = "kr-plugin-sdk"',
+        f'[[package]]\nname = "companion-platform"\nversion = "0.1.0"\nsource = "git+{CORE_URL}.git?branch=main#{"0" * 40}"\n\n[[package]]\nname = "kr-plugin-sdk"',
+    )
+    status, output = consumer.run()
+    expect(
+        "a package of the core repository in the lock file is held to the pin, whatever its name",
+        status == 1 and "locks companion-platform" in output,
+        output,
+    )
+
+    for name in ["kr_transitive", "KR-Transitive"]:
+        consumer = Consumer(scratch, world)
+        consumer.edit(
+            "Cargo.lock",
+            '[[package]]\nname = "kr-plugin-sdk"',
+            f'[[package]]\nname = "{name}"\nversion = "0.1.0"\nsource = "registry+https://github.com/rust-lang/crates.io-index"\n\n[[package]]\nname = "kr-plugin-sdk"',
+        )
+        status, output = consumer.run()
+        expect(
+            f"a crate named {name} that the lock file takes from a registry is a core crate and is refused",
+            status == 1 and f"locks the core crate {name}" in output,
+            output,
+        )
+
+    consumer = Consumer(scratch, world)
+    consumer.put("extra/cargo.toml", '[package]\nname = "extra"\nversion = "0.1.0"\n\n[dependencies]\nhelper = { path = "../helper" }\n')
+    status, output = consumer.run()
+    expect("a manifest is read whatever the case of its name", status == 1 and "is a path dependency" in output, output)
+
+    for name in ["extra/Cargo.lock", "extra/cargo.lock"]:
+        consumer = Consumer(scratch, world)
+        consumer.put(name, "version = 4\n")
+        status, output = consumer.run()
+        expect(
+            f"a lock file {name} other than the root's is refused",
+            status == 1 and "a lock file other than the root Cargo.lock" in output,
             output,
         )
 
