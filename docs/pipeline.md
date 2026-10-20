@@ -238,11 +238,11 @@ no Git configuration, and it applies to every Git subprocess the command starts.
 `.github/workflows/plugins-ci.yml` runs on a push to `main`, on a pull request and on a manual run.
 It has three jobs.
 
-`catalogue` formats, lints, generates a development key set outside the checkout, writes a trust
-root over it, runs the tests, validates every package, builds and verifies a generation, verifies
-the committed development generation, and measures a ten thousand entry catalogue. The keys it makes
-are its own and last as long as the run; production signing happens in the signing environment and
-not here.
+`catalogue` first proves that `.gitignore` ignores the local workspace names. It then formats,
+lints, generates a development key set outside the checkout, writes a trust root over it, runs the
+tests, validates every package, builds and verifies a generation, verifies the committed development
+generation, and measures a ten thousand entry catalogue. The keys it makes are its own and last as
+long as the run; production signing happens in the signing environment and not here.
 
 `records` checks out the whole history. It fails when a commit being sent, or a file a published
 package carries, holds a local-only record, a credential or a build-agent instruction file,
@@ -254,13 +254,14 @@ release was packed from, with no path dependency.
 when the job runs. `.cargo/audit.toml` says what fails the check. A finding fails this job without
 hiding the result of another.
 
-An advisory published against a lock that nothing changes would show only at the next push, pull
-request or manual run. So `.github/workflows/advisories.yml` runs the same check, through the same
-`.github/actions/rustsec-audit` action, every day at 04:47 UTC on `main` and on a manual run. It
-holds no secret, reaches no deployment and opens no issue or comment; a finding fails the run, and
-the failed run is the report. GitHub delays scheduled runs at the start of an hour, which is why the
-time is off the hour, and it switches a schedule off in a public repository after 60 days with no
-repository activity.
+An advisory published against a lock that nothing changes would show only at the next push to
+`main`, pull request or manual run. So `.github/workflows/advisories.yml` runs the same check,
+through the same `.github/actions/rustsec-audit` action, every day at 04:47 UTC on `main` and on a
+manual run. It reads the repository with the automatic read-only token, needs no other secret,
+reaches no deployment and opens no issue or comment; a finding fails the run, and the failed run is
+the report. GitHub can delay a scheduled run at the start of an hour, which is why the time is off
+the hour, and under high load it can drop one. It also switches a schedule off in a public
+repository after 60 days with no repository activity.
 
 ## What the checks hold
 
