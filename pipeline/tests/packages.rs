@@ -163,7 +163,12 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
         required_rules: &[],
         provenance: &[],
         frames: &[
-            ("a method the table does not list", "thread/name/set"),
+            ("a conversation the server ends", "thread/archived"),
+            ("a conversation the server ends", "thread/closed"),
+            ("a conversation the server ends", "thread/deleted"),
+            ("a method the table does not list", "thread/realtime/start"),
+            ("a thread the terminal selects", "thread/fork"),
+            ("a thread the terminal selects", "thread/resume"),
             ("an uncertain turn/start result", "turn/start"),
             ("an uncertain turn/start result", "turn/started"),
             (
@@ -179,6 +184,7 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             ("reconnect", "initialize"),
             ("reconnect", "turn/interrupt"),
             ("serverRequest/resolved", "serverRequest/resolved"),
+            ("the turn a thread is running", "turn/completed"),
             ("thread subscriptions", "item/started"),
             ("thread subscriptions", "thread/start"),
             ("thread subscriptions", "thread/started"),
@@ -193,6 +199,12 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             ("item/fileChange/requestApproval", "params.startedAtMs"),
             ("item/started", "params.turnId"),
             ("serverRequest/resolved", "params.requestId"),
+            ("thread/archived", "params.threadId"),
+            ("thread/closed", "params.threadId"),
+            ("thread/deleted", "params.threadId"),
+            ("thread/fork", "params.threadId"),
+            ("thread/resume", "params.threadId"),
+            ("turn/completed", "params.turn.id"),
             ("turn/interrupt", "params.turnId"),
             ("turn/steer", "params.expectedTurnId"),
         ],
@@ -706,6 +718,9 @@ struct ReviewedIntegration {
     grant_statement: &'static str,
     /// The list the host renders from the declaration for the grant, exactly as the owner reads it.
     listed: &'static str,
+    /// The package contract range the package states: a declaration is read by a host on the
+    /// contract that has every member it uses, and the range is how an earlier host refuses it.
+    sdk_range: &'static str,
 }
 
 /// The command integration of every package that declares one, exactly as it was reviewed.
@@ -737,6 +752,7 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
             r#""--dangerously-load-development-channels" "plugin:kalareach-channels@skills-dir"."#,
             r#" It sets no environment variables."#,
         ),
+        sdk_range: ">=0.1.3, <0.2.0",
     },
     ReviewedIntegration {
         plugin: "kalareach/gemini-cli",
@@ -756,6 +772,7 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
             r#"Runs "gemini" in KalaReach sessions with no arguments added."#,
             r#" It sets these environment variables: GEMINI_CLI_NO_RELAUNCH="true"."#,
         ),
+        sdk_range: ">=0.1.3, <0.2.0",
     },
     ReviewedIntegration {
         plugin: "kalareach/qoder-cli",
@@ -793,6 +810,29 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
             r#" of the KalaReach forwarder installed on this machine, written as the path of a"#,
             r#" program the application starts. It sets no environment variables."#,
         ),
+        sdk_range: ">=0.1.3, <0.2.0",
+    },
+    ReviewedIntegration {
+        plugin: "kalareach/codex",
+        command: "codex",
+        flags: ReviewedFlags::Written(&["--remote", "{gateway}"]),
+        variables: &[],
+        grant_statement: "Adds --remote and the address of a gateway KalaReach opens to a codex you \
+             start in a managed shell, and starts the Codex App Server as that session's backend. \
+             Only a launch that types no option, or one that resumes or forks a thread, is served; \
+             any other runs as you typed it. The terminal and the server run as you, under their \
+             own permissions.",
+        listed: concat!(
+            r#"Runs "codex" in KalaReach sessions with these arguments added, in this order: "#,
+            r#""--remote" "{gateway}". It sets no environment variables."#,
+            r#" It also declares a server for the terminal to speak to, which a host that runs"#,
+            r#" one makes from the same program, "codex", with these arguments, in this order:"#,
+            r#" "app-server" "--listen" "stdio://". {gateway} stands for the address at which"#,
+            r#" the terminal reaches that server. All of this applies only when the command is"#,
+            r#" typed alone or followed by "resume" or "fork" and no option, and only on a host"#,
+            r#" that runs such a server; any other invocation runs as typed."#,
+        ),
+        sdk_range: ">=0.1.6, <0.2.0",
     },
 ];
 
@@ -1040,7 +1080,7 @@ fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly(
         // by its range rather than by a member it does not know.
         assert_eq!(
             manifest.sdk_range.to_string(),
-            ">=0.1.3, <0.2.0",
+            reviewed.sdk_range,
             "{}",
             reviewed.plugin
         );
