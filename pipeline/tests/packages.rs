@@ -649,8 +649,9 @@ fn grant_refusal(plugin: &str, statement: &str) -> Option<String> {
 }
 
 /// KR-REQ-11.44: a package supplies its own native bridge, and the grant the owner confirms for it
-/// states where its code runs: every package of the repository that ships a bridge carries the
-/// reviewed statement for that package, and one with an unreviewed or changed statement is refused.
+/// states where its code runs: at least one package of the repository ships a bridge, and each one
+/// that does carries the reviewed statement for that package, so a package with an unreviewed or
+/// changed statement fails here.
 #[test]
 fn a_native_bridge_grant_states_where_the_code_runs() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -2112,9 +2113,10 @@ fn member<'a>(value: &'a serde_json::Value, path: &str) -> Option<&'a serde_json
     Some(current)
 }
 
-/// KR-REQ-11.44: a package supplies its protocol mappings, tested against the application's actual
-/// API types: every frame a connector package pins, each with its provenance, is read the way the
-/// package's own table says, by its method, its identifier and the members its situation is about.
+/// KR-REQ-11.44: a package supplies its protocol mappings, pinned to the application's frames:
+/// every frame a connector package pins, each with its provenance, from the version the package was
+/// tested against, is read the way the package's own table says, by its method, its identifier and
+/// the members its situation is about.
 #[test]
 fn every_pinned_frame_is_read_the_way_the_table_says() {
     let loaded = packages::load(&root()).expect("the repository loads");
