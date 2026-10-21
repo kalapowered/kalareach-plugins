@@ -2,10 +2,10 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "codex",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "display_name": "Codex CLI",
-  "description": "Recognises Codex CLI, reads its App Server through a declarative table and stops the turn it is running.",
-  "sdk_range": ">=0.1.1, <0.2.0",
+  "description": "Recognises Codex CLI, serves it behind a gateway, reads its App Server through a declarative table, answers its approvals and stops the turn it is running.",
+  "sdk_range": ">=0.1.6, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
@@ -61,32 +61,32 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "e276b90ffb7c32c01b8c8bad288852435643ffd60dc57b3067e1d56322cce971",
-      "size_bytes": "6819"
+      "digest": "67cda29387cf60869ce71be28ce9118a898de39a3a7efdef40310494f7a96fb0",
+      "size_bytes": "9588"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "093e4a9fe70dee2801905a131500d53f750c3c89f730bbaf0f8f0146277e39d4",
-      "size_bytes": "16103"
+      "digest": "62b6cecf01bf2bd1fa913770b608927cd65e622b54f7563f1a260074fed28e1b",
+      "size_bytes": "76645"
     },
     {
       "role": "fixture",
       "path": "fixtures/conformance.json",
-      "digest": "c3d63e248eb922313d6ea5366713ee95d095497122f59a0491d42b00c1ab4f3b",
-      "size_bytes": "4961"
+      "digest": "5481eac3070126d1836501fa9c312b68fd83a064aa6f8a879e607b19fccea819",
+      "size_bytes": "9648"
     },
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "122ca902b97f73a546ee1a424179c672756dc27eca9748af30d20f79daaf6f50",
-      "size_bytes": "10511"
+      "digest": "2c7d0791296851308672afba6eeba47d3f2432abd3f9957adeee2f9a7b28b1dd",
+      "size_bytes": "14073"
     },
     {
       "role": "presentation",
       "path": "presentation.json",
-      "digest": "51c4a083904b315b7e3fd4839f3b7bde4d6e6f298f4fea0958e6fbf7e806ef12",
-      "size_bytes": "3390"
+      "digest": "28e6313dcd84c47f691f84a96e810aa66a26de0d9c44aee63abeafd810471394",
+      "size_bytes": "11041"
     }
   ],
   "capabilities": [
@@ -105,6 +105,18 @@
     {
       "capability": "upstream.action",
       "reason": "Ask Codex to stop the turn it is running when you press Stop"
+    },
+    {
+      "capability": "command_integration.launch",
+      "reason": "Start codex with the flags that point its terminal at the gateway, and its App Server as the session's backend"
+    },
+    {
+      "capability": "approval.decode",
+      "reason": "Read the approval requests Codex asks for a command and for a file change, and offer the decisions Codex reads"
+    },
+    {
+      "capability": "approval.respond",
+      "reason": "Answer those requests with the decision you choose"
     }
   ],
   "actions": [
@@ -133,8 +145,69 @@
       },
       "description": "Draw this package's document again from the thread state the host already holds",
       "confirmation_required": false
+    },
+    {
+      "id": "approval.answer",
+      "label": "Answer an approval",
+      "effect": "approval.respond",
+      "implementation": {
+        "type": "decision_destination",
+        "decision": "decision"
+      },
+      "parameters": {
+        "parameters": [
+          {
+            "name": "decision",
+            "kind": {
+              "type": "choice",
+              "choices": [
+                {
+                  "id": "accept",
+                  "label": "Allow once"
+                },
+                {
+                  "id": "accept-for-session",
+                  "label": "Allow for the session"
+                },
+                {
+                  "id": "decline",
+                  "label": "Decline"
+                },
+                {
+                  "id": "decline-and-stop",
+                  "label": "Decline and stop"
+                }
+              ]
+            },
+            "label": "Decision",
+            "required": true
+          }
+        ]
+      },
+      "description": "Answer the command or file-change approval Codex is waiting on",
+      "confirmation_required": false
     }
   ],
   "attachments": null,
-  "native_bridge": null
+  "native_bridge": null,
+  "command_integration": {
+    "command": "codex",
+    "flags": [
+      "--remote",
+      "{gateway}"
+    ],
+    "variables": [],
+    "backend": {
+      "arguments": [
+        "app-server",
+        "--listen",
+        "stdio://"
+      ],
+      "launching_words": [
+        "resume",
+        "fork"
+      ]
+    },
+    "grant_statement": "Adds --remote and the address of a gateway KalaReach opens to a codex you start in a managed shell, and starts the Codex App Server as that session's backend. Only a launch that types no option, or one that resumes or forks a thread, is served; any other runs as you typed it. The terminal and the server run as you, under their own permissions."
+  }
 }
