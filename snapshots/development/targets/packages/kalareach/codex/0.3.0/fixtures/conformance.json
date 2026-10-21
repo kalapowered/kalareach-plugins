@@ -19,6 +19,7 @@
         "present_nodes": [
           "overview",
           "activity",
+          "approval",
           "controls"
         ]
       },
@@ -48,6 +49,7 @@
         "present_nodes": [
           "overview",
           "activity",
+          "approval",
           "controls"
         ]
       },
@@ -61,7 +63,7 @@
       ]
     },
     {
-      "name": "a turn waiting on a person can still be stopped",
+      "name": "a turn waiting on a person can still be stopped, and its approval answered where the answer can be carried",
       "context": {
         "rights": [
           "session.view",
@@ -81,12 +83,17 @@
         "present_nodes": [
           "overview",
           "activity",
+          "approval",
           "controls"
         ]
       },
       "visible_controls": [
         "cancel",
-        "refresh"
+        "refresh",
+        "allow-once",
+        "allow-session",
+        "decline",
+        "decline-stop"
       ],
       "enabled_controls": [
         "cancel",
@@ -110,6 +117,7 @@
         "present_nodes": [
           "overview",
           "activity",
+          "approval",
           "controls"
         ]
       },
@@ -138,6 +146,7 @@
         "present_nodes": [
           "overview",
           "activity",
+          "approval",
           "controls"
         ]
       },
@@ -169,6 +178,7 @@
         "present_nodes": [
           "overview",
           "activity",
+          "approval",
           "controls"
         ]
       },
@@ -198,6 +208,7 @@
         "present_nodes": [
           "overview",
           "activity",
+          "approval",
           "controls"
         ]
       },
@@ -228,11 +239,213 @@
         "present_nodes": [
           "overview",
           "activity",
+          "approval",
           "controls"
         ]
       },
       "visible_controls": [],
       "enabled_controls": []
+    },
+    {
+      "name": "a waiting approval offers the four answers to an actor who may give it",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel",
+          "agent.approval.respond"
+        ],
+        "binding_state": "awaiting_person",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ],
+          [
+            "approval.respond",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh",
+        "allow-once",
+        "allow-session",
+        "decline",
+        "decline-stop"
+      ],
+      "enabled_controls": [
+        "cancel",
+        "refresh",
+        "allow-once",
+        "allow-session",
+        "decline",
+        "decline-stop"
+      ]
+    },
+    {
+      "name": "an actor without the answer right is not offered it",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel"
+        ],
+        "binding_state": "awaiting_person",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ],
+          [
+            "approval.respond",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "cancel",
+        "refresh"
+      ]
+    },
+    {
+      "name": "with no approval waiting there is nothing to answer",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel",
+          "agent.approval.respond"
+        ],
+        "binding_state": "bound",
+        "flags": [],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ],
+          [
+            "approval.respond",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh"
+      ],
+      "enabled_controls": [
+        "refresh"
+      ]
+    },
+    {
+      "name": "volatile-native operation stops the answer",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel",
+          "agent.approval.respond"
+        ],
+        "binding_state": "native_only_volatile",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ],
+          [
+            "approval.respond",
+            "qualified_available"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh",
+        "allow-once",
+        "allow-session",
+        "decline",
+        "decline-stop"
+      ],
+      "enabled_controls": [
+        "refresh"
+      ]
+    },
+    {
+      "name": "no evidence that approvals can be answered leaves the answer unusable",
+      "context": {
+        "rights": [
+          "session.view",
+          "agent.cancel",
+          "agent.approval.respond"
+        ],
+        "binding_state": "awaiting_person",
+        "flags": [
+          "pending_approval"
+        ],
+        "capabilities": [
+          [
+            "upstream.action",
+            "qualified_available"
+          ],
+          [
+            "approval.respond",
+            "temporarily_unavailable"
+          ]
+        ],
+        "present_nodes": [
+          "overview",
+          "activity",
+          "approval",
+          "controls"
+        ]
+      },
+      "visible_controls": [
+        "cancel",
+        "refresh",
+        "allow-once",
+        "allow-session",
+        "decline",
+        "decline-stop"
+      ],
+      "enabled_controls": [
+        "cancel",
+        "refresh"
+      ]
     }
   ]
 }
