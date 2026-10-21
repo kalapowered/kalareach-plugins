@@ -2,7 +2,7 @@
   "signatures": [
     {
       "keyid": "5547449f217effa345d4137e813ec466c94b64323476e0cab31e9f7598bb0361",
-      "sig": "2a4881c3a9386653ea9f87a3aebc5ab580a16e1b5f5bce8a03ba70caeca98345f6f380658b9a76447c8d663eed3926c62e79a5e47988dab10757e8ab3c0c4b08"
+      "sig": "3e85b43a0eb25595b6c051dbc5992ff4d1e1f186a286c9ac8e076f4c18c2497b14fc9f4bbc14729cbbbd458a0be1a5919c104ce909a2fa54bd178c0e5c5cd707"
     }
   ],
   "signed": {
@@ -16,9 +16,9 @@
     "targets": {
       "index.json": {
         "hashes": {
-          "sha256": "a79c54da99a57003d011a0c89a695f4e7deda55645b1c72f119004e9d4baa50f"
+          "sha256": "f477d4da027c32c1d1c941cc9dffa97cd5e1c2d2050d39ba92d987cf80933da3"
         },
-        "length": 24382
+        "length": 24383
       },
       "packages/kalareach/claude-code/0.5.0/README.md": {
         "hashes": {
@@ -76,9 +76,9 @@
       },
       "packages/kalareach/codex/0.3.0/README.md": {
         "hashes": {
-          "sha256": "67cda29387cf60869ce71be28ce9118a898de39a3a7efdef40310494f7a96fb0"
+          "sha256": "bc2c3abb093962d80cc4cf09449eebf71a1e25f25341c2cbb318807d22cef373"
         },
-        "length": 9588
+        "length": 10140
       },
       "packages/kalareach/codex/0.3.0/connector.json": {
         "hashes": {
@@ -100,9 +100,9 @@
       },
       "packages/kalareach/codex/0.3.0/plugin.json": {
         "hashes": {
-          "sha256": "a37d8d7eaf63f8502ae2da2e57a39784a01a159426060aca53a48647d30b928f"
+          "sha256": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b"
         },
-        "length": 5986
+        "length": 5987
       },
       "packages/kalareach/codex/0.3.0/presentation.json": {
         "hashes": {
@@ -369,6 +369,6 @@
         "length": 4058
       }
     },
-    "version": 4
+    "version": 5
   }
 }
