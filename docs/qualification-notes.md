@@ -125,14 +125,19 @@ arrive in part. Status: a host bound, not a vendor fact.
 execution, and nothing in the package treats it as though it did. Status: verified against the
 published documentation.
 
-Volatile forwarding is declared as untested, which is what `volatile_forwarding: false` means. Until
-it is tested, the unchanged terminal integration is the supported path when receipt storage fails.
+Volatile forwarding is declared tested, which is what `volatile_forwarding: true` means. The host's
+cases show it in three orders against a stand-in for the App Server of this table's shape, not
+against a live Codex. The receipt journal faulting before a rich answer's marker leaves the
+terminal's answer the one that goes. Faulting after the marker leaves the rich answer the one that
+goes, and the terminal's later answer is not forwarded. A committed marker followed by a failed write
+leaves the request uncertain. Status: shown in the host's own cases; how a live Codex behaves in those
+orders is part of the real-agent run.
 
 The six behaviours the Codex row names, which are competing approvals, thread subscriptions,
 `turn/steer`'s `expectedTurnId`, `serverRequest/resolved`, reconnect and an uncertain `turn/start`
 result, are protocol behaviours, and they are covered here only as far as a package can cover them.
 
-`fixtures/frames.json` pins fifteen frames across those situations, written from the documentation's
+`fixtures/frames.json` pins twenty-one frames across those situations, written from the documentation's
 examples and completed against the generated schema's required members, and the test
 `every_pinned_frame_is_read_the_way_the_table_says` under `cargo test` reads every one of them through
 this package's own table: the method it finds, the route and class it reaches, the identifier it
