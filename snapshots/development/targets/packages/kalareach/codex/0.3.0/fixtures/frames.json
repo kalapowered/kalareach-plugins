@@ -2,7 +2,7 @@
   "corpus_version": 1,
   "protocol": "codex-app-server",
   "tested_version": "0.155.1",
-  "source": "Frames written from the published App Server documentation's own examples, completed against the required members of the schema codex-cli 0.155.1 generates. They are not a capture of a live session.",
+  "source": "Frames written from the published App Server documentation's own examples, completed against the required members of the schema codex-cli 0.155.1 generates. They are not a capture of a live session. The frames for selecting a thread, ending one and ending a turn are the shapes the test stand-in for that release writes, each checked against the same schemas.",
   "frames": [
     {
       "situation": "thread subscriptions",
@@ -337,21 +337,149 @@
     },
     {
       "situation": "a method the table does not list",
-      "note": "Renaming a thread is not in this table, so it is a mutation by default",
+      "note": "An experimental request no stable schema of this release lists, so it is a mutation by default",
       "frame": {
-        "method": "thread/name/set",
+        "method": "thread/realtime/start",
         "id": 50,
         "params": {
           "threadId": "thr_123",
-          "name": "Tests"
+          "prompt": "Hello"
         }
       },
       "expect": {
-        "wire_name": "thread/name/set",
+        "wire_name": "thread/realtime/start",
         "method": null,
         "direction": null,
         "class": "mutation",
         "request_id": 50
+      }
+    },
+    {
+      "situation": "a thread the terminal selects",
+      "note": "Resuming a stored thread selects it; the reply names the thread the terminal is in",
+      "frame": {
+        "method": "thread/resume",
+        "id": 60,
+        "params": {
+          "threadId": "thr_123"
+        }
+      },
+      "expect": {
+        "wire_name": "thread/resume",
+        "method": "thread.resume",
+        "direction": "host_to_upstream",
+        "class": "mutation",
+        "request_id": 60,
+        "members": {
+          "params.threadId": "thr_123"
+        }
+      }
+    },
+    {
+      "situation": "a thread the terminal selects",
+      "note": "Forking copies a thread into a new one and selects the copy",
+      "frame": {
+        "method": "thread/fork",
+        "id": 61,
+        "params": {
+          "threadId": "thr_123"
+        }
+      },
+      "expect": {
+        "wire_name": "thread/fork",
+        "method": "thread.fork",
+        "direction": "host_to_upstream",
+        "class": "mutation",
+        "request_id": 61,
+        "members": {
+          "params.threadId": "thr_123"
+        }
+      }
+    },
+    {
+      "situation": "a conversation the server ends",
+      "note": "The last subscriber left and the thread was unloaded",
+      "frame": {
+        "method": "thread/closed",
+        "params": {
+          "threadId": "thr_123"
+        }
+      },
+      "expect": {
+        "wire_name": "thread/closed",
+        "method": "thread.closed",
+        "direction": "upstream_to_host",
+        "class": "observation",
+        "request_id": null,
+        "members": {
+          "params.threadId": "thr_123"
+        }
+      }
+    },
+    {
+      "situation": "a conversation the server ends",
+      "note": "A thread moved to the archive",
+      "frame": {
+        "method": "thread/archived",
+        "params": {
+          "threadId": "thr_123"
+        }
+      },
+      "expect": {
+        "wire_name": "thread/archived",
+        "method": "thread.archived",
+        "direction": "upstream_to_host",
+        "class": "observation",
+        "request_id": null,
+        "members": {
+          "params.threadId": "thr_123"
+        }
+      }
+    },
+    {
+      "situation": "a conversation the server ends",
+      "note": "A thread deleted for good",
+      "frame": {
+        "method": "thread/deleted",
+        "params": {
+          "threadId": "thr_123"
+        }
+      },
+      "expect": {
+        "wire_name": "thread/deleted",
+        "method": "thread.deleted",
+        "direction": "upstream_to_host",
+        "class": "observation",
+        "request_id": null,
+        "members": {
+          "params.threadId": "thr_123"
+        }
+      }
+    },
+    {
+      "situation": "the turn a thread is running",
+      "note": "The notification that a turn ended names the thread and the turn",
+      "frame": {
+        "method": "turn/completed",
+        "params": {
+          "threadId": "thr_123",
+          "turn": {
+            "id": "turn_456",
+            "items": [],
+            "status": "completed"
+          }
+        }
+      },
+      "expect": {
+        "wire_name": "turn/completed",
+        "method": "turn.completed",
+        "direction": "upstream_to_host",
+        "class": "observation",
+        "request_id": null,
+        "members": {
+          "params.threadId": "thr_123",
+          "params.turn.id": "turn_456"
+        }
       }
     }
   ],
