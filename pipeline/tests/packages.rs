@@ -2852,6 +2852,11 @@ const BUNDLED_AGENTS: &[(&str, &[&str])] = &[
     ("Qoder CLI", &["kalareach/qoder-cli"]),
 ];
 
+/// KR-REQ-12.23: the manifest half of shipping the native terminal route for every bundled agent:
+/// each of the six agents has an adapter package here, no two adapters claim one protocol, and no
+/// adapter invents a control surface, since none of its actions types into the terminal or sends
+/// a method its own table does not route and none claims native-composer insertion without the
+/// bridge that makes it safe. That a host launches the terminal route by default is the host's.
 #[test]
 fn every_bundled_adapter_is_present_and_declares_no_surface_of_its_own() {
     let loaded = packages::load(&root()).expect("the repository loads");
