@@ -20,7 +20,9 @@ program. **Exercised behaviour** means the thing was run and watched. The identi
 and recommendation sections below rest on document and binary checks and say nothing was driven.
 The qualification-case sections report exercised behaviour and cite the record under
 `fixtures/agents/` it came from; those records are later than the research and describe the package
-and core revision they were run with. A row headed "Range the table was written against" is the
+and core revision they were run with. A record file is replaced when its parts are run again, so each
+section describes the run the file now holds and, where it keeps the working of an earlier run, names
+the revision at which the file held that run. A row headed "Range the table was written against" is the
 range the research read, not a claim that a build in it has passed the version qualification: that
 needs a record in which every part passes, and the signed index names no such build yet.
 
@@ -75,7 +77,7 @@ reference to this file.
 | --- | --- | --- | --- | --- |
 | Executable | `codex` | `codex --version` on the qualification machine, reporting `codex-cli 0.155.1` | 2026-09-20 | Verified against a live install |
 | Distribution | npm `@openai/codex` | `https://registry.npmjs.org/@openai/codex`, `dist-tags.latest` = `0.155.1` | 2026-09-20 | Verified against the registry |
-| Protocol | Codex App Server, `codex-app-server` | `https://learn.chatgpt.com/docs/app-server` | 2026-09-20 | Verified against the published documentation |
+| Protocol | Codex App Server, `codex-app-server` | `https://learn.chatgpt.com/docs/app-server` | 2026-09-20 | Verified against the published documentation as it stood on that date; the page is not pinned by a digest, so a later reader cannot compare bytes |
 | Protocol version tested | 0.155.1 | The JSON Schema written by `codex app-server generate-json-schema`, whose v2 document is titled `CodexAppServerProtocolV2`; both schema files are pinned by digest above | 2026-09-20 | Binary check |
 | Range the table was written against | `=0.155.1` | This qualification | 2026-09-20 | The only release whose schema was read. The transport and the protocol are both documented as experimental, so the range admits nothing that was not tested |
 
@@ -160,9 +162,19 @@ unknown request, are the gateway's to establish. Status: not covered here.
 
 ### Qualification cases
 
-`fixtures/agents/kalareach/codex/0.155.1/macos-aarch64.json` records every part of section 12's eight
+`fixtures/agents/kalareach/codex/0.155.1/macos-aarch64.json` holds the run of 2026-09-27: `scripts/e2e-agents.sh` against a host built from the core repository at `9ecfe87bdfa6`, with version 0.2.1 of this package installed from `snapshots/development` on a paired owner device's confirmation, on macOS arm64, with the plugins repository at `edd5598bd7dc`. Codex 0.155.1 is the pinned build, and part 6a moved the installation to 0.156.1. Parts 1, 2a, 3, 4 and 7 ran with the person's vendor subscription login, a file in Codex's own directory in the person's home. The parts that need no login ran with the run's own home, every proxy variable at a loopback port nothing listens on, and a keychain of the run's own as that home's default.
+
+Parts 1, 2b, 2c and 7 failed because the host announced no live instance for the launched execution, where section 12 asks for exactly one. Part 1 also failed because a paired device's `upload.begin` was refused (`INVALID_ARGUMENT`), so the image was not the device's transfer. Part 7 also found that the second process forked the saved conversation under a new identifier, so two executions on one identifier were not shown. Parts 2a, 3, 4, 5a, 6a and 8a passed. Part 14.03a did not run: the build shows no composer without an account. Parts 5b, 6b and 8b wait for the command integration, and part 14.03b waits for a read of a draft's attachment state.
+
+What the passing parts show: slash commands, interrupts, queued prompts and steering each worked on their own (2a); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Codex kept the executable it started with while the installation moved to 0.156.1, whose own process started on the terminal route (6a); and forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a).
+
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and parts 1, 2b, 2c and 7 did not here.
+
+The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c42fa4c41174:fixtures/agents/kalareach/codex/0.155.1/macos-aarch64.json`).
+
+At revision `c42fa4c41174` of this repository, `fixtures/agents/kalareach/codex/0.155.1/macos-aarch64.json` recorded every part of section 12's eight
 cases for this build and version 0.2.1 of this package on macOS arm64, as `scripts/e2e-agents.sh` ran
-them against a host built from the core repository at the commit the record names. The package was
+them against a host built from the core repository at the commit that record names. The package was
 installed from `snapshots/development` on a paired owner device's confirmation, and the host bound it to
 nothing: it hands no installed connector to a worker, so Codex ran on its terminal route, started by
 typing `codex` at a managed shell's prompt, with its home inside the run's own directory, every proxy
@@ -175,13 +187,14 @@ while the installation moved to 0.156.1, whose own process started on the termin
 forged titles, transcripts, registrations and hook input changed nothing the host reports (8a). Codex
 shows its sign-in screen and no composer without an account, so 14.03a did not run.
 
-The run's home held a keychain of the run's own as its default, and the record names each executable
+The run's home held a keychain of the run's own as its default, and that record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
 until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended
 between two looks is not in it. The parts that need a vendor account, a binding or a registration the
-host issued did not run, and the record says why for each. Status: exercised behaviour of the host with
+host issued did not run, and that record says why for each. Status: exercised behaviour of the host with
 this build on its terminal route. None of the table's classifications was exercised, because the host
 bound no connector.
+
 
 ## kalareach/claude-code
 
@@ -191,7 +204,7 @@ bound no connector.
 | --- | --- | --- | --- | --- |
 | Executable | `claude` | `claude --version` on the qualification machine, reporting `2.1.278 (Claude Code)` | 2026-09-20 | Verified against a live install |
 | Distribution | npm `@anthropic-ai/claude-code` | `https://registry.npmjs.org/@anthropic-ai/claude-code`, `dist-tags.latest` = `2.1.278` | 2026-09-20 | Verified against the registry |
-| Protocol | Claude Code Channels, `claude-code-channels` | `https://code.claude.com/docs/en/channels-reference` and `https://code.claude.com/docs/en/channels` | 2026-09-20 | Verified against the published documentation |
+| Protocol | Claude Code Channels, `claude-code-channels` | `https://code.claude.com/docs/en/channels-reference` and `https://code.claude.com/docs/en/channels` | 2026-09-20 | Verified against the published documentation as it stood on that date; the pages are not pinned by a digest, so a later reader cannot compare bytes |
 | Protocol version tested | 2.1.278 | The three channel notification names are present in the installed 2.1.278 executable, pinned by digest above | 2026-09-20 | Binary check |
 | Range the table was written against | `=2.1.278` | This qualification | 2026-09-20 | The only release checked. The documented behaviour floor is 2.1.234, the release that sends permission requests only to servers it registered as channels, treats an undeclared permission capability as undeclared, and masks credentials in the relayed fields; that floor is what the bridge recipe's `application_range` is written for, and it is not a claim that any release between it and 2.1.278 was tested |
 
@@ -369,9 +382,9 @@ What core provides, and what is unverified about it:
   `plugins/data/kalareach-channels-skills-dir`, which the recipe does not name and its removal does
   not touch. Status: verified by two runs without an account, 2026-09-25.
 - The executor reads each `claude` executable on the daemon's search path without running it, and
-  refuses the recipe unless a signed qualification record names that executable's digest at a
-  version inside the recipe's range. No release carries such a record yet, so core refuses the
-  recipe and writes nothing. The runs above supplied the record this qualification publishes: the
+  refuses the recipe unless the signed index names that executable's digest, as a qualified build, at a
+  version inside the recipe's range. No release lists such a build yet, so core refuses the
+  recipe and writes nothing. The runs above supplied the build this qualification publishes: the
   digest pinned above, at 2.1.278. Status: verified by core's tests and by the runs above.
 - Not verified: a session with an account; the channel registering under
   `--dangerously-load-development-channels`; whether a session that is already running picks the
@@ -471,9 +484,19 @@ the package's own table declares, for a method and a request the table routes.
 
 ### Qualification cases
 
-`fixtures/agents/kalareach/claude-code/2.1.278/macos-aarch64.json` records every part of section 12's
+`fixtures/agents/kalareach/claude-code/2.1.278/macos-aarch64.json` holds the run of 2026-10-04: `scripts/e2e-agents.sh` against a host built from the core repository at `ee5db1b87ebd`, with version 0.5.0 of this package installed from `snapshots/development` on a paired owner device's confirmation, on macOS arm64, with the plugins repository at `31832d29de08`. Claude Code 2.1.278 is the pinned build, and part 6a moved the installation to 2.1.281. Parts 1, 2a, 3, 4 and 7 ran with the person's vendor subscription login, a login keychain item. The parts that need no login ran with the run's own home, every proxy variable at a loopback port nothing listens on, and a keychain of the run's own as that home's default.
+
+Part 1 failed because a paired device's `upload.begin` was refused (`INVALID_ARGUMENT`), so the image was not the device's transfer. Parts 2a, 2b, 2c, 3, 4, 5a, 6a, 7, 8a and 14.03a passed. Parts 5b, 6b and 8b wait for the command integration, and part 14.03b waits for a read of a draft's attachment state.
+
+What the passing parts show: slash commands, interrupts, queued prompts and steering each worked on their own (2a); an agent started by hand was detected as a manual launch and offered only observation and the terminal, with every typed agent action refused (2b); under the instance's binding the package's own `status.refresh` action was accepted and the agent's typed actions were refused, because no upstream transport was bound (2c); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Claude Code kept the executable it started with while the installation moved to 2.1.281, whose own process started on the terminal route (6a); the same saved conversation used from a second process was detected as another execution's and not merged (7); forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a); and a path typed at the agent's prompt arrived as terminal input and showed in its composer (14.03a).
+
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and part 1 did not here.
+
+The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c1c2c3afaf37:fixtures/agents/kalareach/claude-code/2.1.278/macos-aarch64.json`).
+
+At revision `c1c2c3afaf37` of this repository, `fixtures/agents/kalareach/claude-code/2.1.278/macos-aarch64.json` recorded every part of section 12's
 eight cases for this build and version 0.4.0 of this package on macOS arm64, as `scripts/e2e-agents.sh`
-ran them against a host built from the core repository at the commit the record names. The package was
+ran them against a host built from the core repository at the commit that record names. The package was
 installed from `snapshots/development` on a paired owner device's confirmation, and the host bound it to
 nothing: it hands no installed connector to a worker, so Claude Code ran on its terminal route, started
 by typing `claude` at a managed shell's prompt, with its home inside the run's own directory, every
@@ -482,9 +505,9 @@ Code's own onboarding leaves (`.claude.json` with `hasCompletedOnboarding`), bec
 its first-run connection check fails; its first screen was then the folder-trust dialog. The owner
 granted the package's native bridge and its command integration with the rest of what it requests. The
 host enables no command integration for a session, so Claude Code started as typed, without the
-integration's flags. At the core commit the record names, the host could not apply the recipe here: it
-needs Claude Code's own directory, which does not exist when the package is installed, and a signed
-qualification record naming a Claude Code executable, which none does; the run did not read the
+integration's flags. At the core commit that record names, the host could not apply the recipe here: it
+needs Claude Code's own directory, which does not exist when the package is installed, and a
+qualified build in the signed index naming a Claude Code executable, which none does; the run did not read the
 bridge's journal to see which stopped it, and no part below depends on it.
 
 The record names core `28d6c4b19`, the host these parts ran on, where part 2b runs at the
@@ -500,13 +523,14 @@ hook input, including this package's forwarder fed forged hook events and a forg
 nothing the host reports (8a); and a path typed at its composer, after the folder was trusted,
 arrived as terminal input and showed in the composer (14.03a).
 
-The run's home held a keychain of the run's own as its default, and the record names each executable
+The run's home held a keychain of the run's own as its default, and that record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
 until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended
 between two looks is not in it. The parts that need a vendor account, a binding or a registration the
-host issued did not run, and the record says why for each. Status: exercised behaviour of the host with
+host issued did not run, and that record says why for each. Status: exercised behaviour of the host with
 this build on its terminal route. None of the table's classifications was exercised, because the host
 bound no connector.
+
 
 ## kalareach/opencode
 
@@ -620,9 +644,19 @@ only to read the document it serves.
 
 ### Qualification cases
 
-`fixtures/agents/kalareach/opencode/1.18.31/macos-aarch64.json` records every part of section 12's eight
+`fixtures/agents/kalareach/opencode/1.18.31/macos-aarch64.json` holds the run of 2026-10-02: `scripts/e2e-agents.sh` against a host built from the core repository at `3efe72d7c353`, with version 0.2.1 of this package installed from `snapshots/development` on a paired owner device's confirmation, on macOS arm64, with the plugins repository at `364a6631949d`. OpenCode 1.18.31 is the pinned build, and part 6a moved the installation to 1.18.32. Parts 1, 2a, 3, 4 and 7 ran with the provider key `OPENROUTER_API_KEY` from the person's shell, in the run's own home. The parts that need no login ran with the run's own home, every proxy variable at a loopback port nothing listens on, and a keychain of the run's own as that home's default.
+
+Part 1 failed because a paired device's `upload.begin` was refused (`INVALID_ARGUMENT`), so the image was not the device's transfer. Parts 2a, 2b, 2c, 3, 4, 5a, 6a, 7, 8a and 14.03a passed. Parts 5b, 6b and 8b wait for the command integration, and part 14.03b waits for a read of a draft's attachment state.
+
+What the passing parts show: slash commands, interrupts, queued prompts and steering each worked on their own (2a); an agent started by hand was detected as a manual launch and offered only observation and the terminal, with every typed agent action refused (2b); under the instance's binding the package's own `session.refresh` action was accepted and the agent's typed actions were refused, because no upstream transport was bound (2c); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running OpenCode kept the executable it started with while the installation moved to 1.18.32, whose own process started on the terminal route (6a); the same saved conversation used from a second process was detected as another execution's and not merged (7); forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a); and a path typed at the agent's prompt arrived as terminal input and showed in its composer (14.03a).
+
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and part 1 did not here.
+
+The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c42fa4c41174:fixtures/agents/kalareach/opencode/1.18.31/macos-aarch64.json`).
+
+At revision `c42fa4c41174` of this repository, `fixtures/agents/kalareach/opencode/1.18.31/macos-aarch64.json` recorded every part of section 12's eight
 cases for this build and version 0.2.1 of this package on macOS arm64, as `scripts/e2e-agents.sh` ran
-them against a host built from the core repository at the commit the record names. The package was
+them against a host built from the core repository at the commit that record names. The package was
 installed from `snapshots/development` on a paired owner device's confirmation, and the host bound it to
 nothing: it hands no installed connector to a worker, so OpenCode ran on its terminal route, started by
 typing `opencode` at a managed shell's prompt, with its home inside the run's own directory, every proxy
@@ -634,13 +668,14 @@ and a restarted daemon served the session again (5a); forged titles, transcripts
 input changed nothing the host reports (8a); and a path typed at its composer arrived as terminal input
 and showed there (14.03a). No newer build is named for this package, so 6a did not run.
 
-The run's home held a keychain of the run's own as its default, and the record names each executable
+The run's home held a keychain of the run's own as its default, and that record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
 until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended
 between two looks is not in it. The parts that need a vendor account, a binding or a registration the
-host issued did not run, and the record says why for each. Status: exercised behaviour of the host with
+host issued did not run, and that record says why for each. Status: exercised behaviour of the host with
 this build on its terminal route. None of the table's classifications was exercised, because the host
 bound no connector.
+
 
 ## kalareach/gemini-cli
 
@@ -819,16 +854,26 @@ No account was signed in to and no turn was started.
 
 ### Qualification cases
 
-`fixtures/agents/kalareach/gemini-cli/0.60.0/macos-aarch64.json` records every part of section 12's
+`fixtures/agents/kalareach/gemini-cli/0.60.0/macos-aarch64.json` holds the run of 2026-10-04: `scripts/e2e-agents.sh` against a host built from the core repository at `ee5db1b87ebd`, with version 0.5.0 of this package installed from `snapshots/development` on a paired owner device's confirmation, on macOS arm64, with the plugins repository at `557a136f1050`. Gemini CLI 0.60.0 is the pinned build, and part 6a moved the installation to 0.61.0. Parts 1, 2a, 3, 4 and 7 ran with the provider key `GEMINI_API_KEY` from the person's shell, in the run's own home. The parts that need no login ran with the run's own home, every proxy variable at a loopback port nothing listens on, and a keychain of the run's own as that home's default.
+
+Parts 1, 2b, 2c and 7 failed because the host announced no live instance for the launched execution, where section 12 asks for exactly one. Part 1 also failed because a paired device's `upload.begin` was refused (`INVALID_ARGUMENT`), so the image was not the device's transfer. Parts 2a, 3, 4, 5a, 6a and 8a passed. Part 14.03a did not run: the build shows no composer without an account. Parts 5b, 6b and 8b wait for the command integration, and part 14.03b waits for a read of a draft's attachment state.
+
+What the passing parts show: slash commands, interrupts, queued prompts and steering each worked on their own (2a); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Gemini CLI kept the executable it started with while the installation moved to 0.61.0, whose own process started on the terminal route (6a); and forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a).
+
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and parts 1, 2b, 2c and 7 did not here.
+
+The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c1c2c3afaf37:fixtures/agents/kalareach/gemini-cli/0.60.0/macos-aarch64.json`).
+
+At revision `c1c2c3afaf37` of this repository, `fixtures/agents/kalareach/gemini-cli/0.60.0/macos-aarch64.json` recorded every part of section 12's
 eight cases for this build and version 0.4.0 of this package on macOS arm64, as `scripts/e2e-agents.sh`
-ran them against a host built from the core repository at the commit the record names. The package was
+ran them against a host built from the core repository at the commit that record names. The package was
 installed from `snapshots/development` on a paired owner device's confirmation, and the host bound it to
 nothing: it hands no installed connector to a worker, so Gemini CLI ran on its terminal route, started
 by typing `gemini` at a managed shell's prompt, with its home inside the run's own directory, every
 proxy variable at a loopback port nothing listens on, and no account. The owner granted the package's
 native bridge and its command integration with the rest of what it requests. The host enables no
 command integration for a session, so Gemini CLI started as typed, without `GEMINI_CLI_NO_RELAUNCH`. At
-the core commit the record names, the host knows no directory where Gemini CLI keeps its plugins, so
+the core commit that record names, the host knows no directory where Gemini CLI keeps its plugins, so
 its bridge executor refuses the recipe before it reads any version; the run did not read the bridge's
 journal to confirm that, and no part below depends on it.
 
@@ -840,13 +885,14 @@ forged titles, transcripts, registrations and hook input changed nothing the hos
 Gemini CLI asks for authentication before it shows a composer, so 14.03a did not run, and no newer
 build is named for this package, so 6a did not run.
 
-The run's home held a keychain of the run's own as its default, and the record names each executable
+The run's home held a keychain of the run's own as its default, and that record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
 until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended
 between two looks is not in it. The parts that need a vendor account, a binding or a registration the
-host issued did not run, and the record says why for each. Status: exercised behaviour of the host with
+host issued did not run, and that record says why for each. Status: exercised behaviour of the host with
 this build on its terminal route. None of the table's classifications was exercised, because the host
 bound no connector.
+
 
 ## kalareach/kimi-code-cli
 
@@ -933,9 +979,19 @@ qualification, and `~/.kimi-code` was unchanged before and after.
 
 ### Qualification cases
 
-`fixtures/agents/kalareach/kimi-code-cli/2.0.2/macos-aarch64.json` records every part of section 12's
+`fixtures/agents/kalareach/kimi-code-cli/2.0.2/macos-aarch64.json` holds the run of 2026-10-01: `scripts/e2e-agents.sh` against a host built from the core repository at `daad6681a66f`, with version 0.2.1 of this package installed from `snapshots/development` on a paired owner device's confirmation, on macOS arm64, with the plugins repository at `030933e6bf21`. Kimi Code CLI 2.0.2 is the pinned build, and part 6a moved the installation to 2.1.0. Parts 1, 2a, 3, 4 and 7 ran with the person's vendor subscription login, a file in Kimi Code CLI's own directory in the person's home, inside the confinement its entry names. The parts that need no login ran with the run's own home, every proxy variable at a loopback port nothing listens on, and a keychain of the run's own as that home's default.
+
+Part 1 failed a check whose text is in the part's log, which is not kept with the record. Part 2a failed because the agent was not shown to be running its turn when the second prompt was entered, so that prompt was not shown to wait for a turn still running. Parts 2b, 2c, 3, 4, 5a, 6a, 7, 8a and 14.03a passed. Parts 5b, 6b and 8b wait for the command integration, and part 14.03b waits for a read of a draft's attachment state.
+
+What the passing parts show: an agent started by hand was detected as a manual launch and offered only observation and the terminal, with every typed agent action refused (2b); under the instance's binding the package's own `session.refresh` action was accepted and the agent's typed actions were refused, because no upstream transport was bound (2c); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Kimi Code CLI kept the executable it started with while the installation moved to 2.1.0, whose own process started on the terminal route (6a); the same saved conversation used from a second process was detected as another execution's and not merged (7); forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a); and a path typed at the agent's prompt arrived as terminal input and showed in its composer (14.03a).
+
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and parts 1 and 2a did not here.
+
+The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c42fa4c41174:fixtures/agents/kalareach/kimi-code-cli/2.0.2/macos-aarch64.json`).
+
+At revision `c42fa4c41174` of this repository, `fixtures/agents/kalareach/kimi-code-cli/2.0.2/macos-aarch64.json` recorded every part of section 12's
 eight cases for this build and version 0.2.1 of this package on macOS arm64, as `scripts/e2e-agents.sh`
-ran them against a host built from the core repository at the commit the record names. The package was
+ran them against a host built from the core repository at the commit that record names. The package was
 installed from `snapshots/development` on a paired owner device's confirmation, and the host bound it to
 nothing: it hands no installed connector to a worker, so Kimi Code CLI ran on its terminal route,
 started by typing `kimi` at a managed shell's prompt, with its home inside the run's own directory,
@@ -951,13 +1007,14 @@ and hook input changed nothing the host reports (8a); and a path typed at its co
 was trusted, arrived as terminal input and showed there (14.03a). No newer build is named, so 6a did not
 run.
 
-The run's home held a keychain of the run's own as its default, and the record names each executable
+The run's home held a keychain of the run's own as its default, and that record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
 until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended
 between two looks is not in it. The parts that need a vendor account, a binding or a registration the
-host issued did not run, and the record says why for each. Status: exercised behaviour of the host with
+host issued did not run, and that record says why for each. Status: exercised behaviour of the host with
 this build on its terminal route. None of the table's classifications was exercised, because the host
 bound no connector.
+
 
 ## kalareach/qoder-cli
 
@@ -1131,9 +1188,19 @@ directory, the same three this machine runs about every six hours.
 
 ### Qualification cases
 
-`fixtures/agents/kalareach/qoder-cli/1.1.63/macos-aarch64.json` records every part of section 12's eight
+`fixtures/agents/kalareach/qoder-cli/1.1.63/macos-aarch64.json` holds the run of 2026-10-04: `scripts/e2e-agents.sh` against a host built from the core repository at `ee5db1b87ebd`, with version 0.5.0 of this package installed from `snapshots/development` on a paired owner device's confirmation, on macOS arm64, with the plugins repository at `63509a49dd9b`. Qoder CLI 1.1.63 is the pinned build, and part 6a moved the installation to 1.1.64. The person approved no login for Qoder CLI, so parts 1, 2a, 3, 4 and 7, which need one, did not run. The parts that need no login ran with the run's own home, every proxy variable at a loopback port nothing listens on, and a keychain of the run's own as that home's default.
+
+Parts 2b, 2c, 5a, 6a and 8a passed. Part 14.03a did not run either: the build shows no composer without an account. Parts 5b, 6b and 8b wait for the command integration, and part 14.03b waits for a read of a draft's attachment state.
+
+What the passing parts show: an agent started by hand was detected as a manual launch and offered only observation and the terminal, with every typed agent action refused (2b); under the instance's binding the package's own `session.refresh` action was accepted and the agent's typed actions were refused, because no upstream transport was bound (2c); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Qoder CLI kept the executable it started with while the installation moved to 1.1.64, whose own process started on the terminal route (6a); and forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a).
+
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and parts 1, 2a, 3, 4, 7 and 14.03a did not run here.
+
+The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c1c2c3afaf37:fixtures/agents/kalareach/qoder-cli/1.1.63/macos-aarch64.json`).
+
+At revision `c1c2c3afaf37` of this repository, `fixtures/agents/kalareach/qoder-cli/1.1.63/macos-aarch64.json` recorded every part of section 12's eight
 cases for this build and version 0.4.0 of this package on macOS arm64, as `scripts/e2e-agents.sh` ran
-them against a host built from the core repository at the commit the record names. The package was
+them against a host built from the core repository at the commit that record names. The package was
 installed from `snapshots/development` on a paired owner device's confirmation, and the host bound it to
 nothing: it hands no installed connector to a worker, so Qoder CLI ran on its terminal route, started by
 typing `qodercli` at a managed shell's prompt, with its home inside the run's own directory, every proxy
@@ -1157,13 +1224,14 @@ titles, transcripts, registrations and hook input changed nothing the host repor
 asks its person to sign in before it shows a composer, so 14.03a did not run, and no newer build is
 named, so 6a did not run.
 
-The run's home held a keychain of the run's own as its default, and the record names each executable
+The run's home held a keychain of the run's own as its default, and that record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
 until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended
 between two looks is not in it. The parts that need a vendor account, a binding or a registration the
-host issued did not run, and the record says why for each. Status: exercised behaviour of the host with
+host issued did not run, and that record says why for each. Status: exercised behaviour of the host with
 this build on its terminal route. None of the table's classifications was exercised, because the host
 bound no connector.
+
 
 ## kalareach/opencode-attach
 
