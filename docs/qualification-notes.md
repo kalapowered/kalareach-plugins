@@ -17,7 +17,8 @@ note at all.
 Three kinds of evidence appear below, and they are not equally strong. A **document check** reads
 what the vendor publishes. A **binary check** reads an identity or a name out of the installed
 program. **Exercised behaviour** means the thing was run and watched. The identity, wire-contract
-and recommendation sections below rest on document and binary checks and say nothing was driven.
+and recommendation sections below rest on document and binary checks and, where a section says so,
+on runs of the vendor's own build or of the recipe without an account and without a model turn.
 The qualification-case sections report exercised behaviour and cite the record under
 `fixtures/agents/` it came from; those records are later than the research and describe the package
 and core revision they were run with. A record file is replaced when its parts are run again, so each
@@ -168,7 +169,7 @@ Parts 1, 2b, 2c and 7 failed because the host announced no live instance for the
 
 What the passing parts show: slash commands, interrupts, queued prompts and steering each worked on their own (2a); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Codex kept the executable it started with while the installation moved to 0.156.1, whose own process started on the terminal route (6a); and forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a).
 
-The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and parts 1, 2b, 2c and 7 did not here.
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. The pipeline names a build only when every part of the eight cases (1 to 8b) passed and no 14.03 part failed, and parts 1, 2b, 2c and 7 did not here.
 
 The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c42fa4c41174:fixtures/agents/kalareach/codex/0.155.1/macos-aarch64.json`).
 
@@ -490,7 +491,7 @@ Part 1 failed because a paired device's `upload.begin` was refused (`INVALID_ARG
 
 What the passing parts show: slash commands, interrupts, queued prompts and steering each worked on their own (2a); an agent started by hand was detected as a manual launch and offered only observation and the terminal, with every typed agent action refused (2b); under the instance's binding the package's own `status.refresh` action was accepted and the agent's typed actions were refused, because no upstream transport was bound (2c); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Claude Code kept the executable it started with while the installation moved to 2.1.281, whose own process started on the terminal route (6a); the same saved conversation used from a second process was detected as another execution's and not merged (7); forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a); and a path typed at the agent's prompt arrived as terminal input and showed in its composer (14.03a).
 
-The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and part 1 did not here.
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. The pipeline names a build only when every part of the eight cases (1 to 8b) passed and no 14.03 part failed, and part 1 did not here.
 
 The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c1c2c3afaf37:fixtures/agents/kalareach/claude-code/2.1.278/macos-aarch64.json`).
 
@@ -638,8 +639,8 @@ is tested, the unchanged terminal integration is the supported path when receipt
 The agent-protocol subcommand this build also offers is a different surface from the server API and
 is not what this package reads. Status: out of scope here.
 
-Nothing was driven: no turn was started, no permission was answered, and no account was signed in
-to. The server was started once, on loopback, with a home directory belonging to this qualification,
+In this research nothing was driven: no turn was started, no permission was answered, and no account
+was signed in to. The server was started once, on loopback, with a home directory belonging to this qualification,
 only to read the document it serves.
 
 ### Qualification cases
@@ -650,7 +651,7 @@ Part 1 failed because a paired device's `upload.begin` was refused (`INVALID_ARG
 
 What the passing parts show: slash commands, interrupts, queued prompts and steering each worked on their own (2a); an agent started by hand was detected as a manual launch and offered only observation and the terminal, with every typed agent action refused (2b); under the instance's binding the package's own `session.refresh` action was accepted and the agent's typed actions were refused, because no upstream transport was bound (2c); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running OpenCode kept the executable it started with while the installation moved to 1.18.32, whose own process started on the terminal route (6a); the same saved conversation used from a second process was detected as another execution's and not merged (7); forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a); and a path typed at the agent's prompt arrived as terminal input and showed in its composer (14.03a).
 
-The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and part 1 did not here.
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. The pipeline names a build only when every part of the eight cases (1 to 8b) passed and no 14.03 part failed, and part 1 did not here.
 
 The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c42fa4c41174:fixtures/agents/kalareach/opencode/1.18.31/macos-aarch64.json`).
 
@@ -666,7 +667,7 @@ On that route the host advertised no typed capability for OpenCode and refused e
 each of this package's actions (2b); OpenCode and its local terminal outlived a killed control daemon,
 and a restarted daemon served the session again (5a); forged titles, transcripts, registrations and hook
 input changed nothing the host reports (8a); and a path typed at its composer arrived as terminal input
-and showed there (14.03a). No newer build is named for this package, so 6a did not run.
+and showed there (14.03a). No newer build was named for this package when it ran, so 6a did not run.
 
 The run's home held a keychain of the run's own as its default, and that record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
@@ -850,7 +851,7 @@ here.
 `max_message_bytes` is 8 MiB, this host's bound. Prompt content can carry an image inline, which is
 why the bound is not smaller. Volatile forwarding is untested.
 
-No account was signed in to and no turn was started.
+In this research no account was signed in to and no turn was started.
 
 ### Qualification cases
 
@@ -860,7 +861,7 @@ Parts 1, 2b, 2c and 7 failed because the host announced no live instance for the
 
 What the passing parts show: slash commands, interrupts, queued prompts and steering each worked on their own (2a); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Gemini CLI kept the executable it started with while the installation moved to 0.61.0, whose own process started on the terminal route (6a); and forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a).
 
-The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and parts 1, 2b, 2c and 7 did not here.
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. The pipeline names a build only when every part of the eight cases (1 to 8b) passed and no 14.03 part failed, and parts 1, 2b, 2c and 7 did not here.
 
 The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c1c2c3afaf37:fixtures/agents/kalareach/gemini-cli/0.60.0/macos-aarch64.json`).
 
@@ -883,7 +884,7 @@ refused every typed action and each of this package's actions (2b); Gemini CLI a
 terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); and
 forged titles, transcripts, registrations and hook input changed nothing the host reports (8a).
 Gemini CLI asks for authentication before it shows a composer, so 14.03a did not run, and no newer
-build is named for this package, so 6a did not run.
+build was named for this package when it ran, so 6a did not run.
 
 The run's home held a keychain of the run's own as its default, and that record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
@@ -973,8 +974,8 @@ Nothing in this package depends on `kimi web`'s REST and WebSocket server or on 
 control. Both are the vendor's own services, and neither is evidence that KalaReach may reuse a
 service protocol. Status: out of scope, deliberately.
 
-`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. No account was
-signed in to and no turn was started; the probes ran with a home directory belonging to this
+`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. In this research no
+account was signed in to and no turn was started; the probes ran with a home directory belonging to this
 qualification, and `~/.kimi-code` was unchanged before and after.
 
 ### Qualification cases
@@ -985,7 +986,7 @@ Part 1 failed a check whose text is in the part's log, which is not kept with th
 
 What the passing parts show: an agent started by hand was detected as a manual launch and offered only observation and the terminal, with every typed agent action refused (2b); under the instance's binding the package's own `session.refresh` action was accepted and the agent's typed actions were refused, because no upstream transport was bound (2c); a local and a remote answer raced to one approval left one upstream resolution and an accurate receipt for the loser (3); a disconnection after upstream admission and before the reply was reconciled without duplicate work (4); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Kimi Code CLI kept the executable it started with while the installation moved to 2.1.0, whose own process started on the terminal route (6a); the same saved conversation used from a second process was detected as another execution's and not merged (7); forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a); and a path typed at the agent's prompt arrived as terminal input and showed in its composer (14.03a).
 
-The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and parts 1 and 2a did not here.
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. The pipeline names a build only when every part of the eight cases (1 to 8b) passed and no 14.03 part failed, and parts 1 and 2a did not here.
 
 The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c42fa4c41174:fixtures/agents/kalareach/kimi-code-cli/2.0.2/macos-aarch64.json`).
 
@@ -1004,7 +1005,7 @@ On that route the host advertised no typed capability for Kimi Code CLI and refu
 and each of this package's actions (2b); Kimi Code CLI and its local terminal outlived a killed control
 daemon, and a restarted daemon served the session again (5a); forged titles, transcripts, registrations
 and hook input changed nothing the host reports (8a); and a path typed at its composer, after the folder
-was trusted, arrived as terminal input and showed there (14.03a). No newer build is named, so 6a did not
+was trusted, arrived as terminal input and showed there (14.03a). No newer build was named when it ran, so 6a did not
 run.
 
 The run's home held a keychain of the run's own as its default, and that record names each executable
@@ -1038,14 +1039,14 @@ release, and every one of them is `inferred`.
 
 The executable carries its version in its file name, and `~/.local/bin/qodercli` is a link to it. A
 match rule compares a whole file name and removes only a `.exe` suffix, so recognising
-`qodercli-1.1.63` means naming that spelling. This package is qualified against 1.1.63 alone, so it
+`qodercli-1.1.63` means naming that spelling. This package is pinned to 1.1.63 alone, so it
 carries exactly that rule, narrowed to `~/.qoder/bin/qodercli`, beside the two rules for the stable
 entry points: a host that resolves a launch all the way to the versioned file recognises the release
 this package covers, and a host that stops at the dispatcher or the command name recognises the
 application by that name. A release this qualification does not cover matches the stable names only,
-which is what an `inferred` rule is for, and a package qualified against that release names its file
+which is what an `inferred` rule is for, and a package pinned to that release names its file
 in its own rules. Status: the rule vocabulary compares file names rather than version-stripped
-stems, recorded, and covered for the qualified release rather than worked around.
+stems, recorded, and covered for the pinned release rather than worked around.
 
 ### The flag
 
@@ -1170,8 +1171,8 @@ are created with no command integration enabled, so no launch adds these element
 ### What is not qualified here
 
 Agent-protocol mode starts a subprocess with its own execution. Nothing in the installed build
-offered a way to join a terminal that is already running, and no vendor document was read for this
-package, so this package offers none. Status: the mode's own behaviour is a binary check; the
+offered a way to join a terminal that is already running, and no vendor document about joining a
+running agent was read for this package, so this package offers none. Status: the mode's own behaviour is a binary check; the
 absence of an attachment path is unverified and recorded as a boundary rather than as a document
 check.
 
@@ -1179,8 +1180,8 @@ The vendor's remote-control feature runs through the vendor's own application an
 evidence that KalaReach may reuse that service protocol, and nothing in this package depends on it.
 Status: out of scope, deliberately.
 
-`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. No account was
-signed in to and no turn was started. The 1.1.63 probes ran a copy in a directory of this
+`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. In this research no
+account was signed in to and no turn was started. The 1.1.63 probes ran a copy in a directory of this
 qualification's own, with a home directory of its own. Files under `~/.qoder` did change while they
 ran, and each belongs to one of three runs no probe started, which Qoder CLI recorded in its own run
 manifests: the installed `qodercli` run as `--version`, `update` and `--version` from the home
@@ -1194,7 +1195,7 @@ Parts 2b, 2c, 5a, 6a and 8a passed. Part 14.03a did not run either: the build sh
 
 What the passing parts show: an agent started by hand was detected as a manual launch and offered only observation and the terminal, with every typed agent action refused (2b); under the instance's binding the package's own `session.refresh` action was accepted and the agent's typed actions were refused, because no upstream transport was bound (2c); the agent and its local terminal outlived a killed control daemon, and a restarted daemon served the session again (5a); a running Qoder CLI kept the executable it started with while the installation moved to 1.1.64, whose own process started on the terminal route (6a); and forged shell titles, transcript paths, session identifiers and hook input changed nothing the host reports (8a).
 
-The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. A case qualifies a build only when every part of it passed, and parts 1, 2a, 3, 4, 7 and 14.03a did not run here.
+The record names each executable image seen beneath the agent's sessions, looked at every quarter second from just before the launch until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended between two looks is not in it. Status: exercised behaviour of the host with this build on its terminal route. No part drove a typed action through the table's classifications: no instance had an upstream transport bound. The pipeline names a build only when every part of the eight cases (1 to 8b) passed and no 14.03 part failed, and parts 1, 2a, 3, 4, 7 and 14.03a did not run here.
 
 The same path held an earlier run, which a later run replaced; its text is kept below, with the revision to read it at (`git show c1c2c3afaf37:fixtures/agents/kalareach/qoder-cli/1.1.63/macos-aarch64.json`).
 
@@ -1221,8 +1222,8 @@ Code section describes. On that route the host advertised no typed capability fo
 refused every typed action and each of this package's actions (2b); Qoder CLI and its local terminal
 outlived a killed control daemon, and a restarted daemon served the session again (5a); and forged
 titles, transcripts, registrations and hook input changed nothing the host reports (8a). Qoder CLI
-asks its person to sign in before it shows a composer, so 14.03a did not run, and no newer build is
-named, so 6a did not run.
+asks its person to sign in before it shows a composer, so 14.03a did not run, and no newer build was
+named when it ran, so 6a did not run.
 
 The run's home held a keychain of the run's own as its default, and that record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch
@@ -1323,8 +1324,8 @@ account.
 
 `max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested.
 
-Nothing was driven: no turn was started, no permission was answered, no terminal was attached, and
-no account was signed in to. The server was started once, on loopback, with a home directory and a
+In this research nothing was driven: no turn was started, no permission was answered, no terminal
+was attached, and no account was signed in to. The server was started once, on loopback, with a home directory and a
 working directory belonging to this qualification, only to read the document it serves, and it was
 stopped by the process identifier recorded when it started.
 
@@ -1344,7 +1345,7 @@ On that route the host advertised no typed capability and refused every typed ac
 package's actions (2b); the attached terminal, the server and the local terminal outlived a killed
 control daemon, and a restarted daemon served the session again (5a); forged titles, transcripts,
 registrations and hook input changed nothing the host reports (8a); and a path typed at the attached
-composer arrived as terminal input and showed there (14.03a). No newer build is named, so 6a did not
+composer arrived as terminal input and showed there (14.03a). No newer build was named when it ran, so 6a did not
 run.
 
 The run's home held a keychain of the run's own as its default, and the record names each executable
@@ -1386,7 +1387,7 @@ selected.
 
 1.51.0 is the newest release that runs the agent itself, so it is the one pinned. The Python sources
 of 1.50.0 differ from it only in the build identifier, which was read from both wheels; 1.50.0 was
-not probed, and the qualified range does not admit it.
+not probed, and the range the table was written against does not admit it.
 
 ### The two distributions
 
@@ -1510,7 +1511,7 @@ On that route the host advertised no typed capability for kimi-cli and refused e
 each of this package's actions (2b); kimi-cli and its local terminal outlived a killed control daemon,
 and a restarted daemon served the session again (5a); forged titles, transcripts, registrations and hook
 input changed nothing the host reports (8a); and a path typed at its composer arrived as terminal input
-and showed there (14.03a). No newer build is named, so 6a did not run.
+and showed there (14.03a). No newer build was named when it ran, so 6a did not run.
 
 The run's home held a keychain of the run's own as its default, and the record names each executable
 image seen beneath the agent's sessions, looked at every quarter second from just before the launch

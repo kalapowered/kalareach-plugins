@@ -181,7 +181,8 @@ the build list and the qualification records in `fixtures/agents`, and a build i
 its record shows every part of the qualification cases passed. A build is added by committing a
 record that qualifies it, and withdrawn by removing its pin or by a newly measured record that no
 longer qualifies; the next generation names it or leaves it out, and the release keeps its version
-and digest.
+and digest. The pipeline writes no qualification result into the entry beside the build, which the
+host release record in the core repository requires of a listed build.
 
 ## Delegation
 

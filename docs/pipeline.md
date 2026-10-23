@@ -88,6 +88,11 @@ or a `grant` member added there is refused), a record run on another platform th
 says, a platform the list does not know, a build pinned twice or for a package this repository
 does not publish with a connector table, and one executable named as two versions.
 
+The pipeline writes an entry's `builds` and leaves its `qualification` list empty. The host release
+record in the core repository refuses a listed build whose plugin entry cites no qualification
+result, so the release record for a build's platform stops at the first build the pipeline names,
+until the results are written.
+
 The builds are signed with the index and kept apart from the package's bytes, so a generation adds or
 withdraws a build without a new package. A build is added when its record newly qualifies, and
 withdrawn when its pin is removed or a newly measured record no longer qualifies; the package's
