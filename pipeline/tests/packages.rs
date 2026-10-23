@@ -2852,6 +2852,289 @@ const BUNDLED_AGENTS: &[(&str, &[&str])] = &[
     ("Qoder CLI", &["kalareach/qoder-cli"]),
 ];
 
+/// How the two profiles of one agent that share a command name stand to each other.
+enum ProfilePair {
+    /// A rule of `by` recognises the program where its agent installs it, at the directory named by
+    /// `at`, and no rule of the other does: the program there is told by where it is installed.
+    /// The bare command name, anywhere else, stays claimed by both.
+    Separate {
+        by: &'static str,
+        at: &'static [&'static str],
+    },
+    /// Both recognise a program identically, wherever it is: nothing tells the two profiles apart,
+    /// so a host that chooses by these rules chooses neither, and the terminal route is all the
+    /// program has until something outside the rules (the person, or the profile the host starts
+    /// the backend for) settles it.
+    Tie,
+}
+
+/// The profiles of one agent that share a command name, and how each pair stands.
+const PROFILE_PAIRS: &[(&str, &str, ProfilePair)] = &[
+    (
+        "kalareach/kimi-code-cli",
+        "kalareach/kimi-cli",
+        ProfilePair::Separate {
+            by: "kalareach/kimi-code-cli",
+            at: &[".kimi-code", "bin"],
+        },
+    ),
+    (
+        "kalareach/opencode",
+        "kalareach/opencode-attach",
+        ProfilePair::Tie,
+    ),
+];
+
+/// KR-REQ-12.24, KR-REQ-12.21: the profiles of one agent are never told apart by the executable's
+/// name alone. Where an agent has two (Kimi's two distributions, OpenCode's two API families), a
+/// pair either separates on an installation location that only one of them names, or is declared a
+/// tie that no rule resolves. This reads the match rules the packages ship with the SDK's own
+/// reading of a path, over the paths the rules themselves imply: the command name by itself, and
+/// each directory a rule names with the command beneath it. The host decides on the same two
+/// things, because the worker establishes no distribution for a program it finds running and so
+/// reads every rule as a guess whatever confidence it declares: a rule that names the installation
+/// location outranks one that names the command alone, among packages one publisher published
+/// through one repository, and equals tie. So a package edit that dropped the location, added a rule that broke a tie, or moved
+/// a profile to another publisher changes what the host binds, and fails here first. The separation
+/// holds while both packages of a pair are admitted; the host re-binds by name when one is not.
+#[test]
+fn two_profiles_of_one_agent_are_told_apart_by_an_installation_location_or_tie() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let rules = |plugin: &str| {
+        loaded
+            .repository
+            .packages
+            .iter()
+            .find(|package| package.package.manifest.plugin_id().as_str() == plugin)
+            .unwrap_or_else(|| panic!("{plugin} is in the repository"))
+            .package
+            .manifest
+            .match_rules
+            .clone()
+    };
+
+    // Every agent with several profiles has its pairs declared, and nothing else is.
+    for (agent, plugins) in BUNDLED_AGENTS {
+        let declared = PROFILE_PAIRS
+            .iter()
+            .filter(|(first, second, _)| plugins.contains(first) && plugins.contains(second))
+            .count();
+        let pairs = plugins.len() * plugins.len().saturating_sub(1) / 2;
+        assert_eq!(
+            declared, pairs,
+            "{agent}: every pair of its profiles is declared"
+        );
+    }
+
+    for (first, second, pair) in PROFILE_PAIRS {
+        // A location outranks a name only within one publisher's packages (through one repository,
+        // which the seeded bundle is).
+        assert_eq!(
+            first.split_once('/').map(|(publisher, _)| publisher),
+            second.split_once('/').map(|(publisher, _)| publisher),
+            "{first} and {second} are one publisher's"
+        );
+        let (first_rules, second_rules) = (rules(first), rules(second));
+        // The paths the two profiles' rules imply.
+        let mut paths = std::collections::BTreeSet::new();
+        for rule in first_rules.iter().chain(&second_rules) {
+            let stem = &rule.executable.file_stem;
+            paths.insert(format!("/opt/bin/{stem}"));
+            if !rule.executable.path_suffix.is_empty() {
+                paths.insert(format!(
+                    "/home/u/{}/{stem}",
+                    rule.executable.path_suffix.join("/")
+                ));
+            }
+        }
+        // For each path both profiles recognise: whether one of them recognises it by a location.
+        let mut ties = Vec::new();
+        let mut separated = Vec::new();
+        for path in &paths {
+            let recognised = |rules: &[kr_plugin_sdk::matching::MatchRule]| {
+                let hits: Vec<_> = rules
+                    .iter()
+                    .filter(|rule| rule.executable.matches_path(path))
+                    .collect();
+                (
+                    !hits.is_empty(),
+                    hits.iter()
+                        .any(|rule| !rule.executable.path_suffix.is_empty()),
+                )
+            };
+            let ((seen_first, located_first), (seen_second, located_second)) =
+                (recognised(&first_rules), recognised(&second_rules));
+            if !(seen_first && seen_second) {
+                continue;
+            }
+            match (located_first, located_second) {
+                (false, false) => ties.push(path.clone()),
+                (true, true) => panic!("{first} and {second} both name the location of {path}"),
+                (located_first, _) => separated.push((path.clone(), located_first)),
+            }
+        }
+        match pair {
+            ProfilePair::Separate { by, at } => {
+                assert!(
+                    !ties.is_empty(),
+                    "{first} and {second}: the command name alone is claimed by both"
+                );
+                assert!(
+                    !separated.is_empty(),
+                    "{first} and {second}: the location {at:?} tells them apart"
+                );
+                for (path, located_first) in &separated {
+                    let winner = if *located_first { first } else { second };
+                    assert_eq!(winner, by, "{path}: the profile that names the location");
+                    assert!(
+                        path.contains(&at.join("/")),
+                        "{path}: the location the profiles are told apart by is {at:?}"
+                    );
+                }
+            }
+            ProfilePair::Tie => {
+                assert!(
+                    separated.is_empty(),
+                    "{first} and {second} are declared a tie, and a rule separates them at \
+                     {separated:?}"
+                );
+                assert!(
+                    !ties.is_empty(),
+                    "{first} and {second} recognise one program"
+                );
+            }
+        }
+    }
+}
+
+/// KR-REQ-12.25: Claude Code's Channels surface is recorded as a separately installed native
+/// channel server: the package says which process Claude Code starts for it, how that process
+/// reaches the worker that owns the session, which settings key switches it on and what removal
+/// takes out, and the names it uses for all of these agree. A registration whose plugin name, server
+/// name, settings key and launch flag disagreed would install a surface Claude Code never loads, and
+/// would look installed. The vendor's own gates (the channel allowlist, the sign-in, the
+/// organisation's channel setting) are decided by Claude Code where it runs; the README lists
+/// them, and none is a claim made here.
+#[test]
+fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_removal() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let package = loaded
+        .repository
+        .packages
+        .iter()
+        .find(|package| package.package.manifest.plugin_id().as_str() == "kalareach/claude-code")
+        .expect("Claude Code's package is in the repository");
+    let manifest = &package.package.manifest;
+    let read = |relative: &str| -> serde_json::Value {
+        serde_json::from_slice(
+            &std::fs::read(package.directory.join(relative)).expect("a bridge file"),
+        )
+        .expect("a JSON bridge file")
+    };
+
+    // The process Claude Code starts for the channel is the core forwarder's channel invocation,
+    // started over standard streams, with no session identifier or secret in its registration.
+    let servers = read("bridge/mcp-servers.json");
+    let servers = servers["mcpServers"].as_object().expect("the servers");
+    assert_eq!(servers.len(), 1, "one channel server");
+    let (server, registration) = servers.iter().next().expect("one server");
+    assert_eq!(registration["command"], "{kr_hook}");
+    assert_eq!(
+        registration["args"],
+        serde_json::json!(["claude-code", "channel"])
+    );
+    assert_eq!(registration["type"], "stdio");
+    assert!(
+        registration.get("env").is_none(),
+        "no variable carries a binding"
+    );
+
+    // The plugin names that server as its channel, and ships disabled until the key switches it on.
+    let plugin = read("bridge/plugin-manifest.json");
+    let name = plugin["name"]
+        .as_str()
+        .expect("the plugin's name")
+        .to_owned();
+    assert_eq!(
+        plugin["channels"],
+        serde_json::json!([{ "server": server }])
+    );
+    assert_eq!(plugin["defaultEnabled"], false);
+
+    // The recipe installs under that name, switches it on with the one key, and removes both.
+    let bridge = manifest
+        .native_bridge
+        .0
+        .as_ref()
+        .expect("the package ships a bridge");
+    let key = format!("enabledPlugins.{name}@skills-dir");
+    let mut files = 0;
+    for step in &bridge.install {
+        match step {
+            kr_plugin_sdk::plugin::BridgeStep::InstallFile { destination, .. } => {
+                assert!(
+                    destination.as_str().starts_with(&format!("skills/{name}/")),
+                    "{destination} is under the plugin's own directory"
+                );
+                files += 1;
+            }
+            kr_plugin_sdk::plugin::BridgeStep::AddConfigurationKey {
+                file,
+                key: added,
+                value,
+            } => {
+                assert_eq!(
+                    (file.as_str(), added.as_str(), value.as_str()),
+                    ("settings.json", key.as_str(), "true")
+                );
+            }
+        }
+    }
+    assert_eq!(files, 3, "the manifest, the channel server and the hooks");
+    let removed_key = bridge.remove.iter().any(|removal| {
+        matches!(removal, kr_plugin_sdk::plugin::BridgeRemoval::RemoveConfigurationKey { key: removed, .. } if *removed == key)
+    });
+    assert!(removed_key, "removal takes the key back out");
+
+    // A launch names the plugin the recipe installs, by the development flag.
+    let integration = manifest
+        .command_integration
+        .as_ref()
+        .expect("a command integration");
+    assert_eq!(
+        integration.flags,
+        [
+            "--dangerously-load-development-channels".to_owned(),
+            format!("plugin:{name}@skills-dir")
+        ]
+    );
+
+    // The process reaches the worker over a private socket the worker made, and the package asks
+    // for what answering an approval takes, each by its own grant.
+    let connector = package
+        .package
+        .connector
+        .as_ref()
+        .expect("a connector table");
+    assert_eq!(
+        connector.transport,
+        kr_plugin_sdk::connector::BrokerTransport::PrivateSocket
+    );
+    let asked: BTreeSet<PluginCapability> = manifest
+        .capabilities
+        .iter()
+        .map(|request| request.capability)
+        .collect();
+    for needed in [
+        PluginCapability::NativeBridgeInstall,
+        PluginCapability::CommandIntegrationLaunch,
+        PluginCapability::ApprovalDecode,
+        PluginCapability::ApprovalRespond,
+    ] {
+        assert!(asked.contains(&needed), "the package asks for {needed}");
+    }
+}
+
 /// KR-REQ-12.23: the manifest half of shipping the native terminal route for every bundled agent:
 /// each of the six agents has an adapter package here, no two adapters claim one protocol, and no
 /// adapter invents a control surface, since none of its actions types into the terminal or sends
