@@ -16,8 +16,13 @@ note at all.
 
 Three kinds of evidence appear below, and they are not equally strong. A **document check** reads
 what the vendor publishes. A **binary check** reads an identity or a name out of the installed
-program. **Exercised behaviour** means the thing was run and watched. Nothing in this file is
-exercised behaviour: no upstream was driven and no bridge was installed.
+program. **Exercised behaviour** means the thing was run and watched. The identity, wire-contract
+and recommendation sections below rest on document and binary checks and say nothing was driven.
+The qualification-case sections report exercised behaviour and cite the record under
+`fixtures/agents/` it came from; those records are later than the research and describe the package
+and core revision they were run with. A row headed "Range the table was written against" is the
+range the research read, not a claim that a build in it has passed the version qualification: that
+needs a record in which every part passes, and the signed index names no such build yet.
 
 The evidence itself is pinned by content, so a later reader can tell whether they are looking at the
 same bytes:
@@ -72,7 +77,7 @@ reference to this file.
 | Distribution | npm `@openai/codex` | `https://registry.npmjs.org/@openai/codex`, `dist-tags.latest` = `0.155.1` | 2026-09-20 | Verified against the registry |
 | Protocol | Codex App Server, `codex-app-server` | `https://learn.chatgpt.com/docs/app-server` | 2026-09-20 | Verified against the published documentation |
 | Protocol version tested | 0.155.1 | The JSON Schema written by `codex app-server generate-json-schema`, whose v2 document is titled `CodexAppServerProtocolV2`; both schema files are pinned by digest above | 2026-09-20 | Binary check |
-| Qualified range | `=0.155.1` | This qualification | 2026-09-20 | The only release whose schema was read. The transport and the protocol are both documented as experimental, so the range admits nothing that was not tested |
+| Range the table was written against | `=0.155.1` | This qualification | 2026-09-20 | The only release whose schema was read. The transport and the protocol are both documented as experimental, so the range admits nothing that was not tested |
 
 ### The declarative proxy contract
 
@@ -188,7 +193,7 @@ bound no connector.
 | Distribution | npm `@anthropic-ai/claude-code` | `https://registry.npmjs.org/@anthropic-ai/claude-code`, `dist-tags.latest` = `2.1.278` | 2026-09-20 | Verified against the registry |
 | Protocol | Claude Code Channels, `claude-code-channels` | `https://code.claude.com/docs/en/channels-reference` and `https://code.claude.com/docs/en/channels` | 2026-09-20 | Verified against the published documentation |
 | Protocol version tested | 2.1.278 | The three channel notification names are present in the installed 2.1.278 executable, pinned by digest above | 2026-09-20 | Binary check |
-| Qualified range | `=2.1.278` | This qualification | 2026-09-20 | The only release checked. The documented behaviour floor is 2.1.234, the release that sends permission requests only to servers it registered as channels, treats an undeclared permission capability as undeclared, and masks credentials in the relayed fields; that floor is what the bridge recipe's `application_range` is written for, and it is not a claim that any release between it and 2.1.278 was tested |
+| Range the table was written against | `=2.1.278` | This qualification | 2026-09-20 | The only release checked. The documented behaviour floor is 2.1.234, the release that sends permission requests only to servers it registered as channels, treats an undeclared permission capability as undeclared, and masks credentials in the relayed fields; that floor is what the bridge recipe's `application_range` is written for, and it is not a claim that any release between it and 2.1.278 was tested |
 
 ### The declarative proxy contract
 
@@ -513,7 +518,7 @@ bound no connector.
 | Distribution | npm `opencode-ai` | `https://registry.npmjs.org/opencode-ai`, the 1.18.31 release, installed into a directory owned by this qualification and nowhere else | 2026-09-20 | Verified against the registry |
 | Protocol | The shared-server API family's durable event stream, `opencode-server-v2-events` | The OpenAPI document that build serves at `GET /doc`, pinned by digest above | 2026-09-20 | Binary check |
 | Protocol version tested | 1.18.31 | The same document | 2026-09-20 | Binary check |
-| Qualified range | `=1.18.31` | This qualification | 2026-09-20 | The only release whose schema was read. Both API families are served from one build and the earlier one is still there, so the range admits nothing that was not read |
+| Range the table was written against | `=1.18.31` | This qualification | 2026-09-20 | The only release whose schema was read. Both API families are served from one build and the earlier one is still there, so the range admits nothing that was not read |
 
 ### The declarative proxy contract
 
@@ -647,7 +652,7 @@ bound no connector.
 | Distribution | npm `@google/gemini-cli` | `https://registry.npmjs.org/@google/gemini-cli`, the 0.60.0 release, installed into a directory owned by this qualification and nowhere else | 2026-09-20 | Verified against the registry |
 | Protocol | The agent protocol over standard streams, `gemini-cli-acp` | The handshake that build answers | 2026-09-20 | Binary check |
 | Protocol version tested | 0.60.0 | `agentInfo` in that handshake: `{"name":"gemini-cli","title":"Gemini CLI","version":"0.60.0"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
-| Qualified range | `=0.60.0` | This qualification | 2026-09-20 | The only release probed |
+| Range the table was written against | `=0.60.0` | This qualification | 2026-09-20 | The only release probed |
 | Bridge range | `=0.60.0` | This qualification: every hook fact below was read from that release | 2026-09-25 | The only release checked |
 
 ### The flag
@@ -853,7 +858,7 @@ bound no connector.
 | Distribution | The kimi.com installer into `~/.kimi-code` | The installed tree, whose executable is `~/.kimi-code/bin/kimi` (sha256 `c2204148f56c872539ac37bfe1868b597adee3606a3d7698ee9b9687aa537f11`) and whose `config.toml` names `api.kimi.ai`; that build prints `https://moonshotai.github.io/kimi-code/` as its documentation | 2026-09-20 | Verified against a live install |
 | Protocol | The agent protocol over standard streams, `kimi-code-cli-acp` | The handshake that build answers under its `acp` subcommand | 2026-09-20 | Binary check |
 | Protocol version tested | 2.0.2 | `agentInfo` in that handshake: `{"name":"Kimi Code CLI","version":"2.0.2"}`, and `protocolVersion` 1 | 2026-09-20 | Binary check |
-| Qualified range | `=2.0.2` | This qualification | 2026-09-20 | The only release probed |
+| Range the table was written against | `=2.0.2` | This qualification | 2026-09-20 | The only release probed |
 
 ### The two distributions
 
@@ -964,7 +969,7 @@ bound no connector.
 | Distribution | The qoder.com installer into `~/.qoder` | The installer at `https://qoder.com/install`, read and not run, fetches the release manifest at `https://qoder-ide.oss-accelerate.aliyuncs.com/qodercli/channels/manifest.json`, downloads the archive the manifest names for the platform, checks it against the manifest's SHA-256, extracts `qodercli` and hands over to that executable's `install` subcommand, which places it under `~/.qoder`. The manifest named `1.1.63`, published 2026-09-24T10:02:00Z. This qualification took the first three steps into a directory of its own and ran no `install`: the darwin-arm64 archive matched the manifest, and the executable in it is byte-identical to the `~/.qoder/bin/qodercli/qodercli-1.1.63` the vendor's installer had put on this machine | 2026-09-25 | Verified against the vendor's release manifest |
 | Protocol | The agent protocol over standard streams, `qoder-cli-acp` | The handshake that build answers under `--acp` | 2026-09-25 | Binary check |
 | Protocol version tested | 1.1.63 | `agentInfo` in that handshake: `{"name":"qoder-cli","title":"Qoder CLI","version":"1.1.63"}`, and `protocolVersion` 1 | 2026-09-25 | Binary check |
-| Qualified range | `=1.1.63` | This qualification | 2026-09-25 | The only release probed. Version 0.2 of this package, qualified against 1.1.59 on 2026-09-20, stays published as it was |
+| Range the table was written against | `=1.1.63` | This qualification | 2026-09-25 | The only release probed. Version 0.2 of this package, qualified against 1.1.59 on 2026-09-20, stays published as it was |
 
 The vendor's installer also names an npm package, `@qoder-ai/qodercli`, for Windows, and the npm
 registry publishes it, `latest` 1.1.63, with `qoder` and `qodercli` as its commands. Source:
@@ -1170,7 +1175,7 @@ bound no connector.
 | Distribution | npm `opencode-ai` | `https://registry.npmjs.org/opencode-ai`, the 1.18.31 release, installed into a directory owned by this qualification and nowhere else | 2026-09-24 | Binary check of the installed release |
 | Protocol | The earlier API family's event stream, `opencode-server-events` | The OpenAPI document that build serves at `GET /doc`, fetched again for this qualification and byte for byte the document pinned above | 2026-09-24 | Binary check |
 | Protocol version tested | 1.18.31 | The same document | 2026-09-24 | Binary check |
-| Qualified range | `=1.18.31` | This qualification | 2026-09-24 | The only release whose schema was read |
+| Range the table was written against | `=1.18.31` | This qualification | 2026-09-24 | The only release whose schema was read |
 | Terminal route | `opencode serve`, then `opencode attach <url>` | That build's own help, which lists both: one starts a headless server and the other attaches the terminal to a running one | 2026-09-24 | Binary check |
 
 ### The declarative proxy contract
@@ -1293,7 +1298,7 @@ bound no connector.
 | Home | `~/.kimi` | The installed package's own share directory, which a `KIMI_SHARE_DIR` variable can move | 2026-09-24 | Binary check |
 | Protocol | The agent protocol over standard streams, `kimi-cli-acp` | The handshake that build answers under its `acp` subcommand | 2026-09-24 | Binary check |
 | Protocol version tested | 1.51.0 | `agentInfo` in that handshake: `{"name":"Kimi Code CLI","version":"1.51.0"}`, and `protocolVersion` 1. The protocol library it installs is agent-client-protocol 0.8.0, pinned by digest above | 2026-09-24 | Binary check |
-| Qualified range | `=1.51.0` | This qualification | 2026-09-24 | The only release probed |
+| Range the table was written against | `=1.51.0` | This qualification | 2026-09-24 | The only release probed |
 
 ### Which release
 
