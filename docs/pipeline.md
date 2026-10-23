@@ -285,3 +285,10 @@ does not decide that a build qualifies: a record can name a part as not run, and
 build only when every part passed (see Qualified builds). An executable no signed build names has
 no version, and a host keeps its terminal as the route for it and offers no typed action; that half
 is the host's, and its own tests hold it.
+
+The tests also hold every connector package to a list in `pipeline/tests/packages.rs`
+(`BUNDLED_CONNECTORS`, and `BUNDLED_AGENTS` for the agents they serve): a package that carries a
+connector table and is not on the list fails
+`a_connector_names_one_protocol_and_identifies_its_application_exactly` until the list names it. The
+list records what this repository has reviewed and signs; it gives a listed package no power that a
+vendor's package lacks.

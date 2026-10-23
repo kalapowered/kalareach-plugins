@@ -143,7 +143,10 @@ against a live install or left it unverified.
 **Native bridges.** A bridge runs under the application's own permissions, outside the sandbox. The
 recipe lists exact files, configuration edits, hashes, version requirements and the operations that
 remove them again, and the installation grant states what it is. Prefer a small registration file
-that forwards to the core hook over anything larger.
+that forwards to the core hook over anything larger. The core hook accepts an invocation only for
+`claude-code`, `gemini-cli` and `qoder-cli`, from the package of that name, and the host applies a
+bridge recipe for Claude Code alone today, so a bridge for any other application, or any other hook
+semantics, needs a change in core.
 
 ## Versions and revocation
 
@@ -190,7 +193,8 @@ A host verifies delegated targets roles beneath a repository's root, scoped by p
 snapshot pinning, terminating-role semantics, bounded depth and revocation. This repository's
 pipeline does not produce them: it signs every package with the top-level targets role and refuses a
 role that pins any other, so a vendor's packages are signed here, and the review above is what
-stands behind them.
+stands behind them. A package that carries a connector table also needs an entry in the list that
+this repository's tests keep ([What the checks hold](pipeline.md#what-the-checks-hold)).
 
 ## What a signature does not mean
 
