@@ -187,7 +187,9 @@ Each role's key is its own. A trust root that named one key for all four would g
 every role, and the pipeline refuses to build one.
 
 The release owner rotates all four keys. A rotation publishes a new root, signed by the root it
-replaces, and a client carries its verification forward from the root it last ended on.
+replaces, and a client carries its verification forward from the root it last ended on. If the
+root's key is lost or leaked, no new root can be signed over it, and a host trusts a new root only
+when its owner adopts it out of band; the procedure is written at the key ceremony.
 
 Keys never live in this repository. Before anything is signed, the pipeline walks the working tree
 and refuses to run if it finds a private key inside it. Inside a checkout, which it recognises by
@@ -219,8 +221,8 @@ cargo run -p kalareach-catalogue -- root --signing-dir "$KALAREACH_SIGNING_DIR"
 ```
 
 Production keys are generated in the signing environment, on the machine that will hold them, and
-never leave it. The pipeline reads keys through a source abstraction, so a key store that is not a
-file plugs into the same path.
+never leave it. The pipeline reads each key from a file in its signing directory; the source abstraction it reads
+through is where a key store that is not a file would plug in, and none is implemented.
 
 ## Building against a local core checkout
 
@@ -293,8 +295,8 @@ reviewer writes it there:
 - `BUNDLED_CONNECTORS` and `BUNDLED_AGENTS` (the agents they serve): a package that carries a
   connector table and is not on them fails
   `a_connector_names_one_protocol_and_identifies_its_application_exactly` and
-  `every_bundled_adapter_is_present_and_declares_no_surface_of_its_own`. A connector for a seventh
-  application also needs the test's count of six bundled agents changed.
+  `every_bundled_adapter_is_present_and_declares_no_surface_of_its_own`. A third test, `every_bundled_adapter_declares_what_it_observes_and_controls_and_answers_only_a_native_request`,
+  counts six bundled agents, so a connector for a seventh application also needs that count changed.
 - `REVIEWED_INTEGRATIONS`: every command integration, word for word (the command, the flags, the
   variables, the package's grant statement and the list the host renders from the declaration). A
   package that declares one also has to state the SDK range `>=0.1.3, <0.2.0` exactly.
