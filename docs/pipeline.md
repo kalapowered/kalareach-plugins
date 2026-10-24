@@ -286,9 +286,19 @@ build only when every part passed (see Qualified builds). An executable no signe
 no version, and a host keeps its terminal as the route for it and offers no typed action; that half
 is the host's, and its own tests hold it.
 
-The tests also hold every connector package to a list in `pipeline/tests/packages.rs`
-(`BUNDLED_CONNECTORS`, and `BUNDLED_AGENTS` for the agents they serve): a package that carries a
-connector table and is not on the list fails
-`a_connector_names_one_protocol_and_identifies_its_application_exactly` until the list names it. The
-list records what this repository has reviewed and signs; it gives a listed package no power that a
-vendor's package lacks.
+The tests also hold what this repository has reviewed and signs to lists in
+`pipeline/tests/packages.rs`, and a package that is not on the list for its kind fails until a
+reviewer writes it there:
+
+- `BUNDLED_CONNECTORS` and `BUNDLED_AGENTS` (the agents they serve): a package that carries a
+  connector table and is not on them fails
+  `a_connector_names_one_protocol_and_identifies_its_application_exactly` and
+  `every_bundled_adapter_is_present_and_declares_no_surface_of_its_own`. A connector for a seventh
+  application also needs the test's count of six bundled agents changed.
+- `REVIEWED_INTEGRATIONS`: every command integration, word for word (the command, the flags, the
+  variables, the package's grant statement and the list the host renders from the declaration). A
+  package that declares one also has to state the SDK range `>=0.1.3, <0.2.0` exactly.
+- `REVIEWED_GRANTS`: the installation grant of every native bridge, word for word.
+
+The lists record what this repository has reviewed and signs; they give a listed package no power
+that a vendor's package lacks.
