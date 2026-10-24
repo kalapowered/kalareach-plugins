@@ -613,14 +613,14 @@ async fn root_naming(version: u64, named: Vec<(RoleType, Vec<Key>)>, epoch: u32)
 
 /// The same key as its 44-byte `SubjectPublicKeyInfo`, which the library that checks a signature
 /// reads as the key it wraps and which has an identifier of its own.
-fn wrapped(key: &Key) -> Key {
+fn wrapped(key: &Key, after: &str) -> Key {
     let mut value = serde_json::to_value(key).expect("a description");
     let raw = value["keyval"]["public"]
         .as_str()
         .expect("hexadecimal")
         .to_owned();
     let prefix = "302a300506032b6570032100";
-    value["keyval"]["public"] = serde_json::json!(format!("{prefix}{raw}"));
+    value["keyval"]["public"] = serde_json::json!(format!("{prefix}{raw}{after}"));
     serde_json::from_value(value).expect("a key")
 }
 
@@ -737,7 +737,7 @@ async fn one_key_spelled_two_ways_is_still_one_key() {
             (RoleType::Snapshot, vec![snapshot_key.clone()]),
             (
                 RoleType::Timestamp,
-                vec![timestamp_key, wrapped(&snapshot_key)],
+                vec![timestamp_key, wrapped(&snapshot_key, "")],
             ),
         ],
         0,
@@ -766,4 +766,47 @@ async fn a_shared_key_in_an_earlier_root_stops_the_build() {
         canonical::canonical(&next).expect("the root renders"),
     ];
     refused_for_a_shared_key(temporary.path(), "chained", signing(1, chain)).await;
+}
+
+/// KR-REQ-26.40: a key the library reads in a spelling the comparison cannot reduce to one value is
+/// refused with its root. The snapshot role's key with a byte after its wrapper, named by the
+/// timestamp role beside its own, is the snapshot key to the library that checks a signature and
+/// no other key to the comparison.
+#[tokio::test]
+async fn a_key_in_a_spelling_the_comparison_cannot_reduce_stops_the_build() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let [root_key, targets_key, snapshot_key, timestamp_key] = epoch_zero_keys().await;
+    let odd = root_naming(
+        1,
+        vec![
+            (RoleType::Root, vec![root_key]),
+            (RoleType::Targets, vec![targets_key]),
+            (RoleType::Snapshot, vec![snapshot_key.clone()]),
+            (
+                RoleType::Timestamp,
+                vec![timestamp_key, wrapped(&snapshot_key, "00")],
+            ),
+        ],
+        0,
+    )
+    .await;
+    let signing = signing(0, vec![odd]);
+    let refusal = attempt(temporary.path(), "odd", &signing)
+        .await
+        .expect_err("a spelling that cannot be compared is refused");
+    let said = refusal.to_string();
+    assert!(
+        matches!(&refusal, kalareach_catalogue::Error::Signing { .. })
+            && said.contains("timestamp")
+            && said.contains("spelling"),
+        "{said}"
+    );
+    assert!(
+        !temporary.path().join("odd").exists(),
+        "a generation was written"
+    );
+    assert!(
+        !temporary.path().join(".odd.building").exists(),
+        "a generation was assembled"
+    );
 }

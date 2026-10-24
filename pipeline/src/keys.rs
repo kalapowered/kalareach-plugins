@@ -534,16 +534,26 @@ async fn root_over(
 }
 
 /// A key as it is compared with the keys of other roles: its family, and its public value in the
-/// one spelling every spelling reduces to.
+/// one spelling every spelling this comparison accepts reduces to; `None` for a spelling it cannot
+/// reduce.
 ///
-/// The library that checks a signature reads one Ed25519 key from its 32 raw bytes or from the 44
-/// bytes of its `SubjectPublicKeyInfo`, and an elliptic-curve key as a compressed or an uncompressed
-/// point; each spelling has an identifier of its own, so two identifiers can name one key. An
-/// Ed25519 key is compared by its 32 bytes, an elliptic-curve key by the X coordinate of its point
-/// (a key and its negation share it, and one holder of either can sign as both), and an RSA key by
-/// the value the library reads out of its `SubjectPublicKeyInfo`. The same material under two key
-/// families is not compared.
-fn comparable(key: &Key) -> (&'static str, Vec<u8>) {
+/// The library that checks a signature reads a key in more spellings than one, and each has an
+/// identifier of its own, so two identifiers can name one key. Where a spelling cannot be compared
+/// by its bytes the key is refused, since a key the comparison cannot place is a key it cannot
+/// say it does not share:
+///
+/// - An Ed25519 key is its 32 raw bytes, or those bytes in a `SubjectPublicKeyInfo` of exactly 44
+///   bytes. The library reads a longer value as a `SubjectPublicKeyInfo` and ignores what follows
+///   it, so a longer value is refused.
+/// - An elliptic-curve key is a point: 65 bytes opening `04`, or 33 bytes opening `02` or `03`,
+///   compared by its X coordinate (a key and its negation share it, and a holder of either can sign
+///   as both). A whole `SubjectPublicKeyInfo`, which the library also reads, is refused.
+/// - An RSA key is one `RSAPublicKey`: a DER sequence that opens with an integer and ends where the
+///   value ends. The library also reads a `SubjectPublicKeyInfo` in its place, which is refused.
+///
+/// Every key this pipeline writes has one of these spellings. The same value under two key families
+/// is not compared: one key has one family.
+fn comparable(key: &Key) -> Option<(&'static str, Vec<u8>)> {
     /// The twelve bytes that wrap an Ed25519 public key in a `SubjectPublicKeyInfo`.
     const ED25519_WRAPPER: [u8; 12] = [
         0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00,
@@ -551,23 +561,43 @@ fn comparable(key: &Key) -> (&'static str, Vec<u8>) {
     match key {
         Key::Ed25519 { keyval, .. } => {
             let public: &[u8] = &keyval.public;
-            let raw = match public.strip_prefix(&ED25519_WRAPPER) {
-                Some(rest) if public.len() == 44 => rest,
-                _ => public,
+            let raw = if public.len() == 32 {
+                public
+            } else if public.len() == 44 && public.starts_with(&ED25519_WRAPPER) {
+                &public[ED25519_WRAPPER.len()..]
+            } else {
+                return None;
             };
-            ("ed25519", raw.to_vec())
+            Some(("ed25519", raw.to_vec()))
         }
-        Key::Rsa { keyval, .. } => ("rsa", keyval.public.to_vec()),
+        Key::Rsa { keyval, .. } => {
+            is_rsa_public_key(&keyval.public).then(|| ("rsa", keyval.public.to_vec()))
+        }
         Key::Ecdsa { keyval, .. } | Key::EcdsaOld { keyval, .. } => {
             let point: &[u8] = &keyval.public;
             let x = match point {
                 [0x04, rest @ ..] if rest.len() == 64 => &rest[..32],
                 [0x02 | 0x03, rest @ ..] if rest.len() == 32 => rest,
-                other => other,
+                _ => return None,
             };
-            ("ecdsa", x.to_vec())
+            Some(("ecdsa", x.to_vec()))
         }
     }
+}
+
+/// Whether `der` is one DER `RSAPublicKey`: a sequence that opens with an integer and ends where
+/// `der` ends. A `SubjectPublicKeyInfo` is a sequence that opens with a sequence.
+fn is_rsa_public_key(der: &[u8]) -> bool {
+    let [0x30, rest @ ..] = der else {
+        return false;
+    };
+    let (length, body) = match rest {
+        [length @ 0..=0x7f, body @ ..] => (usize::from(*length), body),
+        [0x81, length, body @ ..] => (usize::from(*length), body),
+        [0x82, high, low, body @ ..] => (usize::from(u16::from_be_bytes([*high, *low])), body),
+        _ => return false,
+    };
+    length == body.len() && body.first() == Some(&0x02)
 }
 
 /// The keys one role names, each in the form [`comparable`] gives it.
@@ -582,26 +612,30 @@ type Material = HashSet<(&'static str, Vec<u8>)>;
 /// # Errors
 ///
 /// Returns [`Error::Signing`] naming the first two roles, in the order of their names, that name
-/// one key.
+/// one key, and the first role that names a key in a spelling the comparison cannot reduce (see
+/// `comparable` for the spellings it accepts).
 pub fn check_role_keys(root: &Root) -> Result<()> {
     let mut roles: Vec<_> = root.roles.iter().collect();
     roles.sort_by_key(|(role, _)| role.to_string());
-    let named: Vec<(String, Material)> = roles
-        .into_iter()
-        .map(|(role, role_keys)| {
-            let material = role_keys
-                .keyids
-                .iter()
-                .map(|identifier| match root.keys.get(identifier) {
-                    Some(key) => comparable(key),
-                    // A key the root does not describe is named by nothing a signature could be
-                    // counted against, so it stands for itself.
-                    None => ("identifier", identifier.to_vec()),
-                })
-                .collect();
-            (role.to_string(), material)
-        })
-        .collect();
+    let mut named: Vec<(String, Material)> = Vec::with_capacity(roles.len());
+    for (role, role_keys) in roles {
+        let mut material = Material::new();
+        for identifier in &role_keys.keyids {
+            material.insert(match root.keys.get(identifier) {
+                Some(key) => comparable(key).ok_or_else(|| Error::Signing {
+                    detail: format!(
+                        "the {role} role names a key in a spelling this check cannot compare with \
+                         the other roles' keys: an Ed25519 key is its 32 raw bytes, an \
+                         elliptic-curve key a point and an RSA key one RSAPublicKey"
+                    ),
+                })?,
+                // A key the root does not describe is named by nothing a signature could be
+                // counted against, so it stands for itself.
+                None => ("identifier", identifier.to_vec()),
+            });
+        }
+        named.push((role.to_string(), material));
+    }
     for (at, (first, keys)) in named.iter().enumerate() {
         for (second, others) in &named[at + 1..] {
             if !keys.is_disjoint(others) {

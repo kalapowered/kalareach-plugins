@@ -190,8 +190,13 @@ it both, and the pipeline refuses to build one. A build checks every root a gene
 ones before the last included, because a host can adopt any of them, and before it writes anything.
 The roles are compared by key identifier and by the public key itself: an Ed25519 key spelled as its
 32 raw bytes under one role and wrapped in its `SubjectPublicKeyInfo` under another is one key, and
-so is an elliptic-curve key as a compressed and as an uncompressed point. The same material under
-two key types is not compared.
+so is an elliptic-curve key as a compressed and as an uncompressed point. The library that checks a
+signature reads some spellings that cannot be compared by their bytes (an Ed25519 key with bytes
+after its wrapper, an elliptic-curve key or an RSA key as a whole `SubjectPublicKeyInfo`), and a
+root that names one is refused, since a key the comparison cannot place is a key it cannot say is
+not shared. The spellings it accepts are the ones the pipeline writes: an Ed25519 key as its 32 raw
+bytes or in a wrapper of exactly 44 bytes, an elliptic-curve key as a point of 65 or 33 bytes, and an
+RSA key as one `RSAPublicKey`.
 
 The release owner rotates all four keys. A rotation publishes a new root, signed by the root it
 replaces, and a client carries its verification forward from the root it last ended on. If the
