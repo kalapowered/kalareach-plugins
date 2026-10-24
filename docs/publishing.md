@@ -44,7 +44,7 @@ in this catalogue or in the host enforces it.
 A package that needs terminal text instead of its application's own protocol has to ask for
 `terminal.stream`, `terminal.transcript_tail` or `process.observe`, each of which sits outside a
 repository's default ceiling and needs an explicit grant. No package in this repository asks for any
-of them: each first-party package reads its application's native protocol through
+of them: each first-party connector package reads its application's native protocol through
 `broker.semantic_events`, and only the Claude Code package asks to decode and answer that
 application's approvals.
 
@@ -206,8 +206,13 @@ role that pins any other, so a vendor's packages are signed here, and the review
 stands behind them. A package that carries a connector table also needs an entry in the lists that
 this repository's tests keep, a command integration or a native bridge needs its reviewed text
 written there too, and a connector for a seventh application changes the test's count of six bundled
-agents ([What the checks hold](pipeline.md#what-the-checks-hold)). The lists give a listed package no
-power that your package lacks.
+agents. The tests also hold that profiles of one application are one publisher's and declared as
+pairs, that no two packages claim one named protocol, that a package without a connector table asks
+only for capabilities inside the default ceiling and declares no mutation, and that a listed
+connector's actions are the declarative forms and never a `component` action
+([What the checks hold](pipeline.md#what-the-checks-hold)). The lists and rules give a listed package
+no power that your package lacks, and a failing test cannot be overcome by an installation grant:
+they decide what this repository signs.
 
 ## What a signature does not mean
 
