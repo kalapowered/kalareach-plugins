@@ -21,6 +21,9 @@ identifier it declares:
 }
 ```
 
+`first_party` states whether the publisher ships with KalaReach. It is a label: no host reads it to
+decide what a package may do.
+
 The identifier is immutable. It becomes a directory name, a path segment in every target this
 catalogue signs, and half of every plugin identifier you publish. Choosing a new one later means
 publishing new packages, not renaming existing ones.
@@ -129,7 +132,12 @@ so declare the class the action actually has.
 **Match rules.** An `exact` rule identifies the application by something that cannot be coincidence:
 a bundle identifier, a package name in a registry. An `inferred` rule recognises an executable by
 name and is presented to the user as a guess. Claiming `exact` for a name match is the one thing in
-a manifest that is straightforwardly dishonest.
+a manifest that is straightforwardly dishonest. A host reads a rule as exact only for a program whose
+distribution it has established, and no host establishes one, so every rule recognises as a
+guess. Where your package and another publisher's recognise one program equally well, neither
+is bound, the packages the product bundles included; a rule that also names an installation
+location outranks one that names only the executable only among packages of one publisher through
+one repository.
 
 **Connector tables.** A `connector.json` is a semantic trust claim, not a configuration file. It
 says: these methods observe, these mutate, these carry credentials, and this one is outside what I
@@ -144,8 +152,10 @@ against a live install or left it unverified.
 recipe lists exact files, configuration edits, hashes, version requirements and the operations that
 remove them again, and the installation grant states what it is. Prefer a small registration file
 that forwards to the core hook over anything larger. The core hook accepts an invocation only for
-`claude-code`, `gemini-cli` and `qoder-cli`, from the package of that name, and the host applies a
-bridge recipe for Claude Code alone today, so a bridge for any other application, or any other hook
+`claude-code`, `gemini-cli` and `qoder-cli`. It serves a package that installs a native bridge for the
+application the recipe declares, under any publisher and any package name, and a package without a
+bridge, whose launch registers the hook, only when its plugin name is one of those three. The host
+applies a bridge recipe for Claude Code alone today, so a bridge for any other application, or any other hook
 semantics, needs a change in core.
 
 ## Versions and revocation
@@ -193,8 +203,11 @@ A host verifies delegated targets roles beneath a repository's root, scoped by p
 snapshot pinning, terminating-role semantics, bounded depth and revocation. This repository's
 pipeline does not produce them: it signs every package with the top-level targets role and refuses a
 role that pins any other, so a vendor's packages are signed here, and the review above is what
-stands behind them. A package that carries a connector table also needs an entry in the list that
-this repository's tests keep ([What the checks hold](pipeline.md#what-the-checks-hold)).
+stands behind them. A package that carries a connector table also needs an entry in the lists that
+this repository's tests keep, a command integration or a native bridge needs its reviewed text
+written there too, and a connector for a seventh application changes the test's count of six bundled
+agents ([What the checks hold](pipeline.md#what-the-checks-hold)). The lists give a listed package no
+power that your package lacks.
 
 ## What a signature does not mean
 
