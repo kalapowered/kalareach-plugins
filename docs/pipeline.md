@@ -192,11 +192,15 @@ The roles are compared by key identifier and by the public key itself: an Ed2551
 32 raw bytes under one role and wrapped in its `SubjectPublicKeyInfo` under another is one key, and
 so is an elliptic-curve key as a compressed and as an uncompressed point. The library that checks a
 signature reads some spellings that cannot be compared by their bytes (an Ed25519 key with bytes
-after its wrapper, an elliptic-curve key or an RSA key as a whole `SubjectPublicKeyInfo`), and a
-root that names one is refused, since a key the comparison cannot place is a key it cannot say is
-not shared. The spellings it accepts are the ones the pipeline writes: an Ed25519 key as its 32 raw
-bytes or in a wrapper of exactly 44 bytes, an elliptic-curve key as a point of 65 or 33 bytes, and an
-RSA key as one `RSAPublicKey`.
+after its wrapper, an elliptic-curve key as a hybrid point or as a whole `SubjectPublicKeyInfo`, an
+RSA key as a whole `SubjectPublicKeyInfo`), and a root that names one is refused, since a key the
+comparison cannot place is a key it cannot say is not shared. The spellings it accepts include the
+ones the pipeline writes: an Ed25519 key as its 32 raw bytes or in a wrapper of exactly 44 bytes, an
+elliptic-curve key as a point of 65 bytes opening `04` or of 33 bytes opening `02` or `03`, and an
+RSA key as one `RSAPublicKey`. The comparison finds the spellings of one key and, for an
+elliptic-curve key, its negation; it does not find an Ed25519 key and its negation or a small-order
+shift of it, or two RSA keys of one modulus with different exponents, which need arithmetic that
+the pipeline does not do.
 
 The release owner rotates all four keys. A rotation publishes a new root, signed by the root it
 replaces, and a client carries its verification forward from the root it last ended on. If the

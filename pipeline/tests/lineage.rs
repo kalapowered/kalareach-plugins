@@ -611,8 +611,9 @@ async fn root_naming(version: u64, named: Vec<(RoleType, Vec<Key>)>, epoch: u32)
     canonical::canonical(signed.signed()).expect("the root renders")
 }
 
-/// The same key as its 44-byte `SubjectPublicKeyInfo`, which the library that checks a signature
-/// reads as the key it wraps and which has an identifier of its own.
+/// The same key as its `SubjectPublicKeyInfo` followed by the hexadecimal `after`, which the
+/// library that checks a signature reads as the key it wraps and which has an identifier of its
+/// own.
 fn wrapped(key: &Key, after: &str) -> Key {
     let mut value = serde_json::to_value(key).expect("a description");
     let raw = value["keyval"]["public"]

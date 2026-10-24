@@ -98,14 +98,6 @@ fn respelled(key: &Key, prefix: &[u8], suffix: &[u8]) -> Key {
     serde_json::from_value(value).expect("a key")
 }
 
-/// The key's public value less its last byte.
-fn shortened(key: &Key) -> Key {
-    let mut value = serde_json::to_value(key).expect("a description");
-    let public = value["keyval"]["public"].as_str().expect("hex").to_owned();
-    value["keyval"]["public"] = serde_json::json!(&public[..public.len() - 2]);
-    serde_json::from_value(value).expect("a key")
-}
-
 /// An ASN.1 element, in DER.
 fn der(tag: u8, content: &[u8]) -> Vec<u8> {
     let mut element = vec![tag];
@@ -290,11 +282,13 @@ async fn an_ed25519_key_with_a_byte_after_its_wrapper_is_refused() {
     refused_for_its_spelling(respelled(&snapshot, &ED25519_WRAPPER, &[0x00])).await;
 }
 
-/// An Ed25519 key of 31 bytes is no Ed25519 key.
+/// An elliptic-curve hybrid point (65 bytes opening `06` or `07`), which the library also reads, is
+/// not one of the two forms the comparison reduces.
 #[tokio::test]
-async fn an_ed25519_key_of_31_bytes_is_refused() {
-    let [_, _, snapshot, _] = ed25519_keys().await;
-    refused_for_its_spelling(shortened(&snapshot)).await;
+async fn an_elliptic_curve_hybrid_point_is_refused() {
+    let mut hybrid = point(7);
+    hybrid[0] = 0x06 | (hybrid[64] & 1);
+    refused_for_its_spelling(ecdsa_key(&hybrid)).await;
 }
 
 /// An elliptic-curve key as a whole `SubjectPublicKeyInfo`, which the library reads, is not a point.

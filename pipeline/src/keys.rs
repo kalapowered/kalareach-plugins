@@ -547,12 +547,18 @@ async fn root_over(
 ///   it, so a longer value is refused.
 /// - An elliptic-curve key is a point: 65 bytes opening `04`, or 33 bytes opening `02` or `03`,
 ///   compared by its X coordinate (a key and its negation share it, and a holder of either can sign
-///   as both). A whole `SubjectPublicKeyInfo`, which the library also reads, is refused.
+///   as both). A whole `SubjectPublicKeyInfo` and a hybrid point (65 bytes opening `06` or `07`),
+///   which the library also reads, are refused.
 /// - An RSA key is one `RSAPublicKey`: a DER sequence that opens with an integer and ends where the
 ///   value ends. The library also reads a `SubjectPublicKeyInfo` in its place, which is refused.
 ///
 /// Every key this pipeline writes has one of these spellings. The same value under two key families
 /// is not compared: one key has one family.
+///
+/// What this finds is the spellings of one key, and for an elliptic-curve key its negation. It does
+/// not find an Ed25519 key and its negation or a small-order shift of it, or two RSA keys of one
+/// modulus with different exponents: a holder of the private half of one can sign for the other, and
+/// finding that takes arithmetic that neither this crate nor the host's catalogue check does.
 fn comparable(key: &Key) -> Option<(&'static str, Vec<u8>)> {
     /// The twelve bytes that wrap an Ed25519 public key in a `SubjectPublicKeyInfo`.
     const ED25519_WRAPPER: [u8; 12] = [
@@ -625,8 +631,9 @@ pub fn check_role_keys(root: &Root) -> Result<()> {
                 Some(key) => comparable(key).ok_or_else(|| Error::Signing {
                     detail: format!(
                         "the {role} role names a key in a spelling this check cannot compare with \
-                         the other roles' keys: an Ed25519 key is its 32 raw bytes, an \
-                         elliptic-curve key a point and an RSA key one RSAPublicKey"
+                         the other roles' keys: an Ed25519 key is its 32 raw bytes or its 44-byte \
+                         wrapper, an elliptic-curve key a point opening 04, 02 or 03, and an RSA \
+                         key one RSAPublicKey"
                     ),
                 })?,
                 // A key the root does not describe is named by nothing a signature could be
