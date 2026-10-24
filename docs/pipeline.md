@@ -226,7 +226,7 @@ through is where a key store that is not a file would plug in, and none is imple
 
 ## Building against a local core checkout
 
-`pipeline/Cargo.toml` depends on `kr-plugin-sdk` by Git URL and exact revision. That pin is the
+The root `Cargo.toml` names `kr-plugin-sdk` by Git URL and exact revision, which `pipeline/Cargo.toml` reads. That pin is the
 package contract this catalogue is built against.
 
 `scripts/with-local-core.sh` rewrites the fetch URL for the duration of one command, so Cargo reads
@@ -301,6 +301,16 @@ reviewer writes it there:
   variables, the package's grant statement and the list the host renders from the declaration). A
   package that declares one also has to state the SDK range `>=0.1.3, <0.2.0` exactly.
 - `REVIEWED_GRANTS`: the installation grant of every native bridge, word for word.
+- `PROFILE_PAIRS`: every pair of profiles of one bundled agent, declared, and both profiles of a pair
+  published by one publisher.
+- Connector protocol names: no two packages may claim one named protocol, so a vendor's connector
+  for an application a listed package already reads fails the test whatever list it is added to.
+- A package without a connector table requests only capabilities inside the default ceiling and
+  declares no mutation. A listed connector's actions are `presentation`, `upstream_cancel`,
+  `upstream_method` (a method its own table routes) or `decision_destination` (an answer through
+  the table's own destination), never a `component` action, and none writes into the terminal.
 
-The lists record what this repository has reviewed and signs; they give a listed package no power
-that a vendor's package lacks.
+The lists and rules record what this repository has reviewed and signs; they give a listed package
+no power that a vendor's package lacks, and they restrict what this repository signs beyond the host
+contract: an installation grant cannot overcome a failing test, so a package that breaks one is not
+published from here.
