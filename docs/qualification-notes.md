@@ -398,8 +398,8 @@ What core provides, and what is unverified about it:
   - From version 0.5.0 the recipe registers `claude-code channel` and `claude-code hook` as the
     arguments of the forwarder, which its files name by the placeholder `{kr_hook}`. The package
     contract carries the placeholder from core `80d47fb299` (`crates/kr-plugin-sdk/src/forwarder.rs`),
-    and the host replaces it with the full path of the forwarder it installed from core
-    `b84a2726ba`. The forwarder accepts both. A command line it does not accept, such as an unknown application or
+    and from core `b84a2726ba` the host replaces it with the full path of the forwarder it
+    installed. The forwarder accepts both. A command line it does not accept, such as an unknown application or
     surface, an extra argument or an undeclared flag, is a usage error: it is refused on standard
     error with exit code 64, before anything is read or connected, because Claude Code reads a
     hook's exit code 2 as a request to block (`crates/kr-hook/src/cli.rs`).
