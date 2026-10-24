@@ -394,8 +394,9 @@ What core provides, and what is unverified about it:
   core's tests against a stand-in directory, not against a live install.
 - The host contract is core's `kr-hook` forwarder and the worker's gateway, at core `e2f867b3`
   (`crates/kr-hook` and `docs/bridges/claude-code/README.md`):
-  - The recipe registers `kr-hook claude-code channel` and `kr-hook claude-code hook`, and the
-    forwarder accepts both. A command line it does not accept, such as an unknown application or
+  - From version 0.5.0 the recipe registers `claude-code channel` and `claude-code hook` as the
+    arguments of the forwarder, which its files name by the placeholder `{kr_hook}` and the host
+    replaces with the full path of the forwarder it installed. The forwarder accepts both. A command line it does not accept, such as an unknown application or
     surface, an extra argument or an undeclared flag, is a usage error: it is refused on standard
     error with exit code 64, before anything is read or connected, because Claude Code reads a
     hook's exit code 2 as a request to block (`crates/kr-hook/src/cli.rs`).
@@ -454,7 +455,8 @@ From version 0.4.0 the package declares its command integration: the command `cl
 `--dangerously-load-development-channels` and `plugin:kalareach-channels@skills-dir` in that order,
 and no variables. It requests `command_integration.launch` and states `sdk_range`
 `>=0.1.2, <0.2.0`, the package contract that carries the member (core `fec12253`,
-`crates/kr-plugin-sdk/src/integration.rs`).
+`crates/kr-plugin-sdk/src/integration.rs`). From version 0.5.0 it states `>=0.1.3, <0.2.0`, the
+contract that carries the forwarder's placeholder (`crates/kr-plugin-sdk/src/forwarder.rs`).
 
 | Fact | Source | Read | Status |
 | --- | --- | --- | --- |
@@ -740,8 +742,12 @@ The package installs an extension, `kalareach`, and nothing else: `bridge/gemini
 `extensions/kalareach/hooks/hooks.json` and `bridge/gemini-extension-install.json`, the extension's
 install record, at `extensions/kalareach/.gemini-extension-install.json`, all under the user's own
 Gemini CLI directory. The record names `/dev/null/kalareach` as a `local` source; it is installed
-first and removed last. The hooks file registers `kr-hook gemini-cli hook` for `SessionStart` and
-`Notification` with a timeout of 5000 milliseconds and for `SessionEnd` with 1000. Everything below
+first and removed last. The hooks file registers `gemini-cli hook` for `SessionStart` and
+`Notification` with a timeout of 5000 milliseconds and for `SessionEnd` with 1000. From version 0.5.0
+it starts the forwarder as the line `{kr_hook} gemini-cli hook`, where the host writes the installed
+forwarder's full path in single quotes in place of the placeholder, and the package no longer lists
+Windows, because the package contract refuses that line form in a package that does
+(`crates/kr-plugin-sdk/src/validate.rs`). Everything below
 was read from 0.60.0 on 2026-09-25. A binary check here is either the installed bundle read (the
 chunks pinned by digest above) or the build started with a home directory and a working directory
 belonging to this qualification, the network denied, no account and no model turn, and what its
@@ -811,8 +817,9 @@ so a model turn, and a session launched by a running KalaReach worker.
 From version 0.4.0 the package declares its command integration: the command `gemini`, no flags, and
 the variable `GEMINI_CLI_NO_RELAUNCH` with the value `true`, the one pair the package contract
 permits (core `fec12253`, `PERMITTED_VARIABLES` in `crates/kr-plugin-sdk/src/integration.rs`). It
-requests `command_integration.launch` and states `sdk_range` `>=0.1.2, <0.2.0`. Everything below
-was read from 0.60.0, in the files pinned by digest above.
+requests `command_integration.launch` and states `sdk_range` `>=0.1.2, <0.2.0`; from version 0.5.0 it
+states `>=0.1.3, <0.2.0`, for the placeholder. Everything below was read from 0.60.0, in the files
+pinned by digest above.
 
 | Fact | Source | Read | Status |
 | --- | --- | --- | --- |
@@ -1115,9 +1122,10 @@ removal, and no hooks in the first session after installation. The marketplace i
 if a later Qoder CLI stops reading `--settings`.
 
 The core repository defines the launch's two elements (`fixtures/bridges/qoder-cli/flags.json`,
-sha256 `d867f03b41f63a11688ee1c6e0a79455ffbaca09d2c38150b6f8d4b4c269261f`) and the forwarder they
-start, `kr-hook qoder-cli hook`, registered in exec form for the five events above with a timeout of
-one second for `SessionEnd` and five for the rest. This package declares no native bridge; from
+sha256 `4a23ebef3076b3d7f5aaa817d3f4f78561c48db869c6147b92a503e0c3fb6c23`) and the forwarder they
+start, named by the placeholder `{kr_hook}` with the arguments `qoder-cli hook`, which the host
+replaces with the installed forwarder's full path, registered in exec form for the five events above
+with a timeout of one second for `SessionEnd` and five for the rest. This package declares no native bridge; from
 version 0.4.0 it declares those two elements as its command integration, below, and it claims none
 of those hooks' observations.
 
@@ -1128,8 +1136,9 @@ What the build did with them, each run with no account:
   parent was `qodercli` itself, the process that was started. The `qoder` dispatcher execs
   `qodercli` in place (read from `~/.qoder/entry/qoder`, sha256
   `07def4d998e91995000266cecabdedde71113307f122f9655a568c61369baf42`). Status: binary check, run.
-- The core fixture's two elements, with the forwarder built from core and a stand-in worker, ran end
-  to end: Qoder CLI ran `kr-hook qoder-cli hook` for `SessionStart` and `SessionEnd`, logged each as
+- The core fixture's two elements as they stood on that date, which named the forwarder by its bare
+  name, with the forwarder built from core and a stand-in worker, ran end to end: Qoder CLI ran
+  `kr-hook qoder-cli hook` for `SessionStart` and `SessionEnd`, logged each as
   succeeding with exit code 0 in 33 milliseconds, and the forwarder declared itself
   `{"application":"qoder-cli","surface":"hook"}` and reported `thread_started` with detail `startup`
   and `thread_ended` with detail `other` for Qoder CLI's own session identifier. Status: binary
@@ -1150,11 +1159,12 @@ model turn, and a session launched by a running KalaReach worker.
 From version 0.4.0 the package declares its command integration: the command `qodercli`, the two
 elements above as its flags, byte for byte, and no variables. It requests
 `command_integration.launch` and states `sdk_range` `>=0.1.2, <0.2.0`, the package contract that
-carries the member (core `fec12253`, `crates/kr-plugin-sdk/src/integration.rs`).
+carries the member (core `fec12253`, `crates/kr-plugin-sdk/src/integration.rs`). From version 0.5.0 the
+flags name the forwarder by the placeholder `{kr_hook}` and the package states `>=0.1.3, <0.2.0`.
 
 | Fact | Source | Read | Status |
 | --- | --- | --- | --- |
-| The flags are the core fixture's bytes: written as JSON with two-space indentation and a final newline, the list has the fixture's SHA-256, `d867f03b41f63a11688ee1c6e0a79455ffbaca09d2c38150b6f8d4b4c269261f` | `fixtures/bridges/qoder-cli/flags.json` at core `fec12253`; `pipeline/tests/packages.rs`, which checks the digest and that the settings hold the forwarder's hook in exec form for the five events and nothing else | 2026-09-26 | Checked by this repository's tests |
+| The flags are the core fixture's bytes: written as JSON with two-space indentation and a final newline, the list has the fixture's SHA-256, `4a23ebef3076b3d7f5aaa817d3f4f78561c48db869c6147b92a503e0c3fb6c23` | `fixtures/bridges/qoder-cli/flags.json` at core `ee7f7b989f`; `pipeline/tests/packages.rs`, which checks the digest and that the settings hold the forwarder's hook in exec form for the five events and nothing else | 2026-10-24 | Checked by this repository's tests |
 | The two elements add the hooks beside the person's own, and with the forwarder built from core and a stand-in worker they ran end to end | The runs above | 2026-09-25 | Binary check, run |
 | The command is `qodercli`, the stable command name and the one the qualification cases type. The `qoder` dispatcher execs `qodercli` in place, but one declaration names one command and the host applies it only to an invocation of that command, so a Qoder CLI started as `qoder` runs without the integration | `fixtures/agents/builds.json`; the dispatcher read above; the package contract at core `fec12253` (`docs/plugins/README.md`, "Command integration") | 2026-09-26 | Binary check of the dispatcher; document check of the contract |
 
