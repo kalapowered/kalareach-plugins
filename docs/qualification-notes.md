@@ -373,7 +373,8 @@ What core provides, and what is unverified about it:
   terminal with `CLAUDE_CONFIG_DIR` set to that directory, a dummy API key and a refused base URL,
   under a sandbox that denied the keychain, the person's own Claude Code paths, the external volume
   and outbound TCP, and was stopped after 14 seconds. A recorder stood first on its `PATH` as
-  `kr-hook`. Before the installation, Claude Code started no forwarder. Installed, it ran
+  `kr-hook`, because the recipe of that run named the forwarder by its bare name. Before the
+  installation, Claude Code started no forwarder. Installed, it ran
   `kr-hook claude-code hook` for `SessionStart`, started `kr-hook claude-code channel` as the
   plugin's MCP server, and ran `kr-hook claude-code hook` for `SessionEnd` when it was stopped.
   After the executor's removal it started none. The installation added the three files, the
@@ -395,8 +396,10 @@ What core provides, and what is unverified about it:
 - The host contract is core's `kr-hook` forwarder and the worker's gateway, at core `e2f867b3`
   (`crates/kr-hook` and `docs/bridges/claude-code/README.md`):
   - From version 0.5.0 the recipe registers `claude-code channel` and `claude-code hook` as the
-    arguments of the forwarder, which its files name by the placeholder `{kr_hook}` and the host
-    replaces with the full path of the forwarder it installed. The forwarder accepts both. A command line it does not accept, such as an unknown application or
+    arguments of the forwarder, which its files name by the placeholder `{kr_hook}`. The package
+    contract carries the placeholder from core `80d47fb299` (`crates/kr-plugin-sdk/src/forwarder.rs`),
+    and the host replaces it with the full path of the forwarder it installed from core
+    `b84a2726ba`. The forwarder accepts both. A command line it does not accept, such as an unknown application or
     surface, an extra argument or an undeclared flag, is a usage error: it is refused on standard
     error with exit code 64, before anything is read or connected, because Claude Code reads a
     hook's exit code 2 as a request to block (`crates/kr-hook/src/cli.rs`).
