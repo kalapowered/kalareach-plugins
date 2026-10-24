@@ -188,8 +188,10 @@ every role, and the pipeline refuses to build one.
 
 The release owner rotates all four keys. A rotation publishes a new root, signed by the root it
 replaces, and a client carries its verification forward from the root it last ended on. If the
-root's key is lost or leaked, no new root can be signed over it, and a host trusts a new root only
-when its owner adopts it out of band; the procedure is written at the key ceremony.
+root's key is lost, no new root can be signed over it, and a host trusts a new root only when its
+owner adopts it out of band. If it is leaked, its holder can sign a successor root that hosts follow
+at their next sync, so the owner rotates at once and a host that may have followed another root
+re-anchors out of band; the procedure is written at the key ceremony.
 
 Keys never live in this repository. Before anything is signed, the pipeline walks the working tree
 and refuses to run if it finds a private key inside it. Inside a checkout, which it recognises by
