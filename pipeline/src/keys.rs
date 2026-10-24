@@ -501,23 +501,12 @@ async fn root_over(
         HashMap::new();
     let mut roles: HashMap<RoleType, RoleKeys> = HashMap::new();
 
-    // One key per role. A root that named one key for all four would grant whoever holds it every
-    // role, which is exactly what separating them exists to prevent, and a root file cannot say
-    // afterwards which of the four it was meant to be.
-    let mut seen: HashSet<Vec<u8>> = HashSet::new();
     for (role, source) in roles_in_order.iter().zip(sources) {
         let sign = source.as_sign().await.map_err(|source| Error::Signing {
             detail: format!("the {role} key: {source}"),
         })?;
         let key: Key = sign.tuf_key();
         let key_id = key.key_id()?;
-        if !seen.insert(key_id.to_vec()) {
-            return Err(Error::Signing {
-                detail: format!(
-                    "the {role} key is the same key as another role's; each role has its own"
-                ),
-            });
-        }
         keys.insert(key_id.clone(), key);
         roles.insert(
             *role,
@@ -529,7 +518,9 @@ async fn root_over(
         );
     }
 
-    Ok(Root {
+    // One key per role. A root that named one key for two roles would grant whoever holds it both,
+    // and a root file cannot say afterwards which of the two the key was meant for.
+    let root = Root {
         spec_version: "1.0.0".to_owned(),
         consistent_snapshot: false,
         version,
@@ -537,7 +528,92 @@ async fn root_over(
         keys,
         roles,
         _extra: HashMap::new(),
-    })
+    };
+    check_role_keys(&root)?;
+    Ok(root)
+}
+
+/// A key as it is compared with the keys of other roles: its family, and its public value in the
+/// one spelling every spelling reduces to.
+///
+/// The library that checks a signature reads one Ed25519 key from its 32 raw bytes or from the 44
+/// bytes of its `SubjectPublicKeyInfo`, and an elliptic-curve key as a compressed or an uncompressed
+/// point; each spelling has an identifier of its own, so two identifiers can name one key. An
+/// Ed25519 key is compared by its 32 bytes, an elliptic-curve key by the X coordinate of its point
+/// (a key and its negation share it, and one holder of either can sign as both), and an RSA key by
+/// the value the library reads out of its `SubjectPublicKeyInfo`. The same material under two key
+/// families is not compared.
+fn comparable(key: &Key) -> (&'static str, Vec<u8>) {
+    /// The twelve bytes that wrap an Ed25519 public key in a `SubjectPublicKeyInfo`.
+    const ED25519_WRAPPER: [u8; 12] = [
+        0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00,
+    ];
+    match key {
+        Key::Ed25519 { keyval, .. } => {
+            let public: &[u8] = &keyval.public;
+            let raw = match public.strip_prefix(&ED25519_WRAPPER) {
+                Some(rest) if public.len() == 44 => rest,
+                _ => public,
+            };
+            ("ed25519", raw.to_vec())
+        }
+        Key::Rsa { keyval, .. } => ("rsa", keyval.public.to_vec()),
+        Key::Ecdsa { keyval, .. } | Key::EcdsaOld { keyval, .. } => {
+            let point: &[u8] = &keyval.public;
+            let x = match point {
+                [0x04, rest @ ..] if rest.len() == 64 => &rest[..32],
+                [0x02 | 0x03, rest @ ..] if rest.len() == 32 => rest,
+                other => other,
+            };
+            ("ecdsa", x.to_vec())
+        }
+    }
+}
+
+/// The keys one role names, each in the form [`comparable`] gives it.
+type Material = HashSet<(&'static str, Vec<u8>)>;
+
+/// Checks that no two roles of `root` name the same key.
+///
+/// A role holds the authority of its keys, so a key two roles share lets whoever holds it act for
+/// both. A compromised timestamp key is meant to hold a client on an old generation and do nothing
+/// more, which is not so when the same key also signs the targets.
+///
+/// # Errors
+///
+/// Returns [`Error::Signing`] naming the first two roles, in the order of their names, that name
+/// one key.
+pub fn check_role_keys(root: &Root) -> Result<()> {
+    let mut roles: Vec<_> = root.roles.iter().collect();
+    roles.sort_by_key(|(role, _)| role.to_string());
+    let named: Vec<(String, Material)> = roles
+        .into_iter()
+        .map(|(role, role_keys)| {
+            let material = role_keys
+                .keyids
+                .iter()
+                .map(|identifier| match root.keys.get(identifier) {
+                    Some(key) => comparable(key),
+                    // A key the root does not describe is named by nothing a signature could be
+                    // counted against, so it stands for itself.
+                    None => ("identifier", identifier.to_vec()),
+                })
+                .collect();
+            (role.to_string(), material)
+        })
+        .collect();
+    for (at, (first, keys)) in named.iter().enumerate() {
+        for (second, others) in &named[at + 1..] {
+            if !keys.is_disjoint(others) {
+                return Err(Error::Signing {
+                    detail: format!(
+                        "the {first} and {second} roles name the same key; each role has its own"
+                    ),
+                });
+            }
+        }
+    }
+    Ok(())
 }
 
 /// Builds the root that follows `previous`, over the keys of `next`, and signs it under both.

@@ -185,8 +185,13 @@ is the design. A compromised timestamp key lets an attacker hold a client on an 
 does not let them publish a package. A compromised targets key lets them publish a package; it does
 not let them change which keys are trusted.
 
-Each role's key is its own. A trust root that named one key for all four would grant whoever holds it
-every role, and the pipeline refuses to build one.
+Each role's key is its own. A trust root that named one key for two roles would grant whoever holds
+it both, and the pipeline refuses to build one. A build checks every root a generation ships, the
+ones before the last included, because a host can adopt any of them, and before it writes anything.
+The roles are compared by key identifier and by the public key itself: an Ed25519 key spelled as its
+32 raw bytes under one role and wrapped in its `SubjectPublicKeyInfo` under another is one key, and
+so is an elliptic-curve key as a compressed and as an uncompressed point. The same material under
+two key types is not compared.
 
 The release owner rotates all four keys. A rotation publishes a new root, signed by the root it
 replaces, and a client carries its verification forward from the root it last ended on. If the

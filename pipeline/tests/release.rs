@@ -320,27 +320,59 @@ fn a_private_key_in_the_tree_stops_the_pipeline() {
     keys::refuse_keys_in_tree(tree).expect_err("a .pem file in the tree stops the pipeline");
 }
 
+/// One key cannot be the key of two roles, whichever two: a root over keys in which a role's is
+/// another's is not made.
 #[tokio::test]
-async fn one_key_cannot_hold_every_role() {
-    let Some(signing_dir) = std::env::var_os("KALAREACH_SIGNING_DIR") else {
-        return;
-    };
-    let temporary = tempfile::tempdir().expect("a temporary directory");
-    let reused = temporary.path().join("signing");
-    std::fs::create_dir_all(&reused).expect("the directory creates");
-    let source = Path::new(&signing_dir).join("root.pem");
-    for role in ["root.pem", "targets.pem", "snapshot.pem", "timestamp.pem"] {
-        std::fs::copy(&source, reused.join(role)).expect("the key copies");
-    }
+async fn one_key_cannot_hold_two_roles() {
+    use kalareach_catalogue::development::DerivedKeySource;
+    use tough::key_source::KeySource;
+    use tough::schema::RoleType;
 
-    let signing = SigningDirectory::open(&reused, &root()).expect("the directory opens");
     let expires = Timestamp::now()
         .checked_add(Span::new().hours(24))
         .expect("an hour arithmetic that fits");
-    let error = keys::build_root(&signing, expires)
-        .await
-        .expect_err("one key for four roles is refused");
-    assert!(error.to_string().contains("same key"), "{error}");
+    let one = std::num::NonZeroU64::new(1).expect("one is not zero");
+    let source = |role| Box::new(DerivedKeySource::new(role, 0)) as Box<dyn KeySource>;
+
+    // The control: a key for each role.
+    keys::build_root_from(
+        vec![
+            (RoleType::Root, source(RoleType::Root)),
+            (RoleType::Targets, source(RoleType::Targets)),
+            (RoleType::Snapshot, source(RoleType::Snapshot)),
+            (RoleType::Timestamp, source(RoleType::Timestamp)),
+        ],
+        one,
+        expires,
+    )
+    .await
+    .expect("four keys make a root");
+
+    // One key for all four roles, and one key for two.
+    for named in [
+        [RoleType::Root; 4],
+        [
+            RoleType::Root,
+            RoleType::Targets,
+            RoleType::Snapshot,
+            RoleType::Snapshot,
+        ],
+    ] {
+        let sources = [
+            RoleType::Root,
+            RoleType::Targets,
+            RoleType::Snapshot,
+            RoleType::Timestamp,
+        ]
+        .into_iter()
+        .zip(named)
+        .map(|(role, keyed_as)| (role, source(keyed_as)))
+        .collect();
+        let error = keys::build_root_from(sources, one, expires)
+            .await
+            .expect_err("one key for two roles is refused");
+        assert!(error.to_string().contains("same key"), "{error}");
+    }
 }
 
 #[tokio::test]

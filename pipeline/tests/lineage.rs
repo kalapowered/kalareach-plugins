@@ -1,7 +1,8 @@
 //! The development lineage: keys anybody can derive, one chain of roots, and metadata that is
 //! written the same way every time.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
+use std::num::NonZeroU64;
 use std::path::{Path, PathBuf};
 
 use jiff::Timestamp;
@@ -13,7 +14,10 @@ use kalareach_catalogue::{canonical, index, packages, repository_root};
 use kr_plugin_sdk::ids::RepositoryGeneration;
 use kr_plugin_sdk::scalars::TimestampMs;
 use sha2::{Digest as _, Sha256};
-use tough::schema::{RoleType, Root, Signed};
+use tough::editor::signed::SignedRole;
+use tough::key_source::KeySource as _;
+use tough::schema::key::Key;
+use tough::schema::{KeyHolder, RoleKeys, RoleType, Root, Signed};
 
 fn root() -> PathBuf {
     repository_root(Path::new(env!("CARGO_MANIFEST_DIR"))).expect("the repository root is above us")
@@ -552,4 +556,214 @@ async fn signatures_are_written_in_key_order_whatever_order_they_were_made_in() 
         .sort_by(|left, right| right.keyid[..].cmp(&left.keyid[..]));
     let written = canonical::canonical(&signed).expect("the root renders");
     assert_eq!(written, roots[1], "the same root, written in key order");
+}
+
+/// The key of one role in one epoch of the development lineage, as a root names it.
+async fn derived_key(role: RoleType, epoch: u32) -> Key {
+    development::DerivedKeySource::new(role, epoch)
+        .as_sign()
+        .await
+        .expect("a derived key")
+        .tuf_key()
+}
+
+/// A version-`version` root that names `named` for its roles, signed by the root key of `epoch`
+/// alone and written as the pipeline writes a root. The keys need not be four: that is the point.
+async fn root_naming(version: u64, named: Vec<(RoleType, Vec<Key>)>, epoch: u32) -> Vec<u8> {
+    let mut keys = HashMap::new();
+    let mut roles = HashMap::new();
+    for (role, role_keys) in named {
+        let mut identifiers = Vec::new();
+        for key in role_keys {
+            let identifier = key.key_id().expect("a key identifier");
+            keys.insert(identifier.clone(), key);
+            identifiers.push(identifier);
+        }
+        roles.insert(
+            role,
+            RoleKeys {
+                keyids: identifiers,
+                threshold: NonZeroU64::new(1).expect("one"),
+                _extra: HashMap::new(),
+            },
+        );
+    }
+    let root = Root {
+        spec_version: "1.0.0".to_owned(),
+        consistent_snapshot: false,
+        version: NonZeroU64::new(version).expect("a version"),
+        expires: expires(),
+        keys,
+        roles,
+        _extra: HashMap::new(),
+    };
+    let signers: Vec<Box<dyn tough::key_source::KeySource>> = vec![Box::new(
+        development::DerivedKeySource::new(RoleType::Root, epoch),
+    )];
+    let signed = SignedRole::new(
+        root.clone(),
+        &KeyHolder::Root(root),
+        &signers,
+        &aws_lc_rs::rand::SystemRandom::new(),
+    )
+    .await
+    .expect("the root signs");
+    canonical::canonical(signed.signed()).expect("the root renders")
+}
+
+/// The same key as its 44-byte `SubjectPublicKeyInfo`, which the library that checks a signature
+/// reads as the key it wraps and which has an identifier of its own.
+fn wrapped(key: &Key) -> Key {
+    let mut value = serde_json::to_value(key).expect("a description");
+    let raw = value["keyval"]["public"]
+        .as_str()
+        .expect("hexadecimal")
+        .to_owned();
+    let prefix = "302a300506032b6570032100";
+    value["keyval"]["public"] = serde_json::json!(format!("{prefix}{raw}"));
+    serde_json::from_value(value).expect("a key")
+}
+
+/// Builds the repository's generation under `signing` into `name` beside nothing, and returns the
+/// result.
+async fn attempt(
+    temporary: &Path,
+    name: &str,
+    signing: &DevelopmentSigning,
+) -> kalareach_catalogue::Result<()> {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    let catalogue = index::build(
+        &loaded.repository,
+        RepositoryGeneration::new(1),
+        TimestampMs::new(1_760_000_000_000),
+    );
+    tuf::build(
+        &loaded.repository,
+        &catalogue,
+        signing,
+        Expiries {
+            targets: expires(),
+            snapshot: expires(),
+            timestamp: expires(),
+        },
+        &temporary.join(name),
+        false,
+    )
+    .await
+    .map(|_| ())
+}
+
+/// Says that `signing` is refused because the snapshot and timestamp roles share a key, and that
+/// nothing was written: no generation, and no directory one was assembled in.
+async fn refused_for_a_shared_key(temporary: &Path, name: &str, signing: DevelopmentSigning) {
+    let refusal = attempt(temporary, name, &signing)
+        .await
+        .expect_err("a root that gives one key to two roles is refused");
+    let said = refusal.to_string();
+    assert!(
+        matches!(&refusal, kalareach_catalogue::Error::Signing { .. })
+            && said.contains("same key")
+            && said.contains("snapshot")
+            && said.contains("timestamp"),
+        "{name}: {said}"
+    );
+    assert!(
+        !temporary.join(name).exists(),
+        "{name}: a generation was written"
+    );
+    assert!(
+        !temporary.join(format!(".{name}.building")).exists(),
+        "{name}: a generation was assembled"
+    );
+}
+
+/// The keys of epoch 0, in the order root, targets, snapshot, timestamp.
+async fn epoch_zero_keys() -> [Key; 4] {
+    [
+        derived_key(RoleType::Root, 0).await,
+        derived_key(RoleType::Targets, 0).await,
+        derived_key(RoleType::Snapshot, 0).await,
+        derived_key(RoleType::Timestamp, 0).await,
+    ]
+}
+
+/// A version-1 root of epoch 0 whose timestamp role names the snapshot role's key.
+async fn root_sharing_a_key() -> Vec<u8> {
+    let [root_key, targets_key, snapshot_key, _] = epoch_zero_keys().await;
+    root_naming(
+        1,
+        vec![
+            (RoleType::Root, vec![root_key]),
+            (RoleType::Targets, vec![targets_key]),
+            (RoleType::Snapshot, vec![snapshot_key.clone()]),
+            (RoleType::Timestamp, vec![snapshot_key]),
+        ],
+        0,
+    )
+    .await
+}
+
+/// KR-REQ-26.40: the catalogue build signs under a root only when each of its roles has a key of its
+/// own. The development lineage's root, a key for each role, is the control.
+#[tokio::test]
+async fn a_root_that_gives_one_key_to_two_roles_stops_the_build() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    attempt(
+        temporary.path(),
+        "control",
+        &DevelopmentSigning::first()
+            .await
+            .expect("the first lineage"),
+    )
+    .await
+    .expect("four keys, one for each role, are signed under");
+
+    let shared = root_sharing_a_key().await;
+    refused_for_a_shared_key(temporary.path(), "shared", signing(0, vec![shared])).await;
+}
+
+/// KR-REQ-26.40: the same key spelled as its raw bytes under one role and wrapped in its
+/// `SubjectPublicKeyInfo` under another has two identifiers and two byte strings, and is still one
+/// key.
+#[tokio::test]
+async fn one_key_spelled_two_ways_is_still_one_key() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let [root_key, targets_key, snapshot_key, timestamp_key] = epoch_zero_keys().await;
+    let spelled = root_naming(
+        1,
+        vec![
+            (RoleType::Root, vec![root_key]),
+            (RoleType::Targets, vec![targets_key]),
+            (RoleType::Snapshot, vec![snapshot_key.clone()]),
+            (
+                RoleType::Timestamp,
+                vec![timestamp_key, wrapped(&snapshot_key)],
+            ),
+        ],
+        0,
+    )
+    .await;
+    refused_for_a_shared_key(temporary.path(), "spelled", signing(0, vec![spelled])).await;
+}
+
+/// KR-REQ-26.40: a generation ships its whole chain of roots and a host can adopt any of them, so a
+/// root before the last that shares a key stops the build though the last is sound.
+#[tokio::test]
+async fn a_shared_key_in_an_earlier_root_stops_the_build() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let shared = root_sharing_a_key().await;
+    let first: Signed<Root> = serde_json::from_slice(&shared).expect("the root parses");
+    let next = keys::rotate_root(
+        &first,
+        &development::key_sources(0),
+        development::role_sources(1),
+        expires(),
+    )
+    .await
+    .expect("the rotation signs");
+    let chain = vec![
+        shared,
+        canonical::canonical(&next).expect("the root renders"),
+    ];
+    refused_for_a_shared_key(temporary.path(), "chained", signing(1, chain)).await;
 }

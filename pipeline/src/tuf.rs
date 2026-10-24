@@ -254,7 +254,8 @@ pub async fn build(
 ///
 /// They run from version 1 with no gap, so a host that adopted any of them can follow the chain to
 /// the last. A signing directory that holds one root is a chain of one only when that root is
-/// version 1.
+/// version 1. Every root gives each of its roles a key of its own, the earlier ones too: a host can
+/// adopt any of them.
 fn check_root_files(roots: &[Vec<u8>]) -> Result<Vec<(u64, Vec<u8>)>> {
     let mut files = Vec::new();
     for (position, bytes) in roots.iter().enumerate() {
@@ -262,6 +263,7 @@ fn check_root_files(roots: &[Vec<u8>]) -> Result<Vec<(u64, Vec<u8>)>> {
             path: PathBuf::from("root.json"),
             source,
         })?;
+        crate::keys::check_role_keys(&root.signed)?;
         let expected = position as u64 + 1;
         if root.signed.version.get() != expected {
             return Err(Error::Layout {
