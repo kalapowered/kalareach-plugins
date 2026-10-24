@@ -31,21 +31,24 @@ Its keys are development keys, and nothing else about it should be read as a rel
 - Its index carries a fixed `produced_at`, and each signed role is written in a fixed order, so
   rebuilding it from the same packages produces the same bytes.
 
-Rebuild it after changing a package. `--replace` is what writes over a generation that is already
-there; without it a build refuses the destination, because a generation is written once.
+Rebuild it after changing a package, under the next generation number. A number names one index: a
+host that has accepted a number refuses different bytes under it, so a rebuild never reuses the
+number of the generation it replaces. `--replace` is what writes the new generation over the one
+that is already there; without it a build refuses the destination, because a generation is written
+once.
 
 ```bash
 cargo run -p kalareach-catalogue -- build \
   --development \
   --out snapshots/development \
-  --generation 2 \
+  --generation <next> \
   --produced-at 1760000000000 \
   --expires-at 2046-10-01T00:00:00Z \
   --replace
 ```
 
 A generation after another is checked against it with `check-generation`, which says whether its
-roots continue the previous generation's.
+number is higher and its roots continue the previous generation's.
 
 The new generation is assembled beside its destination and moved into place once it verifies there,
 so a build that fails leaves the previous one intact. The generation it replaced is moved beside it

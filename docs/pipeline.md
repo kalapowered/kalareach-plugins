@@ -126,7 +126,9 @@ packages/kalareach/example-declarative/0.1.0/presentation.json
 
 Each role's metadata version is the generation number. A client refuses metadata whose version is
 lower than the one it already trusts, so a generation replayed after a later one is rejected rather
-than accepted as an update.
+than accepted as an update. A generation number also names one index: a host that has accepted a
+number refuses different bytes under it, so a rebuild after any change to a package takes the next
+number.
 
 A generation is written once. `build` checks the generation number, the destination and the keys
 before it writes or removes anything, assembles the generation in a directory it creates beside the
