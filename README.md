@@ -27,7 +27,7 @@ the tree.
 | Path | What it holds |
 | --- | --- |
 | `plugins/<publisher>/<plugin>/` | One package each: manifest, presentation document, optional connector table, assets and fixtures |
-| `publishers/` | One record per publisher: identifier, display name, homepage and whether it ships with KalaReach |
+| `publishers/` | One record per publisher: identifier, display name, homepage and whether it ships with KalaReach (a label; no host reads it to decide what a package may do) |
 | `pipeline/` | The `kalareach-catalogue` command: validation, the index build, TUF signing and verification |
 | `revocations/` | One record per withdrawn release, keyed to its exact version and manifest digest |
 | `fixtures/agents/` | The agent builds each connector is pinned to, and the qualification records the index takes each release's qualified builds from |
