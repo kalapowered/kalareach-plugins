@@ -243,8 +243,8 @@ Production keys are generated in the signing environment, on the machine that wi
 never leave it. The pipeline reads each key from a file in its signing directory; the source abstraction it reads
 through is where a key store that is not a file would plug in, and none is implemented. A build reads
 all four keys from one signing directory and refuses a directory with a key file missing, the root key's
-included, so the root key is on the machine that builds a generation. Separating the roles protects against
-the loss or leak of one key file; it does not protect against a compromised build machine.
+included, so the root key is on the machine that builds a generation. Separating the roles limits what the
+leak of one key file does; it does not protect against a compromised build machine.
 
 ## Building against a local core checkout
 
