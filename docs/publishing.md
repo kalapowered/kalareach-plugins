@@ -42,8 +42,9 @@ in this catalogue or in the host enforces it.
 ## Packages that read terminal text
 
 A package that needs terminal text instead of its application's own protocol has to ask for
-`terminal.stream`, `terminal.transcript_tail` or `process.observe`, each of which sits outside a
-repository's default ceiling and needs an explicit grant. No package in this repository asks for any
+`terminal.stream`, which carries terminal text in this host. `terminal.transcript_tail` and
+`process.observe` also sit outside a repository's default ceiling, and the host has no reader of a
+transcript tail; each needs an explicit grant. No package in this repository asks for any
 of them: each first-party connector package reads its application's native protocol through
 `broker.semantic_events`, and only the Claude Code package asks to decode and answer that
 application's approvals.
