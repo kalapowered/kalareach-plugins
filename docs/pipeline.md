@@ -182,7 +182,8 @@ While the keys are public this is a consistency check and not a trust boundary.
 
 There are four roles, each with its own key: root, targets, snapshot and timestamp. Separating them
 is the design. A compromised timestamp key lets an attacker hold a client on an old generation; it
-does not let them publish a package. A compromised targets key lets them publish a package; it does
+does not let them publish a package. A compromised targets key lets them sign package metadata, which a client
+accepts only when the snapshot and the timestamp also name it, so on its own it publishes nothing; it does
 not let them change which keys are trusted.
 
 Each role's key is its own. A trust root that named one key for two roles would grant whoever holds
@@ -240,7 +241,10 @@ cargo run -p kalareach-catalogue -- root --signing-dir "$KALAREACH_SIGNING_DIR"
 
 Production keys are generated in the signing environment, on the machine that will hold them, and
 never leave it. The pipeline reads each key from a file in its signing directory; the source abstraction it reads
-through is where a key store that is not a file would plug in, and none is implemented.
+through is where a key store that is not a file would plug in, and none is implemented. A build reads
+all four keys from one signing directory and refuses a directory with a key file missing, the root key's
+included, so the root key is on the machine that builds a generation. Separating the roles protects against
+the loss or leak of one key file; it does not protect against a compromised build machine.
 
 ## Building against a local core checkout
 
