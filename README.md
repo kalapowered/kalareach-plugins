@@ -37,8 +37,9 @@ the tree.
 
 The plugin SDK crate `kr-plugin-sdk`, from the core repo, contains the code for validating plugin
 packages. This is used here to run the same code that a host would use to validate packages before
-trusting them. It is pinned to a specific revision in `Cargo.lock`, so packages published from this
-repository are guaranteed to be accepted by a host pinned to the corresponding revision.
+trusting them. It is pinned to an exact core revision by `Cargo.toml`, which `Cargo.lock` repeats, so
+a package that passes here passed that revision's validator. A host built from another revision
+validates with its own, and the pipeline applies publication rules of its own beyond the validator.
 
 ## Build and test
 
