@@ -157,8 +157,10 @@ that forwards to the core hook over anything larger. The core hook accepts an in
 application the recipe declares, under any publisher and any package name, and a package without a
 bridge, whose launch registers the hook, only when its plugin name is one of those three. The host
 applies a bridge recipe for Claude Code and for Gemini CLI today, each only where a signed index names a
-qualified build of the application's executable, so a bridge for any other application, or any other hook
-semantics, needs a change in core.
+qualified build of the application's executable, and never for a script, which the host refuses because the
+program it runs is its interpreter (npm installs Gemini CLI as one, so that recipe applies to no build the
+pipeline can name), so a bridge for any other application, or any other hook semantics, needs a change in
+core.
 
 ## Versions and revocation
 
