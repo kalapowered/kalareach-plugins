@@ -21,7 +21,8 @@ and every package fixture is evaluated against that package's own control predic
 
 The validator is the host's. That is the point of depending on the SDK by revision rather than
 reimplementing the checks here: a package this repository accepts is a package the pinned host
-accepts, and the two cannot drift.
+accepts, as long as the host is built from the pinned revision; a host built from another revision
+validates with its own, and the two can drift.
 
 Validation reports every defect it finds rather than stopping at the first, because somebody fixing
 a package wants the whole list.
@@ -210,10 +211,10 @@ owner adopts it out of band. If it is leaked, its holder can sign a successor ro
 at their next sync, so the owner rotates at once and a host that may have followed another root
 re-anchors out of band; the procedure is written at the key ceremony.
 
-Keys never live in this repository. Before each `build`, each `root` and each `rotate-root` that
-names a signing directory, the pipeline walks the working tree and refuses to run if it finds a
-private key inside it; `development-root` and `rotate-root --development` sign with development keys
-that anybody can derive, and do not scan. Inside a checkout, which it recognises by finding a `.git` at
+Keys never live in this repository. Before each `build` (development or not), each `root` and each
+`rotate-root` without `--development`, the pipeline walks the working tree and refuses to run if it
+finds a private key inside it; `development-root` and `rotate-root --development` sign with
+development keys that anybody can derive, and do not scan. Inside a checkout, which it recognises by finding a `.git` at
 the tree or above it, it asks Git which files could reach a commit, which is every tracked file
 wherever it sits plus every untracked file Git would add, and scans exactly those. That leaves out
 build output, where the scan would otherwise find its own header constants compiled into a binary,
