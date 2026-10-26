@@ -124,10 +124,10 @@ listener, and its framing is not expressible in a connector table today, because
 vocabulary has no WebSocket member. Status: unqualified, and named here so nobody reads the table as
 covering both legs or as establishing one App Server behind both clients.
 
-`max_message_bytes` is 8 MiB. That is the bound this host enforces while reading frames, chosen
-because a frame larger than it would not be read anyway. The vendor states no message limit, and a
-thread history or an input collection large enough to pass it would fail the connection rather than
-arrive in part. Status: a host bound, not a vendor fact.
+`max_message_bytes` is 8 MiB as the package declares it. This host reads frames up to 1 MiB and
+holds a larger declaration to that. The vendor states no message limit, and a thread history or an
+input collection large enough to pass the host's bound would fail the connection rather than arrive
+in part. Status: a package declaration, not a vendor fact.
 
 `thread/resume` reads stored history. It does not establish that this process owns the live
 execution, and nothing in the package treats it as though it did. Status: verified against the
@@ -636,8 +636,9 @@ account.
 
 ### What is not qualified here
 
-`max_message_bytes` is 8 MiB, the bound this host enforces while reading frames. The vendor states
-no limit. Status: a host bound, not a vendor fact.
+`max_message_bytes` is 8 MiB as the package declares it; this host reads frames up to 1 MiB and
+holds a larger declaration to that. The vendor states no limit. Status: a package declaration, not a
+vendor fact.
 
 Volatile forwarding is declared untested, which is what `volatile_forwarding: false` means. Until it
 is tested, the unchanged terminal integration is the supported path when receipt storage fails.
@@ -859,8 +860,8 @@ Reverse filesystem and terminal requests must run in the selected host environme
 the broker scopes. The names are a binary check; the behaviour needs a live turn and is not observed
 here.
 
-`max_message_bytes` is 8 MiB, this host's bound. Prompt content can carry an image inline, which is
-why the bound is not smaller. Volatile forwarding is untested.
+`max_message_bytes` is 8 MiB as the package declares it (this host reads frames up to 1 MiB and holds a larger declaration to that). Prompt content can carry an image inline, which is
+why the declaration is not smaller. Volatile forwarding is untested.
 
 In this research no account was signed in to and no turn was started.
 
@@ -985,7 +986,7 @@ Nothing in this package depends on `kimi web`'s REST and WebSocket server or on 
 control. Both are the vendor's own services, and neither is evidence that KalaReach may reuse a
 service protocol. Status: out of scope, deliberately.
 
-`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. In this research no
+`max_message_bytes` is 8 MiB as the package declares it (this host reads frames up to 1 MiB and holds a larger declaration to that). Volatile forwarding is untested. In this research no
 account was signed in to and no turn was started; the probes ran with a home directory belonging to this
 qualification, and `~/.kimi-code` was unchanged before and after.
 
@@ -1194,7 +1195,7 @@ The vendor's remote-control feature runs through the vendor's own application an
 evidence that KalaReach may reuse that service protocol, and nothing in this package depends on it.
 Status: out of scope, deliberately.
 
-`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. In this research no
+`max_message_bytes` is 8 MiB as the package declares it (this host reads frames up to 1 MiB and holds a larger declaration to that). Volatile forwarding is untested. In this research no
 account was signed in to and no turn was started. The 1.1.63 probes ran a copy in a directory of this
 qualification's own, with a home directory of its own. Files under `~/.qoder` did change while they
 ran, and each belongs to one of three runs no probe started, which Qoder CLI recorded in its own run
@@ -1336,7 +1337,7 @@ account.
 
 ### What is not qualified here
 
-`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested.
+`max_message_bytes` is 8 MiB as the package declares it (this host reads frames up to 1 MiB and holds a larger declaration to that). Volatile forwarding is untested.
 
 In this research nothing was driven: no turn was started, no permission was answered, no terminal
 was attached, and no account was signed in to. The server was started once, on loopback, with a home directory and a
@@ -1500,7 +1501,7 @@ binary check, and not covered by the table.
 
 Nothing in this package depends on `kimi web`, `kimi term` or the Wire surface.
 
-`max_message_bytes` is 8 MiB, this host's bound. Volatile forwarding is untested. No account was
+`max_message_bytes` is 8 MiB as the package declares it (this host reads frames up to 1 MiB and holds a larger declaration to that). Volatile forwarding is untested. No account was
 signed in to and no turn was started. Every probe ran with a home directory and a working directory
 belonging to this qualification, telemetry switched off, the keyring backend disabled, and HTTP
 proxies pointed at a closed loopback port, and the build answered every request above that way.
