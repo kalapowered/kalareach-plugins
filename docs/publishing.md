@@ -158,8 +158,7 @@ application the recipe declares, under any publisher and any package name, and a
 bridge, whose launch registers the hook, only when its plugin name is one of those three. The host
 applies a bridge recipe for Claude Code and for Gemini CLI today, each only where a signed index names a
 qualified build of the application's executable, and never for a script, which the host refuses because the
-program it runs is its interpreter (npm installs Gemini CLI as one, so that recipe applies to no build the
-pipeline can name), so a bridge for any other application, or any other hook semantics, needs a change in
+program it runs is its interpreter (npm installs Gemini CLI as one, so that recipe applies to no npm build), so a bridge for any other application, or any other hook semantics, needs a change in
 core.
 
 ## Versions and revocation
