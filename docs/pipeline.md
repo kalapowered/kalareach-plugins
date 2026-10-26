@@ -210,15 +210,16 @@ owner adopts it out of band. If it is leaked, its holder can sign a successor ro
 at their next sync, so the owner rotates at once and a host that may have followed another root
 re-anchors out of band; the procedure is written at the key ceremony.
 
-Keys never live in this repository. Before anything is signed, the pipeline walks the working tree
-and refuses to run if it finds a private key inside it. Inside a checkout, which it recognises by
-finding a `.git` at the tree or above it, it asks Git which files could reach a commit, which is
-every tracked file wherever it sits plus every untracked file Git would add, and scans exactly
-those. That leaves out build output, where the scan would otherwise find its own header constants
-compiled into a binary, and whatever Git ignores and does not track, which a commit carries only if
-somebody forces it in. This repository ignores `*.pem`, `*.key` and `signing/`, so a key file of
-such a name elsewhere in the checkout is not scanned (the signing directory itself is checked,
-below).
+Keys never live in this repository. Before each `build`, each `root` and each `rotate-root` that
+names a signing directory, the pipeline walks the working tree and refuses to run if it finds a
+private key inside it; `development-root` and `rotate-root --development` sign with development keys
+that anybody can derive, and do not scan. Inside a checkout, which it recognises by finding a `.git` at
+the tree or above it, it asks Git which files could reach a commit, which is every tracked file
+wherever it sits plus every untracked file Git would add, and scans exactly those. That leaves out
+build output, where the scan would otherwise find its own header constants compiled into a binary,
+and whatever Git ignores and does not track, which a commit carries only if somebody forces it in.
+This repository ignores `*.pem`, `*.key` and `signing/`, so a key file of such a name elsewhere in
+the checkout is not scanned (the signing directory itself is checked, below).
 Outside a checkout it walks the tree instead, skipping the directories that hold build output.
 
 Each file is read to its end, and the PEM header is looked for anywhere in a line: a key renamed to
