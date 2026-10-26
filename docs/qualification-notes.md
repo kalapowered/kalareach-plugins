@@ -1128,7 +1128,8 @@ person's `settings.json`, Qoder CLI's own copy and record of the marketplace lef
 removal, and no hooks in the first session after installation. The marketplace is the route to take
 if a later Qoder CLI stops reading `--settings`.
 
-The core repository defines the launch's two elements (`fixtures/bridges/qoder-cli/flags.json`,
+The core repository keeps a copy of the launch's two elements as test data, which the plugins tests pin
+this package to and a host never reads (`fixtures/bridges/qoder-cli/flags.json`,
 sha256 `4a23ebef3076b3d7f5aaa817d3f4f78561c48db869c6147b92a503e0c3fb6c23`) and the forwarder they
 start, named by the placeholder `{kr_hook}` with the arguments `qoder-cli hook`, which the host
 replaces with the installed forwarder's full path, registered in exec form for the five events above
