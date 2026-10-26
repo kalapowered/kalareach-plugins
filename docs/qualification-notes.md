@@ -567,8 +567,9 @@ method is a verb and a path (`POST /api/session/{sessionID}/interrupt`, `v2.sess
 rather than a member of a document. A connector table names a method by a bounded path into a
 decoded message, and `Framing` has no HTTP member, so the request leg is not expressible in a
 connector table today. Status: named here as outside the table, so nobody reads the table as
-covering both legs. Interrupting a turn therefore goes through the broker's own cancellation against
-the bound execution rather than through a route in this table.
+covering both legs. The package's `turn.cancel` action therefore names an upstream cancellation
+that this host cannot send: it builds a cancellation request only from a route a connector table
+declares, and this table declares none.
 
 ### The two API families
 
@@ -1278,8 +1279,8 @@ host's.
 The request leg does not meet it, for the reason recorded for `kalareach/opencode`: asking the
 server to do something is an HTTP request whose method is a verb and a path, such as
 `POST /session/{sessionID}/permissions/{permissionID}`, and `Framing` has no HTTP member. Status:
-named here as outside the table. Interrupting a turn goes through the broker's own cancellation
-against the bound execution.
+named here as outside the table. The package's `turn.cancel` action names an upstream cancellation that
+this host cannot send, because this table declares no cancellation route.
 
 ### The two API families
 
