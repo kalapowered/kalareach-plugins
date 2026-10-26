@@ -471,9 +471,10 @@ contract that carries the forwarder's placeholder (`crates/kr-plugin-sdk/src/for
 The grant's statement says that the flag names `kalareach-channels` so that Claude Code can register
 it as the session's channel, that it skips the allowlist for that plugin alone while every other
 condition still applies, and that Claude Code asks the person to confirm the development channel in
-its terminal before the session starts. The grant shows it beside the command and both flags as the
-host renders them, and `pipeline/tests/packages.rs` checks the declaration and the statement against
-the reviewed ones.
+its terminal before the session starts. This host does not show that text, which is the package's own
+declaration; the person is shown the reading the host generates from the signed manifest, with the
+command and both flags as the host renders them. `pipeline/tests/packages.rs` checks the declaration
+and the statement against the reviewed ones.
 
 Not verified: the channel registering under the flag, as above; the warning on the binary; and a
 session KalaReach launches with the integration applied. At core `fec12253` sessions are created
@@ -837,9 +838,10 @@ pinned by digest above.
 The grant's statement says that the launched process then runs the session itself, so that the
 hooks this package's bridge registers can select the thread, and what the person gives up for it:
 the memory limit raised to half the machine's memory, so a very large session runs out of memory
-sooner, and the restart after an update or one the build asks for, so the session ends instead. The
-grant shows it beside the variable as the host renders it, and `pipeline/tests/packages.rs` checks
-the declaration and the statement against the reviewed ones. No hook selects the thread without the
+sooner, and the restart after an update or one the build asks for, so the session ends instead. This
+host does not show that text, which is the package's own declaration; the person is shown the reading
+the host generates from the signed manifest, with the variable as the host renders it.
+`pipeline/tests/packages.rs` checks the declaration and the statement against the reviewed ones. No hook selects the thread without the
 variable, and the integration applies only where it is turned on, so the person who turns it on
 chooses the trade.
 
@@ -1176,9 +1178,10 @@ flags name the forwarder by the placeholder `{kr_hook}` and the package states `
 The grant's statement says that the settings register the forwarder for the five events with their
 timeouts, that Qoder CLI runs the hooks beside the person's own and nothing is written to their
 settings, that Qoder CLI starts the forwarder itself, under its own permissions and outside the
-plugin sandbox and Wasmtime, and that the forwarder sees those five events. The grant shows it beside
-the command and both elements as the host renders them, and `pipeline/tests/packages.rs` checks the
-declaration and the statement against the reviewed ones.
+plugin sandbox and Wasmtime, and that the forwarder sees those five events. This host does not show
+that text, which is the package's own declaration; the person is shown the reading the host generates
+from the signed manifest, with the command and both elements as the host renders them.
+`pipeline/tests/packages.rs` checks the declaration and the statement against the reviewed ones.
 
 Not verified: a session KalaReach launches with the integration applied. At core `fec12253` sessions
 are created with no command integration enabled, so no launch adds these elements.
