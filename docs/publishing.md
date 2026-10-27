@@ -209,13 +209,14 @@ role that pins any other, so a vendor's packages are signed here, and the review
 stands behind them. A package that carries a connector table also needs an entry in the lists that
 this repository's tests keep, a command integration or a native bridge needs its reviewed text
 written there too, and a connector for a seventh application changes the test's count of six bundled
-agents. The tests also hold that profiles of one application are one publisher's and declared as
-pairs, that no two packages claim one named protocol, that a package without a connector table asks
-only for capabilities inside the default ceiling and declares no mutation, and that a listed
-connector's actions are the declarative forms and never a `component` action
-([What the checks hold](pipeline.md#what-the-checks-hold)). The lists and rules give a listed package
-no power that your package lacks, and a failing test cannot be overcome by an installation grant:
-they decide what this repository signs.
+agents. The tests refuse a package that declares a launch probe, or a `backend` in its command
+integration, until this repository keeps a reviewed list for it. The tests also hold that profiles
+of one application are one publisher's and declared as pairs, that no two packages claim one named
+protocol, that a package without a connector table asks only for capabilities inside the default
+ceiling and declares no mutation, and that a listed connector's actions are the declarative forms
+and never a `component` action ([What the checks hold](pipeline.md#what-the-checks-hold)). The lists
+and rules give a listed package no power that your package lacks, and a failing test cannot be
+overcome by an installation grant: they decide what this repository signs.
 
 ## What a signature does not mean
 

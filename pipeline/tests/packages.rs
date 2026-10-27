@@ -16,6 +16,7 @@ use kr_plugin_sdk::effect::{
 use kr_plugin_sdk::ids::ParameterName;
 use kr_plugin_sdk::integration::{CommandIntegration, IntegrationBackend, IntegrationVariable};
 use kr_plugin_sdk::matching::MatchConfidence;
+use kr_plugin_sdk::plugin::PluginManifest;
 use kr_plugin_sdk::predicate::{BindingState, Predicate, PresentationFlag};
 use kr_plugin_sdk::presentation::Control;
 use kr_plugin_sdk::text::Summary;
@@ -1245,6 +1246,92 @@ fn a_command_integration_that_sets_a_variable_outside_the_closed_list_is_refused
             rejected.report.findings
         );
     }
+}
+
+/// Why `manifest` declares a launch probe nobody has reviewed, or nothing when it declares none.
+///
+/// A launch probe runs the application's own executable with arguments the package chose, whenever
+/// the host's diagnostics are read as well as before a launch, and the owner confirms its
+/// capability on every release. The validator checks that a declaration keeps to the contract, not
+/// that its arguments are the ones the application's qualification found. A command integration is
+/// reviewed word for word in `REVIEWED_INTEGRATIONS`, and a launch probe has no such list, so no
+/// package declares one.
+fn unreviewed_launch_probe(manifest: &PluginManifest) -> Option<String> {
+    manifest.launch_probe.as_ref().map(|_| {
+        format!(
+            "{} declares a launch probe, and no launch probe has been reviewed",
+            manifest.plugin_id()
+        )
+    })
+}
+
+/// No package of this repository declares a launch probe.
+#[test]
+fn no_package_declares_a_launch_probe() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    for package in &loaded.repository.packages {
+        assert_eq!(
+            unreviewed_launch_probe(&package.package.manifest),
+            None,
+            "{}",
+            package.package.manifest.plugin_id()
+        );
+    }
+}
+
+/// A package that declares a launch probe, and asks for the capability that runs it, keeps to the
+/// contract, so the validator accepts it; the check for unreviewed probes is what refuses it, where
+/// the same package without the probe passes.
+#[test]
+fn a_launch_probe_is_refused_until_it_is_reviewed() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path();
+    let package = repository_holding(repository, "codex");
+    let load = || {
+        let loaded = packages::load(repository).expect("the copy loads");
+        assert!(
+            loaded.rejected.is_empty(),
+            "the validator refuses the copy: {:?}",
+            loaded
+                .rejected
+                .iter()
+                .map(|rejected| &rejected.report.findings)
+                .collect::<Vec<_>>()
+        );
+        let [package] = loaded.repository.packages.as_slice() else {
+            panic!("the copy holds one package");
+        };
+        package.package.manifest.clone()
+    };
+    assert_eq!(unreviewed_launch_probe(&load()), None, "the copy as it is");
+
+    let path = package.join("plugin.json");
+    let mut manifest: serde_json::Value =
+        kalareach_catalogue::read_json(&path).expect("the manifest reads");
+    manifest["capabilities"]
+        .as_array_mut()
+        .expect("the package lists its capabilities")
+        .push(serde_json::json!({
+            "capability": "launch.probe",
+            "reason": "Read the mode the application runs in from its own diagnostic command"
+        }));
+    manifest["launch_probe"] = serde_json::json!({
+        "arguments": ["doctor", "--json"],
+        "carried_options": [],
+        "mode": "/mode",
+        "refused_in_service_session": [],
+        "grant_statement": "Runs the application's diagnostic command to read the mode it runs in."
+    });
+    let mut text = serde_json::to_string_pretty(&manifest).expect("the manifest renders");
+    text.push('\n');
+    std::fs::write(&path, text).expect("the manifest writes");
+
+    let probing = load();
+    assert!(
+        probing.launch_probe.is_some(),
+        "the copy declares the probe it was given"
+    );
+    assert!(unreviewed_launch_probe(&probing).is_some());
 }
 
 /// A repository in `repository` holding the publisher record and a copy of one of this
