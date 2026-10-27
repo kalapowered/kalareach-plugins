@@ -1155,6 +1155,7 @@ fn a_changed_command_integration_is_not_the_reviewed_one() {
             value: "true".to_owned(),
         }],
         grant_statement: Summary::new("A statement").expect("a statement"),
+        backend: None,
     });
 }
 
