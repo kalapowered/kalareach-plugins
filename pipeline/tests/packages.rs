@@ -804,9 +804,9 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
 impl ReviewedIntegration {
     /// Why `integration` is not this reviewed declaration, or nothing when it is.
     ///
-    /// The declaration is compared whole. Each of its members is named below, so a member the
-    /// contract adds stops this compiling until it is compared too. No reviewed declaration has a
-    /// server for the terminal.
+    /// The declaration is compared whole. Each of its members, and each of a variable's, is named
+    /// below, so a member the contract adds stops this compiling until it is compared too. No
+    /// reviewed declaration has a server for the terminal.
     fn refusal(&self, integration: &CommandIntegration) -> Option<String> {
         let CommandIntegration {
             command,
@@ -842,7 +842,7 @@ impl ReviewedIntegration {
         }
         let variables: Vec<(&str, &str)> = variables
             .iter()
-            .map(|variable| (variable.name.as_str(), variable.value.as_str()))
+            .map(|IntegrationVariable { name, value }| (name.as_str(), value.as_str()))
             .collect();
         if variables != self.variables {
             return Some(format!(
