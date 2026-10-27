@@ -14,7 +14,7 @@ use kr_plugin_sdk::effect::{
     InvocationError, ParameterKind,
 };
 use kr_plugin_sdk::ids::ParameterName;
-use kr_plugin_sdk::integration::{CommandIntegration, IntegrationVariable};
+use kr_plugin_sdk::integration::{CommandIntegration, IntegrationBackend, IntegrationVariable};
 use kr_plugin_sdk::matching::MatchConfidence;
 use kr_plugin_sdk::predicate::{BindingState, Predicate, PresentationFlag};
 use kr_plugin_sdk::presentation::Control;
@@ -802,38 +802,44 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
 
 impl ReviewedIntegration {
     /// Why `integration` is not this reviewed declaration, or nothing when it is.
+    ///
+    /// The declaration is compared whole. Each of its members is named below, so a member the
+    /// contract adds stops this compiling until it is compared too. No reviewed declaration has a
+    /// server for the terminal.
     fn refusal(&self, integration: &CommandIntegration) -> Option<String> {
-        if integration.command != self.command {
+        let CommandIntegration {
+            command,
+            flags,
+            variables,
+            grant_statement,
+            backend,
+        } = integration;
+        if command != self.command {
             return Some(format!(
-                "the command is {:?}, not {:?}",
-                integration.command, self.command
+                "the command is {command:?}, not {:?}",
+                self.command
             ));
         }
         match self.flags {
-            ReviewedFlags::Written(flags) => {
-                if integration.flags != flags {
-                    return Some(format!(
-                        "the flags are {:?}, not {flags:?}",
-                        integration.flags
-                    ));
+            ReviewedFlags::Written(reviewed) => {
+                if flags != reviewed {
+                    return Some(format!("the flags are {flags:?}, not {reviewed:?}"));
                 }
             }
             ReviewedFlags::Pinned { count, sha256 } => {
-                let mut written =
-                    serde_json::to_string_pretty(&integration.flags).expect("a list of text");
+                let mut written = serde_json::to_string_pretty(flags).expect("a list of text");
                 written.push('\n');
                 let digest = PayloadDigest::of(written.as_bytes()).to_string();
-                if integration.flags.len() != count || digest != sha256 {
+                if flags.len() != count || digest != sha256 {
                     return Some(format!(
                         "the {} flags are not the {count} pinned by {sha256}: their digest is \
                          {digest}",
-                        integration.flags.len()
+                        flags.len()
                     ));
                 }
             }
         }
-        let variables: Vec<(&str, &str)> = integration
-            .variables
+        let variables: Vec<(&str, &str)> = variables
             .iter()
             .map(|variable| (variable.name.as_str(), variable.value.as_str()))
             .collect();
@@ -843,10 +849,15 @@ impl ReviewedIntegration {
                 self.variables
             ));
         }
-        (integration.grant_statement.as_str() != self.grant_statement).then(|| {
+        if grant_statement.as_str() != self.grant_statement {
+            return Some(format!(
+                "the grant is not the reviewed statement: {grant_statement}"
+            ));
+        }
+        backend.as_ref().map(|backend| {
             format!(
-                "the grant is not the reviewed statement: {}",
-                integration.grant_statement
+                "the integration declares a server for the terminal, {backend:?}, and the \
+                 reviewed declaration has none"
             )
         })
     }
@@ -1055,11 +1066,12 @@ fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly(
 }
 
 /// A reviewed declaration is compared whole: another command, a flag changed, added, dropped or
-/// moved, a variable changed or added, or one word of the statement changed is not the reviewed
-/// declaration, and each change to the command, a flag or a variable changes the list the grant
-/// shows. For each declaration, the check that accepts the list the host renders refuses every
-/// misstatement of its strings and every addition in words no string holds; and for a declaration
-/// with two flags and a variable, the string check refuses every misstatement of its strings.
+/// moved, a variable changed or added, a server for the terminal added, or one word of the
+/// statement changed is not the reviewed declaration, and each change to the command, a flag, a
+/// variable or the server changes the list the grant shows. For each declaration, the check that
+/// accepts the list the host renders refuses every misstatement of its strings and every addition
+/// in words no string holds; and for a declaration with two flags and a variable, the string check
+/// refuses every misstatement of its strings.
 #[test]
 fn a_changed_command_integration_is_not_the_reviewed_one() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -1101,6 +1113,13 @@ fn a_changed_command_integration_is_not_the_reviewed_one() {
             }),
         }
         changes.push(variable);
+        // A declaration that differs from the reviewed one by a server for the terminal alone.
+        let mut backend = integration.clone();
+        backend.backend = Some(IntegrationBackend {
+            arguments: vec!["app-server".to_owned()],
+            launching_words: Vec::new(),
+        });
+        changes.push(backend);
         let mut statement = integration.clone();
         statement.grant_statement = Summary::new(reviewed.grant_statement.replacen(
             "KalaReach",
