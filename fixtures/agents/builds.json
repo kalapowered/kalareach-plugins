@@ -246,9 +246,10 @@
         "ready": "Welcome to Codex"
       },
       "account": {
-        "login": "vendor subscription login",
-        "stored": "file in the agent's own directory",
-        "home": "person",
+        "login": "vendor subscription account served by the local subscription proxy",
+        "stored": "the proxy's account pool; the variable of the person's shell environment names the pooled account",
+        "home": "run",
+        "variable": "SUBROUTER_CODEX_ACCOUNT_ID",
         "installs_off": [
           { "switch": "argument", "text": "check_for_update_on_startup=false" }
         ],
@@ -258,15 +259,6 @@
           "-s",
           "read-only"
         ],
-        "status": {
-          "arguments": [
-            "login",
-            "status"
-          ],
-          "shows": [
-            "Logged in using ChatGPT"
-          ]
-        },
         "isolated": [
           {
             "arguments": [
@@ -274,7 +266,7 @@
               "list"
             ],
             "shows": [
-              "disabled"
+              "No MCP servers configured"
             ],
             "lacks": [
               "enabled"
@@ -316,10 +308,6 @@
               "## Skills",
               "### Available skills"
             ],
-            "accepted": {
-              "starts": "# AGENTS.md instructions",
-              "file": ".codex/AGENTS.md"
-            },
             "shows_within": "<permissions instructions>"
           },
           {
@@ -405,13 +393,11 @@
           "--disable",
           "memories"
         ],
-        "server_switches": {
-          "file": ".codex/config.toml",
-          "table": "mcp_servers",
-          "switch": [
-            "-c",
-            "mcp_servers.{name}.enabled=false"
-          ]
+        "config_directory": {
+          "variable": "CODEX_HOME",
+          "files": {
+            "config.toml": "model_provider = \"subrouter\"\n\n[model_providers.subrouter]\nname = \"subrouter\"\nbase_url = \"http://127.0.0.1:31415/v1\"\nwire_api = \"responses\"\nexperimental_bearer_token = \"subrouter\"\nrequest_max_retries = 0\nstream_max_retries = 0\nenv_http_headers = { \"X-Subrouter-Account-ID\" = \"SUBROUTER_CODEX_ACCOUNT_ID\" }\n"
+          }
         },
         "absent": [
           "{work}/.codex",
@@ -422,22 +408,12 @@
           "/etc/codex/managed_config.toml",
           "/Library/Managed Preferences/com.openai.codex.plist",
           "/Library/Managed Preferences/{user}/com.openai.codex.plist",
-          "{home}/.codex/log/codex-tui.log"
-        ],
-        "guarded": [
-          ".codex/config.toml",
-          ".codex/AGENTS.md",
-          ".codex/hooks.json",
-          ".codex/.credentials.json"
-        ],
-        "append_only": [
-          ".codex/session_index.jsonl"
-        ],
-        "recorded": [
-          ".codex/auth.json"
-        ],
-        "line_files": [
-          ".codex/history.jsonl"
+          "{home}/.codex",
+          "{config}/auth.json",
+          "{config}/AGENTS.md",
+          "{config}/AGENTS.override.md",
+          "{config}/hooks.json",
+          "{config}/log/codex-tui.log"
         ],
         "signed_out": [
           "Sign in with ChatGPT",
@@ -445,26 +421,8 @@
           "Please sign in again"
         ],
         "budget": "codex",
-        "turns": 50,
-        "directories": [
-          ".codex/*",
-          ".codex/sessions/{date}",
-          ".codex/shell_snapshots",
-          ".codex/thread-writer-locks",
-          ".codex/tmp",
-          ".codex/.tmp",
-          ".codex/cache",
-          ".codex/plugins",
-          ".codex/skills",
-          ".codex/generated_images",
-          ".codex/mcp-auth",
-          ".codex/mcp-oauth-locks",
-          ".codex/log"
-        ],
-        "removable": [
-          ".codex/sessions/{date}"
-        ],
-        "conversations": ".codex/sessions/{date}",
+        "turns": 25,
+        "conversations": "sessions/{date}",
         "prompt_line": "\"role\":\"user\"",
         "reply_line": "\"role\":\"assistant\"",
         "decision_line": "_call_output\"",
@@ -532,6 +490,7 @@
           "AWS_*",
           "AZURE_*",
           "CLOUDFLARE_*",
+          "SUBROUTER_*",
           "*_API_KEY",
           "*_API_TOKEN",
           "*_ACCESS_TOKEN",
