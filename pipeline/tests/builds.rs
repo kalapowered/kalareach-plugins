@@ -451,8 +451,8 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
     ];
     // Codex's record is a run with a pooled subscription account, from the build's native
     // executable: the host detected the launch, the device's upload was refused, the hook
-    // forwarder's first answer after its start came after its bound, and the account's turns ran
-    // out before parts 4 and 7 started.
+    // forwarder's first timed answer came after its bound, and the account's turns ran out before
+    // parts 4 and 7 started.
     let codex: &[&str] = &[
         "steps 2, 11 did not exit cleanly",
         "parts 1, 8a failed",
