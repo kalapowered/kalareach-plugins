@@ -419,7 +419,7 @@
           "Please sign in again"
         ],
         "budget": "codex",
-        "turns": 30,
+        "turns": 34,
         "conversations": "sessions/{date}",
         "prompt_line": "\"role\":\"user\"",
         "reply_line": "\"role\":\"assistant\"",
