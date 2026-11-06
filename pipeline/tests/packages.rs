@@ -713,12 +713,22 @@ enum ReviewedFlags {
     Pinned { count: usize, sha256: &'static str },
 }
 
+/// The server for the terminal a reviewed command integration declares: the arguments the
+/// application's own executable is started with to make it, and the words that may follow the
+/// command for a launch it is declared for.
+struct ReviewedBackend {
+    arguments: &'static [&'static str],
+    launching_words: &'static [&'static str],
+}
+
 /// A command integration exactly as it was reviewed.
 struct ReviewedIntegration {
     plugin: &'static str,
     command: &'static str,
     flags: ReviewedFlags,
     variables: &'static [(&'static str, &'static str)],
+    /// The server for the terminal, or none when the reviewed declaration has none.
+    backend: Option<ReviewedBackend>,
     /// What the package's grant says beside the list the host renders from the declaration.
     grant_statement: &'static str,
     /// The list the host renders from the declaration for the grant, exactly as the owner reads it.
@@ -745,6 +755,7 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
             "plugin:kalareach-channels@skills-dir",
         ]),
         variables: &[],
+        backend: None,
         grant_statement: "When you run claude in a KalaReach session with this integration on, \
              KalaReach adds the development channels flag naming kalareach-channels, the channel \
              plugin this package's bridge installs, so that Claude Code can register it as the \
@@ -764,6 +775,7 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
         command: "gemini",
         flags: ReviewedFlags::Written(&[]),
         variables: &[("GEMINI_CLI_NO_RELAUNCH", "true")],
+        backend: None,
         grant_statement: "When you run gemini in a KalaReach session with this integration on, \
              KalaReach sets GEMINI_CLI_NO_RELAUNCH to true for it, so the process KalaReach \
              launched runs the session itself instead of starting a second copy of Gemini CLI to \
@@ -789,6 +801,7 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
             sha256: "4a23ebef3076b3d7f5aaa817d3f4f78561c48db869c6147b92a503e0c3fb6c23",
         },
         variables: &[],
+        backend: None,
         grant_statement: "When you run qodercli in a KalaReach session with this integration on, \
              KalaReach adds --settings with inline settings that register the KalaReach forwarder, \
              by the full path of the copy KalaReach installed, with the arguments qoder-cli hook, \
@@ -822,6 +835,10 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
         command: "codex",
         flags: ReviewedFlags::Written(&["--remote", "{gateway}"]),
         variables: &[],
+        backend: Some(ReviewedBackend {
+            arguments: &["app-server", "--listen", "stdio://"],
+            launching_words: &["resume", "fork"],
+        }),
         grant_statement: "Adds --remote and the address of a gateway KalaReach opens to a codex you \
              start in a managed shell, and starts the Codex App Server as that session's backend. \
              Only a launch that types no option, or one that resumes or forks a thread, is served; \
@@ -841,12 +858,19 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
     },
 ];
 
+/// The text of each element of `texts`, in order.
+fn strs(texts: &[String]) -> Vec<&str> {
+    texts.iter().map(String::as_str).collect()
+}
+
 impl ReviewedIntegration {
     /// Why `integration` is not this reviewed declaration, or nothing when it is.
     ///
-    /// The declaration is compared whole. Each of its members, and each of a variable's, is named
-    /// below, so a member the contract adds stops this compiling until it is compared too. No
-    /// reviewed declaration has a server for the terminal.
+    /// The declaration is compared whole. Each of its members, and each of a variable's and of the
+    /// server for the terminal's, is named below, so a member the contract adds stops this
+    /// compiling until it is compared too. A server for the terminal the reviewed declaration does
+    /// not have, one it has and the declaration lacks, and one with another argument or launching
+    /// word, in whole or in order, are each refused.
     fn refusal(&self, integration: &CommandIntegration) -> Option<String> {
         let CommandIntegration {
             command,
@@ -895,12 +919,22 @@ impl ReviewedIntegration {
                 "the grant is not the reviewed statement: {grant_statement}"
             ));
         }
-        backend.as_ref().map(|backend| {
-            format!(
-                "the integration declares a server for the terminal, {backend:?}, and the \
-                 reviewed declaration has none"
-            )
-        })
+        let declared = backend.as_ref().map(
+            |IntegrationBackend {
+                 arguments,
+                 launching_words,
+             }| (strs(arguments), strs(launching_words)),
+        );
+        let reviewed = self
+            .backend
+            .as_ref()
+            .map(|backend| (backend.arguments.to_vec(), backend.launching_words.to_vec()));
+        if declared != reviewed {
+            return Some(format!(
+                "the server for the terminal is {declared:?}, not {reviewed:?}"
+            ));
+        }
+        None
     }
 
     /// Why `statement` is not the list reviewed for this integration, which the grant shows the
@@ -908,8 +942,8 @@ impl ReviewedIntegration {
     ///
     /// The whole statement is compared with the reviewed list, so nothing is added, dropped or
     /// moved anywhere in it, in a string or between two. The reviewed list is then read back, so
-    /// every string it writes is exactly the command, a flag or a variable's value of
-    /// `integration`, whole and in its place.
+    /// every string it writes is exactly the command, a flag, a variable's value or a word of the
+    /// server for the terminal of `integration`, whole and in its place.
     fn listed_refusal(&self, integration: &CommandIntegration, statement: &str) -> Option<String> {
         if statement != self.listed {
             return Some(format!(
@@ -960,7 +994,8 @@ fn written_strings(statement: &str) -> Result<Vec<(&str, String)>, String> {
 /// `integration`, in the order the host applies them, or nothing when they are.
 ///
 /// Every string the statement writes, read whole, is exactly the command, then each flag, then each
-/// variable's value, and no other string is written, so no string is shortened, added, dropped or
+/// variable's value, then, for a server for the terminal, the command again, its arguments and its
+/// launching words, and no other string is written, so no string is shortened, added, dropped or
 /// moved. A flag is never written after `=`, where it would read as a variable's value, and each
 /// value is written after exactly its variable's own name. The other words are not this check's:
 /// an argument written without quotes is no string, so [`ReviewedIntegration::listed_refusal`]
@@ -979,6 +1014,11 @@ fn listing_refusal(integration: &CommandIntegration, statement: &str) -> Option<
             .iter()
             .map(|variable| variable.value.as_str()),
     );
+    if let Some(backend) = &integration.backend {
+        declared.push(integration.command.as_str());
+        declared.extend(backend.arguments.iter().map(String::as_str));
+        declared.extend(backend.launching_words.iter().map(String::as_str));
+    }
     if written != declared {
         return Some(format!(
             "the statement writes {written:?}, not {declared:?}: {statement}"
@@ -1031,6 +1071,16 @@ fn misstatements(integration: &CommandIntegration) -> Vec<String> {
         wrong.push(rendered.replacen(&written, &variable.name, 1));
         wrong.push(rendered.replacen(&written, &format!("NOT_{written}"), 1));
         wrong.push(rendered.replacen(&written, &format!("{written}, EXTRA=\"1\""), 1));
+    }
+    if let Some(backend) = &integration.backend {
+        if let Some(last) = backend.arguments.last() {
+            let mut shorter = last.clone();
+            shorter.pop();
+            wrong.push(rendered.replacen(&quoted(last), &quoted(&shorter), 1));
+        }
+        if let Some(word) = backend.launching_words.first() {
+            wrong.push(rendered.replacen(&quoted(word), &quoted("other"), 1));
+        }
     }
     wrong
 }
@@ -1107,9 +1157,10 @@ fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly(
 }
 
 /// A reviewed declaration is compared whole: another command, a flag changed, added, dropped or
-/// moved, a variable changed or added, a server for the terminal added, or one word of the
-/// statement changed is not the reviewed declaration, and each change to the command, a flag, a
-/// variable or the server changes the list the grant shows. For each declaration, the check that
+/// moved, a variable changed or added, a server for the terminal added, dropped or changed in an
+/// argument or a launching word, or one word of the statement changed is not the reviewed
+/// declaration, and each change to the command, a flag, a variable or the server changes the list
+/// the grant shows. For each declaration, the check that
 /// accepts the list the host renders refuses every misstatement of its strings and every addition
 /// in words no string holds; and for a declaration with two flags and a variable, the string check
 /// refuses every misstatement of its strings.
@@ -1161,6 +1212,37 @@ fn a_changed_command_integration_is_not_the_reviewed_one() {
             launching_words: Vec::new(),
         });
         changes.push(backend);
+        if integration.backend.is_some() {
+            // A reviewed server for the terminal dropped, or changed in one of its arguments or
+            // launching words: another, one more, one fewer, or the same ones in another order.
+            let mut dropped = integration.clone();
+            dropped.backend = None;
+            changes.push(dropped);
+            changes.push(with_backend_changed(&integration, |backend| {
+                backend.arguments.push("--verbose".to_owned());
+            }));
+            changes.push(with_backend_changed(&integration, |backend| {
+                backend.arguments.pop();
+            }));
+            changes.push(with_backend_changed(&integration, |backend| {
+                backend.arguments[0].push(' ');
+            }));
+            changes.push(with_backend_changed(&integration, |backend| {
+                backend.arguments.swap(0, 1);
+            }));
+            changes.push(with_backend_changed(&integration, |backend| {
+                backend.launching_words.push("exec".to_owned());
+            }));
+            changes.push(with_backend_changed(&integration, |backend| {
+                backend.launching_words.pop();
+            }));
+            changes.push(with_backend_changed(&integration, |backend| {
+                backend.launching_words[0].push(' ');
+            }));
+            changes.push(with_backend_changed(&integration, |backend| {
+                backend.launching_words.swap(0, 1);
+            }));
+        }
         let mut statement = integration.clone();
         statement.grant_statement = Summary::new(reviewed.grant_statement.replacen(
             "KalaReach",
@@ -1217,6 +1299,31 @@ fn a_changed_command_integration_is_not_the_reviewed_one() {
         grant_statement: Summary::new("A statement").expect("a statement"),
         backend: None,
     });
+    assert_statement_is_checked(&CommandIntegration {
+        command: "agent".to_owned(),
+        flags: vec!["--one".to_owned()],
+        variables: Vec::new(),
+        grant_statement: Summary::new("A statement").expect("a statement"),
+        backend: Some(IntegrationBackend {
+            arguments: vec!["serve".to_owned(), "--stdio".to_owned()],
+            launching_words: vec!["resume".to_owned(), "fork".to_owned()],
+        }),
+    });
+}
+
+/// `integration` with one change made to its server for the terminal, which it declares.
+fn with_backend_changed(
+    integration: &CommandIntegration,
+    change: impl FnOnce(&mut IntegrationBackend),
+) -> CommandIntegration {
+    let mut changed = integration.clone();
+    change(
+        changed
+            .backend
+            .as_mut()
+            .expect("the integration declares a server for the terminal"),
+    );
+    changed
 }
 
 /// The string check accepts the statement the host renders for `integration` and refuses every

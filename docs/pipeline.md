@@ -326,8 +326,10 @@ reviewer writes it there:
   `every_bundled_adapter_is_present_and_declares_no_surface_of_its_own`. A third test, `every_bundled_adapter_declares_what_it_observes_and_controls_and_answers_only_a_native_request`,
   counts six bundled agents, so a connector for a seventh application also needs that count changed.
 - `REVIEWED_INTEGRATIONS`: every command integration, word for word (the command, the flags, the
-  variables, the package's grant statement and the list the host renders from the declaration). A
-  package that declares one also has to state the SDK range `>=0.1.3, <0.2.0` exactly.
+  variables, the server for the terminal with its arguments and launching words, the package's
+  grant statement and the list the host renders from the declaration). A package that declares one
+  also has to state exactly the SDK range reviewed with it: `>=0.1.3, <0.2.0`, and
+  `>=0.1.6, <0.2.0` for the one that declares a server for the terminal.
 - `REVIEWED_GRANTS`: the installation grant of every native bridge, word for word.
 - `PROFILE_PAIRS`: every pair of profiles of one bundled agent, declared, and both profiles of a pair
   published by one publisher.
