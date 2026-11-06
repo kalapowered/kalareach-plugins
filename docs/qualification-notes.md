@@ -160,28 +160,99 @@ unknown request, are the gateway's to establish. Status: not covered here.
 
 ### Qualification cases
 
-`fixtures/agents/kalareach/codex/0.155.1/macos-aarch64.json` records every part of section 12's eight
-cases for this build and version 0.2.1 of this package on macOS arm64, as `scripts/e2e-agents.sh` ran
-them against a host built from the core repository at the commit the record names. The package was
-installed from `snapshots/development` on a paired owner device's confirmation, and the host bound it to
-nothing: it hands no installed connector to a worker, so Codex ran on its terminal route, started by
-typing `codex` at a managed shell's prompt, with its home inside the run's own directory, every proxy
-variable at a loopback port nothing listens on, and no account.
+`fixtures/agents/kalareach/codex/0.155.1/macos-aarch64.json` records section 12's eight cases for
+this build and version 0.3.0 of this package on macOS arm64, as `scripts/e2e-agents.sh` ran them
+against a host built from the core repository at the commit the record names. The package was
+installed from `snapshots/development` on a paired owner device's confirmation. The host bound it to
+nothing: a session made through `kr new` gets no command integration, so Codex ran on its terminal
+route, started by typing `codex` at a managed shell's prompt, and no gateway stood between the
+terminal and the App Server. The record therefore exercises none of the table's classifications,
+none of the approval answer, the operations templates or the observation declaration the package
+adds, and none of the five things the package's README leaves for a real-agent run: the terminal
+closing its prompt on `serverRequest/resolved` for an answer the host gave, the terminal showing a
+turn the host started, `thread/start`, `thread/resume` and `thread/fork` being the only selection
+changes, the stable-name list being complete for a 0.155.1 session, and `turn/start` over a running
+turn not being a queue. Status for all of them: unverified, and not measurable by a part that has no
+gateway.
 
-On that route the host advertised no typed capability for Codex and refused every typed action and each
-of this package's actions (2b); Codex and its local terminal outlived a killed control daemon, and a
-restarted daemon served the session again (5a); a running Codex kept the executable it started with
-while the installation moved to 0.156.1, whose own process started on the terminal route (6a); and
-forged titles, transcripts, registrations and hook input changed nothing the host reports (8a). Codex
-shows its sign-in screen and no composer without an account, so 14.03a did not run.
+The build is the native executable, SHA-256
+`8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e`, and not the launcher npm puts on
+the path. The launcher runs the executable under node, and the host detected no launch of a build
+started that way: the record of 2026-09-27 for version 0.2.1 failed parts 1, 2b, 2c and 7 for that
+reason, and so did a first run for this record. The package serves a native executable only, so the
+build list's prefix holds a copy of the build's whole vendor directory (the executable,
+`codex-code-mode-host` beside it, `codex-path/rg` and `codex-resources`), made with the file
+system's clone and compared with the npm tree byte for byte, and `bin/codex` in it is the command. A
+second run that put only the executable in the prefix lost Codex's shell tool, which looks for its
+code-mode host beside itself, so part 3 never saw an approval. The newer build that part 6a moves
+to, 0.156.1, SHA-256 `0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a`, is laid out
+the same way.
 
-The run's home held a keychain of the run's own as its default, and the record names each executable
-image seen beneath the agent's sessions, looked at every quarter second from just before the launch
-until the part's sessions ended, with its SHA-256 and where it lies; a process that started and ended
-between two looks is not in it. The parts that need a vendor account, a binding or a registration the
-host issued did not run, and the record says why for each. Status: exercised behaviour of the host with
-this build on its terminal route. None of the table's classifications was exercised, because the host
-bound no connector.
+The route is not the one a person's default configuration gives. The build ran with the run's own
+home and a `CODEX_HOME` of the run's own, whose `config.toml` selects a model provider that is the
+local subscription proxy: its loopback address, the Responses wire API, a fixed placeholder as the
+bearer, no request retries, and the header that pins one pooled account, read from a variable
+(`SUBROUTER_CODEX_ACCOUNT_ID`) that the driver received on a pipe. It is the provider `sr codex`
+gives the installed Codex. The account is on a paid plan; its identifier is in no log and no record,
+and the driver searched the run's files for it, and for the values of the other keys the shell held,
+and found neither. Not exercised: the sign-in with a ChatGPT account, `codex login status`, the
+token refresh, the vendor's own endpoint and its websocket transport. Codex chose `gpt-6-astra` with
+low reasoning effort (read from its screen in a run of this series); the proxy served it.
+
+The person's own Codex home is outside the run, and the build list names none of its files for the
+harness to watch, because the harness digests what it watches and a credential file is among them.
+Instead a stat-only record of `~/.codex` and eight paths in it (existence, inode, size and
+modification time) was taken before and after each of ten runs and diagnostics of this series. None
+of the named files changed in any of them. The directory's own size and modification time changed in
+five of the ten, by an entry some process created or removed there, which the record does not
+identify.
+
+The parts, as the record states them:
+
+- Part 1 failed, and only on the device's own transfer: `upload.begin` is refused with
+  `PERMISSION_DENIED`. The host forwards a call that names a session to the worker, which serves no
+  transfer method, and refuses a call with a host-level target for naming a session, so no target
+  shape reaches an arm that serves it. That is a gap of the host and not of the package or the
+  build. The launch was detected as one instance; the device's prompt was answered; the image was
+  named by its colour; the local terminal showed the same answer.
+- Part 2a passed: `/pwd`, an interrupt, a prompt queued behind a running turn (a new turn after the
+  first finished) and a prompt steered into a running turn, each from the device.
+- Parts 2b and 2c passed: the launch is one live instance in the native terminal mode, offered
+  observation and the terminal; the typed calls (`agent.prompt.submit`, `agent.prompt.queue`,
+  `agent.turn.steer`, `agent.turn.cancel`, the package's `turn.cancel`) are refused with
+  `UNSUPPORTED_CAPABILITY`, an approval answer with `STALE_SESSION`, and `thread.refresh` is refused
+  once the agent has ended and its binding with it.
+- Part 3 passed: the paired device holding the input lease answered an approval while the local
+  terminal answered it the other way; the command ran once, the terminal was told it did not hold
+  the input lease, and a reconnecting device replayed nothing. In the control the local terminal
+  held the lease, the device's allow was refused with `LEASE_LOST`, and the command did not run.
+- Parts 5a and 6a passed: Codex and its terminal outlived a killed control daemon and a restarted
+  daemon served the session again, and a running Codex kept the executable it started with while the
+  installation moved to 0.156.1, whose own process then started on the terminal route.
+- Part 8a failed on its first probe. The forwarder answered `hook-none-session-start` in 676 ms
+  against a bound of 500 ms, at a one-minute load average of 2.01 when the run began. The same probe
+  took 679 ms and 1,159 ms in the two earlier runs, which failed alike, and 435 ms in a run of the
+  part alone that passed, at a one-minute load average of 8.72; in that run the other eleven probes
+  took 4 to 5 ms each. So the result does not follow the load. It is the first run of a forwarder
+  copied to the run's directory a moment before, while the system verifies it, and not the
+  forwarder's time.
+- Parts 4 and 7 are not in the record's run: the account's turns, capped at 30 in the build list of
+  that run, were spent before they started. They were run once afterwards, on their own, at the same
+  commits and with the cap at 34. Part 4 passed. Part 7 failed on one check: Codex forks a saved
+  conversation that a second process resumes, so session B had a new identifier and two executions
+  on one conversation's identifier were not shown. Both launches were detected. These two outcomes
+  are not in the record.
+- Parts 5b, 6b and 8b did not run: they wait for the command integration. Part 14.03a did not run:
+  the entry that runs without an account shows no composer. Part 14.03b did not run: no method reads
+  a draft's attachment state.
+
+The account spent 34 turns: 6 in part 1, 15 in part 2a, 5 in part 3, 4 in part 4 and 4 in part 7,
+over four runs (13, 8, 9 and 4). Parts 1, 2a and 3 ran in each of the first three because the
+build's launch and then its files had to be corrected between them.
+
+Status: exercised behaviour of the host with this build on its terminal route, through the local
+subscription proxy. None of the table's classifications was exercised, because the host bound no
+connector.
 
 ## kalareach/claude-code
 
