@@ -449,12 +449,14 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         "parts 1 failed",
         "section 12 parts 1, 5b, 6b, 8b did not pass",
     ];
-    // Codex's record is a run with the person's login: the host detected no launch of a build a
-    // runtime starts, so the parts that need it failed, and the device's upload was refused.
+    // Codex's record is a run with a pooled subscription account, from the build's native
+    // executable: the host detected the launch, the device's upload was refused, the hook
+    // forwarder's first answer after its start came after its bound, and the account's turns ran
+    // out before parts 4 and 7 started.
     let codex: &[&str] = &[
-        "steps 2, 4, 5, 10 did not exit cleanly",
-        "parts 1, 2b, 2c, 7 failed",
-        "section 12 parts 1, 2b, 2c, 5b, 6b, 7, 8b did not pass",
+        "steps 2, 11 did not exit cleanly",
+        "parts 1, 8a failed",
+        "section 12 parts 1, 4, 5b, 6b, 7, 8a, 8b did not pass",
     ];
     // Kimi Code's record is a run with the person's login: part 1 failed at the check of the image's
     // colour in the agent's answer, before the answer to the device's upload was kept, and the agent

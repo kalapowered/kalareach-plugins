@@ -3,8 +3,8 @@
   "extension": "kalareach.agent-qualification/1",
   "repository": "kalareach-plugins",
   "run": {
-    "started": "2026-09-27T19:07:12Z",
-    "finished": "2026-09-27T19:24:07Z",
+    "started": "2026-11-06T11:27:31Z",
+    "finished": "2026-11-06T11:33:22Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -13,13 +13,13 @@
       "target": "aarch64-apple-darwin"
     },
     "commit": {
-      "id": "edd5598bd7dc6c50e0272a3cf54f0384e9672407",
+      "id": "fa8869d90c31c6d1450e40fb6436852f22260edb",
       "modified": false
     },
     "host": {
       "repository": "kalareach",
       "commit": {
-        "id": "9ecfe87bdfa66e6d27d87d4a8adf55599b15976a",
+        "id": "3a37e9868b23be7365925a7b1ad4023c74513414",
         "modified": false
       }
     },
@@ -34,8 +34,8 @@
     "packages": [
       {
         "name": "kalareach/codex",
-        "version": "0.2.1",
-        "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+        "version": "0.3.0",
+        "manifest_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b",
         "generation": "snapshots/development"
       }
     ],
@@ -73,10 +73,10 @@
       "14.03a"
     ],
     "all_terminals": false,
-    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-WhXxsB",
+    "evidence_directory": "/private/var/folders/55/mtcsh3xj5nd2qnl5_c7d5yk00000gn/T/kalareach-agents-pmKhw2",
     "own_home": {
       "bound_to_a_desktop": true,
-      "default_keychain": "\"~/Library/Keychains/login.keychain-db\"",
+      "default_keychain": "the person's login keychain",
       "home": "~",
       "show_keychain_info_status": 0,
       "worker_profile": "desktop_bound"
@@ -87,12 +87,12 @@
       "number": 1,
       "group": "own-home",
       "what": "a session started with the person's own home names their login keychain",
-      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-d4ded216da994890 --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 <target>/debug/deps/cases-a415feaaca43530c --exact a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 10,
+      "seconds": 7,
       "log": "own-home.log",
       "error": null
     },
@@ -100,12 +100,12 @@
       "number": 2,
       "group": "agents",
       "what": "part 1",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of SUBROUTER_CODEX_ACCOUNT_ID on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-a415feaaca43530c --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 101,
-      "seconds": 184,
+      "seconds": 75,
       "log": "codex/1.log",
       "error": null
     },
@@ -113,12 +113,12 @@
       "number": 3,
       "group": "agents",
       "what": "part 2a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of SUBROUTER_CODEX_ACCOUNT_ID on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-a415feaaca43530c --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 182,
+      "seconds": 110,
       "log": "codex/2a.log",
       "error": null
     },
@@ -126,12 +126,12 @@
       "number": 4,
       "group": "agents",
       "what": "part 2b",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 101,
-      "seconds": 46,
+      "exit": 0,
+      "seconds": 8,
       "log": "codex/2b.log",
       "error": null
     },
@@ -139,12 +139,12 @@
       "number": 5,
       "group": "agents",
       "what": "part 2c",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 101,
-      "seconds": 46,
+      "exit": 0,
+      "seconds": 8,
       "log": "codex/2c.log",
       "error": null
     },
@@ -152,38 +152,25 @@
       "number": 6,
       "group": "agents",
       "what": "part 3",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of SUBROUTER_CODEX_ACCOUNT_ID on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-a415feaaca43530c --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 107,
+      "seconds": 90,
       "log": "codex/3.log",
-      "error": null
-    },
-    {
-      "number": 7,
-      "group": "agents",
-      "what": "part 4",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 95,
-      "log": "codex/4.log",
       "error": null
     },
     {
       "number": 8,
       "group": "agents",
       "what": "part 5a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 46,
+      "seconds": 10,
       "log": "codex/5a.log",
       "error": null
     },
@@ -191,38 +178,25 @@
       "number": 9,
       "group": "agents",
       "what": "part 6a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 79,
+      "seconds": 11,
       "log": "codex/6a.log",
-      "error": null
-    },
-    {
-      "number": 10,
-      "group": "agents",
-      "what": "part 7",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 101,
-      "seconds": 124,
-      "log": "codex/7.log",
       "error": null
     },
     {
       "number": 11,
       "group": "agents",
       "what": "part 8a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
-      "exit": 0,
-      "seconds": 49,
+      "exit": 101,
+      "seconds": 9,
       "log": "codex/8a.log",
       "error": null
     },
@@ -230,12 +204,12 @@
       "number": 12,
       "group": "agents",
       "what": "part 14.03a",
-      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+      "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 9,
+      "seconds": 2,
       "log": "codex/14.03a.log",
       "error": null
     }
@@ -246,9 +220,9 @@
       "verdict": "failed",
       "counts": {
         "passed": 6,
-        "failed": 4,
+        "failed": 2,
         "ignored": 0,
-        "not_run": 3,
+        "not_run": 5,
         "not_built": 0,
         "known_difference": 0
       },
@@ -259,14 +233,14 @@
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
           "outcome": "failed",
-          "reason": "a paired device's upload.begin is refused on this host (INVALID_ARGUMENT), so the image is not the device's transfer; the host did not detect the manual launch as section 12 requires: the host did not announce exactly one live instance for the launched execution (it announced 0 live instance(s))",
+          "reason": "a paired device's upload.begin is refused on this host (PERMISSION_DENIED), so the image is not the device's transfer",
           "runs": [
             {
               "step": 2,
               "outcome": "failed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of SUBROUTER_CODEX_ACCOUNT_ID on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-a415feaaca43530c --exact a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -275,21 +249,26 @@
                 "-s",
                 "read-only"
               ],
-              "budget_limit": 50,
-              "budget_spent": 31,
+              "budget_limit": 30,
+              "budget_spent": 23,
               "declined_requests": 0,
-              "home": "person",
+              "home": "run",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-4ce9cfa1/w/.codex",
-                  "<tmp>/krm-4ce9cfa1/w/AGENTS.md",
-                  "<tmp>/krm-4ce9cfa1/w/AGENTS.override.md",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
                   "/etc/codex/config.toml",
                   "/etc/codex/requirements.toml",
                   "/etc/codex/managed_config.toml",
                   "/Library/Managed Preferences/com.openai.codex.plist",
                   "/Library/Managed Preferences/{user}/com.openai.codex.plist",
-                  "~/.codex/log/codex-tui.log"
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>"
                 ],
                 "probes": [
                   {
@@ -303,7 +282,7 @@
                     ],
                     "lines": [],
                     "shows": [
-                      "disabled"
+                      "No MCP servers configured"
                     ],
                     "shows_within": null
                   },
@@ -334,10 +313,7 @@
                     "shows_within": null
                   },
                   {
-                    "accepted": {
-                      "file": ".codex/AGENTS.md",
-                      "starts": "# AGENTS.md instructions"
-                    },
+                    "accepted": null,
                     "command": [
                       "debug",
                       "prompt-input"
@@ -382,15 +358,7 @@
                     "shows_within": null
                   }
                 ],
-                "servers_switched_off": [
-                  "<server 1>",
-                  "<server 2>",
-                  "<server 3>",
-                  "<server 4>",
-                  "<server 5>",
-                  "<server 6>",
-                  "<server 7>"
-                ],
+                "servers_switched_off": [],
                 "switches": [
                   "-c",
                   "skills.include_instructions=false",
@@ -417,9 +385,9 @@
                   "-c",
                   "analytics.enabled=false",
                   "-c",
-                  "log_dir=\"<tmp>/krm-4ce9cfa1/codex-log\"",
+                  "<not published>",
                   "-c",
-                  "projects={\"<tmp>/krm-4ce9cfa1/w\"={trust_level=\"untrusted\"}}",
+                  "<not published>",
                   "--disable",
                   "hooks",
                   "--disable",
@@ -447,21 +415,7 @@
                   "--disable",
                   "image_generation",
                   "--disable",
-                  "memories",
-                  "-c",
-                  "mcp_servers.<server 1>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 2>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 3>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 4>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 5>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 6>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 7>.enabled=false"
+                  "memories"
                 ],
                 "tools_offered": [
                   {
@@ -487,193 +441,160 @@
                   }
                 ]
               },
-              "login": "vendor subscription login",
-              "stored": "file in the agent's own directory",
+              "login": "vendor subscription account served by the local subscription proxy",
+              "mirror": false,
+              "stored": "the proxy's account pool; the variable of the person's shell environment names the pooled account",
               "turns": 2,
-              "variable": null
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "SUBROUTER_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
             },
             "detected": {
-              "detected": false
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "dec9a11b-033d-4bf4-801c-6d933f000dd2"
             },
             "detection": {
-              "instances": [],
-              "waited_ms": 30004
+              "instances": [
+                {
+                  "application_instance_id": "dec9a11b-033d-4bf4-801c-6d933f000dd2",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964474766-fb39098d-145b-42c7-b963-6044034c12e7",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964474766"
+                }
+              ],
+              "waited_ms": 2
             },
             "device_upload": {
               "call": "upload.begin",
               "error": null,
-              "refused": "INVALID_ARGUMENT"
+              "refused": "PERMISSION_DENIED"
             },
+            "failure_codes": [
+              {
+                "code": "upload_refused",
+                "refused": "PERMISSION_DENIED"
+              }
+            ],
             "image": {
               "answer": "red",
-              "code": "KRD66100428A7A",
-              "file": "<tmp>/krm-4ce9cfa1/w/krd66100428a7a.png",
-              "syntax": "paste",
-              "answered": true
+              "answered": true,
+              "code": "KR8FCD8569A914",
+              "file": "<not published>",
+              "syntax": "paste"
             },
             "installed": {
               "grant": [
+                "approval.decode",
+                "approval.respond",
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "manifest_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b",
               "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
+              "version": "0.3.0"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 0,
+              "run_gone": true,
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID"
+            },
+            "local": {
+              "seen": true,
+              "shows": "KR8FCD8569A914"
             },
             "login_held": true,
             "person_files": {
-              "appended": [
-                {
-                  "appended": 1,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/session_index.jsonl",
-                  "others": 0,
-                  "own": [
-                    {
-                      "holds_the_mark": false,
-                      "id": "01a0e444-2331-7621-af42-1113f92f6644",
-                      "names_a_conversation_it_created": true,
-                      "names_the_run_directory": false,
-                      "time": "2026-09-27T19:08:24.432626Z"
-                    }
-                  ]
-                },
-                {
-                  "appended": 0,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/history.jsonl",
-                  "others": 0,
-                  "own": []
-                }
-              ],
-              "config_directory_removed": null,
-              "files": [
-                {
-                  "changed": false,
-                  "file": "~/.codex/config.toml",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/AGENTS.md",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/hooks.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/.credentials.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/auth.json",
-                  "names_run": false,
-                  "recorded_only": true,
-                  "shared": false
-                }
-              ],
+              "appended": [],
+              "config_directory_removed": true,
+              "files": [],
               "keychain_item_rewritten": null,
-              "lines_removed": [
-                {
-                  "file": "~/.codex/history.jsonl",
-                  "removed": 0
-                }
-              ],
+              "lines_removed": [],
               "searched_for": {
-                "mark": "krd66100428a7a",
-                "run_directory": "<tmp>/krm-4ce9cfa1"
-              }
-            },
-            "person_home": {
-              "appended": [
-                "~/.codex/session_index.jsonl"
-              ],
-              "changed_uncompared": [],
-              "created_and_left": [
-                "~/.codex/thread-writer-locks/01a0e444-2331-7621-af42-1113f92f6644.lock"
-              ],
-              "created_and_removed": [
-                "~/.codex/sessions/2026/09/27/rollout-2026-09-27T21-07-45-01a0e444-2331-7621-af42-1113f92f6644.jsonl"
-              ],
-              "left_holding_the_part": [],
-              "left_unsearched": [],
-              "read_whole_after": true,
-              "removed_by_something_else": [],
-              "rewritten": [],
-              "unread_after": [],
-              "others": {
-                "appended": {
-                  "~/.codex/*": 3,
-                  "~/.codex/sessions/{date}": 1
-                },
-                "changed_uncompared": {
-                  "~/.codex/*": 3
-                },
-                "created_and_left": {
-                  "~/.codex/tmp": 1
-                },
-                "left_holding_the_part": {
-                  "~/.codex/*": 3
-                },
-                "rewritten": {
-                  "~/.codex/*": 10
-                }
+                "mark": "kr8fcd8569a914",
+                "run_directory": "<not published>"
               }
             },
             "prompt": {
-              "answer": "1641",
-              "question": "What is 899 plus 742? Reply with only the number."
+              "answer": "1483",
+              "question": "What is 756 plus 727? Reply with only the number."
             },
             "provenance": {
               "ended_before_read": 0,
               "executed": [
                 {
                   "device": 16777234,
-                  "from": "runtime",
-                  "inode": 54188627,
-                  "pid": 89696,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "device": 16777234,
                   "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 89703,
+                  "image": "<tools>/codex/0.155.1-native/bin/codex",
+                  "inode": 220874060,
+                  "pid": 34357,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "from": "runtime",
-                    "pid": 89696,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                    "from": "build",
+                    "image": "<tools>/codex/0.155.1-native/bin/codex",
+                    "pid": 34357,
+                    "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                   },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
+                  "file": "<tools>/codex/0.155.1-native/bin/codex",
+                  "launch": "native",
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
                   "command": "codex"
                 }
               ],
               "pids": [
-                89696,
-                89703
+                34357
               ],
               "sample_interval_ms": 250,
-              "samples": 154,
-              "session_path": "<tmp>/krm-4ce9cfa1/agent/current/bin:<tmp>/krm-4ce9cfa1/agent/runtime:/usr/bin:/bin",
+              "samples": 41,
+              "session_path": "<not published>",
               "system_programs_of_another_user": []
             },
             "surface": {
@@ -681,22 +602,22 @@
                 {
                   "call": "agent.prompt.submit",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.prompt.queue",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.steer",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.cancel",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.approval.respond",
@@ -706,34 +627,18 @@
                 {
                   "call": "agent.draft.add_attachment",
                   "error": null,
-                  "refused": "INVALID_ARGUMENT"
+                  "refused": "PERMISSION_DENIED"
                 },
                 {
                   "call": "plugin.action.invoke turn.cancel",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 }
               ],
               "backend_files": 0,
               "capability_records": [],
               "resources": 0
-            },
-            "local": {
-              "shows": "KRD66100428A7A",
-              "seen": true
-            },
-            "failure_codes": [
-              {
-                "code": "upload_refused",
-                "refused": "INVALID_ARGUMENT"
-              },
-              {
-                "code": "launch_not_detected",
-                "session": null,
-                "cause": "not_one_instance",
-                "announced": 0
-              }
-            ]
+            }
           }
         },
         {
@@ -748,7 +653,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of SUBROUTER_CODEX_ACCOUNT_ID on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-a415feaaca43530c --exact slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -757,21 +662,26 @@
                 "-s",
                 "read-only"
               ],
-              "budget_limit": 50,
-              "budget_spent": 36,
+              "budget_limit": 30,
+              "budget_spent": 28,
               "declined_requests": 0,
-              "home": "person",
+              "home": "run",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-a841c466/w/.codex",
-                  "<tmp>/krm-a841c466/w/AGENTS.md",
-                  "<tmp>/krm-a841c466/w/AGENTS.override.md",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
                   "/etc/codex/config.toml",
                   "/etc/codex/requirements.toml",
                   "/etc/codex/managed_config.toml",
                   "/Library/Managed Preferences/com.openai.codex.plist",
                   "/Library/Managed Preferences/{user}/com.openai.codex.plist",
-                  "~/.codex/log/codex-tui.log"
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>"
                 ],
                 "probes": [
                   {
@@ -785,7 +695,7 @@
                     ],
                     "lines": [],
                     "shows": [
-                      "disabled"
+                      "No MCP servers configured"
                     ],
                     "shows_within": null
                   },
@@ -816,10 +726,7 @@
                     "shows_within": null
                   },
                   {
-                    "accepted": {
-                      "file": ".codex/AGENTS.md",
-                      "starts": "# AGENTS.md instructions"
-                    },
+                    "accepted": null,
                     "command": [
                       "debug",
                       "prompt-input"
@@ -864,15 +771,7 @@
                     "shows_within": null
                   }
                 ],
-                "servers_switched_off": [
-                  "<server 1>",
-                  "<server 2>",
-                  "<server 3>",
-                  "<server 4>",
-                  "<server 5>",
-                  "<server 6>",
-                  "<server 7>"
-                ],
+                "servers_switched_off": [],
                 "switches": [
                   "-c",
                   "skills.include_instructions=false",
@@ -899,9 +798,9 @@
                   "-c",
                   "analytics.enabled=false",
                   "-c",
-                  "log_dir=\"<tmp>/krm-a841c466/codex-log\"",
+                  "<not published>",
                   "-c",
-                  "projects={\"<tmp>/krm-a841c466/w\"={trust_level=\"untrusted\"}}",
+                  "<not published>",
                   "--disable",
                   "hooks",
                   "--disable",
@@ -929,21 +828,7 @@
                   "--disable",
                   "image_generation",
                   "--disable",
-                  "memories",
-                  "-c",
-                  "mcp_servers.<server 1>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 2>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 3>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 4>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 5>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 6>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 7>.enabled=false"
+                  "memories"
                 ],
                 "tools_offered": [
                   {
@@ -969,21 +854,63 @@
                   }
                 ]
               },
-              "login": "vendor subscription login",
-              "stored": "file in the agent's own directory",
+              "login": "vendor subscription account served by the local subscription proxy",
+              "mirror": false,
+              "stored": "the proxy's account pool; the variable of the person's shell environment names the pooled account",
               "turns": 5,
-              "variable": null
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "SUBROUTER_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
             },
             "agent_reads": [
               {
                 "call": "agent.capabilities",
                 "error": null,
-                "refused": "STALE_SESSION"
+                "refused": null
               },
               {
                 "call": "agent.commands",
                 "error": null,
-                "refused": "STALE_SESSION"
+                "refused": null
               }
             ],
             "checker_controls": [
@@ -1024,140 +951,57 @@
               "why_not": "the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead"
             },
             "detected": {
-              "detected": false
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "3703e0ca-b856-429a-9dd3-1b9b7239f036"
             },
             "detection": {
-              "instances": [],
-              "waited_ms": 30023
+              "instances": [
+                {
+                  "application_instance_id": "3703e0ca-b856-429a-9dd3-1b9b7239f036",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964551462-cf1012f5-1936-4420-891e-d78d3ccf359d",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964551462"
+                }
+              ],
+              "waited_ms": 1
             },
             "installed": {
               "grant": [
+                "approval.decode",
+                "approval.respond",
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "manifest_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b",
               "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
+              "version": "0.3.0"
             },
             "interrupt": {
               "key": "\u001b",
-              "shows": "Conversation interrupted",
-              "seen": true
+              "seen": true,
+              "shows": "Conversation interrupted"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 0,
+              "run_gone": true,
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID"
             },
             "login_held": true,
             "person_files": {
-              "appended": [
-                {
-                  "appended": 1,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/session_index.jsonl",
-                  "others": 0,
-                  "own": [
-                    {
-                      "holds_the_mark": false,
-                      "id": "01a0e447-04bc-7d32-b0a6-ed46967cfccb",
-                      "names_a_conversation_it_created": true,
-                      "names_the_run_directory": false,
-                      "time": "2026-09-27T19:11:32.403905Z"
-                    }
-                  ]
-                },
-                {
-                  "appended": 0,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/history.jsonl",
-                  "others": 0,
-                  "own": []
-                }
-              ],
-              "config_directory_removed": null,
-              "files": [
-                {
-                  "changed": false,
-                  "file": "~/.codex/config.toml",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/AGENTS.md",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/hooks.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/.credentials.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/auth.json",
-                  "names_run": false,
-                  "recorded_only": true,
-                  "shared": false
-                }
-              ],
+              "appended": [],
+              "config_directory_removed": true,
+              "files": [],
               "keychain_item_rewritten": null,
-              "lines_removed": [
-                {
-                  "file": "~/.codex/history.jsonl",
-                  "removed": 0
-                }
-              ],
+              "lines_removed": [],
               "searched_for": {
-                "mark": "krfa1ff17bc70f",
-                "run_directory": "<tmp>/krm-a841c466"
-              }
-            },
-            "person_home": {
-              "appended": [
-                "~/.codex/session_index.jsonl"
-              ],
-              "changed_uncompared": [],
-              "created_and_left": [
-                "~/.codex/thread-writer-locks/01a0e447-04bc-7d32-b0a6-ed46967cfccb.lock"
-              ],
-              "created_and_removed": [
-                "~/.codex/sessions/2026/09/27/rollout-2026-09-27T21-10-54-01a0e447-04bc-7d32-b0a6-ed46967cfccb.jsonl"
-              ],
-              "left_holding_the_part": [],
-              "left_unsearched": [],
-              "read_whole_after": true,
-              "removed_by_something_else": [],
-              "rewritten": [],
-              "unread_after": [],
-              "others": {
-                "appended": {
-                  "~/.codex/*": 3,
-                  "~/.codex/sessions/{date}": 1
-                },
-                "changed_uncompared": {
-                  "~/.codex/*": 3
-                },
-                "created_and_left": {
-                  "~/.codex/tmp": 1
-                },
-                "left_holding_the_part": {
-                  "~/.codex/*": 3
-                },
-                "removed_by_something_else": {
-                  "~/.codex/shell_snapshots": 1,
-                  "~/.codex/thread-writer-locks": 1,
-                  "~/.codex/tmp": 1
-                },
-                "rewritten": {
-                  "~/.codex/*": 10
-                }
+                "mark": "krfc7b534905c3",
+                "run_directory": "<not published>"
               }
             },
             "provenance": {
@@ -1165,44 +1009,37 @@
               "executed": [
                 {
                   "device": 16777234,
-                  "from": "runtime",
-                  "inode": 54188627,
-                  "pid": 26597,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "device": 16777234,
                   "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 26612,
+                  "image": "<tools>/codex/0.155.1-native/bin/codex",
+                  "inode": 220874060,
+                  "pid": 37573,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "from": "runtime",
-                    "pid": 26597,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                    "from": "build",
+                    "image": "<tools>/codex/0.155.1-native/bin/codex",
+                    "pid": 37573,
+                    "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                   },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
+                  "file": "<tools>/codex/0.155.1-native/bin/codex",
+                  "launch": "native",
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
                   "command": "codex"
                 }
               ],
               "pids": [
-                26597,
-                26612
+                37573
               ],
               "sample_interval_ms": 250,
-              "samples": 320,
-              "session_path": "<tmp>/krm-a841c466/agent/current/bin:<tmp>/krm-a841c466/agent/runtime:/usr/bin:/bin",
+              "samples": 173,
+              "session_path": "<not published>",
               "system_programs_of_another_user": []
             },
             "queued": {
-              "answer": "1527",
+              "answer": "1491",
               "order": {
                 "after": {
                   "busy": true,
@@ -1222,9 +1059,9 @@
               }
             },
             "slash": {
+              "seen": true,
               "shows": "Current working directory:",
-              "typed": "/pwd",
-              "seen": true
+              "typed": "/pwd"
             },
             "steering": {
               "order": {
@@ -1251,22 +1088,22 @@
                 {
                   "call": "agent.prompt.submit",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.prompt.queue",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.steer",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.cancel",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.approval.respond",
@@ -1276,12 +1113,12 @@
                 {
                   "call": "agent.draft.add_attachment",
                   "error": null,
-                  "refused": "INVALID_ARGUMENT"
+                  "refused": "PERMISSION_DENIED"
                 },
                 {
                   "call": "plugin.action.invoke turn.cancel",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 }
               ],
               "backend_files": 0,
@@ -1295,36 +1132,59 @@
           "part": "2b",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
-          "outcome": "failed",
-          "reason": "the host did not detect the manual launch as section 12 requires: the host announced 0 live instance(s) for the launched execution, not one: section 12 keeps a manual launch valid through the same detection and capability process",
+          "outcome": "passed",
           "runs": [
             {
               "step": 4,
-              "outcome": "failed"
+              "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --nocapture --test-threads=1",
           "evidence": {
             "after": {
-              "instances": [],
+              "instances": [
+                {
+                  "application_instance_id": "dff7df89-6f70-41ea-aac7-4a35e29d9e14",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964663930-f98b9b84-5c1e-4cc4-ae20-ffa052128b2d",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964663930"
+                }
+              ],
               "waited_ms": 0
             },
             "agent_reads": [
               {
                 "call": "agent.capabilities",
-                "detail": "STALE_SESSION: no application instance 08fd8b00-b83f-49bb-9ef4-9e53ee1e2c5e",
+                "detail": "accepted",
                 "error": null,
-                "refused": "STALE_SESSION"
+                "refused": null
               },
               {
                 "call": "agent.commands",
-                "detail": "STALE_SESSION: no application instance 08fd8b00-b83f-49bb-9ef4-9e53ee1e2c5e",
+                "detail": "accepted",
                 "error": null,
-                "refused": "STALE_SESSION"
+                "refused": null
               }
             ],
             "attachment_request": "refused before any instance is looked at: agent.draft.add_attachment names an application instance in its selectors and carries none in its parameters, so this refusal says nothing about the terminal route",
-            "binding": null,
+            "binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1793964663930-f98b9b84-5c1e-4cc4-ae20-ffa052128b2d",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
             "capability_states": [
               [
                 "plugin.metadata.match/1",
@@ -1341,6 +1201,18 @@
               [
                 "plugin.upstream.action/1",
                 "not_tested"
+              ],
+              [
+                "plugin.command_integration.launch/1",
+                "not_tested"
+              ],
+              [
+                "plugin.approval.decode/1",
+                "not_tested"
+              ],
+              [
+                "plugin.approval.respond/1",
+                "not_tested"
               ]
             ],
             "checker_controls": [
@@ -1353,7 +1225,7 @@
               {
                 "check": "detected",
                 "rejected": true,
-                "said": "the launched execution has ended and no instance is live",
+                "said": "the launched execution has ended and 1 instance(s) are still announced live",
                 "wrong": "the launched execution has ended"
               },
               {
@@ -1401,7 +1273,7 @@
               {
                 "check": "unchanged",
                 "rejected": true,
-                "said": "the instance and revision were Some(Held { instance: ApplicationInstanceId(Uuid(9da3e3fd-c960-44ed-ae66-4a68b8a0801d)), revision: AgentBindingRevision(U64(2)) }) and are None (0 live)",
+                "said": "the instance and revision were Some(Held { instance: ApplicationInstanceId(Uuid(dff7df89-6f70-41ea-aac7-4a35e29d9e14)), revision: AgentBindingRevision(U64(2)) }) and are Some(Held { instance: ApplicationInstanceId(Uuid(dff7df89-6f70-41ea-aac7-4a35e29d9e14)), revision: AgentBindingRevision(U64(1)) }) (1 live)",
                 "wrong": "the binding revision moved on"
               }
             ],
@@ -1417,17 +1289,29 @@
               "why_not": "only a typed route could advertise a typed action or accept one, and a launch the integration did not make has none"
             },
             "detected": {
-              "detected": false,
-              "why": "the host announced 0 live instance(s) for the launched execution, not one: section 12 keeps a manual launch valid through the same detection and capability process"
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "dff7df89-6f70-41ea-aac7-4a35e29d9e14"
             },
             "detection": {
-              "instances": [],
-              "waited_ms": 30185
+              "instances": [
+                {
+                  "application_instance_id": "dff7df89-6f70-41ea-aac7-4a35e29d9e14",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964663930-f98b9b84-5c1e-4cc4-ae20-ffa052128b2d",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964663930"
+                }
+              ],
+              "waited_ms": 266
             },
             "detection_control": {
               "after": {
                 "instances": [],
-                "waited_ms": 9
+                "waited_ms": 2
               },
               "breaks_property": true,
               "check": "the launched execution has ended and no instance is live",
@@ -1437,103 +1321,96 @@
             "executable_identity": "no read the host serves names the executable of an adopted instance; the image the agent runs is under provenance",
             "installed": {
               "grant": [
+                "approval.decode",
+                "approval.respond",
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "manifest_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b",
               "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
+              "version": "0.3.0"
             },
-            "live_bindings": 0,
+            "live_bindings": 1,
             "provenance": {
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-5aa6bc46/agent/current/bin/codex",
-                  "device": 16777234,
-                  "from": "runtime",
-                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "inode": 54188627,
-                  "pid": 52088,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "command": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "command": "codex",
                   "device": 16777234,
                   "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 52095,
+                  "image": "<tools>/codex/0.155.1-native/bin/codex",
+                  "inode": 220874060,
+                  "pid": 42903,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-5aa6bc46/agent/current/bin/codex",
-                    "from": "runtime",
-                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 52088,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                    "command": "codex",
+                    "from": "build",
+                    "image": "<tools>/codex/0.155.1-native/bin/codex",
+                    "pid": 42903,
+                    "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                   },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "reached": "process 52095 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex), started by the runtime, maps it",
+                  "file": "<tools>/codex/0.155.1-native/bin/codex",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
                   "what": "codex"
                 }
               ],
               "pids": [
-                52088,
-                52095
+                42903
               ],
               "sample_interval_ms": 250,
-              "samples": 129,
-              "session_path": "<tmp>/krm-5aa6bc46/agent/current/bin:<tmp>/krm-5aa6bc46/agent/runtime:/usr/bin:/bin",
+              "samples": 14,
+              "session_path": "/private/tmp/krm-db7bcbd2/agent/current/bin:/private/tmp/krm-db7bcbd2/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
             "surface": {
               "answers": [
                 {
                   "call": "agent.prompt.submit",
-                  "detail": "STALE_SESSION: no application instance 08fd8b00-b83f-49bb-9ef4-9e53ee1e2c5e",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to dff7df89-6f70-41ea-aac7-4a35e29d9e14: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.prompt.queue",
-                  "detail": "STALE_SESSION: no application instance 08fd8b00-b83f-49bb-9ef4-9e53ee1e2c5e",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to dff7df89-6f70-41ea-aac7-4a35e29d9e14: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.steer",
-                  "detail": "STALE_SESSION: no application instance 08fd8b00-b83f-49bb-9ef4-9e53ee1e2c5e",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to dff7df89-6f70-41ea-aac7-4a35e29d9e14: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.cancel",
-                  "detail": "STALE_SESSION: no application instance 08fd8b00-b83f-49bb-9ef4-9e53ee1e2c5e",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to dff7df89-6f70-41ea-aac7-4a35e29d9e14: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.approval.respond",
-                  "detail": "STALE_SESSION: no pending resource a4f0fa6e-9aed-44a9-9063-d75bfcaa4b4c",
+                  "detail": "STALE_SESSION: no pending resource b7b3eb06-dead-4ac2-b7ab-c599ccdf03f9",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.draft.add_attachment",
-                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "detail": "PERMISSION_DENIED: the method is not reachable from a local caller",
                   "error": null,
-                  "refused": "INVALID_ARGUMENT"
+                  "refused": "PERMISSION_DENIED"
                 },
                 {
                   "call": "plugin.action.invoke turn.cancel",
-                  "detail": "STALE_SESSION: kalareach/codex is not bound to 08fd8b00-b83f-49bb-9ef4-9e53ee1e2c5e",
+                  "detail": "UNSUPPORTED_CAPABILITY: the host could not complete this request (the request failed on the host); the detail is not sent to a paired device",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 }
               ],
               "backend_files": [],
@@ -1547,139 +1424,179 @@
           "part": "2c",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
-          "outcome": "failed",
-          "reason": "the host did not detect the manual launch, so no binding holds the package: the host announced 0 live instance(s) for the launched execution, not one: section 12 keeps a manual launch valid through the same detection and capability process",
+          "outcome": "passed",
           "runs": [
             {
               "step": 5,
-              "outcome": "failed"
+              "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --nocapture --test-threads=1",
           "evidence": {
-            "agent_reads": [
-              {
-                "call": "agent.capabilities",
-                "detail": "STALE_SESSION: no application instance afc0b9e6-0f33-4f70-a5a6-b093b3884881",
-                "error": null,
-                "refused": "STALE_SESSION"
+            "after": {
+              "instances": [
+                {
+                  "application_instance_id": "c1a4dba6-274e-4b21-ac2e-b227df035969",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964672367-6a139c2f-e159-4f2e-9598-68e8506f73e0",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964672367"
+                }
+              ],
+              "waited_ms": 0
+            },
+            "binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1793964672367-6a139c2f-e159-4f2e-9598-68e8506f73e0",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
               },
-              {
-                "call": "agent.commands",
-                "detail": "STALE_SESSION: no application instance afc0b9e6-0f33-4f70-a5a6-b093b3884881",
-                "error": null,
-                "refused": "STALE_SESSION"
+              "capabilities": {
+                "records": []
               }
-            ],
-            "detected": "the host announced 0 live instance(s) for the launched execution, not one: section 12 keeps a manual launch valid through the same detection and capability process",
+            },
+            "control": {
+              "after": {
+                "instances": [],
+                "waited_ms": 2
+              },
+              "answers": [
+                {
+                  "call": "plugin.action.invoke thread.refresh",
+                  "detail": "STALE_SESSION: kalareach/codex is not bound to c1a4dba6-274e-4b21-ac2e-b227df035969",
+                  "error": null,
+                  "refused": "STALE_SESSION"
+                }
+              ],
+              "breaks_property": true,
+              "what": "the agent ended, its binding with it, and the same presentation action sent again as a new action"
+            },
             "detection": {
-              "instances": [],
-              "waited_ms": 30245
+              "instances": [
+                {
+                  "application_instance_id": "c1a4dba6-274e-4b21-ac2e-b227df035969",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964672367-6a139c2f-e159-4f2e-9598-68e8506f73e0",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964672367"
+                }
+              ],
+              "waited_ms": 261
+            },
+            "held": {
+              "instance": "c1a4dba6-274e-4b21-ac2e-b227df035969",
+              "revision": 1
             },
             "installed": {
               "grant": [
+                "approval.decode",
+                "approval.respond",
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "manifest_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b",
               "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
+              "version": "0.3.0"
             },
             "provenance": {
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-8bb245f6/agent/current/bin/codex",
-                  "device": 16777234,
-                  "from": "runtime",
-                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "inode": 54188627,
-                  "pid": 59219,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "command": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "command": "codex",
                   "device": 16777234,
                   "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 59252,
+                  "image": "<tools>/codex/0.155.1-native/bin/codex",
+                  "inode": 220874060,
+                  "pid": 43344,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-8bb245f6/agent/current/bin/codex",
-                    "from": "runtime",
-                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 59219,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                    "command": "codex",
+                    "from": "build",
+                    "image": "<tools>/codex/0.155.1-native/bin/codex",
+                    "pid": 43344,
+                    "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                   },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "reached": "process 59252 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex), started by the runtime, maps it",
+                  "file": "<tools>/codex/0.155.1-native/bin/codex",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
                   "what": "codex"
                 }
               ],
               "pids": [
-                59219,
-                59252
+                43344
               ],
               "sample_interval_ms": 250,
-              "samples": 130,
-              "session_path": "<tmp>/krm-8bb245f6/agent/current/bin:<tmp>/krm-8bb245f6/agent/runtime:/usr/bin:/bin",
+              "samples": 13,
+              "session_path": "/private/tmp/krm-819e8670/agent/current/bin:/private/tmp/krm-819e8670/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
-            "surface": {
-              "answers": [
-                {
-                  "call": "agent.prompt.submit",
-                  "detail": "STALE_SESSION: no application instance afc0b9e6-0f33-4f70-a5a6-b093b3884881",
-                  "error": null,
-                  "refused": "STALE_SESSION"
-                },
-                {
-                  "call": "agent.prompt.queue",
-                  "detail": "STALE_SESSION: no application instance afc0b9e6-0f33-4f70-a5a6-b093b3884881",
-                  "error": null,
-                  "refused": "STALE_SESSION"
-                },
-                {
-                  "call": "agent.turn.steer",
-                  "detail": "STALE_SESSION: no application instance afc0b9e6-0f33-4f70-a5a6-b093b3884881",
-                  "error": null,
-                  "refused": "STALE_SESSION"
-                },
-                {
-                  "call": "agent.turn.cancel",
-                  "detail": "STALE_SESSION: no application instance afc0b9e6-0f33-4f70-a5a6-b093b3884881",
-                  "error": null,
-                  "refused": "STALE_SESSION"
-                },
-                {
-                  "call": "agent.approval.respond",
-                  "detail": "STALE_SESSION: no pending resource 04d92725-dc19-476b-a11a-6e6efb2536d7",
-                  "error": null,
-                  "refused": "STALE_SESSION"
-                },
-                {
-                  "call": "agent.draft.add_attachment",
-                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
-                  "error": null,
-                  "refused": "INVALID_ARGUMENT"
-                },
-                {
-                  "call": "plugin.action.invoke turn.cancel",
-                  "detail": "STALE_SESSION: kalareach/codex is not bound to afc0b9e6-0f33-4f70-a5a6-b093b3884881",
-                  "error": null,
-                  "refused": "STALE_SESSION"
-                }
-              ],
-              "backend_files": [],
-              "capability_records": [],
-              "resources": 0
-            }
+            "supported": [
+              {
+                "call": "plugin.action.invoke thread.refresh",
+                "detail": "accepted",
+                "error": null,
+                "refused": null
+              }
+            ],
+            "unsupported": [
+              {
+                "call": "agent.prompt.submit",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to c1a4dba6-274e-4b21-ac2e-b227df035969: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.prompt.queue",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to c1a4dba6-274e-4b21-ac2e-b227df035969: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.turn.steer",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to c1a4dba6-274e-4b21-ac2e-b227df035969: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.turn.cancel",
+                "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to c1a4dba6-274e-4b21-ac2e-b227df035969: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              },
+              {
+                "call": "agent.approval.respond",
+                "detail": "STALE_SESSION: no pending resource 6529e306-555a-4e61-aeab-a612e9b18127",
+                "error": null,
+                "refused": "STALE_SESSION"
+              },
+              {
+                "call": "agent.draft.add_attachment",
+                "detail": "PERMISSION_DENIED: the method is not reachable from a local caller",
+                "error": null,
+                "refused": "PERMISSION_DENIED"
+              },
+              {
+                "call": "plugin.action.invoke turn.cancel",
+                "detail": "UNSUPPORTED_CAPABILITY: the host could not complete this request (the request failed on the host); the detail is not sent to a paired device",
+                "error": null,
+                "refused": "UNSUPPORTED_CAPABILITY"
+              }
+            ]
           }
         },
         {
@@ -1694,7 +1611,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl KR_AGENTS_KEY_FD=3 (the value of SUBROUTER_CODEX_ACCOUNT_ID on a pipe) KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe) <target>/debug/deps/cases-a415feaaca43530c --exact a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --nocapture --test-threads=1",
           "evidence": {
             "account": {
               "arguments": [
@@ -1703,21 +1620,26 @@
                 "-s",
                 "read-only"
               ],
-              "budget_limit": 50,
-              "budget_spent": 38,
+              "budget_limit": 30,
+              "budget_spent": 30,
               "declined_requests": 0,
-              "home": "person",
+              "home": "run",
               "isolation": {
                 "absent_before_start": [
-                  "<tmp>/krm-5057a506/w/.codex",
-                  "<tmp>/krm-5057a506/w/AGENTS.md",
-                  "<tmp>/krm-5057a506/w/AGENTS.override.md",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
                   "/etc/codex/config.toml",
                   "/etc/codex/requirements.toml",
                   "/etc/codex/managed_config.toml",
                   "/Library/Managed Preferences/com.openai.codex.plist",
                   "/Library/Managed Preferences/{user}/com.openai.codex.plist",
-                  "~/.codex/log/codex-tui.log"
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>",
+                  "<not published>"
                 ],
                 "probes": [
                   {
@@ -1731,7 +1653,7 @@
                     ],
                     "lines": [],
                     "shows": [
-                      "disabled"
+                      "No MCP servers configured"
                     ],
                     "shows_within": null
                   },
@@ -1762,10 +1684,7 @@
                     "shows_within": null
                   },
                   {
-                    "accepted": {
-                      "file": ".codex/AGENTS.md",
-                      "starts": "# AGENTS.md instructions"
-                    },
+                    "accepted": null,
                     "command": [
                       "debug",
                       "prompt-input"
@@ -1810,15 +1729,7 @@
                     "shows_within": null
                   }
                 ],
-                "servers_switched_off": [
-                  "<server 1>",
-                  "<server 2>",
-                  "<server 3>",
-                  "<server 4>",
-                  "<server 5>",
-                  "<server 6>",
-                  "<server 7>"
-                ],
+                "servers_switched_off": [],
                 "switches": [
                   "-c",
                   "skills.include_instructions=false",
@@ -1845,9 +1756,9 @@
                   "-c",
                   "analytics.enabled=false",
                   "-c",
-                  "log_dir=\"<tmp>/krm-5057a506/codex-log\"",
+                  "<not published>",
                   "-c",
-                  "projects={\"<tmp>/krm-5057a506/w\"={trust_level=\"untrusted\"}}",
+                  "<not published>",
                   "--disable",
                   "hooks",
                   "--disable",
@@ -1875,21 +1786,7 @@
                   "--disable",
                   "image_generation",
                   "--disable",
-                  "memories",
-                  "-c",
-                  "mcp_servers.<server 1>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 2>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 3>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 4>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 5>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 6>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 7>.enabled=false"
+                  "memories"
                 ],
                 "tools_offered": [
                   {
@@ -1915,16 +1812,58 @@
                   }
                 ]
               },
-              "login": "vendor subscription login",
-              "stored": "file in the agent's own directory",
+              "login": "vendor subscription account served by the local subscription proxy",
+              "mirror": false,
+              "stored": "the proxy's account pool; the variable of the person's shell environment names the pooled account",
               "turns": 2,
-              "variable": null
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID",
+              "variables_absent": [
+                "OPENAI_*",
+                "ANTHROPIC_*",
+                "CLAUDE_CODE_*",
+                "CODEX_*",
+                "GEMINI_*",
+                "GOOGLE_*",
+                "VERTEX_*",
+                "GCLOUD_*",
+                "CLOUDSDK_*",
+                "CLOUD_ML_*",
+                "CODE_ASSIST_*",
+                "MOONSHOT_*",
+                "KIMI_*",
+                "OPENROUTER_*",
+                "OPENCODE_*",
+                "AWS_*",
+                "AZURE_*",
+                "CLOUDFLARE_*",
+                "SUBROUTER_*",
+                "*_API_KEY",
+                "*_API_TOKEN",
+                "*_ACCESS_TOKEN",
+                "*_AUTH_TOKEN",
+                "*_TOKEN",
+                "*_SECRET",
+                "*_SECRET_KEY",
+                "*_ACCESS_KEY",
+                "*_PASSWORD",
+                "*_BASE_URL",
+                "*_API_BASE",
+                "*_KEY",
+                "*_PAT",
+                "*_APIKEY",
+                "DATABRICKS_*",
+                "INFOMANIAK_*",
+                "PRIVATEMODE_*",
+                "SNOWFLAKE_*",
+                "WATSONX_*",
+                "*_ENDPOINT"
+              ]
             },
-            "command": "echo kr1adc57 >> <tmp>/krm-5057a506/w/a",
+            "command": "<not published>",
             "control": {
               "breaks_property": true,
               "check": true,
-              "command": "echo kr1adc57-2 >> <tmp>/krm-5057a506/w/a",
+              "command": "<not published>",
               "device_refused": "LEASE_LOST",
               "executions": 0,
               "what": "a second approval with the local terminal holding the lease: it denied and the device's allow was refused"
@@ -1941,15 +1880,28 @@
                 "\"type\":\"function_call\"",
                 "\"type\":\"custom_tool_call\""
               ],
-              "conversation": "01a0e44b-5849-7c90-ace2-0209a43da2d7",
+              "conversation": "01a1b0a0-a5ce-77a2-a01c-d7eea75b82ad",
               "marked_by": "_call_output\""
             },
             "detected": {
-              "detected": false
+              "detected": true,
+              "identity": "unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance",
+              "instance": "aa71e3d9-eeb4-448b-883b-72ccc004d21a"
             },
             "detection": {
-              "instances": [],
-              "waited_ms": 30152
+              "instances": [
+                {
+                  "application_instance_id": "aa71e3d9-eeb4-448b-883b-72ccc004d21a",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964681061-74848596-d52f-47cf-bc15-ee8c3171aa1f",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964681061"
+                }
+              ],
+              "waited_ms": 1
             },
             "executions": {
               "after_reconnecting": 1,
@@ -1957,137 +1909,40 @@
             },
             "installed": {
               "grant": [
+                "approval.decode",
+                "approval.respond",
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "manifest_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b",
               "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
+              "version": "0.3.0"
+            },
+            "key": {
+              "complete": true,
+              "held_by": 0,
+              "run_gone": true,
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID"
             },
             "login_held": true,
             "loser": {
               "exit_status": 8,
               "receipt": {
-                "shows": "input lease",
-                "seen": true
+                "seen": true,
+                "shows": "input lease"
               },
               "typed": "n",
               "who": "the local terminal"
             },
             "person_files": {
-              "appended": [
-                {
-                  "appended": 1,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/session_index.jsonl",
-                  "others": 0,
-                  "own": [
-                    {
-                      "holds_the_mark": true,
-                      "id": "01a0e44b-5849-7c90-ace2-0209a43da2d7",
-                      "names_a_conversation_it_created": true,
-                      "names_the_run_directory": false,
-                      "time": "2026-09-27T19:16:18.423571Z"
-                    }
-                  ]
-                },
-                {
-                  "appended": 0,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/history.jsonl",
-                  "others": 0,
-                  "own": []
-                }
-              ],
-              "config_directory_removed": null,
-              "files": [
-                {
-                  "changed": false,
-                  "file": "~/.codex/config.toml",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/AGENTS.md",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/hooks.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/.credentials.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/auth.json",
-                  "names_run": false,
-                  "recorded_only": true,
-                  "shared": false
-                }
-              ],
+              "appended": [],
+              "config_directory_removed": true,
+              "files": [],
               "keychain_item_rewritten": null,
-              "lines_removed": [
-                {
-                  "file": "~/.codex/history.jsonl",
-                  "removed": 0
-                }
-              ],
+              "lines_removed": [],
               "searched_for": {
-                "mark": "kr12cbc31adc57",
-                "run_directory": "<tmp>/krm-5057a506"
-              }
-            },
-            "person_home": {
-              "appended": [
-                "~/.codex/session_index.jsonl"
-              ],
-              "changed_uncompared": [],
-              "created_and_left": [
-                "~/.codex/thread-writer-locks/01a0e44b-5849-7c90-ace2-0209a43da2d7.lock"
-              ],
-              "created_and_removed": [
-                "~/.codex/sessions/2026/09/27/rollout-2026-09-27T21-15-38-01a0e44b-5849-7c90-ace2-0209a43da2d7.jsonl"
-              ],
-              "left_holding_the_part": [
-                "~/.codex/session_index.jsonl"
-              ],
-              "left_unsearched": [],
-              "read_whole_after": true,
-              "removed_by_something_else": [
-                "~/.codex/thread-writer-locks/01a0e447-04bc-7d32-b0a6-ed46967cfccb.lock"
-              ],
-              "rewritten": [],
-              "unread_after": [],
-              "others": {
-                "appended": {
-                  "~/.codex/*": 4
-                },
-                "changed_uncompared": {
-                  "~/.codex/*": 1
-                },
-                "created_and_left": {
-                  "~/.codex/tmp": 1
-                },
-                "left_holding_the_part": {
-                  "~/.codex/*": 3
-                },
-                "removed_by_something_else": {
-                  "~/.codex/tmp": 1
-                },
-                "rewritten": {
-                  "~/.codex/*": 9
-                }
+                "mark": "krc8e1fa75d871",
+                "run_directory": "<not published>"
               }
             },
             "provenance": {
@@ -2095,54 +1950,48 @@
               "executed": [
                 {
                   "device": 16777234,
-                  "from": "runtime",
-                  "inode": 54188627,
-                  "pid": 67918,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "device": 16777234,
                   "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 67923,
+                  "image": "<tools>/codex/0.155.1-native/bin/codex",
+                  "inode": 220874060,
+                  "pid": 44205,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 },
                 {
                   "device": 16777234,
                   "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex-code-mode-host",
-                  "inode": 69650504,
-                  "pid": 74739,
+                  "image": "<tools>/codex/0.155.1-native/bin/codex-code-mode-host",
+                  "inode": 220874061,
+                  "pid": 44501,
                   "sha256": "59a702a68f1ef79fceaca644db46b8385ceefbb66035e78b8ade7cdcc21fda55"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "from": "runtime",
-                    "pid": 67918,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                    "from": "build",
+                    "image": "<tools>/codex/0.155.1-native/bin/codex",
+                    "pid": 44205,
+                    "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                   },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
+                  "file": "<tools>/codex/0.155.1-native/bin/codex",
+                  "launch": "native",
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
                   "command": "codex"
                 }
               ],
               "pids": [
-                67918,
-                67923,
-                74739
+                44205,
+                44501
               ],
               "sample_interval_ms": 250,
-              "samples": 231,
-              "session_path": "<tmp>/krm-5057a506/agent/current/bin:<tmp>/krm-5057a506/agent/runtime:/usr/bin:/bin",
+              "samples": 94,
+              "session_path": "<not published>",
               "system_programs_of_another_user": []
             },
             "replay": {
               "checker_control_rejected": true,
-              "probe": "zqkr12cbc31adc57",
+              "probe": "zqkrc8e1fa75d871",
+              "screen_checked": true,
               "typed_again": false
             },
             "resources": 0,
@@ -2157,442 +2006,22 @@
           "part": "4",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
-          "outcome": "passed",
-          "runs": [
-            {
-              "step": 7,
-              "outcome": "passed"
-            }
+          "outcome": "not_run",
+          "reason": "the codex budget has 0 of its 30 turns left, fewer than the 2 part 4 can start (the ledger)",
+          "needs": [
+            "vendor account"
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --nocapture --test-threads=1",
           "evidence": {
-            "account": {
-              "arguments": [
-                "-a",
-                "on-request",
-                "-s",
-                "read-only"
-              ],
-              "budget_limit": 50,
-              "budget_spent": 40,
-              "declined_requests": 0,
-              "home": "person",
-              "isolation": {
-                "absent_before_start": [
-                  "<tmp>/krm-2038219a/w/.codex",
-                  "<tmp>/krm-2038219a/w/AGENTS.md",
-                  "<tmp>/krm-2038219a/w/AGENTS.override.md",
-                  "/etc/codex/config.toml",
-                  "/etc/codex/requirements.toml",
-                  "/etc/codex/managed_config.toml",
-                  "/Library/Managed Preferences/com.openai.codex.plist",
-                  "/Library/Managed Preferences/{user}/com.openai.codex.plist",
-                  "~/.codex/log/codex-tui.log"
-                ],
-                "probes": [
-                  {
-                    "accepted": null,
-                    "command": [
-                      "mcp",
-                      "list"
-                    ],
-                    "lacks": [
-                      "enabled"
-                    ],
-                    "lines": [],
-                    "shows": [
-                      "disabled"
-                    ],
-                    "shows_within": null
-                  },
-                  {
-                    "accepted": null,
-                    "command": [
-                      "features",
-                      "list"
-                    ],
-                    "lacks": [],
-                    "lines": [
-                      "apps stable false",
-                      "browser_use stable false",
-                      "computer_use stable false",
-                      "goals stable false",
-                      "hooks stable false",
-                      "image_generation stable false",
-                      "memories stable false",
-                      "multi_agent stable false",
-                      "plugins stable false",
-                      "remote_plugin stable false",
-                      "shell_snapshot stable false",
-                      "skill_mcp_dependency_install stable false",
-                      "skill_search stable false",
-                      "tool_suggest stable false"
-                    ],
-                    "shows": [],
-                    "shows_within": null
-                  },
-                  {
-                    "accepted": {
-                      "file": ".codex/AGENTS.md",
-                      "starts": "# AGENTS.md instructions"
-                    },
-                    "command": [
-                      "debug",
-                      "prompt-input"
-                    ],
-                    "lacks": [
-                      "{servers}",
-                      "## Skills",
-                      "### Available skills"
-                    ],
-                    "lines": [],
-                    "shows": [
-                      "Network access is restricted",
-                      "`sandbox_mode` is `read-only`"
-                    ],
-                    "shows_within": "<permissions instructions>"
-                  },
-                  {
-                    "accepted": null,
-                    "command": [
-                      "exec",
-                      "--ephemeral",
-                      "--skip-git-repo-check",
-                      "--disable",
-                      "enable_request_compression",
-                      "-c",
-                      "model_provider=\"kr-stub\"",
-                      "-c",
-                      "model_providers.kr-stub={name=\"kr-stub\", base_url=\"{stub}/v1\", experimental_bearer_token=\"stub\", wire_api=\"responses\", request_max_retries=0, stream_max_retries=0}",
-                      "Say nothing."
-                    ],
-                    "lacks": [
-                      "skill",
-                      "mcp",
-                      "deferred",
-                      "{servers}"
-                    ],
-                    "lines": [],
-                    "shows": [
-                      "custom functions/exec",
-                      "nested functions/exec/exec_command"
-                    ],
-                    "shows_within": null
-                  }
-                ],
-                "servers_switched_off": [
-                  "<server 1>",
-                  "<server 2>",
-                  "<server 3>",
-                  "<server 4>",
-                  "<server 5>",
-                  "<server 6>",
-                  "<server 7>"
-                ],
-                "switches": [
-                  "-c",
-                  "skills.include_instructions=false",
-                  "-c",
-                  "approval_policy=\"on-request\"",
-                  "-c",
-                  "sandbox_mode=\"read-only\"",
-                  "-c",
-                  "approvals_reviewer=\"user\"",
-                  "-c",
-                  "check_for_update_on_startup=false",
-                  "-c",
-                  "tui.show_tooltips=false",
-                  "-c",
-                  "tui.whimsy=false",
-                  "-c",
-                  "history.persistence=\"none\"",
-                  "-c",
-                  "web_search=\"disabled\"",
-                  "-c",
-                  "model_reasoning_effort=\"low\"",
-                  "-c",
-                  "notify=[]",
-                  "-c",
-                  "analytics.enabled=false",
-                  "-c",
-                  "log_dir=\"<tmp>/krm-2038219a/codex-log\"",
-                  "-c",
-                  "projects={\"<tmp>/krm-2038219a/w\"={trust_level=\"untrusted\"}}",
-                  "--disable",
-                  "hooks",
-                  "--disable",
-                  "plugins",
-                  "--disable",
-                  "apps",
-                  "--disable",
-                  "computer_use",
-                  "--disable",
-                  "browser_use",
-                  "--disable",
-                  "multi_agent",
-                  "--disable",
-                  "skill_search",
-                  "--disable",
-                  "skill_mcp_dependency_install",
-                  "--disable",
-                  "tool_suggest",
-                  "--disable",
-                  "remote_plugin",
-                  "--disable",
-                  "shell_snapshot",
-                  "--disable",
-                  "goals",
-                  "--disable",
-                  "image_generation",
-                  "--disable",
-                  "memories",
-                  "-c",
-                  "mcp_servers.<server 1>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 2>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 3>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 4>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 5>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 6>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 7>.enabled=false"
-                ],
-                "tools_offered": [
-                  {
-                    "check": "passed",
-                    "control": {
-                      "added": "nested control/skill",
-                      "rejected": true,
-                      "server": false
-                    },
-                    "probe": [
-                      "exec",
-                      "--ephemeral",
-                      "--skip-git-repo-check",
-                      "--disable",
-                      "enable_request_compression",
-                      "-c",
-                      "model_provider=\"kr-stub\"",
-                      "-c",
-                      "model_providers.kr-stub={name=\"kr-stub\", base_url=\"{stub}/v1\", experimental_bearer_token=\"stub\", wire_api=\"responses\", request_max_retries=0, stream_max_retries=0}",
-                      "Say nothing."
-                    ],
-                    "tools": 19
-                  }
-                ]
-              },
-              "login": "vendor subscription login",
-              "stored": "file in the agent's own directory",
-              "turns": 2,
-              "variable": null
-            },
-            "admission": "the agent's conversation held the prompt, and no screen the device was sent from the submission until it disconnected showed the reply mark or the code in upper case",
-            "after_reconnect": {
-              "finished_replies": 1,
-              "prompts": 1,
-              "shows": "KR212741DBEBA8-END",
-              "seen": true
-            },
-            "control": {
-              "breaks_property": true,
-              "check": true,
-              "finished_replies": 2,
-              "prompts": 2,
-              "what": "the same prompt sent again"
-            },
-            "conversation": "01a0e44d-0872-78c1-ade3-5e5a6f66af45",
-            "cutoff": {
-              "fresh_screens": 0,
-              "reader_stopped": true
-            },
-            "detected": {
-              "detected": false
-            },
-            "detection": {
-              "instances": [],
-              "waited_ms": 30172
-            },
-            "installed": {
-              "grant": [
-                "upstream.action"
-              ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
-              "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
-            },
-            "login_held": true,
-            "markers": {
-              "looked_for": "KR21",
-              "reply_begins": "KR212741DBEBA8-START",
-              "reply_ends": "KR212741DBEBA8-END",
-              "screen_reply_mark": null
-            },
-            "person_files": {
-              "appended": [
-                {
-                  "appended": 1,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/session_index.jsonl",
-                  "others": 0,
-                  "own": [
-                    {
-                      "holds_the_mark": false,
-                      "id": "01a0e44d-0872-78c1-ade3-5e5a6f66af45",
-                      "names_a_conversation_it_created": true,
-                      "names_the_run_directory": false,
-                      "time": "2026-09-27T19:18:11.532176Z"
-                    }
-                  ]
-                },
-                {
-                  "appended": 0,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/history.jsonl",
-                  "others": 0,
-                  "own": []
-                }
-              ],
-              "config_directory_removed": null,
-              "files": [
-                {
-                  "changed": false,
-                  "file": "~/.codex/config.toml",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/AGENTS.md",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/hooks.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/.credentials.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/auth.json",
-                  "names_run": false,
-                  "recorded_only": true,
-                  "shared": false
-                }
-              ],
-              "keychain_item_rewritten": null,
-              "lines_removed": [
-                {
-                  "file": "~/.codex/history.jsonl",
-                  "removed": 0
-                }
-              ],
-              "searched_for": {
-                "mark": "kr212741dbeba8",
-                "run_directory": "<tmp>/krm-2038219a"
+            "failure_codes": [
+              {
+                "code": "budget_short",
+                "budget": "codex",
+                "left": 0,
+                "limit": 30,
+                "need": 2,
+                "part": "4"
               }
-            },
-            "person_home": {
-              "appended": [
-                "~/.codex/session_index.jsonl"
-              ],
-              "changed_uncompared": [],
-              "created_and_left": [
-                "~/.codex/thread-writer-locks/01a0e44d-0872-78c1-ade3-5e5a6f66af45.lock"
-              ],
-              "created_and_removed": [
-                "~/.codex/sessions/2026/09/27/rollout-2026-09-27T21-17-28-01a0e44d-0872-78c1-ade3-5e5a6f66af45.jsonl"
-              ],
-              "left_holding_the_part": [],
-              "left_unsearched": [],
-              "read_whole_after": true,
-              "removed_by_something_else": [
-                "~/.codex/thread-writer-locks/01a0e44b-5849-7c90-ace2-0209a43da2d7.lock"
-              ],
-              "rewritten": [],
-              "unread_after": [],
-              "others": {
-                "appended": {
-                  "~/.codex/*": 4
-                },
-                "changed_uncompared": {
-                  "~/.codex/*": 2
-                },
-                "created_and_left": {
-                  "~/.codex/tmp": 1
-                },
-                "left_holding_the_part": {
-                  "~/.codex/*": 4
-                },
-                "removed_by_something_else": {
-                  "~/.codex/tmp": 1
-                },
-                "rewritten": {
-                  "~/.codex/*": 9
-                }
-              }
-            },
-            "provenance": {
-              "ended_before_read": 0,
-              "executed": [
-                {
-                  "device": 16777234,
-                  "from": "runtime",
-                  "inode": 54188627,
-                  "pid": 83959,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "device": 16777234,
-                  "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 83965,
-                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
-                }
-              ],
-              "launches": [
-                {
-                  "agent_process": {
-                    "from": "runtime",
-                    "pid": 83959,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                  },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
-                  "command": "codex"
-                }
-              ],
-              "pids": [
-                83959,
-                83965
-              ],
-              "sample_interval_ms": 250,
-              "samples": 181,
-              "session_path": "<tmp>/krm-2038219a/agent/current/bin:<tmp>/krm-2038219a/agent/runtime:/usr/bin:/bin",
-              "system_programs_of_another_user": []
-            },
-            "reconciled": {
-              "attachment": "34db535e-94db-4c85-91ec-7a421f395f60",
-              "epoch": 2,
-              "next_sequence": 2,
-              "stale_input": "AMBIGUOUS_ATTACHMENT"
-            }
+            ]
           }
         },
         {
@@ -2607,56 +2036,67 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --nocapture --test-threads=1",
           "evidence": {
             "after_restart": {
               "detection": {
-                "instances": [],
+                "instances": [
+                  {
+                    "application_instance_id": "ff536222-983e-4f1b-80b4-f4bb17528dad",
+                    "bypass": "disabled",
+                    "ended_at": null,
+                    "mode": "native_terminal",
+                    "plugin_id": "kalareach/codex",
+                    "profile_id": "lp-1793964772797-6ee33a95-cc5d-44ed-91ea-95cb65e369bb",
+                    "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                    "started_at": "1793964772797"
+                  }
+                ],
                 "waited_ms": 0
               },
               "surface": {
                 "answers": [
                   {
                     "call": "agent.prompt.submit",
-                    "detail": "STALE_SESSION: no application instance cce9eedf-0e38-4bec-b690-a8d4fed632d1",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to ff536222-983e-4f1b-80b4-f4bb17528dad: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                     "error": null,
-                    "refused": "STALE_SESSION"
+                    "refused": "UNSUPPORTED_CAPABILITY"
                   },
                   {
                     "call": "agent.prompt.queue",
-                    "detail": "STALE_SESSION: no application instance cce9eedf-0e38-4bec-b690-a8d4fed632d1",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to ff536222-983e-4f1b-80b4-f4bb17528dad: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                     "error": null,
-                    "refused": "STALE_SESSION"
+                    "refused": "UNSUPPORTED_CAPABILITY"
                   },
                   {
                     "call": "agent.turn.steer",
-                    "detail": "STALE_SESSION: no application instance cce9eedf-0e38-4bec-b690-a8d4fed632d1",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to ff536222-983e-4f1b-80b4-f4bb17528dad: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                     "error": null,
-                    "refused": "STALE_SESSION"
+                    "refused": "UNSUPPORTED_CAPABILITY"
                   },
                   {
                     "call": "agent.turn.cancel",
-                    "detail": "STALE_SESSION: no application instance cce9eedf-0e38-4bec-b690-a8d4fed632d1",
+                    "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to ff536222-983e-4f1b-80b4-f4bb17528dad: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                     "error": null,
-                    "refused": "STALE_SESSION"
+                    "refused": "UNSUPPORTED_CAPABILITY"
                   },
                   {
                     "call": "agent.approval.respond",
-                    "detail": "STALE_SESSION: no pending resource 5fb9af92-443e-4198-a202-47ae91ae1a63",
+                    "detail": "STALE_SESSION: no pending resource b5312bcd-983e-40f5-8309-bdca5627fcbb",
                     "error": null,
                     "refused": "STALE_SESSION"
                   },
                   {
                     "call": "agent.draft.add_attachment",
-                    "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                    "detail": "PERMISSION_DENIED: the method is not reachable from a local caller",
                     "error": null,
-                    "refused": "INVALID_ARGUMENT"
+                    "refused": "PERMISSION_DENIED"
                   },
                   {
                     "call": "plugin.action.invoke turn.cancel",
-                    "detail": "STALE_SESSION: kalareach/codex is not bound to cce9eedf-0e38-4bec-b690-a8d4fed632d1",
+                    "detail": "UNSUPPORTED_CAPABILITY: the host could not complete this request (the request failed on the host); the detail is not sent to a paired device",
                     "error": null,
-                    "refused": "STALE_SESSION"
+                    "refused": "UNSUPPORTED_CAPABILITY"
                   }
                 ],
                 "backend_files": [],
@@ -2665,76 +2105,79 @@
               }
             },
             "agent_processes": [
-              "node <tmp>/krm-5e5407c7/agent/current/bin/codex",
-              "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex"
+              "codex"
             ],
             "control": {
               "breaks_property": true,
-              "check": "these have ended: process 93425 (node <tmp>/krm-5e5407c7/agent/current/bin/codex), process 93434 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex)",
+              "check": "these have ended: process 48665 (codex)",
               "what": "the agent ended with a second daemon kill"
             },
             "detection": {
-              "instances": [],
-              "waited_ms": 30248
+              "instances": [
+                {
+                  "application_instance_id": "ff536222-983e-4f1b-80b4-f4bb17528dad",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964772797-6ee33a95-cc5d-44ed-91ea-95cb65e369bb",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964772797"
+                }
+              ],
+              "waited_ms": 265
             },
             "installed": {
               "grant": [
+                "approval.decode",
+                "approval.respond",
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "manifest_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b",
               "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
+              "version": "0.3.0"
             },
-            "killed_daemon": 93287,
+            "killed_daemon": 48501,
             "local_terminal_input": "> 2. Sign in with Device Code",
             "provenance": {
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-5e5407c7/agent/current/bin/codex",
-                  "device": 16777234,
-                  "from": "runtime",
-                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "inode": 54188627,
-                  "pid": 93425,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "command": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "command": "codex",
                   "device": 16777234,
                   "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 93434,
+                  "image": "<tools>/codex/0.155.1-native/bin/codex",
+                  "inode": 220874060,
+                  "pid": 48665,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-5e5407c7/agent/current/bin/codex",
-                    "from": "runtime",
-                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 93425,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                    "command": "codex",
+                    "from": "build",
+                    "image": "<tools>/codex/0.155.1-native/bin/codex",
+                    "pid": 48665,
+                    "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                   },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "reached": "process 93434 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex), started by the runtime, maps it",
+                  "file": "<tools>/codex/0.155.1-native/bin/codex",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
                   "what": "codex"
                 }
               ],
               "pids": [
-                93425,
-                93434
+                48665
               ],
               "sample_interval_ms": 250,
-              "samples": 133,
-              "session_path": "<tmp>/krm-5e5407c7/agent/current/bin:<tmp>/krm-5e5407c7/agent/runtime:/usr/bin:/bin",
+              "samples": 19,
+              "session_path": "/private/tmp/krm-0286cda0/agent/current/bin:/private/tmp/krm-0286cda0/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
-            "restarted_daemon": 96973
+            "restarted_daemon": 48766
           }
         },
         {
@@ -2760,184 +2203,234 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --nocapture --test-threads=1",
           "evidence": {
             "control": {
               "breaks_property": true,
-              "check": "process 6915 runs <tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex (inode 69650625), not <tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex (inode 69650492)",
-              "relaunched_process": 6915,
+              "check": "process 49575 runs <tools>/codex/0.156.1-native/bin/codex (inode 220874333), not <tools>/codex/0.155.1-native/bin/codex (inode 220874060)",
+              "relaunched_process": 49575,
               "relaunched_runs": {
-                "file": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                "inode": 69650625
+                "file": "<tools>/codex/0.156.1-native/bin/codex",
+                "inode": 220874333
               },
               "what": "the agent relaunched in the first session after the upgrade"
             },
             "first_after_upgrade": {
-              "instances": [],
+              "instances": [
+                {
+                  "application_instance_id": "1616d5b8-f94a-475f-95a2-d19f12825ac3",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964782728-6076c3f5-5192-4e67-be17-aeb9cc67e2cb",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964782728"
+                }
+              ],
               "waited_ms": 0
             },
-            "first_agent_process": 98231,
-            "first_binding": null,
+            "first_agent_process": 49339,
+            "first_binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1793964782728-6076c3f5-5192-4e67-be17-aeb9cc67e2cb",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
             "first_detection": {
-              "instances": [],
-              "waited_ms": 30132
+              "instances": [
+                {
+                  "application_instance_id": "1616d5b8-f94a-475f-95a2-d19f12825ac3",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964782728-6076c3f5-5192-4e67-be17-aeb9cc67e2cb",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964782728"
+                }
+              ],
+              "waited_ms": 258
             },
             "installed": {
               "grant": [
+                "approval.decode",
+                "approval.respond",
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "manifest_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b",
               "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
+              "version": "0.3.0"
             },
-            "launch": "child",
+            "launch": "native",
             "newer": {
               "mark": {
-                "file": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                "inode": 69650625
+                "file": "<tools>/codex/0.156.1-native/bin/codex",
+                "inode": 220874333
               },
               "version": "0.156.1"
             },
             "pinned": {
-              "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-              "inode": 69650492
+              "file": "<tools>/codex/0.155.1-native/bin/codex",
+              "inode": 220874060
             },
             "provenance": {
               "ended_before_read": [],
               "executed": [
                 {
-                  "command": "node <tmp>/krm-f75f451a/agent/current/bin/codex",
-                  "device": 16777234,
-                  "from": "runtime",
-                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "inode": 54188627,
-                  "pid": 98224,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "command": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "command": "codex",
                   "device": 16777234,
                   "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 98231,
+                  "image": "<tools>/codex/0.155.1-native/bin/codex",
+                  "inode": 220874060,
+                  "pid": 49339,
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                 },
                 {
-                  "command": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+                  "command": "codex",
                   "device": 16777234,
                   "from": "newer build",
-                  "image": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650625,
-                  "pid": 2129,
+                  "image": "<tools>/codex/0.156.1-native/bin/codex",
+                  "inode": 220874333,
+                  "pid": 49426,
                   "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a"
                 }
               ],
               "launches": [
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-f75f451a/agent/current/bin/codex",
-                    "from": "runtime",
-                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 98224,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                    "command": "codex",
+                    "from": "build",
+                    "image": "<tools>/codex/0.155.1-native/bin/codex",
+                    "pid": 49339,
+                    "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
                   },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "reached": "process 98231 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex), started by the runtime, maps it",
+                  "file": "<tools>/codex/0.155.1-native/bin/codex",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
                   "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
                   "what": "codex"
                 },
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-f75f451a/agent/current/bin/codex",
-                    "from": "runtime",
-                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 2116,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                    "command": "codex",
+                    "from": "newer build",
+                    "image": "<tools>/codex/0.156.1-native/bin/codex",
+                    "pid": 49426,
+                    "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a"
                   },
-                  "file": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "reached": "process 2129 (<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex), started by the runtime, maps it",
+                  "file": "<tools>/codex/0.156.1-native/bin/codex",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
                   "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a",
                   "what": "codex"
                 },
                 {
                   "agent_process": {
-                    "command": "node <tmp>/krm-f75f451a/agent/current/bin/codex",
-                    "from": "runtime",
-                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 6909,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
+                    "command": "codex",
+                    "from": "newer build",
+                    "image": "<tools>/codex/0.156.1-native/bin/codex",
+                    "pid": 49575,
+                    "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a"
                   },
-                  "file": "<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "reached": "process 6915 (<tools>/codex/0.156.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex), started by the runtime, maps it",
+                  "file": "<tools>/codex/0.156.1-native/bin/codex",
+                  "launch": "native",
+                  "reached": "the agent's own process maps it",
                   "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a",
                   "what": "codex"
                 }
               ],
               "pids": [
-                2116,
-                2129,
-                6909,
-                6915,
-                98224,
-                98231
+                49339,
+                49426,
+                49575
               ],
               "sample_interval_ms": 250,
-              "samples": 253,
-              "session_path": "<tmp>/krm-f75f451a/agent/current/bin:<tmp>/krm-f75f451a/agent/runtime:/usr/bin:/bin",
+              "samples": 26,
+              "session_path": "/private/tmp/krm-34f4e0ee/agent/current/bin:/private/tmp/krm-34f4e0ee/agent/runtime:/usr/bin:/bin",
               "system_programs_of_another_user": []
             },
-            "second_binding": null,
+            "second_binding": {
+              "binding": {
+                "binding_revision": "1",
+                "mode": "native_terminal",
+                "profile_id": "lp-1793964783855-bd7eb78a-fc5c-4b21-ad8d-191328351186",
+                "rich_mutations_suspended": false,
+                "suspension_reason": null,
+                "thread_id": null,
+                "turn_id": null
+              },
+              "capabilities": {
+                "records": []
+              }
+            },
             "second_detection": {
-              "instances": [],
-              "waited_ms": 30091
+              "instances": [
+                {
+                  "application_instance_id": "df814125-bd4f-401d-9208-406a6600d9de",
+                  "bypass": "disabled",
+                  "ended_at": null,
+                  "mode": "native_terminal",
+                  "plugin_id": "kalareach/codex",
+                  "profile_id": "lp-1793964783855-bd7eb78a-fc5c-4b21-ad8d-191328351186",
+                  "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                  "started_at": "1793964783855"
+                }
+              ],
+              "waited_ms": 4
             },
             "second_surface": {
               "answers": [
                 {
                   "call": "agent.prompt.submit",
-                  "detail": "STALE_SESSION: no application instance c5515476-c65a-4a1a-adce-4491aa530306",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.submit to df814125-bd4f-401d-9208-406a6600d9de: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.prompt.queue",
-                  "detail": "STALE_SESSION: no application instance c5515476-c65a-4a1a-adce-4491aa530306",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a prompt.queue to df814125-bd4f-401d-9208-406a6600d9de: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.steer",
-                  "detail": "STALE_SESSION: no application instance c5515476-c65a-4a1a-adce-4491aa530306",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.steer to df814125-bd4f-401d-9208-406a6600d9de: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.turn.cancel",
-                  "detail": "STALE_SESSION: no application instance c5515476-c65a-4a1a-adce-4491aa530306",
+                  "detail": "UNSUPPORTED_CAPABILITY: nothing carries a turn.cancel to df814125-bd4f-401d-9208-406a6600d9de: this instance has no upstream transport bound, so the operation is refused rather than reported as applied",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 },
                 {
                   "call": "agent.approval.respond",
-                  "detail": "STALE_SESSION: no pending resource a548f57c-3695-4987-bf7f-4bab0e9f4e20",
+                  "detail": "STALE_SESSION: no pending resource 1af13ca5-2a75-477e-9a5a-bacfa1bfa387",
                   "error": null,
                   "refused": "STALE_SESSION"
                 },
                 {
                   "call": "agent.draft.add_attachment",
-                  "detail": "INVALID_ARGUMENT: agent.draft.add_attachment names no application instance in its parameters",
+                  "detail": "PERMISSION_DENIED: the method is not reachable from a local caller",
                   "error": null,
-                  "refused": "INVALID_ARGUMENT"
+                  "refused": "PERMISSION_DENIED"
                 },
                 {
                   "call": "plugin.action.invoke turn.cancel",
-                  "detail": "STALE_SESSION: kalareach/codex is not bound to c5515476-c65a-4a1a-adce-4491aa530306",
+                  "detail": "UNSUPPORTED_CAPABILITY: the host could not complete this request (the request failed on the host); the detail is not sent to a paired device",
                   "error": null,
-                  "refused": "STALE_SESSION"
+                  "refused": "UNSUPPORTED_CAPABILITY"
                 }
               ],
               "backend_files": [],
@@ -2962,508 +2455,20 @@
           "part": "7",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
-          "outcome": "failed",
-          "reason": "the host did not detect launch A as section 12 requires: the host did not announce exactly one live instance for the launched execution (it announced 0 live instance(s)); the host did not detect launch B as section 12 requires: the host did not announce exactly one live instance for the launched execution (it announced 0 live instance(s)); the agent lets no second process write a conversation another process writes, so session B forked the saved conversation under a new identifier: two executions on one conversation's identifier were not shown",
-          "runs": [
-            {
-              "step": 10,
-              "outcome": "failed"
-            }
+          "outcome": "not_run",
+          "reason": "the codex budget has 0 of its 30 turns left, fewer than the 2 part 7 can start (the ledger)",
+          "needs": [
+            "vendor account"
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --nocapture --test-threads=1",
           "evidence": {
-            "account": {
-              "arguments": [
-                "-a",
-                "on-request",
-                "-s",
-                "read-only"
-              ],
-              "budget_limit": 50,
-              "budget_spent": 42,
-              "declined_requests": 0,
-              "home": "person",
-              "isolation": {
-                "absent_before_start": [
-                  "<tmp>/krm-9603fc48/w/.codex",
-                  "<tmp>/krm-9603fc48/w/AGENTS.md",
-                  "<tmp>/krm-9603fc48/w/AGENTS.override.md",
-                  "/etc/codex/config.toml",
-                  "/etc/codex/requirements.toml",
-                  "/etc/codex/managed_config.toml",
-                  "/Library/Managed Preferences/com.openai.codex.plist",
-                  "/Library/Managed Preferences/{user}/com.openai.codex.plist",
-                  "~/.codex/log/codex-tui.log"
-                ],
-                "probes": [
-                  {
-                    "accepted": null,
-                    "command": [
-                      "mcp",
-                      "list"
-                    ],
-                    "lacks": [
-                      "enabled"
-                    ],
-                    "lines": [],
-                    "shows": [
-                      "disabled"
-                    ],
-                    "shows_within": null
-                  },
-                  {
-                    "accepted": null,
-                    "command": [
-                      "features",
-                      "list"
-                    ],
-                    "lacks": [],
-                    "lines": [
-                      "apps stable false",
-                      "browser_use stable false",
-                      "computer_use stable false",
-                      "goals stable false",
-                      "hooks stable false",
-                      "image_generation stable false",
-                      "memories stable false",
-                      "multi_agent stable false",
-                      "plugins stable false",
-                      "remote_plugin stable false",
-                      "shell_snapshot stable false",
-                      "skill_mcp_dependency_install stable false",
-                      "skill_search stable false",
-                      "tool_suggest stable false"
-                    ],
-                    "shows": [],
-                    "shows_within": null
-                  },
-                  {
-                    "accepted": {
-                      "file": ".codex/AGENTS.md",
-                      "starts": "# AGENTS.md instructions"
-                    },
-                    "command": [
-                      "debug",
-                      "prompt-input"
-                    ],
-                    "lacks": [
-                      "{servers}",
-                      "## Skills",
-                      "### Available skills"
-                    ],
-                    "lines": [],
-                    "shows": [
-                      "Network access is restricted",
-                      "`sandbox_mode` is `read-only`"
-                    ],
-                    "shows_within": "<permissions instructions>"
-                  },
-                  {
-                    "accepted": null,
-                    "command": [
-                      "exec",
-                      "--ephemeral",
-                      "--skip-git-repo-check",
-                      "--disable",
-                      "enable_request_compression",
-                      "-c",
-                      "model_provider=\"kr-stub\"",
-                      "-c",
-                      "model_providers.kr-stub={name=\"kr-stub\", base_url=\"{stub}/v1\", experimental_bearer_token=\"stub\", wire_api=\"responses\", request_max_retries=0, stream_max_retries=0}",
-                      "Say nothing."
-                    ],
-                    "lacks": [
-                      "skill",
-                      "mcp",
-                      "deferred",
-                      "{servers}"
-                    ],
-                    "lines": [],
-                    "shows": [
-                      "custom functions/exec",
-                      "nested functions/exec/exec_command"
-                    ],
-                    "shows_within": null
-                  }
-                ],
-                "servers_switched_off": [
-                  "<server 1>",
-                  "<server 2>",
-                  "<server 3>",
-                  "<server 4>",
-                  "<server 5>",
-                  "<server 6>",
-                  "<server 7>"
-                ],
-                "switches": [
-                  "-c",
-                  "skills.include_instructions=false",
-                  "-c",
-                  "approval_policy=\"on-request\"",
-                  "-c",
-                  "sandbox_mode=\"read-only\"",
-                  "-c",
-                  "approvals_reviewer=\"user\"",
-                  "-c",
-                  "check_for_update_on_startup=false",
-                  "-c",
-                  "tui.show_tooltips=false",
-                  "-c",
-                  "tui.whimsy=false",
-                  "-c",
-                  "history.persistence=\"none\"",
-                  "-c",
-                  "web_search=\"disabled\"",
-                  "-c",
-                  "model_reasoning_effort=\"low\"",
-                  "-c",
-                  "notify=[]",
-                  "-c",
-                  "analytics.enabled=false",
-                  "-c",
-                  "log_dir=\"<tmp>/krm-9603fc48/codex-log\"",
-                  "-c",
-                  "projects={\"<tmp>/krm-9603fc48/w\"={trust_level=\"untrusted\"}}",
-                  "--disable",
-                  "hooks",
-                  "--disable",
-                  "plugins",
-                  "--disable",
-                  "apps",
-                  "--disable",
-                  "computer_use",
-                  "--disable",
-                  "browser_use",
-                  "--disable",
-                  "multi_agent",
-                  "--disable",
-                  "skill_search",
-                  "--disable",
-                  "skill_mcp_dependency_install",
-                  "--disable",
-                  "tool_suggest",
-                  "--disable",
-                  "remote_plugin",
-                  "--disable",
-                  "shell_snapshot",
-                  "--disable",
-                  "goals",
-                  "--disable",
-                  "image_generation",
-                  "--disable",
-                  "memories",
-                  "-c",
-                  "mcp_servers.<server 1>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 2>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 3>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 4>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 5>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 6>.enabled=false",
-                  "-c",
-                  "mcp_servers.<server 7>.enabled=false"
-                ],
-                "tools_offered": [
-                  {
-                    "check": "passed",
-                    "control": {
-                      "added": "nested control/skill",
-                      "rejected": true,
-                      "server": false
-                    },
-                    "probe": [
-                      "exec",
-                      "--ephemeral",
-                      "--skip-git-repo-check",
-                      "--disable",
-                      "enable_request_compression",
-                      "-c",
-                      "model_provider=\"kr-stub\"",
-                      "-c",
-                      "model_providers.kr-stub={name=\"kr-stub\", base_url=\"{stub}/v1\", experimental_bearer_token=\"stub\", wire_api=\"responses\", request_max_retries=0, stream_max_retries=0}",
-                      "Say nothing."
-                    ],
-                    "tools": 19
-                  },
-                  {
-                    "check": "passed",
-                    "control": {
-                      "added": "nested control/skill",
-                      "rejected": true,
-                      "server": false
-                    },
-                    "probe": [
-                      "exec",
-                      "--ephemeral",
-                      "--skip-git-repo-check",
-                      "--disable",
-                      "enable_request_compression",
-                      "-c",
-                      "model_provider=\"kr-stub\"",
-                      "-c",
-                      "model_providers.kr-stub={name=\"kr-stub\", base_url=\"{stub}/v1\", experimental_bearer_token=\"stub\", wire_api=\"responses\", request_max_retries=0, stream_max_retries=0}",
-                      "Say nothing."
-                    ],
-                    "tools": 19
-                  }
-                ]
-              },
-              "login": "vendor subscription login",
-              "stored": "file in the agent's own directory",
-              "turns": 2,
-              "variable": null
-            },
-            "control": {
-              "breaks_property": true,
-              "isolated": false,
-              "what": "session B's marker typed into session A"
-            },
-            "conversation": "01a0e450-93dd-7382-ac3c-727ebdf30375",
-            "installed": {
-              "grant": [
-                "upstream.action"
-              ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
-              "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
-            },
-            "login_held": true,
-            "person_files": {
-              "appended": [
-                {
-                  "appended": 2,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/session_index.jsonl",
-                  "others": 0,
-                  "own": [
-                    {
-                      "holds_the_mark": false,
-                      "id": "01a0e450-93dd-7382-ac3c-727ebdf30375",
-                      "names_a_conversation_it_created": true,
-                      "names_the_run_directory": false,
-                      "time": "2026-09-27T19:21:59.204463Z"
-                    },
-                    {
-                      "holds_the_mark": false,
-                      "id": "01a0e451-2d14-7721-bf4d-25a49eba004b",
-                      "names_a_conversation_it_created": true,
-                      "names_the_run_directory": false,
-                      "time": "2026-09-27T19:22:00.385102Z"
-                    }
-                  ]
-                },
-                {
-                  "appended": 0,
-                  "earlier_lines_intact": true,
-                  "file": "~/.codex/history.jsonl",
-                  "others": 0,
-                  "own": []
-                }
-              ],
-              "config_directory_removed": null,
-              "files": [
-                {
-                  "changed": false,
-                  "file": "~/.codex/config.toml",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/AGENTS.md",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/hooks.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/.credentials.json",
-                  "names_run": false,
-                  "recorded_only": false,
-                  "shared": false
-                },
-                {
-                  "changed": false,
-                  "file": "~/.codex/auth.json",
-                  "names_run": false,
-                  "recorded_only": true,
-                  "shared": false
-                }
-              ],
-              "keychain_item_rewritten": null,
-              "lines_removed": [
-                {
-                  "file": "~/.codex/history.jsonl",
-                  "removed": 0
-                }
-              ],
-              "searched_for": {
-                "mark": "kre48a30e25044",
-                "run_directory": "<tmp>/krm-9603fc48"
-              }
-            },
-            "person_home": {
-              "appended": [
-                "~/.codex/session_index.jsonl"
-              ],
-              "changed_uncompared": [],
-              "created_and_left": [
-                "~/.codex/thread-writer-locks/01a0e450-93dd-7382-ac3c-727ebdf30375.lock",
-                "~/.codex/thread-writer-locks/01a0e451-2d14-7721-bf4d-25a49eba004b.lock"
-              ],
-              "created_and_removed": [
-                "~/.codex/sessions/2026/09/27/rollout-2026-09-27T21-21-21-01a0e450-93dd-7382-ac3c-727ebdf30375.jsonl",
-                "~/.codex/sessions/2026/09/27/rollout-2026-09-27T21-22-00-01a0e451-2d14-7721-bf4d-25a49eba004b.jsonl"
-              ],
-              "left_holding_the_part": [],
-              "left_unsearched": [],
-              "read_whole_after": true,
-              "removed_by_something_else": [
-                "~/.codex/thread-writer-locks/01a0e44d-0872-78c1-ade3-5e5a6f66af45.lock"
-              ],
-              "rewritten": [],
-              "unread_after": [],
-              "others": {
-                "appended": {
-                  "~/.codex/*": 4
-                },
-                "changed_uncompared": {
-                  "~/.codex/*": 1
-                },
-                "created_and_left": {
-                  "~/.codex/tmp": 2
-                },
-                "left_holding_the_part": {
-                  "~/.codex/*": 3
-                },
-                "removed_by_something_else": {
-                  "~/.codex/tmp": 1
-                },
-                "rewritten": {
-                  "~/.codex/*": 9
-                }
-              }
-            },
-            "provenance": {
-              "ended_before_read": 0,
-              "executed": [
-                {
-                  "device": 16777234,
-                  "from": "runtime",
-                  "inode": 54188627,
-                  "pid": 12757,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "device": 16777234,
-                  "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 12764,
-                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
-                }
-              ],
-              "launches": [
-                {
-                  "agent_process": {
-                    "from": "runtime",
-                    "pid": 12757,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                  },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
-                  "command": "codex"
-                },
-                {
-                  "agent_process": {
-                    "from": "runtime",
-                    "pid": 20083,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                  },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
-                  "command": "codex"
-                }
-              ],
-              "pids": [
-                12757,
-                12764,
-                20083,
-                20088
-              ],
-              "sample_interval_ms": 250,
-              "samples": 284,
-              "session_path": "<tmp>/krm-9603fc48/agent/current/bin:<tmp>/krm-9603fc48/agent/runtime:/usr/bin:/bin",
-              "system_programs_of_another_user": []
-            },
-            "session_a": {
-              "detected": {
-                "detected": false
-              },
-              "detection": {
-                "instances": [],
-                "waited_ms": 30158
-              },
-              "owners": [
-                {
-                  "pid": 12757
-                },
-                {
-                  "pid": 12764
-                }
-              ]
-            },
-            "session_b": {
-              "detected": {
-                "detected": false
-              },
-              "detection": {
-                "instances": [],
-                "waited_ms": 30111
-              },
-              "owners": [
-                {
-                  "pid": 20083
-                },
-                {
-                  "pid": 20088
-                }
-              ],
-              "resumed_with": [
-                "fork",
-                "01a0e450-93dd-7382-ac3c-727ebdf30375"
-              ],
-              "same_conversation": false
-            },
             "failure_codes": [
               {
-                "code": "launch_not_detected",
-                "session": "A",
-                "cause": "not_one_instance",
-                "announced": 0
-              },
-              {
-                "code": "launch_not_detected",
-                "session": "B",
-                "cause": "not_one_instance",
-                "announced": 0
-              },
-              {
-                "code": "resume_forks"
+                "code": "budget_short",
+                "budget": "codex",
+                "left": 0,
+                "limit": 30,
+                "need": 2,
+                "part": "7"
               }
             ]
           }
@@ -3473,199 +2478,17 @@
           "part": "8a",
           "source": "kalareach:tests/e2e/agents/tests/cases.rs",
           "keyed_by": "attached_comment",
-          "outcome": "passed",
+          "outcome": "failed",
+          "reason": "the forwarder answers hook-none-session-start within 500 ms: {\"elapsed_ms\":676,\"exit\":0,\"probe\":\"hook-none-session-start\",\"stderr_first_line\":\"\",\"stdout\":\"{}\\n\",\"surface\":\"hook\"}",
           "runs": [
             {
               "step": 11,
-              "outcome": "passed"
+              "outcome": "failed"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --nocapture --test-threads=1",
           "evidence": {
-            "binding": null,
-            "control": {
-              "breaks_property": false,
-              "owner": {
-                "forwarded_bytes": 3,
-                "input_bytes": 3,
-                "keyboard": "ghostty",
-                "screen_shows": "> 2. Sign in with Device Code"
-              },
-              "viewer": "PERMISSION_DENIED: this grant does not carry terminal.input",
-              "what": "a view-only device's input refused as not permitted where the owner device's is admitted",
-              "why_not": "a forgery that changes the host's state needs a registration the host issued, which this host issues to no connector"
-            },
-            "detection": {
-              "instances": [],
-              "waited_ms": 30120
-            },
-            "installed": {
-              "grant": [
-                "upstream.action"
-              ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
-              "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
-            },
-            "live_bindings": 0,
-            "provenance": {
-              "ended_before_read": [],
-              "executed": [
-                {
-                  "command": "node <tmp>/krm-bff18af2/agent/current/bin/codex",
-                  "device": 16777234,
-                  "from": "runtime",
-                  "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                  "inode": 54188627,
-                  "pid": 37768,
-                  "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                },
-                {
-                  "command": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "device": 16777234,
-                  "from": "build",
-                  "image": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "inode": 69650492,
-                  "pid": 37777,
-                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e"
-                }
-              ],
-              "launches": [
-                {
-                  "agent_process": {
-                    "command": "node <tmp>/krm-bff18af2/agent/current/bin/codex",
-                    "from": "runtime",
-                    "image": "/opt/homebrew/Cellar/node@22/22.23.2_2/bin/node",
-                    "pid": 37768,
-                    "sha256": "0c61847de20184ae3f35c24be3a79682e25fccccccbcbd316b7e224e24fa8637"
-                  },
-                  "file": "<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
-                  "launch": "child",
-                  "reached": "process 37777 (<tools>/codex/0.155.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex), started by the runtime, maps it",
-                  "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
-                  "what": "codex"
-                }
-              ],
-              "pids": [
-                37768,
-                37777
-              ],
-              "sample_interval_ms": 250,
-              "samples": 148,
-              "session_path": "<tmp>/krm-bff18af2/agent/current/bin:<tmp>/krm-bff18af2/agent/runtime:/usr/bin:/bin",
-              "system_programs_of_another_user": []
-            },
-            "steps": [
-              {
-                "forgery": "titles",
-                "title": "kalareach session b6688df1-7fa5-4b03-bee4-bb7eae536919 approval allow"
-              },
-              {
-                "forgery": "transcript",
-                "path": "<tmp>/krm-bff18af2/h/.codex/sessions/rollout-b6688df1-7fa5-4b03-bee4-bb7eae536919.jsonl"
-              },
-              {
-                "forgery": "registrations and hook input, through Claude Code's forwarder",
-                "probes": [
-                  {
-                    "elapsed_ms": 14,
-                    "exit": 0,
-                    "probe": "hook-none-session-start",
-                    "stderr_first_line": "",
-                    "stdout": "{}\n",
-                    "surface": "hook"
-                  },
-                  {
-                    "elapsed_ms": 4,
-                    "exit": 0,
-                    "probe": "hook-none-permission",
-                    "stderr_first_line": "",
-                    "stdout": "{}\n",
-                    "surface": "hook"
-                  },
-                  {
-                    "elapsed_ms": 5,
-                    "exit": 0,
-                    "probe": "hook-none-tool",
-                    "stderr_first_line": "",
-                    "stdout": "{}\n",
-                    "surface": "hook"
-                  },
-                  {
-                    "elapsed_ms": 9,
-                    "exit": 0,
-                    "probe": "channel-none",
-                    "stderr_first_line": "",
-                    "stdout": "{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{},\"serverInfo\":{\"name\":\"kalareach\",\"version\":\"0.1.0\"}}}\n",
-                    "surface": "channel"
-                  },
-                  {
-                    "elapsed_ms": 5,
-                    "exit": 0,
-                    "probe": "hook-absent-session-start",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-bff18af2/forged/absent.sock could not be reached: No such file or directory (os error 2)",
-                    "stdout": "{}\n",
-                    "surface": "hook"
-                  },
-                  {
-                    "elapsed_ms": 5,
-                    "exit": 0,
-                    "probe": "hook-absent-permission",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-bff18af2/forged/absent.sock could not be reached: No such file or directory (os error 2)",
-                    "stdout": "{}\n",
-                    "surface": "hook"
-                  },
-                  {
-                    "elapsed_ms": 8,
-                    "exit": 0,
-                    "probe": "hook-absent-tool",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-bff18af2/forged/absent.sock could not be reached: No such file or directory (os error 2)",
-                    "stdout": "{}\n",
-                    "surface": "hook"
-                  },
-                  {
-                    "elapsed_ms": 8,
-                    "exit": 1,
-                    "probe": "channel-absent",
-                    "stderr_first_line": "kr-hook: the worker at <tmp>/krm-bff18af2/forged/absent.sock could not be reached: No such file or directory (os error 2)",
-                    "stdout": "",
-                    "surface": "channel"
-                  },
-                  {
-                    "elapsed_ms": 11,
-                    "exit": 0,
-                    "probe": "hook-worker-session-start",
-                    "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
-                    "stdout": "{}\n",
-                    "surface": "hook"
-                  },
-                  {
-                    "elapsed_ms": 9,
-                    "exit": 0,
-                    "probe": "hook-worker-permission",
-                    "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
-                    "stdout": "{}\n",
-                    "surface": "hook"
-                  },
-                  {
-                    "elapsed_ms": 15,
-                    "exit": 0,
-                    "probe": "hook-worker-tool",
-                    "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
-                    "stdout": "{}\n",
-                    "surface": "hook"
-                  },
-                  {
-                    "elapsed_ms": 10,
-                    "exit": 1,
-                    "probe": "channel-worker",
-                    "stderr_first_line": "kr-hook: the worker closed the connection without admitting this bridge",
-                    "stdout": "",
-                    "surface": "channel"
-                  }
-                ]
-              }
-            ]
+            "exit": 101
           }
         },
         {
@@ -3706,15 +2529,18 @@
               "outcome": "not_run"
             }
           ],
-          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-d4ded216da994890 --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
+          "command": "env -i <driver environment> KR_AGENTS_BUILD=<evidence>/codex/build.json KR_AGENTS_GENERATION=<evidence>/generation KR_AGENTS_RESULT=<evidence>/codex/results.jsonl KR_REQUIRE_AGENTS=1 KR_REQUIRE_SHELL_PACKAGES=1 KR_AGENTS_TURNS=<ledger> KR_AGENTS_KEY_SCAN=<evidence>/codex/key-scan.jsonl <target>/debug/deps/cases-a415feaaca43530c --exact a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --nocapture --test-threads=1",
           "evidence": {
             "installed": {
               "grant": [
+                "approval.decode",
+                "approval.respond",
+                "command_integration.launch",
                 "upstream.action"
               ],
-              "manifest_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576",
+              "manifest_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b",
               "plugin_id": "kalareach/codex",
-              "version": "0.2.1"
+              "version": "0.3.0"
             },
             "provenance": {
               "ended_before_read": [],
@@ -3747,7 +2573,7 @@
       "operation": "terminal",
       "declared": null,
       "source": "plugin.json",
-      "package_digest": "9278761702756adbe59bfa8b252fa1011e0c9914f9c3c5933fa3813883389576"
+      "package_digest": "5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b"
     }
   ],
   "failures_outside_identifiers": [],
@@ -3763,17 +2589,15 @@
     "known_differences": 0,
     "tests": {
       "passed": 6,
-      "failed": 4,
+      "failed": 2,
       "ignored": 0,
-      "not_run": 5,
+      "not_run": 7,
       "not_built": 0,
       "known_difference": 0
     },
     "failed_steps": [
       2,
-      4,
-      5,
-      10
+      11
     ]
   }
 }
