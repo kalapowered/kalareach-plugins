@@ -745,7 +745,8 @@ struct ReviewedIntegration {
 /// It cannot check that the flags are the ones the application's qualification found, or that the
 /// statement a person reads before granting the integration says what granting it costs them. So
 /// each declaration is written here, and the package has to carry exactly that: a new declaration,
-/// or a changed command, flag, variable or statement, fails until it is reviewed and written here.
+/// or a changed command, flag, variable, server for the terminal or statement, fails until it is
+/// reviewed and written here.
 const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
     ReviewedIntegration {
         plugin: "kalareach/claude-code",
@@ -990,8 +991,9 @@ fn written_strings(statement: &str) -> Result<Vec<(&str, String)>, String> {
     Ok(strings)
 }
 
-/// Why the strings `statement` writes are not exactly the command, the flags and the variables of
-/// `integration`, in the order the host applies them, or nothing when they are.
+/// Why the strings `statement` writes are not exactly the command, the flags, the variables and the
+/// server for the terminal of `integration`, in the order the host applies them, or nothing when
+/// they are.
 ///
 /// Every string the statement writes, read whole, is exactly the command, then each flag, then each
 /// variable's value, then, for a server for the terminal, the command again, its arguments and its
@@ -1045,7 +1047,8 @@ fn listing_refusal(integration: &CommandIntegration, statement: &str) -> Option<
 /// Statements that each misstate `integration` in one way, made from the statement the host renders
 /// for it: the last flag shortened, written inside another string, written as a variable's value or
 /// followed by one more; the first two flags swapped; the first variable's value left out, written
-/// under a longer name or followed by one more variable.
+/// under a longer name or followed by one more variable; the last argument of the server for the
+/// terminal shortened and its first launching word replaced.
 fn misstatements(integration: &CommandIntegration) -> Vec<String> {
     let rendered = integration.statement();
     let quoted = |text: &str| serde_json::to_string(text).expect("text is a JSON string");
@@ -1111,8 +1114,8 @@ fn unquoted_additions(integration: &CommandIntegration) -> Vec<String> {
 
 /// Every package that declares a command integration declares the reviewed one, validates, asks
 /// for the capability that applies it and states the package contract that reads it, and the grant
-/// a person confirms lists its command, every flag and every variable exactly. A reviewed package
-/// that stops declaring its integration fails too.
+/// a person confirms lists its command, every flag, every variable and its server for the terminal
+/// exactly. A reviewed package that stops declaring its integration fails too.
 #[test]
 fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -1160,10 +1163,10 @@ fn every_command_integration_is_the_reviewed_one_and_its_grant_lists_it_exactly(
 /// moved, a variable changed or added, a server for the terminal added, dropped or changed in an
 /// argument or a launching word, or one word of the statement changed is not the reviewed
 /// declaration, and each change to the command, a flag, a variable or the server changes the list
-/// the grant shows. For each declaration, the check that
-/// accepts the list the host renders refuses every misstatement of its strings and every addition
-/// in words no string holds; and for a declaration with two flags and a variable, the string check
-/// refuses every misstatement of its strings.
+/// the grant shows. For each declaration, the check that accepts the list the host renders refuses
+/// every misstatement of its strings and every addition in words no string holds; and for a
+/// declaration with two flags and a variable, and for one with a flag and a server for the
+/// terminal, the string check refuses every misstatement of its strings.
 #[test]
 fn a_changed_command_integration_is_not_the_reviewed_one() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -3389,11 +3392,6 @@ fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_re
     }
 }
 
-/// KR-REQ-12.23: the manifest half of shipping the native terminal route for every bundled agent:
-/// each of the six agents has an adapter package here, no two adapters claim one protocol, and no
-/// adapter invents a control surface, since none of its actions types into the terminal or sends
-/// a method its own table does not route and none claims native-composer insertion without the
-/// bridge that makes it safe. That a host launches the terminal route by default is the host's.
 /// The methods a table answers approvals through, or for, that it does not route.
 ///
 /// A table answers by one of two forms: a decision destination, which names the method that
@@ -3458,6 +3456,11 @@ fn a_table_that_answers_approvals_routes_every_method_it_answers_through() {
     }
 }
 
+/// KR-REQ-12.23: the manifest half of shipping the native terminal route for every bundled agent:
+/// each of the six agents has an adapter package here, no two adapters claim one protocol, and no
+/// adapter invents a control surface, since none of its actions types into the terminal or sends
+/// a method its own table does not route and none claims native-composer insertion without the
+/// bridge that makes it safe. That a host launches the terminal route by default is the host's.
 #[test]
 fn every_bundled_adapter_is_present_and_declares_no_surface_of_its_own() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -3548,7 +3551,7 @@ fn every_bundled_adapter_is_present_and_declares_no_surface_of_its_own() {
                             .filter(|connector| connector.answers_approvals())
                         else {
                             panic!(
-                                "{agent}: the action {} answers through a table that names no destination",
+                                "{agent}: the action {} answers through a table that names no decision destination or decision response",
                                 action.id
                             );
                         };

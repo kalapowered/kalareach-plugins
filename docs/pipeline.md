@@ -338,7 +338,8 @@ reviewer writes it there:
 - A package without a connector table requests only capabilities inside the default ceiling and
   declares no mutation. A listed connector's actions are `presentation`, `upstream_cancel`,
   `upstream_method` (a method its own table routes) or `decision_destination` (an answer through
-  the table's own destination), never a `component` action, and none writes into the terminal.
+  the table's own decision destination or decision response, every method of which the table
+  routes), never a `component` action, and none writes into the terminal.
 
 The lists and rules record what this repository has reviewed and signs; they give a listed package
 no power that a vendor's package lacks, and they restrict what this repository signs beyond the host
