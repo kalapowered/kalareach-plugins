@@ -6,14 +6,14 @@ use std::path::{Path, PathBuf};
 use kalareach_catalogue::{fixtures, packages, repository_root};
 use kr_plugin_sdk::capability::PluginCapability;
 use kr_plugin_sdk::connector::{
-    AnswerError, FieldPath, FieldSegment, MethodClass, ResponseCorrelation,
+    AnswerError, ConnectorManifest, FieldPath, FieldSegment, MethodClass, ResponseCorrelation,
 };
 use kr_plugin_sdk::digest::PayloadDigest;
 use kr_plugin_sdk::effect::{
     ActionImplementation, ActionInvocation, ActionRight, AttachmentInsertion, EffectClass,
     InvocationError, ParameterKind,
 };
-use kr_plugin_sdk::ids::ParameterName;
+use kr_plugin_sdk::ids::{MethodName, ParameterName};
 use kr_plugin_sdk::integration::{CommandIntegration, IntegrationBackend, IntegrationVariable};
 use kr_plugin_sdk::matching::MatchConfidence;
 use kr_plugin_sdk::plugin::PluginManifest;
@@ -3394,6 +3394,70 @@ fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_re
 /// adapter invents a control surface, since none of its actions types into the terminal or sends
 /// a method its own table does not route and none claims native-composer insertion without the
 /// bridge that makes it safe. That a host launches the terminal route by default is the host's.
+/// The methods a table answers approvals through, or for, that it does not route.
+///
+/// A table answers by one of two forms: a decision destination, which names the method that
+/// carries the answer and the method whose requests it answers, or a decision response, which names
+/// each method whose requests it answers. Each of those methods has to be one the table routes.
+fn unrouted_answer_methods(connector: &ConnectorManifest) -> Vec<&MethodName> {
+    let mut methods = connector.approval_methods();
+    methods.extend(
+        connector
+            .decision_destination
+            .as_ref()
+            .map(|destination| &destination.method),
+    );
+    methods.retain(|method| {
+        !connector
+            .routes
+            .iter()
+            .any(|route| &route.method == *method)
+    });
+    methods
+}
+
+/// A table that answers approvals is held to routing every method it answers through or for,
+/// whichever form it answers by: the tables as published route them all, and a method each form
+/// names that the table does not route is found.
+#[test]
+fn a_table_that_answers_approvals_routes_every_method_it_answers_through() {
+    const UNROUTED: &str = "item.unrouted.request-approval";
+    type Edit = fn(&mut serde_json::Value);
+    let edits: [(&str, Edit); 3] = [
+        ("kalareach/claude-code", |table| {
+            table["decision_destination"]["method"] = serde_json::json!(UNROUTED);
+        }),
+        ("kalareach/claude-code", |table| {
+            table["decision_destination"]["answers"] = serde_json::json!(UNROUTED);
+        }),
+        ("kalareach/codex", |table| {
+            table["decision_response"]["answers"]
+                .as_array_mut()
+                .expect("the response names the requests it answers")
+                .push(serde_json::json!(UNROUTED));
+        }),
+    ];
+    let loaded = packages::load(&root()).expect("the repository loads");
+    for (plugin, edit) in edits {
+        let connector = package_named(&loaded, plugin)
+            .package
+            .connector
+            .clone()
+            .unwrap_or_else(|| panic!("{plugin} carries no table"));
+        assert!(connector.answers_approvals(), "{plugin}");
+        assert!(unrouted_answer_methods(&connector).is_empty(), "{plugin}");
+
+        let mut table = serde_json::to_value(&connector).expect("a table is JSON");
+        edit(&mut table);
+        let changed: ConnectorManifest = serde_json::from_value(table).expect("the table reads");
+        let unrouted: Vec<&str> = unrouted_answer_methods(&changed)
+            .into_iter()
+            .map(MethodName::as_str)
+            .collect();
+        assert_eq!(unrouted, [UNROUTED], "{plugin}");
+    }
+}
+
 #[test]
 fn every_bundled_adapter_is_present_and_declares_no_surface_of_its_own() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -3477,26 +3541,23 @@ fn every_bundled_adapter_is_present_and_declares_no_surface_of_its_own() {
                     ActionImplementation::DecisionDestination { .. } => {
                         // An answer goes where this package's own table says an answer goes, and
                         // that is a method the table routes, for requests the table routes.
-                        let destination =
-                            package.package.connector.as_ref().and_then(|connector| {
-                                connector
-                                    .decision_destination
-                                    .as_ref()
-                                    .map(|destination| (connector, destination))
-                            });
-                        let Some((connector, destination)) = destination else {
+                        let Some(connector) = package
+                            .package
+                            .connector
+                            .as_ref()
+                            .filter(|connector| connector.answers_approvals())
+                        else {
                             panic!(
                                 "{agent}: the action {} answers through a table that names no destination",
                                 action.id
                             );
                         };
-                        for method in [&destination.method, &destination.answers] {
-                            assert!(
-                                connector.routes.iter().any(|route| &route.method == method),
-                                "{agent}: the action {} answers through {method}, which its own table does not route",
-                                action.id
-                            );
-                        }
+                        let unrouted = unrouted_answer_methods(connector);
+                        assert!(
+                            unrouted.is_empty(),
+                            "{agent}: the action {} answers through {unrouted:?}, which its own table does not route",
+                            action.id
+                        );
                     }
                     other => panic!(
                         "{agent}: the action {} is implemented as {}, which is not a declarative form this repository reviewed",
