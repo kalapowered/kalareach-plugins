@@ -201,13 +201,16 @@ The route is not the one a person's default configuration gives. The build ran w
 home and a `CODEX_HOME` of the run's own, whose `config.toml` selects a model provider that is the
 local subscription proxy: its loopback address, the Responses wire API, a fixed placeholder as the
 bearer, no request retries, and the header that pins one pooled account, read from a variable
-(`SUBROUTER_CODEX_ACCOUNT_ID`) that the driver received on a pipe. It is the provider shape `sr
-codex` gives the installed Codex, as the proxy's own program spells it. The account is on the pro
-plan. Its identifier is in no log and no record, and for each part with a login the driver searched
-the run's files for it, and for the values of the other keys the shell held, and found neither. Not
-exercised: the sign-in with a ChatGPT account, `codex login status`, the token refresh, the vendor's
-own endpoint and its websocket transport. Codex chose `gpt-6-astra` (read from its screen in a run
-of this series), at the low reasoning effort the entry sets; the proxy served it.
+(`SUBROUTER_CODEX_ACCOUNT_ID`) that the driver received on a pipe. It follows the provider `sr
+codex` passes to the installed Codex (the loopback base URL, the Responses wire API, the placeholder
+bearer and the account header, as the proxy's program spells them, read from the program and not
+shown by the run), with two differences: the header's value is read from a variable, and no request
+is retried. The proxy's status listing, taken after the run, shows the account on the pro plan. Its
+identifier is in no log and no record, and for each part with a login the driver searched the run's
+files for it, and for the values of the other keys the shell held, and found neither. Not exercised:
+the sign-in with a ChatGPT account, `codex login status`, the token refresh, the vendor's own
+endpoint and its websocket transport. Codex chose `gpt-6-astra` (read from its screen in a run of
+this series), at the low reasoning effort the entry sets; the proxy served it.
 
 The person's own Codex home is outside the run, and the build list names none of its files for the
 harness to watch, because the harness digests what it watches and a credential file is among them.
@@ -245,11 +248,13 @@ The parts, as the record states them:
 - Part 8a failed on its first probe: the forwarder answered `hook-none-session-start` in 676 ms
   against a bound of 500 ms, at a one-minute load average of 2.01 when the run began. The same probe
   took 679 ms and 1,159 ms in the two earlier runs, which failed alike, and 434 ms and 435 ms in two
-  runs of the part alone that passed, at one-minute load averages of 7.17 and 8.72; in those two
-  runs the other eleven probes took 4 to 5 ms each. The harness starts the forwarder once before it
-  times anything, so the slow answer is not that file's first start. The result does not follow the
-  load, and its cause is not determined: the first timed answer is slow in every run, and the part's
-  bound is what makes it fail.
+  runs of the part alone that passed (the first at the earlier, node-launched entry), at one-minute
+  load averages of 7.17 and 8.72; in those two runs the other eleven probes took 4 to 5 ms each. The
+  harness starts the forwarder once before it times anything, so the slow answer is not that file's
+  first start. The first timed answer is slow in every run: it exceeded the bound in the three full
+  runs and stayed under it in the two runs of the part alone. The load averages are those at the
+  start of each run and not at the probe, so they do not show whether load plays a part. The cause
+  is not determined.
 - Parts 4 and 7 are not in the record's run: the account's turns, capped at 30 in the build list of
   that run, were spent before they started. They were run once afterwards, on their own, at the same
   commit with the cap raised to 34 in the working tree. Part 4 passed. Part 7 failed on one check:
