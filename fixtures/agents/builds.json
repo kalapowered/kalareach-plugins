@@ -464,11 +464,15 @@
           "refuse": "\u001b"
         },
         "resume": [
+          "resume",
+          "{conversation}"
+        ],
+        "fork": [
           "fork",
           "{conversation}"
         ],
-        "resume_forks": true,
         "image": "paste",
+        "image_line": "\"type\":\"input_image\"",
         "cleared": [
           "OPENAI_*",
           "ANTHROPIC_*",
