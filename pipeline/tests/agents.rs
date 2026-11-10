@@ -551,7 +551,7 @@ fn a_failure_is_published_as_its_code_and_a_time_or_identifier_that_is_not_one_i
                 "failure_codes": [
                     { "code": "agent_stopped", "after": "customer.example" },
                     { "code": "budget_short", "budget": "private-client", "left": 1, "limit": 50, "need": 2, "part": "1" },
-                    { "code": "upload_refused", "refused": "customer.example" },
+                    { "code": "upload_refused", "call": "upload.begin", "refused": "customer.example" },
                     { "code": "upload_not_by_a_device" },
                     { "code": "customer.example" },
                     { "code": "launch_not_detected", "session": null, "cause": "customer.example", "announced": 1 },
@@ -612,7 +612,7 @@ fn a_failure_is_published_as_its_code_and_a_time_or_identifier_that_is_not_one_i
         json!([
             { "code": "agent_stopped", "after": "<not published>" },
             { "code": "budget_short", "budget": "<not published>", "left": 1, "limit": 50, "need": 2, "part": "1" },
-            { "code": "upload_refused", "refused": "<not published>" },
+            { "code": "upload_refused", "call": "upload.begin", "refused": "<not published>" },
             { "code": "upload_not_by_a_device" },
             { "code": "launch_not_detected", "session": null, "cause": "<not published>", "announced": 1 },
             { "code": "environment_not_read" },

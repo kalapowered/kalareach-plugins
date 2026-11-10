@@ -195,10 +195,13 @@ records, and that fails the part. `resume` holds the arguments of the agent's or
 command that starts a conversation of its own from a saved one, where it has one, each with
 `{conversation}` for the saved conversation's identifier. Part 7 starts the ordinary resume on a
 conversation another process holds and records what the agent did: it refused to run (its start
-reaches no composer and shows one of `resume_refused`, or the shell's prompt comes back), it
-continued the conversation both processes write now, or it started a conversation of its own. The
-first two pass the part, with the host keeping two live executions apart; the third fails it with
-`resume_forks`, since two processes on one conversation's identifier were not shown. Part 7f starts
+reaches no composer and shows one of `resume_refused`), it continued the conversation both
+processes write now, or it started a conversation of its own, which is one other file holding the
+question under an identifier that is not the saved one's. The first two pass the part, with the
+host keeping two live executions apart; the third fails it with `resume_forks`, since two processes
+on one conversation's identifier were not shown. A start that ends with the shell's prompt back and
+none of the `resume_refused` texts is recorded as `ended` and fails the part, since nothing shows
+that the held conversation was the cause. Part 7f starts
 the `fork` command and passes only when the agent wrote the second process's question into a
 conversation of its own; where the entry has no `fork`, the part is not run. The
 composer waits for a prompt while the screen shows `composer` and not `busy`. While a part's own

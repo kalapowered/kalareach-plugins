@@ -194,14 +194,15 @@ def sets: {
   checks: ["queued", "steered"],
   wrongs: ["a turn started between the prompts", "entered with no turn running", "the agent kept no record of the prompt as queued", "the prompt joined before the turn finished", "the prompt joined the running turn", "the turn finished its work"],
   control_what: ["a second approval with the local terminal holding the lease: it denied and the device's allow was refused", "orders made wrong on purpose, which the queue and steering checks reject", "session B's marker typed into session A", "the same prompt sent again"],
-  control_why_not: ["the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead"],
+  control_why_not: ["the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead", "no second execution ran, so there was no second session to type a marker from"],
   origins: ["build", "newer build", "runtime", "run", "shell", "system", "elsewhere"],
   sessions: ["A", "B"],
   parts: ["1", "2a", "2b", "2c", "3", "4", "5a", "5b", "6a", "6b", "7", "7f", "8a", "8b", "14.03a", "14.03b"],
-  resume_outcomes: ["refused", "merged", "forked"],
+  resume_outcomes: ["refused", "merged", "forked", "ended"],
   transfer_callers: ["paired device", "local owner"],
   transfer_drivers: ["kr-client uploads::send"],
   transfer_calls: ["upload.begin", "upload.chunk", "upload.finish"],
+  transfer_routes: ["local endpoint"],
   media_types: ["image/png"],
   codes: known_codes,
   stop_classes: (stop_classes | keys),
@@ -339,7 +340,8 @@ def valid($v; $c):
 def code_schema: {
   code: "in:codes", refused: "in:error_codes", session: "in:sessions", cause: "in:causes", announced: "number",
   after: "in:parts", variable: "build:account.variable", budget: "build:account.budget",
-  left: "number", limit: "number", need: "number", part: "in:parts", class: "in:stop_classes"
+  left: "number", limit: "number", need: "number", part: "in:parts", class: "in:stop_classes",
+  call: "in:transfer_calls"
 };
 
 # The marker that a value is left out of its object or array.
@@ -381,7 +383,7 @@ def answer_schema: {call: "call", refused: "in:error_codes", error: "flag"};
 # What a device's own transfer of an image came to: who sent it, with which driver, what the host
 # published or the step it refused or failed at, never the bytes or a name of the file.
 def transfer_schema: {
-  caller: "in:transfer_callers", driver: "in:transfer_drivers",
+  caller: "in:transfer_callers", route: "in:transfer_routes", driver: "in:transfer_drivers",
   published: {
     byte_len: "number", content_digest: "sha256", declared_media_type: "in:media_types",
     presented_as_image: "bool"
@@ -399,7 +401,7 @@ def received_schema: {
 # What the agent did with a conversation another process holds.
 def resume_schema: {
   outcome: "in:resume_outcomes", forked_conversation: "conversation",
-  shown: "member:resume_refused", screen_seen: "bool"
+  shown: "member:resume_refused"
 };
 
 def detection_schema: {
@@ -631,12 +633,14 @@ def code_text($entry):
   elif .code == "budget_held" then "another run holds the \(.budget // "?") budget"
   elif .code == "ledger_unreadable" then "the ledger cannot be read, so what the \(.budget // "?") budget has left is not known"
   elif .code == "budget_short" then "the \(.budget // "?") budget has \(.left // "?") of its \(.limit // "?") turns left, fewer than the \(.need // "?") part \(.part // "?") can start (the ledger)"
-  elif .code == "upload_refused" then "a paired device's upload.begin is refused on this host (\(.refused // "?")), so the image is not the device's transfer"
+  # A code written before the step was carried names upload.begin, the one step the earlier harness
+  # sent; remove the default with `device_upload` above.
+  elif .code == "upload_refused" then "a paired device's \(.call // "upload.begin") is refused on this host (\(.refused // "?")), so the image is not the device's transfer"
   elif .code == "upload_transferred_another_image" then "a paired device's transfer did not give the agent the image the part sent: the host published another, its staging area or the agent's record held another, or a step failed with no code the host refused it with"
   elif .code == "upload_not_by_a_device" then "the image was transferred by the host's own owner on this machine, not by a paired device"
   elif .code == "launch_not_detected" then
     "the host did not detect \(if .session then "launch " + .session else "the manual launch" end) as section 12 requires: \(.cause | cause_text) (it announced \(.announced // "?") live instance(s))"
-  elif .code == "resume_forks" then "the agent lets no second process write a conversation another process writes, so session B forked the saved conversation under a new identifier: two executions on one conversation's identifier were not shown"
+  elif .code == "resume_forks" then "the agent's ordinary resume command started a conversation of its own from the saved one for session B, so two executions on one conversation's identifier were not shown"
   elif .code == "queued_prompt_not_during_turn" then "the agent was not shown to be running its turn when the second prompt was entered, so the prompt was not shown to wait for a turn that was still running"
   elif .code == "reply_before_record" then "the reply reached the device before the agent recorded the prompt, or whether it had could not be told, so no moment between them was shown"
   elif .code == "not_pinned" then "the session was not shown to run only the pinned build, so the part did not test it"

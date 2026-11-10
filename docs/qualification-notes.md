@@ -277,10 +277,11 @@ Since this record, the harness changed in three places. Part 8a runs the forward
 forging session before it times anything, and records that run apart from the twelve timed ones;
 its 500 ms bound is unchanged. A signed, notarized release's first run under the host was not
 measured, so whether the wait is as long for one is not shown. Part 7 starts the agent's ordinary
-resume command and records whether the agent refused, continued the conversation or started one of
-its own; `codex fork` is the optional part 7f. Part 1 sends the image with the client library's
+resume command and records whether the agent refused (it shows a text the build list names for
+that), continued the conversation or started one of its own; `codex fork` is the optional part 7f. Part 1 sends the image with the client library's
 upload driver and passes only when the host's published digest, the staged file and every image in
-the agent's own record equal the digest of the image sent, with a paired device as the sender.
+the agent's own record equal the digest of the image sent, with a paired device as the sender and
+its chunks on a route a paired device reaches (the host's local endpoint is not one).
 
 Status: exercised behaviour of the host with this build on its terminal route, through the local
 subscription proxy. None of the table's classifications was exercised, because no upstream transport
