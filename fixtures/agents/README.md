@@ -23,7 +23,7 @@ record names each part on its own. The case numbers are the specification's.
 
 | Part | What it shows |
 | --- | --- |
-| 1 | Starting the agent from a managed shell, connecting remotely, sending a prompt, adding an image through the attachment path the operation declares, and inspecting the same execution locally |
+| 1 | Starting the agent from a managed shell, connecting remotely, sending a prompt, transferring an image from the paired device and adding it through the attachment path the operation declares, and inspecting the same execution locally |
 | 2a | Slash commands, interrupts, queued prompts and steering, each exercised on its own |
 | 2b | An agent started by hand on its terminal route is detected as a manual launch and offered only observation and the terminal: no typed capability is advertised, and every typed action for it is refused |
 | 2c | Under a binding, an action the installed evidence supports is permitted and one it does not support is refused |
@@ -33,7 +33,8 @@ record names each part on its own. The case numbers are the specification's.
 | 5b | The gateway's request state survives the daemon's crash |
 | 6a | A live process keeps the build image it started with when the installed agent is upgraded, and the newer build starts on the terminal route |
 | 6b | Each process stays bound to its own adapter and schema, and a build outside the qualified range is refused the typed routes |
-| 7 | The same saved conversation reused from another process is detected as another execution's, not merged |
+| 7 | The same saved conversation reused from another process by the agent's ordinary resume command is detected as another execution's, not merged |
+| 7f | Where the agent has a command that starts a conversation of its own from a saved one, a second process on it is detected as another execution's, with a conversation of its own; a record may leave this part out |
 | 8a | Forged shell titles, transcript paths, session identifiers and hook input leave the host's state unchanged |
 | 8b | A forged credential fails at the check where the host's own registration for the same launch passes |
 | 14.03a | A path typed at the agent's prompt is terminal input, and reaches the agent's own composer |
@@ -190,9 +191,16 @@ call or answer without an identifier, or an answer tied to no call leaves the co
 fails the part. Since one call of a tool that runs code can ask more than once whatever its text
 holds, part 3 also requires that the part refused nothing from its prompt to the end of its
 control: any request besides the one it answers reaches a dialog, which the part refuses and
-records, and that fails the part. `resume_forks` says the resume arguments start a new conversation from
-the saved one because the agent lets no second process write a conversation another writes; the
-second-process part then says it did not show two processes on one conversation's identifier. The
+records, and that fails the part. `resume` holds the arguments of the agent's ordinary resume command and `fork` those of its
+command that starts a conversation of its own from a saved one, where it has one, each with
+`{conversation}` for the saved conversation's identifier. Part 7 starts the ordinary resume on a
+conversation another process holds and records what the agent did: it refused to run (its start
+reaches no composer and shows one of `resume_refused`, or the shell's prompt comes back), it
+continued the conversation both processes write now, or it started a conversation of its own. The
+first two pass the part, with the host keeping two live executions apart; the third fails it with
+`resume_forks`, since two processes on one conversation's identifier were not shown. Part 7f starts
+the `fork` command and passes only when the agent wrote the second process's question into a
+conversation of its own; where the entry has no `fork`, the part is not run. The
 composer waits for a prompt while the screen shows `composer` and not `busy`. While a part's own
 steps run, the probes among them, a thread of its own reads the files no part may change, those
 the person's own programs also write, and those only appended to (for their earlier lines), every
@@ -331,7 +339,7 @@ person's files said, and stays in the part's log and the run's evidence director
 else that is not published. The codes are `not_selected`, `build_blocked`, `no_account`,
 `agent_stopped`, `no_ledger`, `variable_missing`, `budget_held`, `ledger_unreadable`,
 `login_files_unreadable`, `budget_short`, `upload_refused`, `upload_transferred_another_image`,
-`launch_not_detected`, `resume_forks`, `reply_before_record`, `queued_prompt_not_during_turn`,
+`upload_not_by_a_device`, `launch_not_detected`, `resume_forks`, `reply_before_record`, `queued_prompt_not_during_turn`,
 `not_pinned`, `environment_not_clear`, `environment_not_read`, `key_scan_incomplete`, `part_failed`,
 `exited_after_outcome`, `installed_other_package` and `agent_stops` with the class of what stopped
 the agent;

@@ -250,11 +250,14 @@ The parts, as the record states them:
   took 679 ms and 1,159 ms in the two earlier runs, which failed alike, and 434 ms and 435 ms in two
   runs of the part alone that passed (the first at the earlier, node-launched entry), at one-minute
   load averages of 7.17 and 8.72; in those two runs the other eleven probes took 4 to 5 ms each. The
-  harness starts the forwarder once before it times anything, so the slow answer is not that file's
-  first start. The first timed answer is slow in every run: it exceeded the bound in the three full
-  runs and stayed under it in the two runs of the part alone. The load averages are those at the
-  start of each run and not at the probe, so they do not show whether load plays a part. The cause
-  is not determined.
+  harness starts the forwarder once before it times anything, but outside the host's process tree.
+  The first timed answer is slow in every run: it exceeded the bound in the three full runs and
+  stayed under it in the two runs of the part alone. The load averages are those at the start of
+  each run and not at the probe, so they do not show whether load plays a part. The cause was found
+  afterwards, without an agent: the first run of any file under the host's daemon waits 0.4 to 0.8
+  seconds for the system's assessment of that file, with none of the file's own processor time, and
+  later runs of it take 3 to 5 ms. The forwarder's earlier start paid nothing toward that wait, so
+  the first timed probe paid all of it.
 - Parts 4 and 7 are not in the record's run: the account's turns, capped at 30 in the build list of
   that run, were spent before they started. They were run once afterwards, on their own, at the same
   commit with the cap raised to 34 in the working tree. Part 4 passed. Part 7 failed on one check:
@@ -269,6 +272,15 @@ The parts, as the record states them:
 The account spent 34 turns: 6 in part 1, 15 in part 2a, 5 in part 3, 4 in part 4 and 4 in part 7,
 over four runs (13, 8, 9 and 4). Parts 1, 2a and 3 ran in each of the first three because the
 build's launch and then its files had to be corrected between them.
+
+Since this record, the harness changed in three places. Part 8a runs the forwarder once from the
+forging session before it times anything, and records that run apart from the twelve timed ones;
+its 500 ms bound is unchanged. A signed, notarized release's first run under the host was not
+measured, so whether the wait is as long for one is not shown. Part 7 starts the agent's ordinary
+resume command and records whether the agent refused, continued the conversation or started one of
+its own; `codex fork` is the optional part 7f. Part 1 sends the image with the client library's
+upload driver and passes only when the host's published digest, the staged file and every image in
+the agent's own record equal the digest of the image sent, with a paired device as the sender.
 
 Status: exercised behaviour of the host with this build on its terminal route, through the local
 subscription proxy. None of the table's classifications was exercised, because no upstream transport
