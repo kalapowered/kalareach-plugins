@@ -30,6 +30,12 @@ pub const CASE_PARTS: [&str; 13] = [
     "1", "2a", "2b", "2c", "3", "4", "5a", "5b", "6a", "6b", "7", "8a", "8b",
 ];
 
+/// The parts of section 12's cases a record may name once or leave out: the fork of an agent that
+/// has a command to start a conversation of its own from a saved one, which shows two executions
+/// from one saved history. Where a record names it, it counts as any part does; a record without
+/// it is whole.
+pub const OPTIONAL_CASE_PARTS: [&str; 1] = ["7f"];
+
 /// The parts of the row that keeps a typed path from counting as an accepted attachment.
 pub const ATTACHMENT_PARTS: [&str; 2] = ["14.03a", "14.03b"];
 
@@ -259,8 +265,14 @@ pub fn form_problems(record: &Value, platform: &Platform) -> Vec<String> {
             "the identifiers are {keys:?}, not {CASES} and {ATTACHMENTS}"
         ));
     }
-    let tests = check_identifier(record, CASES, &CASE_PARTS, &mut problems);
-    let more = check_identifier(record, ATTACHMENTS, &ATTACHMENT_PARTS, &mut problems);
+    let tests = check_identifier(
+        record,
+        CASES,
+        &CASE_PARTS,
+        &OPTIONAL_CASE_PARTS,
+        &mut problems,
+    );
+    let more = check_identifier(record, ATTACHMENTS, &ATTACHMENT_PARTS, &[], &mut problems);
     let names: BTreeSet<String> = tests.into_iter().chain(more).collect();
     for test in all_tests(record) {
         let condition = &test["condition"];
@@ -530,13 +542,14 @@ fn check_summary(record: &Value, problems: &mut Vec<String>) {
     }
 }
 
-/// Checks one identifier's tests: each part once, each outcome one a part can have, a reason for
-/// a part not run and a command and its runs for a part that ran, and counts and a verdict that
-/// agree with them. Returns the names of its tests.
+/// Checks one identifier's tests: each part once (an optional part at most once), each outcome one
+/// a part can have, a reason for a part not run and a command and its runs for a part that ran, and
+/// counts and a verdict that agree with them. Returns the names of its tests.
 fn check_identifier(
     record: &Value,
     identifier: &str,
     parts: &[&str],
+    optional: &[&str],
     problems: &mut Vec<String>,
 ) -> Vec<String> {
     let entry = &record["identifiers"][identifier];
@@ -580,8 +593,12 @@ fn check_identifier(
             None => problems.push(format!("{identifier} does not name part {part}")),
         }
     }
-    for part in seen.keys() {
-        if !parts.contains(part) {
+    for (part, times) in &seen {
+        if optional.contains(part) {
+            if *times > 1 {
+                problems.push(format!("{identifier} names part {part} {times} times"));
+            }
+        } else if !parts.contains(part) {
             problems.push(format!(
                 "{identifier} names part {part:?}, which it has none of"
             ));

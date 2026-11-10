@@ -589,6 +589,85 @@ fn a_failed_part_leaves_the_build_out_and_a_typed_path_part_not_run_does_not() {
     );
 }
 
+/// The record with the fork part named once more, as a copy of part 7 with a step of its own.
+fn with_fork_part(record: &Value) -> Value {
+    let mut record = record.clone();
+    let steps = record["steps"]
+        .as_array_mut()
+        .expect("the record lists its steps");
+    let number = steps
+        .iter()
+        .filter_map(|step| step["number"].as_u64())
+        .max()
+        .unwrap_or(0)
+        + 1;
+    let seven = record["identifiers"]["KR-REQ-12.32"]["tests"]
+        .as_array()
+        .expect("tests")
+        .iter()
+        .find(|test| test["part"] == "7")
+        .expect("part 7")
+        .clone();
+    let mut step = record["steps"]
+        .as_array()
+        .expect("steps")
+        .iter()
+        .find(|step| step["number"] == seven["runs"][0]["step"])
+        .expect("part 7's step")
+        .clone();
+    step["number"] = json!(number);
+    step["what"] = json!("part 7f");
+    record["steps"].as_array_mut().expect("steps").push(step);
+    let mut fork = seven;
+    fork["part"] = json!("7f");
+    fork["test"] = json!("the fork part");
+    fork["runs"] = json!([{ "step": number, "outcome": "passed" }]);
+    record["identifiers"]["KR-REQ-12.32"]["tests"]
+        .as_array_mut()
+        .expect("tests")
+        .push(fork);
+    recount(&mut record);
+    record
+}
+
+/// The fork part of section 12's case 7 is optional: a record without it is whole, one that names
+/// it once counts it as any part counts, and one that names it twice is refused.
+#[test]
+fn the_fork_part_may_be_left_out_and_a_failed_one_leaves_the_build_out() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+
+    let passed = temporary.path().join("passed");
+    claude_code_repository(&passed, &with_fork_part(&qualified_record()));
+    assert_eq!(claude_code_entry_builds(&passed), vec![claude_code_build()]);
+
+    let failed = temporary.path().join("failed");
+    claude_code_repository(
+        &failed,
+        &with_outcome(&with_fork_part(&qualified_record()), "7f", "failed"),
+    );
+    let reasons = left_out_because(&failed);
+    assert!(
+        reasons.contains(&"parts 7f failed".to_owned()),
+        "{reasons:?}"
+    );
+
+    let twice = temporary.path().join("twice");
+    let mut record = with_fork_part(&qualified_record());
+    let again = record["identifiers"]["KR-REQ-12.32"]["tests"]
+        .as_array()
+        .expect("tests")
+        .last()
+        .expect("the fork part")
+        .clone();
+    record["identifiers"]["KR-REQ-12.32"]["tests"]
+        .as_array_mut()
+        .expect("tests")
+        .push(again);
+    recount(&mut record);
+    claude_code_repository(&twice, &record);
+    assert!(refused(&twice).contains("names part 7f 2 times"));
+}
+
 /// A record says something about a build only as a whole run of this release and this build: one
 /// for another release, another build, a run whose own-home check failed, or one with problems,
 /// keeps the build out; so does a missing record.

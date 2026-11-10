@@ -104,7 +104,7 @@ fn strings<'a>(value: &'a Value, found: &mut Vec<&'a str>) {
 }
 
 /// The parts that run with the login, as the harness names them to the record's writer.
-const LOGIN_PARTS: &str = r#"["1", "2a", "3", "4", "7"]"#;
+const LOGIN_PARTS: &str = r#"["1", "2a", "3", "4", "7", "7f"]"#;
 
 /// `record` as the record's writer, `scripts/record-redaction.jq` run with jq as the harness runs
 /// it, publishes it for the build list's `entry` and the account name `user`.
@@ -515,8 +515,10 @@ fn a_failure_is_published_as_its_code_and_a_time_or_identifier_that_is_not_one_i
             "outcome": "failed",
             "reason": "the agent stopped after customer.example; the private-client budget has 1 of its 50 turns left",
             "evidence": {
-                "device_upload": {
-                    "call": "upload.begin", "refused": "INVALID_ARGUMENT", "error": null,
+                "transfer": {
+                    "caller": "paired device", "driver": "kr-client uploads::send",
+                    "refused": { "call": "upload.begin", "code": "INVALID_ARGUMENT" },
+                    "failed": { "call": "customer.example", "error": "connection to customer.example failed" },
                     "detail": "INVALID_ARGUMENT: upload.begin names customer.example"
                 },
                 "installed": { "plugin_id": "kalareach/example", "version": "0.1.0", "manifest_digest": "ab", "grant": ["terminal.customer.example", "upstream.action"] },
@@ -550,6 +552,7 @@ fn a_failure_is_published_as_its_code_and_a_time_or_identifier_that_is_not_one_i
                     { "code": "agent_stopped", "after": "customer.example" },
                     { "code": "budget_short", "budget": "private-client", "left": 1, "limit": 50, "need": 2, "part": "1" },
                     { "code": "upload_refused", "refused": "customer.example" },
+                    { "code": "upload_not_by_a_device" },
                     { "code": "customer.example" },
                     { "code": "launch_not_detected", "session": null, "cause": "customer.example", "announced": 1 },
                     { "code": "environment_not_read" },
@@ -563,8 +566,12 @@ fn a_failure_is_published_as_its_code_and_a_time_or_identifier_that_is_not_one_i
     let test = &published["identifiers"]["KR-REQ-12.32"]["tests"][0];
     let evidence = &test["evidence"];
     assert_eq!(
-        evidence["device_upload"],
-        json!({ "call": "upload.begin", "refused": "INVALID_ARGUMENT", "error": null })
+        evidence["transfer"],
+        json!({
+            "caller": "paired device", "driver": "kr-client uploads::send",
+            "refused": { "call": "upload.begin", "code": "INVALID_ARGUMENT" },
+            "failed": { "call": "<not published>", "error": true }
+        })
     );
     assert_eq!(
         evidence["installed"]["grant"],
@@ -606,6 +613,7 @@ fn a_failure_is_published_as_its_code_and_a_time_or_identifier_that_is_not_one_i
             { "code": "agent_stopped", "after": "<not published>" },
             { "code": "budget_short", "budget": "<not published>", "left": 1, "limit": 50, "need": 2, "part": "1" },
             { "code": "upload_refused", "refused": "<not published>" },
+            { "code": "upload_not_by_a_device" },
             { "code": "launch_not_detected", "session": null, "cause": "<not published>", "announced": 1 },
             { "code": "environment_not_read" },
             { "code": "agent_stops" },
@@ -616,7 +624,8 @@ fn a_failure_is_published_as_its_code_and_a_time_or_identifier_that_is_not_one_i
         test["reason"],
         "the agent stopped after part <not published>; the <not published> budget has 1 of its 50 turns \
          left, fewer than the 2 part 1 can start (the ledger); a paired device's upload.begin is refused on \
-         this host (<not published>), so the image is not the device's transfer; the host did not detect \
+         this host (<not published>), so the image is not the device's transfer; the image was transferred \
+         by the host's own owner on this machine, not by a paired device; the host did not detect \
          the manual launch as section 12 requires: for a cause the part's log states (it announced 1 live \
          instance(s)); the names the session's shell exports could not be read, so that none the build list \
          clears is exported was not established, and the agent was not started or was ended before anything \

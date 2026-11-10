@@ -173,7 +173,7 @@ def stop_classes: {
 def known_codes: [
   "not_selected", "build_blocked", "no_account", "agent_stopped", "no_ledger", "variable_missing",
   "budget_held", "ledger_unreadable", "login_files_unreadable", "budget_short", "upload_refused",
-  "upload_transferred_another_image", "launch_not_detected", "resume_forks", "reply_before_record",
+  "upload_transferred_another_image", "upload_not_by_a_device", "launch_not_detected", "resume_forks", "reply_before_record",
   "not_pinned", "environment_not_clear", "environment_not_read", "key_scan_incomplete", "part_failed",
   "exited_after_outcome", "installed_other_package", "agent_stops", "queued_prompt_not_during_turn"
 ];
@@ -197,7 +197,12 @@ def sets: {
   control_why_not: ["the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead"],
   origins: ["build", "newer build", "runtime", "run", "shell", "system", "elsewhere"],
   sessions: ["A", "B"],
-  parts: ["1", "2a", "2b", "2c", "3", "4", "5a", "5b", "6a", "6b", "7", "8a", "8b", "14.03a", "14.03b"],
+  parts: ["1", "2a", "2b", "2c", "3", "4", "5a", "5b", "6a", "6b", "7", "7f", "8a", "8b", "14.03a", "14.03b"],
+  resume_outcomes: ["refused", "merged", "forked"],
+  transfer_callers: ["paired device", "local owner"],
+  transfer_drivers: ["kr-client uploads::send"],
+  transfer_calls: ["upload.begin", "upload.chunk", "upload.finish"],
+  media_types: ["image/png"],
   codes: known_codes,
   stop_classes: (stop_classes | keys),
   error_codes: ["INVALID_ARGUMENT", "UNSUPPORTED_SCHEMA", "UNSUPPORTED_CAPABILITY", "PERMISSION_DENIED", "PAIRING_EXPIRED", "PAIRING_REJECTED", "PAIRING_AUTH_FAILED", "PAIRING_ATTEMPTS_EXHAUSTED", "RENDEZVOUS_UNAVAILABLE", "RENDEZVOUS_CONFIG_ERROR", "UNKNOWN_SESSION", "AMBIGUOUS_SESSION", "AMBIGUOUS_ATTACHMENT", "TERMINAL_UNAVAILABLE", "TERMINAL_PROBE_FAILED", "INPUT_INCOMPATIBLE", "SESSION_CLOSED", "SESSION_LIMIT", "RESOURCE_UNAVAILABLE", "HOST_NOT_CONFIGURED", "ENVIRONMENT_UNAVAILABLE", "DESKTOP_UNAVAILABLE", "STALE_SESSION", "LEASE_LOST", "GEOMETRY_NOT_OWNER", "DRAFT_CONFLICT", "EDITOR_BUSY", "ID_CONFLICT", "UPSTREAM_UNAVAILABLE", "OUTCOME_UNKNOWN", "RESYNC_REQUIRED", "QUOTA_EXCEEDED", "RATE_LIMITED", "SERVICE_CAPACITY", "CLOCK_UNTRUSTED", "STORAGE_UNAVAILABLE", "SHELL_INTEGRATION_UNSUPPORTED", "ATTACHMENT_INTEGRITY", "REPOSITORY_UNTRUSTED", "PACKAGE_UNAVAILABLE_OFFLINE", "PLUGIN_GRANT_REQUIRED", "PLUGIN_DISABLED", "QUESTION_RESOLVED", "QUESTION_EXPIRED", "NOT_IN_KR_SESSION", "OWNER_CONFIRMATION_REQUIRED", "CAUSAL_LIMIT", "SOURCE_CHANGED"],
@@ -246,6 +251,7 @@ def context($entry; $user; $servers; $own; $roots; $named):
       lists: {
         arguments: ($account.arguments // []), cleared: ($account.cleared // []),
         decision_calls: ($account.decision_calls // []), call_lines: ($account.call_lines // []),
+        resume_refused: ($account.resume_refused // []),
         hosts: ($account.confinement.hosts // []), unasked_tools: ($account.confinement.unasked_tools // []),
         reported: ($account.confinement.reported // []), residuals: ($account.confinement.residuals // [])
       },
@@ -255,7 +261,7 @@ def context($entry; $user; $servers; $own; $roots; $named):
       switch_patterns: [($account.switches // [])[] | switch_pattern],
       images: [("^" + ("<tools>/" + ($entry.prefix // "") | literal_pattern) + "/[A-Za-z0-9._@+/-]+$"),
                (if $entry.newer then "^" + ("<tools>/" + $entry.newer.prefix | literal_pattern) + "/[A-Za-z0-9._@+/-]+$" else empty end)],
-      resume_words: [($account.resume // [])[] | select(test("^\\{") | not)]
+      resume_words: [(($account.resume // []) + ($account.fork // []))[] | select(test("^\\{") | not)]
     };
 
 # The switches a part gave the agent: the build list's own, each matching its entry, and after them
@@ -371,6 +377,30 @@ def project($schema; $c):
 # --- What a login part's evidence keeps ------------------------------------------------------
 
 def answer_schema: {call: "call", refused: "in:error_codes", error: "flag"};
+
+# What a device's own transfer of an image came to: who sent it, with which driver, what the host
+# published or the step it refused or failed at, never the bytes or a name of the file.
+def transfer_schema: {
+  caller: "in:transfer_callers", driver: "in:transfer_drivers",
+  published: {
+    byte_len: "number", content_digest: "sha256", declared_media_type: "in:media_types",
+    presented_as_image: "bool"
+  },
+  refused: {call: "in:transfer_calls", code: "in:error_codes"},
+  failed: {call: "in:transfer_calls", error: "flag"}
+};
+
+# What the agent was given of the image, read from its own record.
+def received_schema: {
+  from_the_transfer: "bool", staged_digest_is_the_sent: "bool",
+  record_marker: "build:account.image_line", images_in_the_record: "number"
+};
+
+# What the agent did with a conversation another process holds.
+def resume_schema: {
+  outcome: "in:resume_outcomes", forked_conversation: "conversation",
+  shown: "member:resume_refused", screen_seen: "bool"
+};
 
 def detection_schema: {
   instances: [{
@@ -503,6 +533,9 @@ def evidence_schema: {
   key: {variable: "build:account.variable", held_by: "count", complete: "bool", run_gone: "bool"},
   account: account_schema, provenance: provenance_schema, person_files: person_files_schema,
   person_home: person_home_schema, detection: detection_schema, detected: detected_schema,
+  transfer: transfer_schema, received: received_schema, resume: resume_schema,
+  # The refusal of an upload that records made before the transfer driver carry as part 1's evidence;
+  # remove it once a run of the current harness has replaced each of them.
   device_upload: answer_schema,
   surface: {
     capability_records: [{capability: "in:capabilities", usable: "bool"}],
@@ -599,7 +632,8 @@ def code_text($entry):
   elif .code == "ledger_unreadable" then "the ledger cannot be read, so what the \(.budget // "?") budget has left is not known"
   elif .code == "budget_short" then "the \(.budget // "?") budget has \(.left // "?") of its \(.limit // "?") turns left, fewer than the \(.need // "?") part \(.part // "?") can start (the ledger)"
   elif .code == "upload_refused" then "a paired device's upload.begin is refused on this host (\(.refused // "?")), so the image is not the device's transfer"
-  elif .code == "upload_transferred_another_image" then "a paired device's upload.begin did not transfer the image the part gave: it was accepted with another, or it failed with no code the host refused it with"
+  elif .code == "upload_transferred_another_image" then "a paired device's transfer did not give the agent the image the part sent: the host published another, its staging area or the agent's record held another, or a step failed with no code the host refused it with"
+  elif .code == "upload_not_by_a_device" then "the image was transferred by the host's own owner on this machine, not by a paired device"
   elif .code == "launch_not_detected" then
     "the host did not detect \(if .session then "launch " + .session else "the manual launch" end) as section 12 requires: \(.cause | cause_text) (it announced \(.announced // "?") live instance(s))"
   elif .code == "resume_forks" then "the agent lets no second process write a conversation another process writes, so session B forked the saved conversation under a new identifier: two executions on one conversation's identifier were not shown"

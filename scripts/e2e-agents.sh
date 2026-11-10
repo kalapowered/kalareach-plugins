@@ -91,6 +91,7 @@ parts=(
   "6a|a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route|||"
   "6b||waits for the command integration: a build outside the qualified range can be refused only a typed route, and no launch has one without the integration|the command integration's landing|command integration"
   "7|a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged|||"
+  "7f|a_forked_conversation_is_another_execution_with_a_conversation_of_its_own|||"
   "8a|forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged|||"
   "8b||waits for the command integration: no launch has a registration the host issued, against which a forgery could fail where it passes|the command integration's landing|command integration"
   "14.03a|a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer|||"
@@ -105,11 +106,12 @@ login_turns() {
     3) echo 2 ;;
     4) echo 2 ;;
     7) echo 2 ;;
+    7f) echo 2 ;;
     *) echo 0 ;;
   esac
 }
 # The parts that run with the login, for the record's writer (scripts/record-redaction.jq).
-login_parts='["1", "2a", "3", "4", "7"]'
+login_parts='["1", "2a", "3", "4", "7", "7f"]'
 
 # The environment the driver runs with, and nothing else (env -i): whatever else this shell
 # holds, a key among it, reaches no program the driver starts. A login's one variable goes to the
