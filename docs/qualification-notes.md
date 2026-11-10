@@ -283,6 +283,19 @@ upload driver and passes only when the host's published digest, the staged file 
 the agent's own record equal the digest of the image sent, with a paired device as the sender and
 its chunks on a route a paired device reaches (the host's local endpoint is not one).
 
+The build list's turn cap for the Codex account is 20, the turns of one complete round: the fifteen
+the parts reserve (part 1 two, 2a five, 3 two, 4 two, 7 two, 7f two) and five for the gateway cases,
+one each. A charge past the cap is refused by the driver, and the script starts no part that the
+budget cannot cover.
+
+Five gateway cases in the core repository's agents driver (`tests/e2e/agents/tests/gateway.rs`)
+show what the package's table assumes of the pinned terminal and server: a device's answer to an
+approval closes the terminal's prompt, the terminal shows a turn the host started, the binding's
+thread changes only where the terminal starts, resumes or forks one, a whole session names no method
+the table does not list, and a device's prompt over a running turn is refused. They are not parts of
+a record. They run against the application stand-in with no turn, and against the pinned build with
+one turn each.
+
 Status: exercised behaviour of the host with this build on its terminal route, through the local
 subscription proxy. None of the table's classifications was exercised, because no upstream transport
 was bound and the host read no frame of the App Server.
