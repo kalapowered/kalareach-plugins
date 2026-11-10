@@ -443,6 +443,11 @@
           "input": "/pwd",
           "shows": "Current working directory:"
         },
+        "commands": {
+          "fork": "/fork",
+          "new": "/new",
+          "quit": "/quit"
+        },
         "interrupt": {
           "input": "\u001b",
           "shows": "Conversation interrupted"
