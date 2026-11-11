@@ -166,13 +166,14 @@ def stop_classes: {
   workspace_list_changed: "the person's list of workspaces changed other than by gaining the run's folder",
   secret_found: "a string of the login's files was found in what the run wrote, or the search for it was not complete",
   provider_key_found: "the value of a provider key the person's shell holds was found in what the run wrote",
-  uncharged_turns: "the agent's record holds prompts the part did not charge, or they could not be counted"
+  uncharged_turns: "the agent's record holds prompts the part did not charge, or they could not be counted",
+  turn_audit_blind: "the agent's record holds no turn for a case that passed with a charged turn, so the check that no turn went uncharged saw nothing"
 };
 
 # The failure codes a part can carry.
 def known_codes: [
   "not_selected", "build_blocked", "no_account", "agent_stopped", "no_ledger", "variable_missing",
-  "budget_held", "ledger_unreadable", "login_files_unreadable", "budget_short", "upload_refused",
+  "budget_held", "ledger_missing", "ledger_unreadable", "login_files_unreadable", "budget_short", "upload_refused",
   "upload_transferred_another_image", "upload_not_by_a_device", "launch_not_detected", "resume_forks", "reply_before_record",
   "not_pinned", "environment_not_clear", "environment_not_read", "key_scan_incomplete", "part_failed",
   "exited_after_outcome", "installed_other_package", "agent_stops", "queued_prompt_not_during_turn"
@@ -631,7 +632,8 @@ def code_text($entry):
   elif .code == "variable_missing" then "its login is the variable \(.variable // "?"), which this shell's environment does not hold (the user)"
   elif .code == "login_files_unreadable" then "the login's files cannot be read, so the evidence could not be searched for their strings (the user)"
   elif .code == "budget_held" then "another run holds the \(.budget // "?") budget"
-  elif .code == "ledger_unreadable" then "the ledger cannot be read, so what the \(.budget // "?") budget has left is not known"
+  elif .code == "ledger_missing" then "the ledger is not there, and a run makes none of its own: the first, empty one is made on purpose (the \(.budget // "?") budget)"
+  elif .code == "ledger_unreadable" then "the ledger cannot be read, or holds no array for the \(.budget // "?") budget, so what the budget has left is not known"
   elif .code == "budget_short" then "the \(.budget // "?") budget has \(.left // "?") of its \(.limit // "?") turns left, fewer than the \(.need // "?") part \(.part // "?") can start (the ledger)"
   # A code written before the step was carried names upload.begin, the one step the earlier harness
   # sent; remove the default with `device_upload` above.

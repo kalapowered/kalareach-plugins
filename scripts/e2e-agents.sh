@@ -53,7 +53,9 @@
 #                     checkout's own)
 #   --tools DIR       where the agent builds are installed (default: KR_AGENTS_TOOLS)
 #   --turns FILE      the ledger the parts with a login charge their turns to, kept across runs
-#                     (default: KR_AGENTS_TURNS); without it those parts do not run
+#                     (default: KR_AGENTS_TURNS); without it those parts do not run. The file is
+#                     made on purpose before the first run, holding {"budgets": {"<budget>": []}};
+#                     a file that is not there, or whose budget is not an array, stops them
 #   --run-temp DIR    where the driver makes the runs' folders (default: KR_AGENTS_RUN_TEMP, or
 #                     /private/tmp/kalareach-agents): a short path of words in a scratch directory,
 #                     because a part asks the agent to run a command that names a file in its folder,
@@ -848,8 +850,11 @@ while IFS= read -r package; do
         else
           budget_lock="$turns.$budget.lock"
           spent=0
-          if [ -e "$turns" ] && ! spent="$(jq -e --arg budget "$budget" '.budgets[$budget] // [] | length' "$turns")"; then
-            login_reason="the ledger $turns cannot be read, so what the $budget budget has left is not known"
+          if [ ! -e "$turns" ]; then
+            login_reason="the ledger $turns is not there, and a run makes none of its own: make the first, empty one on purpose, a file holding {\"budgets\": {\"$budget\": []}}"
+            login_code="$(jq -cn --arg budget "$budget" '[{code: "ledger_missing", budget: $budget}]')"
+          elif ! spent="$(jq -e --arg budget "$budget" '.budgets[$budget] | if type == "array" then length else error("not an array") end' "$turns")"; then
+            login_reason="the ledger $turns cannot be read, or holds no array for the $budget budget, so what the budget has left is not known"
             login_code="$(jq -cn --arg budget "$budget" '[{code: "ledger_unreadable", budget: $budget}]')"
           elif [ $((limit - spent)) -lt "$need" ]; then
             login_reason="the $budget budget has $((limit - spent)) of its $limit turns left, fewer than the $need part $part can start (the ledger)"
