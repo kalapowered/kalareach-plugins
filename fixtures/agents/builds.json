@@ -299,12 +299,16 @@
             ],
             "shows": [
               "Network access is restricted",
-              "`sandbox_mode` is `read-only`"
+              "`sandbox_mode` is `read-only`",
+              "Escalation Requests"
             ],
             "lacks": [
               "{servers}",
               "## Skills",
-              "### Available skills"
+              "### Available skills",
+              "Approval policy is currently never",
+              "`approval_policy` is `unless-trusted`",
+              "`approvals_reviewer` is `auto_review`"
             ],
             "shows_within": "<permissions instructions>"
           },
