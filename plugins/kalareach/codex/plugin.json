@@ -61,14 +61,14 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "bc2c3abb093962d80cc4cf09449eebf71a1e25f25341c2cbb318807d22cef373",
-      "size_bytes": "10140"
+      "digest": "2e3ad81799f8f1197e8c726ef735921da8b607a675341deec35b894596ffba08",
+      "size_bytes": "13015"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "20d01ea94fbe8d69f9ec6735c5f52934a86b4ae31ebebe1291167d83a579f6a5",
-      "size_bytes": "83570"
+      "digest": "8751825a55a76ec6a38a9325938e59904a5737d5996e865797a599ac95a9ec5d",
+      "size_bytes": "83698"
     },
     {
       "role": "fixture",
@@ -79,8 +79,8 @@
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "2c7d0791296851308672afba6eeba47d3f2432abd3f9957adeee2f9a7b28b1dd",
-      "size_bytes": "14073"
+      "digest": "e040f7ad560326287c6b4e0746c20a1dc4aafbc914a61cef67769692f6d6b614",
+      "size_bytes": "14039"
     },
     {
       "role": "presentation",
