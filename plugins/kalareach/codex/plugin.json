@@ -5,7 +5,7 @@
   "version": "0.3.0",
   "display_name": "Codex CLI",
   "description": "Recognises Codex CLI, serves it behind a gateway, reads its App Server through a declarative table, answers its approvals and stops the turn it is running.",
-  "sdk_range": ">=0.1.6, <0.2.0",
+  "sdk_range": ">=0.1.7, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
@@ -67,8 +67,8 @@
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "62b6cecf01bf2bd1fa913770b608927cd65e622b54f7563f1a260074fed28e1b",
-      "size_bytes": "76645"
+      "digest": "20d01ea94fbe8d69f9ec6735c5f52934a86b4ae31ebebe1291167d83a579f6a5",
+      "size_bytes": "83570"
     },
     {
       "role": "fixture",

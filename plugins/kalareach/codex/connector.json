@@ -1023,6 +1023,101 @@
       "method": "process.spawn",
       "wire_name": "process/spawn",
       "direction": "host_to_upstream"
+    },
+    {
+      "method": "collaboration-mode.list",
+      "wire_name": "collaborationMode/list",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "environment.info",
+      "wire_name": "environment/info",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "thread.background-terminals.list",
+      "wire_name": "thread/backgroundTerminals/list",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "thread.search",
+      "wire_name": "thread/search",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "thread.settings.update",
+      "wire_name": "thread/settings/update",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "thread.background-terminals.clean",
+      "wire_name": "thread/backgroundTerminals/clean",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "thread.memory-mode.set",
+      "wire_name": "thread/memoryMode/set",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "thread.queue.add",
+      "wire_name": "thread/queue/add",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "thread.realtime.start",
+      "wire_name": "thread/realtime/start",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "thread.realtime.append-speech",
+      "wire_name": "thread/realtime/appendSpeech",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "thread.realtime.stop",
+      "wire_name": "thread/realtime/stop",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "memory.reset",
+      "wire_name": "memory/reset",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "project.create",
+      "wire_name": "project/create",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "account.bedrock.setup",
+      "wire_name": "account/bedrock/setup",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "get-auth-status",
+      "wire_name": "getAuthStatus",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "user-verification.verify",
+      "wire_name": "userVerification/verify",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "account.bedrock.discover",
+      "wire_name": "account/bedrock/discover",
+      "direction": "host_to_upstream"
+    },
+    {
+      "method": "raw-response.completed",
+      "wire_name": "rawResponse/completed",
+      "direction": "upstream_to_host"
+    },
+    {
+      "method": "raw-response-item.completed",
+      "wire_name": "rawResponseItem/completed",
+      "direction": "upstream_to_host"
     }
   ],
   "methods": [
@@ -2005,6 +2100,101 @@
       "method": "process.spawn",
       "class": "unsupported",
       "evidence": "Starts a process session outside the Codex sandbox"
+    },
+    {
+      "method": "collaboration-mode.list",
+      "class": "observation",
+      "evidence": "Lists the collaboration mode presets the server offers; the terminal sends it at every start, and it reads and changes nothing"
+    },
+    {
+      "method": "environment.info",
+      "class": "observation",
+      "evidence": "Reports the environment this server runs in, as a read shared with other reads"
+    },
+    {
+      "method": "thread.background-terminals.list",
+      "class": "observation",
+      "evidence": "Lists the background terminals a thread has running; it reads and changes nothing"
+    },
+    {
+      "method": "thread.search",
+      "class": "observation",
+      "evidence": "Searches stored thread logs for text and returns what matches; it reads and changes nothing"
+    },
+    {
+      "method": "thread.settings.update",
+      "class": "mutation",
+      "evidence": "Changes the model, effort, permissions, personality or collaboration mode that a thread's later turns use; the terminal sends it at each settings change"
+    },
+    {
+      "method": "thread.background-terminals.clean",
+      "class": "mutation",
+      "evidence": "Stops the background terminals a thread has running"
+    },
+    {
+      "method": "thread.memory-mode.set",
+      "class": "mutation",
+      "evidence": "Sets whether a thread may use and write memories"
+    },
+    {
+      "method": "thread.queue.add",
+      "class": "mutation",
+      "evidence": "Adds a prompt to a thread's queue of prompts to run after the turn in progress"
+    },
+    {
+      "method": "thread.realtime.start",
+      "class": "mutation",
+      "evidence": "Starts a realtime conversation on a thread"
+    },
+    {
+      "method": "thread.realtime.append-speech",
+      "class": "mutation",
+      "evidence": "Adds spoken text to a thread's realtime conversation"
+    },
+    {
+      "method": "thread.realtime.stop",
+      "class": "mutation",
+      "evidence": "Ends a thread's realtime conversation"
+    },
+    {
+      "method": "memory.reset",
+      "class": "mutation",
+      "evidence": "Clears the memories the server holds"
+    },
+    {
+      "method": "project.create",
+      "class": "mutation",
+      "evidence": "Creates a project the server keeps"
+    },
+    {
+      "method": "account.bedrock.setup",
+      "class": "mutation",
+      "evidence": "Writes the Amazon Bedrock provider configuration and ends a login in progress; its answer is empty"
+    },
+    {
+      "method": "get-auth-status",
+      "class": "credential",
+      "evidence": "Reports how the server is authenticated and, where asked, the token; the broker keeps the answer"
+    },
+    {
+      "method": "user-verification.verify",
+      "class": "credential",
+      "evidence": "Signs a challenge with a local key and returns the proof; the broker keeps the answer"
+    },
+    {
+      "method": "account.bedrock.discover",
+      "class": "credential",
+      "evidence": "Lists the AWS profiles and the kinds of AWS credentials the server's environment holds; the broker keeps the answer"
+    },
+    {
+      "method": "raw-response.completed",
+      "class": "observation",
+      "evidence": "ServerNotification RawResponseCompletedNotification in the pinned schema; it reports one finished response and changes no state"
+    },
+    {
+      "method": "raw-response-item.completed",
+      "class": "observation",
+      "evidence": "ServerNotification RawResponseItemCompletedNotification in the pinned schema; it reports one finished response item and changes no state"
     }
   ],
   "decision_destination": null,
@@ -2052,7 +2242,43 @@
               "name": "id"
             }
           ]
-        }
+        },
+        "hidden_when": [
+          {
+            "place": {
+              "segments": [
+                {
+                  "type": "member",
+                  "name": "params"
+                },
+                {
+                  "type": "member",
+                  "name": "ephemeral"
+                }
+              ]
+            },
+            "values": [
+              true
+            ]
+          },
+          {
+            "place": {
+              "segments": [
+                {
+                  "type": "member",
+                  "name": "params"
+                },
+                {
+                  "type": "member",
+                  "name": "threadSource"
+                }
+              ]
+            },
+            "values": [
+              "system"
+            ]
+          }
+        ]
       },
       {
         "method": "thread.resume",
