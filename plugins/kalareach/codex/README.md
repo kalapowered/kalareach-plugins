@@ -22,7 +22,13 @@ that only an application server of this shape needs said:
   `thread/closed`, `thread/archived` and `thread/deleted` end it; `turn/started` and
   `turn/completed` name the running turn; `serverRequest/resolved` names the request that was
   answered or cleared. The host reads those places itself. Without them it would know nothing of
-  the thread, and every rich operation would stay refused.
+  the thread, and every rich operation would stay refused. One start is not a selection: a
+  `thread/start` whose `params.ephemeral` is `true` and whose `params.threadSource` is `"system"` is
+  a thread the terminal starts for its own purposes, such as the title of a conversation, and it
+  never shows it. The table states those two conditions on the start route. A request that meets
+  both opens no selection, its reply names no conversation, and the `thread/unsubscribe` that later
+  ends that thread leaves the conversation as it was. A place that is missing or holds another
+  value fails the condition, and the request is a selection.
 - **Decision response.** Codex reads the answer to an approval as the response to the request it
   asked, `{"id": <the request's id>, "result": {"decision": <value>}}`. The table maps the four
   decisions to the values Codex reads (`accept`, `acceptForSession`, `decline`, `cancel`) for
@@ -49,11 +55,22 @@ typed: no gateway runs there.
 ## What it classifies
 
 Every stable method name of the pinned schema, 195 of them, plus `process/spawn`, which no request
-union lists and which is kept classified. Each has the evidence it was classified against. Reads are
-observations. Starting, steering, interrupting and compacting a thread are mutations, and so is every
-reverse request whose answer changes what the agent does. The account, configuration and
-authentication methods are credential methods: the broker keeps their answers and never passes them
-to a component.
+union lists and which is kept classified. It also lists nineteen messages that a 0.155.1 terminal
+sends or receives and that the stable schema leaves out, seventeen requests and two notifications.
+Each has the evidence it was classified against. Reads are observations. Starting, steering,
+interrupting and compacting a thread are mutations, and so is every reverse request whose answer
+changes what the agent does. The account, configuration and authentication methods are credential
+methods: the broker keeps their answers and never passes them to a component.
+
+The nineteen are these. Observations: `collaborationMode/list` (the terminal sends it at every
+start, before it starts a thread), `environment/info`, `thread/backgroundTerminals/list`,
+`thread/search`, and the notifications `rawResponse/completed` and `rawResponseItem/completed`.
+Mutations: `thread/settings/update` (the terminal sends it at every change of model, permissions,
+personality, effort or collaboration mode), `thread/backgroundTerminals/clean`,
+`thread/memoryMode/set`, `thread/queue/add`, `thread/realtime/start`,
+`thread/realtime/appendSpeech`, `thread/realtime/stop`, `memory/reset`, `project/create` and
+`account/bedrock/setup`. Credential methods: `getAuthStatus`, `userVerification/verify` and
+`account/bedrock/discover`.
 
 Thirty-eight methods are declared unsupported rather than proxied. They run outside Codex's sandbox
 (`thread/shellCommand`, `process/spawn`, `command/exec` and its write, terminate and resize);
@@ -105,23 +122,42 @@ is already running, a steer or a cancel is refused until Codex says a turn start
 to a resume does not name the turn. A prompt is not refused then: the host knows of no running turn,
 and it learns of one only from `turn/started`.
 
-## What is not measured
+## What is measured, and what is not
 
 The host's cases for this package run against a stand-in for Codex's App Server in the core
-repository, not against a live Codex. Five things about a real 0.155.1 session are assumed and left
-for a run that has one:
+repository. The stand-in sends what a recording of the pinned 0.155.1 terminal and server showed
+them sending: the helper thread for a conversation's title, the marks on the thread objects, the old
+thread's `thread/unsubscribe` after `/new` and `/fork`, and the unsubscribe before `/quit`. Two things
+about a real session have been measured:
+
+1. The terminal shows a turn the host started.
+2. The terminal starts a thread of its own for the title of a conversation. At the first user message
+   of a thread that has no name, and again at each later one while it has none, it sends
+   `config/read`, then `thread/start` with `ephemeral` true and `threadSource` `"system"`, runs a
+   turn on that thread and sends `thread/unsubscribe` for it, when the turn ends or after thirty
+   seconds. The recap and the rename suggestion use the same thread. The same flow follows a prompt
+   a device sent. The conditions the table states on the start route are the terminal's own test for
+   a hidden thread, and the cases read the binding after a turn and after that flow has ended.
+
+Three things are assumed and left for a run that has one:
 
 1. The terminal closes its approval prompt when Codex sends `serverRequest/resolved` for a request
    a device answered.
-2. The terminal shows a turn the host started.
-3. `thread/start`, `thread/resume` and `thread/fork` are the only ways the terminal selects a
-   thread, and the thread a reply names is the one the terminal shows. A thread the terminal starts
-   for its own purposes on the same connection, an ephemeral one for instance, would be taken as the
-   conversation it is in.
-4. The 195 stable method names are every method a 0.155.1 session sends. A method outside the list
-   is read as a mutation.
-5. A prompt sent over a running turn is not a queue, which is why the host refuses one while it
+2. The 195 stable method names and the nineteen above are every method a 0.155.1 session sends. A
+   method outside them is read as a mutation, and it holds rich operations back until the terminal
+   selects a thread again.
+3. A prompt sent over a running turn is not a queue, which is why the host refuses one while it
    knows a turn is running.
+
+Three limits are known, and no reading of an unchanged 0.155.1 closes them:
+
+- A switch the terminal makes from its own cache, such as the return from a side conversation or the
+  view of a sub-agent, sends no frame. The binding can then name a thread the terminal does not
+  show.
+- Approval requests and item notifications are not attributed by thread, so a sub-agent's approval
+  is listed as the instance's.
+- A turn that already runs when the terminal selects a thread is not recovered from the reply,
+  which does not name it. A steer or a cancel is refused until Codex says a turn started.
 
 Queueing a prompt is declared off for the same reason, and the matrix's case for queued prompts is
 open.
@@ -146,6 +182,6 @@ The frames are drawn from the situations the integration has to handle: starting
 and unsubscribing a thread, the notifications that end one, steering with an expected turn, a turn
 start and the notifications that report it, two approval requests, a resolved server request, a
 connection opening again and a turn being interrupted, two methods the table refuses outright or
-treats as carrying a credential, and one it does not list at all, which is read as a mutation
-because that is what an unlisted method is. Each is a frame, not a sequence: what a host does across
+treats as carrying a credential, and one it does not list at all (the experimental
+`mock/experimentalMethod`), which is read as a mutation because that is what an unlisted method is. Each is a frame, not a sequence: what a host does across
 two pending requests, or across a reconnection, is the gateway's and is not settled here.

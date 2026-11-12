@@ -339,15 +339,14 @@
       "situation": "a method the table does not list",
       "note": "An experimental request no stable schema of this release lists, so it is a mutation by default",
       "frame": {
-        "method": "thread/realtime/start",
+        "method": "mock/experimentalMethod",
         "id": 50,
         "params": {
-          "threadId": "thr_123",
-          "prompt": "Hello"
+          "value": "x"
         }
       },
       "expect": {
-        "wire_name": "thread/realtime/start",
+        "wire_name": "mock/experimentalMethod",
         "method": null,
         "direction": null,
         "class": "mutation",
