@@ -7,6 +7,20 @@
 # informational notice is printed and does not fail the check, because `cargo audit` has no setting
 # that would make it. A yanked release is not an advisory, and the check does not look for one.
 
+[advisories]
+ignore = [
+    # rustix 1.1.4 is unsound: its six extended-attribute functions (`getxattr`, `lgetxattr`,
+    # `fgetxattr`, `listxattr`, `llistxattr`, `flistxattr`) mark bytes as initialized that a call
+    # with a zero-length buffer never wrote. The lock holds 1.1.4 because the pinned core release's
+    # protocol crate (kr-protocol) pins `rustix = "=1.1.4"`, so the lock cannot move on its own. No
+    # code this workspace reaches calls one of the six functions: the six crates that depend on
+    # rustix (cap-primitives, cap-std, fs-set-times, kr-protocol, rustix-linux-procfs, tempfile)
+    # call none, and the lock holds no crate that wraps extended attributes. So the functions can
+    # give no other result here. Remove this once the core pin moves to a release whose workspace
+    # holds rustix 1.1.6 or later; the entry goes out in the commit that moves the pin.
+    "RUSTSEC-2026-0486",
+]
+
 [output]
 deny = ["unmaintained", "unsound"]
 quiet = false
