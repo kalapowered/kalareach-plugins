@@ -835,7 +835,7 @@ dependencies = [
 [[package]]
 name = "kr-cbor"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=5f07b1a50906d598be944381bd1f428d41fc574d#5f07b1a50906d598be944381bd1f428d41fc574d"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=28abb2a9c397011428ca7d6c3f71a2c30d5ecb77#28abb2a9c397011428ca7d6c3f71a2c30d5ecb77"
 dependencies = [
  "ciborium",
  "serde",
@@ -846,7 +846,7 @@ dependencies = [
 [[package]]
 name = "kr-plugin-sdk"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=5f07b1a50906d598be944381bd1f428d41fc574d#5f07b1a50906d598be944381bd1f428d41fc574d"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=28abb2a9c397011428ca7d6c3f71a2c30d5ecb77#28abb2a9c397011428ca7d6c3f71a2c30d5ecb77"
 dependencies = [
  "cap-fs-ext",
  "cap-std",
@@ -864,7 +864,7 @@ dependencies = [
 [[package]]
 name = "kr-protocol"
 version = "0.1.0"
-source = "git+https://github.com/kalapowered/kalareach.git?rev=5f07b1a50906d598be944381bd1f428d41fc574d#5f07b1a50906d598be944381bd1f428d41fc574d"
+source = "git+https://github.com/kalapowered/kalareach.git?rev=28abb2a9c397011428ca7d6c3f71a2c30d5ecb77#28abb2a9c397011428ca7d6c3f71a2c30d5ecb77"
 dependencies = [
  "base64 0.23.1",
  "kr-cbor",
@@ -1084,9 +1084,9 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "1.1.4"
+version = "1.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190"
+checksum = "e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa"
 dependencies = [
  "bitflags 2.13.2",
  "errno",
