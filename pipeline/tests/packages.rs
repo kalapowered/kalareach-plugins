@@ -167,7 +167,10 @@ const BUNDLED_CONNECTORS: &[BundledConnector] = &[
             ("a conversation the server ends", "thread/archived"),
             ("a conversation the server ends", "thread/closed"),
             ("a conversation the server ends", "thread/deleted"),
-            ("a method the table does not list", "mock/experimentalMethod"),
+            (
+                "a method the table does not list",
+                "mock/experimentalMethod",
+            ),
             ("a thread the terminal selects", "thread/fork"),
             ("a thread the terminal selects", "thread/resume"),
             ("an uncertain turn/start result", "turn/start"),
