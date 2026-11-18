@@ -127,8 +127,9 @@ and it learns of one only from `turn/started`.
 The host's cases for this package run against a stand-in for Codex's App Server in the core
 repository. The stand-in sends what a recording of the pinned 0.155.1 terminal and server showed
 them sending: the helper thread for a conversation's title, the marks on the thread objects, the old
-thread's `thread/unsubscribe` after `/new` and `/fork`, and the unsubscribe before `/quit`. Two things
-about a real session have been measured:
+thread's `thread/unsubscribe` after `/new` and `/fork`, and the unsubscribe before `/quit`. Five
+things about a real session of the pinned 0.155.1 build on macOS arm64 have been measured, each in a
+passed run of a gateway case of the host's agent test driver:
 
 1. The terminal shows a turn the host started.
 2. The terminal starts a thread of its own for the title of a conversation. At the first user message
@@ -138,16 +139,25 @@ about a real session have been measured:
    seconds. The recap and the rename suggestion use the same thread. The same flow follows a prompt
    a device sent. The conditions the table states on the start route are the terminal's own test for
    a hidden thread, and the cases read the binding after a turn and after that flow has ended.
+3. The terminal closes its approval prompt when Codex sends `serverRequest/resolved` for a request a
+   device answered. The prompt closed while the turn was still open, and the command ran once.
+4. In one session, with one turn and the slash commands the case sent, the binding was never
+   suspended: that session showed no method outside the 195 stable names and the nineteen above.
+5. A prompt a device sent over a running turn is refused by the host before any `turn/start`. The
+   agent's own record of the conversation holds the terminal's prompt and not the device's.
 
-Three things are assumed and left for a run that has one:
+Three things are still assumed:
 
-1. The terminal closes its approval prompt when Codex sends `serverRequest/resolved` for a request
-   a device answered.
-2. The 195 stable method names and the nineteen above are every method a 0.155.1 session sends. A
+1. The 195 stable method names and the nineteen above are every method a 0.155.1 session sends. The
+   one session that was measured showed no other, and the host keeps no cumulative record of
+   methods, so a suspension that began and ended between two reads of the binding would not show. A
    method outside them is read as a mutation, and it holds rich operations back until the terminal
    selects a thread again.
-3. A prompt sent over a running turn is not a queue, which is why the host refuses one while it
-   knows a turn is running.
+2. A prompt sent over a running turn is not a queue, which is why the host refuses one while it
+   knows a turn is running. A real run keeps no record of what the server received, so that the
+   prompt did not arrive is read from the agent's own record of the conversation.
+3. An approval that a device and the terminal answer together leaves one decision. The case that
+   was measured has a device as the only one to answer.
 
 Three limits are known, and no reading of an unchanged 0.155.1 closes them:
 
