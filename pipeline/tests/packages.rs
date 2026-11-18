@@ -859,7 +859,7 @@ const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
             r#" typed alone or followed by "resume" or "fork" and no option, and only on a host"#,
             r#" that runs such a server; any other invocation runs as typed."#,
         ),
-        sdk_range: ">=0.1.6, <0.2.0",
+        sdk_range: ">=0.1.7, <0.2.0",
     },
 ];
 
