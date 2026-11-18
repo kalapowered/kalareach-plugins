@@ -3271,7 +3271,12 @@ fn two_profiles_of_one_agent_are_told_apart_by_an_installation_location_or_tie()
 /// name, settings key and launch flag disagreed would install a surface Claude Code never loads, and
 /// would look installed. The vendor's own gates (the channel allowlist, the sign-in, the
 /// organisation's channel setting) are decided by Claude Code where it runs; the README lists
-/// them, and none is a claim made here.
+/// them, and none is a claim made here. The consent is what the owner is shown when confirming the
+/// installation: the bridge's grant statement, then the host's own reading of the command
+/// integration's flags; the integration's own grant statement is not shown. The core binds that text
+/// into the confirmation's plan by its digest (`crates/kr-protocol/src/confirmation.rs` in the
+/// core), so the owner accepts exactly the words this package carries, and those words have to say
+/// what the recipe does.
 #[test]
 fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_removal() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -3326,6 +3331,7 @@ fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_re
         .expect("the package ships a bridge");
     let key = format!("enabledPlugins.{name}@skills-dir");
     let mut files = 0;
+    let mut keys = 0;
     for step in &bridge.install {
         match step {
             kr_plugin_sdk::plugin::BridgeStep::InstallFile { destination, .. } => {
@@ -3344,6 +3350,7 @@ fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_re
                     (file.as_str(), added.as_str(), value.as_str()),
                     ("settings.json", key.as_str(), "true")
                 );
+                keys += 1;
             }
         }
     }
@@ -3353,7 +3360,8 @@ fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_re
     });
     assert!(removed_key, "removal takes the key back out");
 
-    // A launch names the plugin the recipe installs, by the development flag.
+    // A launch names the plugin the recipe installs, by the development flag; the host reads these
+    // flags back to the owner at the installation's confirmation, in its own statement.
     let integration = manifest
         .command_integration
         .as_ref()
@@ -3365,6 +3373,49 @@ fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_re
             format!("plugin:{name}@skills-dir")
         ]
     );
+
+    // Consent. At the owner's confirmation of the installation the host shows the bridge's grant
+    // statement, and the confirmation's plan binds it by its digest. It says how many files the
+    // install writes and removal deletes, and that the install adds one key: the numbers the recipe
+    // above holds. The reviewed words are pinned whole by
+    // `a_native_bridge_grant_states_where_the_code_runs`; what this case holds is that the
+    // statement the owner accepts and the recipe agree.
+    let removed_files = bridge
+        .remove
+        .iter()
+        .filter(|removal| {
+            matches!(
+                removal,
+                kr_plugin_sdk::plugin::BridgeRemoval::RemoveFile { .. }
+            )
+        })
+        .count();
+    let in_words = |count: usize| match count {
+        1 => "one",
+        2 => "two",
+        3 => "three",
+        _ => panic!("the statement has no word for {count}"),
+    };
+    let shown = bridge.grant_statement.as_str();
+    for (what, said) in [
+        (
+            "the files the install writes",
+            format!("Installs {} registration files", in_words(files)),
+        ),
+        (
+            "the keys the install adds",
+            format!("adds {} settings key", in_words(keys)),
+        ),
+        (
+            "the files removal deletes",
+            format!("deletes exactly those {} files", in_words(removed_files)),
+        ),
+    ] {
+        assert!(
+            shown.contains(&said),
+            "the statement the owner is shown gives {what} as {said:?}: {shown}"
+        );
+    }
 
     // The process reaches the worker over a private socket the worker made, and the package asks
     // for what answering an approval takes, each by its own grant.
