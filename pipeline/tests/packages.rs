@@ -3271,7 +3271,10 @@ fn two_profiles_of_one_agent_are_told_apart_by_an_installation_location_or_tie()
 /// name, settings key and launch flag disagreed would install a surface Claude Code never loads, and
 /// would look installed. The vendor's own gates (the channel allowlist, the sign-in, the
 /// organisation's channel setting) are decided by Claude Code where it runs; the README lists
-/// them, and none is a claim made here.
+/// them, and none is a claim made here. The consent the package records is its two grant statements:
+/// the one a person reads before the bridge installs says where its code runs, which key switches it
+/// on and what removal takes back out, and the one read before a launch names the same plugin and
+/// says Claude Code asks for its confirmation in the terminal.
 #[test]
 fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_removal() {
     let loaded = packages::load(&root()).expect("the repository loads");
@@ -3365,6 +3368,35 @@ fn claude_codes_channel_surface_is_recorded_by_one_plugin_name_from_launch_to_re
             format!("plugin:{name}@skills-dir")
         ]
     );
+
+    // Consent. The statement a person reads before the bridge installs says that Claude Code starts
+    // the forwarder outside the plugin sandbox, how many files and which key the install writes, and
+    // that removal takes the same key and files back out.
+    let install_grant = bridge.grant_statement.as_str();
+    for stated in [
+        "outside the KalaReach plugin sandbox, outside Wasmtime",
+        "three registration files",
+        "adds one settings key",
+        "Removal takes the key back out and deletes exactly those three files",
+    ] {
+        assert!(
+            install_grant.contains(stated),
+            "the install grant says {stated:?}: {install_grant}"
+        );
+    }
+    // The statement read before a launch names the plugin the flag names, says the flag skips the
+    // allowlist for that plugin only, and says the person confirms it in the terminal.
+    let launch_grant = integration.grant_statement.as_str();
+    for stated in [
+        name.as_str(),
+        "skips the channel allowlist for that one plugin",
+        "confirm it in the terminal before the session starts",
+    ] {
+        assert!(
+            launch_grant.contains(stated),
+            "the launch grant says {stated:?}: {launch_grant}"
+        );
+    }
 
     // The process reaches the worker over a private socket the worker made, and the package asks
     // for what answering an approval takes, each by its own grant.
