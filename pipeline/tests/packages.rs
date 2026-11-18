@@ -3573,6 +3573,54 @@ fn every_bundled_adapter_is_present_and_declares_no_surface_of_its_own() {
     }
 }
 
+/// KR-REQ-12.29: every package takes the manual attachment path, which a package declares by
+/// saying nothing: its `attachments` member is null and none of its actions has the effect
+/// `upstream.attachment`, so no package inserts an attachment into a draft or a composer. The
+/// daemon admits the manual path without a declaration and refuses the other two, so a package
+/// that declares insertion or an attachment action fails here until the daemon admits that
+/// declaration in the same change.
+#[test]
+fn every_package_takes_the_manual_attachment_path() {
+    let loaded = packages::load(&root()).expect("the repository loads");
+    // A rejected package is not read below, so it could declare anything unseen.
+    assert!(
+        loaded.rejected.is_empty(),
+        "{:?}",
+        loaded
+            .rejected
+            .iter()
+            .map(|rejected| &rejected.relative)
+            .collect::<Vec<_>>()
+    );
+    assert!(
+        !loaded.repository.packages.is_empty(),
+        "the repository carries no package"
+    );
+    for package in &loaded.repository.packages {
+        let manifest = &package.package.manifest;
+        assert!(
+            manifest.attachments.0.is_none(),
+            "{} declares attachment insertion {:?}, which is not the manual path",
+            package.relative,
+            manifest
+                .attachments
+                .0
+                .as_ref()
+                .map(|attachments| attachments.insertion)
+        );
+        for action in &manifest.actions {
+            assert_ne!(
+                action.effect,
+                EffectClass::UpstreamAttachment,
+                "{} declares the action {} with the effect {}, which is not the manual path",
+                package.relative,
+                action.id,
+                action.effect
+            );
+        }
+    }
+}
+
 #[test]
 fn a_tampered_package_is_rejected() {
     let source = root().join("plugins/kalareach/example-declarative");
