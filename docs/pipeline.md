@@ -329,7 +329,7 @@ reviewer writes it there:
   variables, the server for the terminal with its arguments and launching words, the package's
   grant statement and the list the host renders from the declaration). A package that declares one
   also has to state exactly the SDK range reviewed with it: `>=0.1.3, <0.2.0`, and
-  `>=0.1.6, <0.2.0` for the one that declares a server for the terminal.
+  `>=0.1.7, <0.2.0` for the one that declares a server for the terminal.
 - `REVIEWED_GRANTS`: the installation grant of every native bridge, word for word.
 - `PROFILE_PAIRS`: every pair of profiles of one bundled agent, declared, and both profiles of a pair
   published by one publisher.
