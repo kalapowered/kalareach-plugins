@@ -729,9 +729,11 @@ struct ReviewedIntegration {
     variables: &'static [(&'static str, &'static str)],
     /// The server for the terminal, or none when the reviewed declaration has none.
     backend: Option<ReviewedBackend>,
-    /// What the package's grant says beside the list the host renders from the declaration.
+    /// The statement the package writes inside its declaration. The host does not show it at the
+    /// installation's confirmation; it is reviewed here with the rest of the declaration.
     grant_statement: &'static str,
-    /// The list the host renders from the declaration for the grant, exactly as the owner reads it.
+    /// The host's own reading of the declaration, exactly as the installation's confirmation shows
+    /// it to the owner, after the bridge's statement where the release installs a bridge.
     listed: &'static str,
     /// The package contract range the package states: a declaration is read by a host on the
     /// contract that has every member it uses, and the range is how an earlier host refuses it.
@@ -742,11 +744,13 @@ struct ReviewedIntegration {
 ///
 /// The validator checks that a declaration's command is one of the package's own executables, that
 /// each flag is one whole visible argument and that each variable is on the contract's closed list.
-/// It cannot check that the flags are the ones the application's qualification found, or that the
-/// statement a person reads before granting the integration says what granting it costs them. So
-/// each declaration is written here, and the package has to carry exactly that: a new declaration,
-/// or a changed command, flag, variable, server for the terminal or statement, fails until it is
-/// reviewed and written here.
+/// It cannot check that the flags are the ones the application's qualification found, or that what
+/// the owner is shown of them, the host's own reading of the declaration at the installation's
+/// confirmation, says what granting the integration costs them. The statement the package writes
+/// inside the declaration is not shown there; it is reviewed with the rest. So each declaration is
+/// written here, and the package has to carry exactly that: a new declaration, or a changed
+/// command, flag, variable, server for the terminal or statement, fails until it is reviewed and
+/// written here.
 const REVIEWED_INTEGRATIONS: &[ReviewedIntegration] = &[
     ReviewedIntegration {
         plugin: "kalareach/claude-code",
@@ -938,8 +942,8 @@ impl ReviewedIntegration {
         None
     }
 
-    /// Why `statement` is not the list reviewed for this integration, which the grant shows the
-    /// owner beside its statement, or nothing when it is.
+    /// Why `statement` is not the list reviewed for this integration, which the installation's
+    /// confirmation shows the owner as the host's own reading, or nothing when it is.
     ///
     /// The whole statement is compared with the reviewed list, so nothing is added, dropped or
     /// moved anywhere in it, in a string or between two. The reviewed list is then read back, so
