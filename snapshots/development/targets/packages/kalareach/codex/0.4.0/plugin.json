@@ -2,14 +2,14 @@
   "manifest_version": 1,
   "publisher_id": "kalareach",
   "plugin_name": "codex",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "display_name": "Codex CLI",
   "description": "Recognises Codex CLI, serves it behind a gateway, reads its App Server through a declarative table, answers its approvals and stops the turn it is running.",
-  "sdk_range": ">=0.1.6, <0.2.0",
+  "sdk_range": ">=0.1.7, <0.2.0",
   "wit_range": ">=0.1.0, <0.2.0",
   "source": {
     "repository": "https://github.com/kalapowered/kalareach-plugins",
-    "revision": "cb39424b9bf23de38b91d6cbc787d4824439877d"
+    "revision": "c354262454aa399a93bfd8f2d94f33994a4b3174"
   },
   "match_rules": [
     {
@@ -61,14 +61,14 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "bc2c3abb093962d80cc4cf09449eebf71a1e25f25341c2cbb318807d22cef373",
-      "size_bytes": "10140"
+      "digest": "a8bf8dec068699fbbe37b39f6937f9edd11caa9228a5ce896722d951518edbf0",
+      "size_bytes": "14217"
     },
     {
       "role": "connector",
       "path": "connector.json",
-      "digest": "62b6cecf01bf2bd1fa913770b608927cd65e622b54f7563f1a260074fed28e1b",
-      "size_bytes": "76645"
+      "digest": "8751825a55a76ec6a38a9325938e59904a5737d5996e865797a599ac95a9ec5d",
+      "size_bytes": "83698"
     },
     {
       "role": "fixture",
@@ -79,8 +79,8 @@
     {
       "role": "asset",
       "path": "fixtures/frames.json",
-      "digest": "2c7d0791296851308672afba6eeba47d3f2432abd3f9957adeee2f9a7b28b1dd",
-      "size_bytes": "14073"
+      "digest": "e040f7ad560326287c6b4e0746c20a1dc4aafbc914a61cef67769692f6d6b614",
+      "size_bytes": "14039"
     },
     {
       "role": "presentation",

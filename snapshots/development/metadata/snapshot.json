@@ -2,7 +2,7 @@
   "signatures": [
     {
       "keyid": "770e80f30b806de2f71dda174de757d6e17afeb9a8c03027cb14699cddea15fb",
-      "sig": "f4d233c14b88680899da48bcffc62e4ee4403dbcc88eeda0cd142ae4d97d74c728577b6cbbf66e103775d4b672c5fa83f308dac178b600f2e15d8f17ea843b03"
+      "sig": "064749b273dcf9cd91de901e730bd74c49a06341c73c83e49f7217742a997fc7c16925f5ff9a043120ffd0e788af7a97489526d502acc8ed88fb2c6410b5520c"
     }
   ],
   "signed": {
@@ -11,13 +11,13 @@
     "meta": {
       "targets.json": {
         "hashes": {
-          "sha256": "ff9e9cfd0edf31d219f8bcae1d99a4bb050f165189fe15b900eb78624609cdde"
+          "sha256": "dca2e9909b6394aa70ea88e31de39f721f868e23b9f3988b72ea196694c60bb8"
         },
         "length": 13150,
-        "version": 5
+        "version": 6
       }
     },
     "spec_version": "1.0.0",
-    "version": 5
+    "version": 6
   }
 }
