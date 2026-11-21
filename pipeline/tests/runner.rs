@@ -404,6 +404,43 @@ fn a_probe_only_call_that_exited_0_with_no_not_run_line_is_not_a_complete_run() 
     );
 }
 
+/// What the runner's header and usage say of the generation a run installs from is true of every
+/// part: part 5b on the stand-in route installs the core repository's own fixture package whatever
+/// the generation is, and a candidate lists every pinned build a host can launch, not those with no
+/// record.
+#[test]
+fn the_runners_texts_give_the_stand_in_exception_and_what_a_candidate_lists() {
+    let script = std::fs::read_to_string(root().join("scripts").join("e2e-agents.sh"))
+        .expect("the runner reads");
+    // A comment's lines joined, so a sentence that wraps is read as one.
+    let comments = script
+        .lines()
+        .filter_map(|line| line.strip_prefix('#'))
+        .map(str::trim)
+        .collect::<Vec<_>>()
+        .join(" ");
+    let exception = "part 5b on the stand-in route installs the core repository's own fixture package whatever the generation is";
+    let (header, usage) = comments
+        .split_once("Usage:")
+        .expect("the header has a usage");
+    assert!(
+        header.contains(&format!("(snapshots/development by default; {exception})")),
+        "item 4 of the header gives the exception"
+    );
+    assert!(
+        usage.contains(&format!("(default: snapshots/development); {exception};")),
+        "the usage of --generation gives the exception"
+    );
+    assert!(
+        script.contains("it names every pinned build a host can launch, without reading a qualification record"),
+        "the notice says what a candidate names"
+    );
+    assert!(
+        !script.contains("pinned builds with no record"),
+        "a candidate names builds that have a record too"
+    );
+}
+
 /// The package a run installs is the generation's, so the generation the runner copies holds the
 /// package the record is for: the manifest digest of the tree's package is the one its index names.
 #[test]

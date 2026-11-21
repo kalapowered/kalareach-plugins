@@ -294,10 +294,10 @@ failed one keeps the build out. `docs/pipeline.md` describes the rest.
 
 A host serves the gateway route only to a build that the generation's index lists for the package.
 `--generation DIR` names the signed generation the real routes install packages from, by default
-`snapshots/development`, which lists no build before a record exists. Part 5b on the stand-in route
-installs the core repository's own fixture package whatever the generation is. For a run before the record, a
-candidate generation made with `kalareach-catalogue build --development --candidate` lists the pinned
-builds with no record; it is signed with development keys only, and the run says when its generation
+`snapshots/development`, which lists a build only after a record shows it passing. Part 5b on the
+stand-in route installs the core repository's own fixture package whatever the generation is. For a run before the record, a
+candidate generation made with `kalareach-catalogue build --development --candidate` lists every
+pinned build a host can launch, without reading a qualification record; it is signed with development keys only, and the run says when its generation
 is one. A candidate is for a run on one machine and is no release.
 
 ```bash

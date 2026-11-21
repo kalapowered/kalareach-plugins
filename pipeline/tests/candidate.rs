@@ -121,6 +121,10 @@ async fn a_candidate_generation_lists_the_pinned_build_and_says_candidate_in_its
         printed.contains("candidate generation: it names"),
         "{printed}"
     );
+    assert!(
+        printed.contains("pinned build(s) that no qualification record shows passing"),
+        "{printed}"
+    );
     assert!(printed.contains(&pinned_codex_digest()), "{printed}");
     let verified = tuf::verify(&candidate, false)
         .await

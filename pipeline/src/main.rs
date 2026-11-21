@@ -418,8 +418,8 @@ async fn build(root: &std::path::Path, args: &BuildArgs) -> Result<()> {
             })
             .collect();
         println!(
-            "candidate generation: it names {} pinned build(s) that the ordinary load leaves out \
-             for want of a record, and it is signed with development keys, so it is no release:",
+            "candidate generation: it names {} pinned build(s) that no qualification record shows \
+             passing, and it is signed with development keys, so it is no release:",
             named.len()
         );
         for (plugin_id, release, build) in named {

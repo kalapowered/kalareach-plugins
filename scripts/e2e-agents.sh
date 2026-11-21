@@ -17,8 +17,10 @@
 #      execution context the host gives it, names their login keychain as its default.
 #   4. For each package, and each selected part the driver has a test for, the driver starts a host
 #      from those binaries on the internal disk, pairs an owner device, installs the package from a
-#      copy of the generation --generation names (snapshots/development by default) on that device's confirmation, starts the agent by typing its
-#      command at the prompt of a managed shell, and checks the part and its control. A part whose
+#      copy of the generation --generation names (snapshots/development by default; part 5b on the
+#      stand-in route installs the core repository's own fixture package whatever the generation is)
+#      on that device's confirmation, starts the agent by typing its command at the prompt of a
+#      managed shell, and checks the part and its control. A part whose
 #      session searched or ran anything but the pinned build, its runtime, the run's own and the
 #      system's did not test the build, and is recorded as not run, naming what ran. A part whose
 #      host installed anything but this tree's package failed.
@@ -62,9 +64,11 @@
 #                     then, and takes a path in a cache directory for a doubtful command
 #   --agent PACKAGE   run this package only, as publisher/plugin; repeat for several
 #   --case PART       run this part only, such as 2b or 14.03a; repeat for several
-#   --generation DIR  the signed generation every package is installed from (default:
-#                     snapshots/development); a candidate generation made by `kalareach-catalogue
-#                     build --development --candidate` goes here, and the run says so
+#   --generation DIR  the signed generation the real routes install packages from (default:
+#                     snapshots/development); part 5b on the stand-in route installs the core
+#                     repository's own fixture package whatever the generation is; a candidate
+#                     generation made by `kalareach-catalogue build --development --candidate`
+#                     goes here, and the run says so
 #   --write           write the records into fixtures/agents
 #
 # It exits 0 when every part it ran passed, 1 when one failed, the host did not build or a login's
@@ -508,7 +512,7 @@ generation="$evidence/generation"
   refuse "$generation_source is not a generation: it holds no root.json, metadata/targets.json and targets/index.json"
 cp -R "$generation_source" "$generation"
 if [ "$(jq -r '.signed.targets["index.json"].custom.candidate // false' "$generation/metadata/targets.json")" = "true" ]; then
-  echo "this run installs from a candidate generation: it names the pinned builds with no record, and it is signed with development keys, so it is no release" >&2
+  echo "this run installs from a candidate generation: it names every pinned build a host can launch, without reading a qualification record, and it is signed with development keys, so it is no release" >&2
 fi
 
 # The executable each named runtime is on this machine, as JSON. The driver links each into a
