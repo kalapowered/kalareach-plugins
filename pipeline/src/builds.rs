@@ -252,9 +252,17 @@ pub struct Builds {
     /// By package and release.
     named: BTreeMap<(String, String), Vec<QualifiedBuild>>,
     omitted: Vec<Omitted>,
+    /// Whether the builds were named without a record ([`load_candidate`]).
+    candidate: bool,
 }
 
 impl Builds {
+    /// Whether these builds were named without a qualification record, for a candidate generation.
+    #[must_use]
+    pub const fn is_candidate(&self) -> bool {
+        self.candidate
+    }
+
     /// The builds one release names, in their canonical order.
     #[must_use]
     pub fn for_release(&self, plugin_id: &str, release: &str) -> Vec<QualifiedBuild> {
@@ -290,10 +298,33 @@ impl Builds {
 /// repository does not publish or publishes without a connector table, or a record cannot be read or
 /// breaks its form.
 pub fn load(root: &Path, packages: &[LoadedPackage]) -> Result<Builds> {
+    load_with(root, packages, false)
+}
+
+/// Decides which pinned builds a candidate generation names: the same as [`load`], except that no
+/// qualification record is read and none is required, so every pinned build a host could run is
+/// named.
+///
+/// A candidate generation exists so that a real run can install the package and have the host
+/// serve its route to a build no record shows passing yet. It says nothing of whether the build
+/// qualifies, and the build that names it carries the mark that says so.
+///
+/// # Errors
+///
+/// Returns an error when the build list is refused ([`read_list`]) or pins a build for a package
+/// this repository does not publish or publishes without a connector table.
+pub fn load_candidate(root: &Path, packages: &[LoadedPackage]) -> Result<Builds> {
+    load_with(root, packages, true)
+}
+
+fn load_with(root: &Path, packages: &[LoadedPackage], candidate: bool) -> Result<Builds> {
     let Some(list) = read_list(root)? else {
         return Ok(Builds::default());
     };
-    let mut builds = Builds::default();
+    let mut builds = Builds {
+        candidate,
+        ..Builds::default()
+    };
     for pinned in &list.builds {
         let package =
             connector_package(packages, &pinned.package).map_err(|what| Error::Layout {
@@ -307,7 +338,11 @@ pub fn load(root: &Path, packages: &[LoadedPackage]) -> Result<Builds> {
             &pinned.version.to_string(),
             &list.platform,
         );
-        let reasons = reasons_to_leave_out(root, &relative, &list.platform, pinned, package)?;
+        let reasons = if candidate {
+            launch_reasons(pinned)
+        } else {
+            reasons_to_leave_out(root, &relative, &list.platform, pinned, package)?
+        };
         if reasons.is_empty() {
             builds
                 .named
@@ -380,6 +415,22 @@ fn canonical(
     )
 }
 
+/// What keeps a pinned build from naming an executable a host runs, whatever a record shows.
+fn launch_reasons(pinned: &Pinned) -> Vec<String> {
+    match pinned.launch {
+        Launch::Script => vec![
+            "the pinned file is a script, whose process is its interpreter, so it names no \
+             executable a host runs"
+                .to_owned(),
+        ],
+        Launch::Wheel => vec![
+            "the pinned file is a wheel, an archive, so it names no executable a host runs"
+                .to_owned(),
+        ],
+        Launch::Native | Launch::Child => Vec::new(),
+    }
+}
+
 /// Everything that keeps one pinned build out of its release's entry; nothing when it is named.
 fn reasons_to_leave_out(
     root: &Path,
@@ -406,19 +457,7 @@ fn reasons_to_leave_out(
             ),
         });
     }
-    let mut reasons = Vec::new();
-    match pinned.launch {
-        Launch::Script => reasons.push(
-            "the pinned file is a script, whose process is its interpreter, so it names no \
-             executable a host runs"
-                .to_owned(),
-        ),
-        Launch::Wheel => reasons.push(
-            "the pinned file is a wheel, an archive, so it names no executable a host runs"
-                .to_owned(),
-        ),
-        Launch::Native | Launch::Child => {}
-    }
+    let mut reasons = launch_reasons(pinned);
     reasons.extend(records::release_problems(&record, package));
     reasons.extend(records::build_problems(
         &record,

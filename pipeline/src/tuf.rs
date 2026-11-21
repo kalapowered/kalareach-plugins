@@ -203,7 +203,14 @@ pub async fn build(
         .timestamp_version(version)
         .timestamp_expires(expiries.timestamp);
     for target in &staged {
-        let built = Target::from_path(&target.path).await.map_err(Error::from)?;
+        let mut built = Target::from_path(&target.path).await.map_err(Error::from)?;
+        if repository.builds.is_candidate() && target.name == INDEX_TARGET {
+            // The index is the target a host reads the builds from, so the signed metadata that
+            // pins it says what its builds are.
+            built
+                .custom
+                .insert(CANDIDATE_MARK.to_owned(), serde_json::Value::Bool(true));
+        }
         check_target_against_validation(&target.name, &built, &declared, &index_bytes)?;
         editor.add_target(target.name.as_str(), built)?;
     }
@@ -607,11 +614,17 @@ pub struct BuildOutcome {
     pub retired: Option<PathBuf>,
 }
 
+/// The member of the index target's `custom` in the signed targets metadata that says the
+/// generation is a candidate: its builds were named without a qualification record.
+pub const CANDIDATE_MARK: &str = "candidate";
+
 /// What verification found.
 #[derive(Clone, Debug)]
 pub struct Verified {
     /// How many targets the metadata pins.
     pub target_count: usize,
+    /// Whether the signed metadata says the generation is a candidate ([`CANDIDATE_MARK`]).
+    pub candidate: bool,
     /// The index the generation carries.
     pub index: CatalogueIndex,
 }
@@ -663,15 +676,16 @@ pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verif
     let index_name = TargetName::new(INDEX_TARGET)?;
     // The index is held whole, because it is parsed. Its signed length is checked against the
     // repository metadata budget first, so what is held is what a host would be willing to hold.
-    let index_length = repository
+    let pinned_index = repository
         .targets()
         .signed
         .targets
         .get(&index_name)
-        .map(|target| target.length)
         .ok_or_else(|| Error::Layout {
             detail: format!("the metadata does not pin {INDEX_TARGET}"),
         })?;
+    let index_length = pinned_index.length;
+    let candidate = pinned_index.custom.get(CANDIDATE_MARK) == Some(&serde_json::Value::Bool(true));
     if index_length > kr_plugin_sdk::limits::METADATA_BUDGET_BYTES {
         return Err(Error::Layout {
             detail: format!(
@@ -752,6 +766,7 @@ pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verif
 
     Ok(Verified {
         target_count,
+        candidate,
         index,
     })
 }

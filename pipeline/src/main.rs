@@ -14,7 +14,7 @@
 //! Every command that signs first walks the working tree and refuses to run if a private key is
 //! inside it.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use clap::{Args, Parser, Subcommand};
@@ -157,6 +157,11 @@ struct BuildArgs {
     /// Replace a generation that is already in the output directory.
     #[arg(long)]
     replace: bool,
+    /// Name the pinned builds that have no qualification record yet, for one run on this machine.
+    /// The signed metadata says the generation is a candidate. It is signed with the development
+    /// keys only, written outside the repository, and never made in a release or hosted job.
+    #[arg(long)]
+    candidate: bool,
 }
 
 #[derive(Debug, Args)]
@@ -270,9 +275,72 @@ async fn write_root(root: &std::path::Path, args: &RootArgs) -> Result<()> {
     Ok(())
 }
 
+/// Whether `out` is, or would be, inside the repository at `root`, where a generation is published
+/// from. The nearest folder that exists is resolved, so a link or a `..` cannot hide where it is.
+fn inside_the_repository(root: &Path, out: &Path) -> bool {
+    let Ok(root) = std::fs::canonicalize(root) else {
+        return true;
+    };
+    let absolute = std::path::absolute(out).unwrap_or_else(|_| out.to_path_buf());
+    let mut existing = absolute.as_path();
+    let mut missing = Vec::new();
+    while !existing.exists() {
+        match (existing.parent(), existing.file_name()) {
+            (Some(parent), Some(name)) => {
+                missing.push(name.to_owned());
+                existing = parent;
+            }
+            _ => break,
+        }
+    }
+    let mut resolved = std::fs::canonicalize(existing).unwrap_or_else(|_| existing.to_path_buf());
+    resolved.extend(missing.iter().rev());
+    resolved.starts_with(&root)
+}
+
+/// What keeps a candidate generation from being made: one is made with development keys, on a
+/// person's machine, outside the repository, and by nothing a release is made of.
+fn refuse_a_candidate_out_of_place(root: &Path, args: &BuildArgs) -> Result<()> {
+    if args.signing_dir.is_some() || !args.development {
+        return Err(Error::Signing {
+            detail: "a candidate generation is signed with development keys only, so a host that \
+                     trusts the release root refuses it; name --development and no signing \
+                     directory"
+                .to_owned(),
+        });
+    }
+    let hosted = ["GITHUB_ACTIONS", "CI"]
+        .into_iter()
+        .any(|name| std::env::var_os(name).is_some_and(|value| !value.is_empty()));
+    if hosted {
+        return Err(Error::Layout {
+            detail: "a candidate generation is made on a person's machine, not in a release or \
+                     hosted job"
+                .to_owned(),
+        });
+    }
+    if inside_the_repository(root, &args.out) {
+        return Err(Error::Layout {
+            detail: format!(
+                "a candidate generation is written outside the repository, not to {}, which is \
+                 where a generation is published from",
+                args.out.display()
+            ),
+        });
+    }
+    Ok(())
+}
+
 async fn build(root: &std::path::Path, args: &BuildArgs) -> Result<()> {
+    if args.candidate {
+        refuse_a_candidate_out_of_place(root, args)?;
+    }
     keys::refuse_keys_in_tree(root)?;
-    let repository = validate(root)?;
+    let mut repository = validate(root)?;
+    if args.candidate {
+        repository.builds =
+            kalareach_catalogue::builds::load_candidate(root, &repository.packages)?;
+    }
     let signing: Box<dyn SigningMaterial> = if args.development {
         Box::new(match &args.roots_dir {
             Some(directory) => DevelopmentSigning::from_directory(args.epoch, directory)?,
