@@ -689,6 +689,18 @@ def driver_build($tools; $root; $files; $actions; $installed):
      {version: .newer.version, prefix: ($tools + "/" + .newer.prefix), pinned: .newer.pinned,
       sha256: .newer.sha256, ready: .newer.ready, isolated: (.newer.isolated // [])} end)};
 
+# The newer build's isolation commands that a person may adopt from a probe-only run, whose result
+# line is the input and whose build list entry is $entry: the pinned entry's commands whose probe the
+# run's record shows adoptable, and only where the record allows adoption. The record is evidence for
+# a person to read; nothing here judges the answers.
+def adopted_isolation($entry):
+  (.evidence.shows // {}) as $shows
+  | if $shows.probe_only == true and $shows.adoption.allowed == true then
+      [($entry.account.isolated // [])[]
+       | select(.arguments as $arguments
+                | any($shows.probes[]?; .arguments == $arguments and .adoptable == true))]
+    else [] end;
+
 # A whole record, redacted: $user is the account name the run had, $entry the build list's entry
 # for the agent, and $login_parts the parts that run with the login where the entry names one.
 def redact_record($user; $entry; $login_parts):

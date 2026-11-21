@@ -126,6 +126,26 @@ build_variable() {
   esac
 }
 
+# The assignments the upgrade case's probe-only run is given, one on a line: the build, the
+# generation, the folder the runner made for the whole answers, and where the result goes. It has no
+# ledger and no login, and starts no turn.
+probe_only_inputs() {
+  printf '%s\n' "KR_AGENTS_GATEWAY_BUILD=$1" "KR_AGENTS_GENERATION=$2" \
+    "KR_AGENTS_GATEWAY_PROBE_ONLY=1" "KR_AGENTS_GATEWAY_EVIDENCE=$3" "KR_AGENTS_RESULT=$4" \
+    "KR_REQUIRE_AGENTS=1" "KR_REQUIRE_SHELL_PACKAGES=1"
+}
+
+# The test of a part, from the parts table.
+test_of() {
+  local spec rest
+  for spec in "${parts[@]}"; do
+    if [ "${spec%%|*}" = "$1" ]; then
+      rest="${spec#*|}"
+      echo "${rest%%|*}"
+    fi
+  done
+}
+
 # The most turns each part with a login can start, which the harness reserves before it runs one.
 login_turns() {
   case "$1" in
@@ -1025,6 +1045,25 @@ while IFS= read -r package; do
       fi
     fi
   done
+
+  # The upgrade case's probe-only run, where the newer build is installed and the entry gives it no
+  # isolation commands yet: the pinned entry's commands run against the newer build, with no login
+  # and no model call, and every whole answer is kept in a folder the runner makes. The commands a
+  # person may adopt from the run are written beside it, and none is adopted here.
+  if [ -z "$blocked" ] && [ "$newer_status" = "true" ] && selected_part 6b &&
+    [ "$(printf '%s' "$entry" | jq '(.newer.isolated // []) | length')" = "0" ]; then
+    probes="$directory/newer-probes"
+    mkdir -p "$probes"
+    probe_inputs=()
+    while IFS= read -r line; do probe_inputs+=("$line"); done < <(
+      probe_only_inputs "$directory/build.json" "$generation" "$probes" "$directory/newer-probes.jsonl")
+    : >"$directory/newer-probes.jsonl"
+    env -i "${driver_environment[@]}" "${probe_inputs[@]}" "$gateway_driver" \
+      --exact "$(test_of 6b)" --nocapture --test-threads=1 >"$directory/newer-probes.log" 2>&1 || true
+    jq -c -s -L "$root/scripts" --argjson entry "$entry" \
+      'include "record-redaction"; (map(select(.part == "6b")) | last // {}) | adopted_isolation($entry)' \
+      "$directory/newer-probes.jsonl" >"$directory/newer-isolated.json" || true
+  fi
 
   # The record: every part, the run's identity, the build and the package it is for.
   finished="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"

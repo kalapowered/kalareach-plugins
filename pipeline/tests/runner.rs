@@ -264,3 +264,64 @@ fn the_build_a_driver_reads_carries_the_newer_build_and_its_isolation_probes() {
         "a newer build with none has none"
     );
 }
+
+/// The newer build's isolation probes are adopted from a probe-only run only where the run's record
+/// allows adoption, and then only those the record shows adoptable; the call that makes the run
+/// asks for it by the probe-only variable and names the evidence folder the runner made.
+#[test]
+fn the_newer_builds_probes_are_adopted_only_from_a_probe_only_record_that_allows_it() {
+    let entry = json!({"account": {"isolated": [
+        {"arguments": ["mcp", "list"], "lacks": ["server"]},
+        {"arguments": ["features", "list"], "shows": "off"}]}});
+    let result = |allowed: bool, second_adoptable: bool| {
+        json!({"part": "6b", "outcome": "not_run", "evidence": {"shows": {
+            "probe_only": true,
+            "adoption": {"allowed": allowed, "refused_because": []},
+            "probes": [
+                {"arguments": ["mcp", "list"], "adoptable": true},
+                {"arguments": ["features", "list"], "adoptable": second_adoptable}]}}})
+    };
+    let adopted = |result: Value| {
+        jq(
+            "$result | adopted_isolation($entry)",
+            &[("result", result), ("entry", entry.clone())],
+        )
+    };
+    assert_eq!(
+        adopted(result(true, true)),
+        entry["account"]["isolated"],
+        "a record that allows adoption gives the probes it ran"
+    );
+    assert_eq!(
+        adopted(result(false, false)),
+        json!([]),
+        "no adoption where it is refused"
+    );
+    let silent = json!({"part": "6b", "outcome": "passed", "evidence": {"shows": {}}});
+    assert_eq!(
+        adopted(silent),
+        json!([]),
+        "a run that was no probe-only run adopts nothing"
+    );
+
+    let inputs = from_script(
+        &[&function("probe_only_inputs")],
+        "probe_only_inputs /run/build.json /run/gen /run/probes /run/probe.jsonl",
+    );
+    let lines: Vec<&str> = inputs.lines().collect();
+    for wanted in [
+        "KR_AGENTS_GATEWAY_BUILD=/run/build.json",
+        "KR_AGENTS_GENERATION=/run/gen",
+        "KR_AGENTS_GATEWAY_PROBE_ONLY=1",
+        "KR_AGENTS_GATEWAY_EVIDENCE=/run/probes",
+        "KR_AGENTS_RESULT=/run/probe.jsonl",
+    ] {
+        assert!(lines.contains(&wanted), "{wanted} is in {lines:?}");
+    }
+    assert!(
+        lines
+            .iter()
+            .all(|line| !line.starts_with("KR_AGENTS_TURNS")),
+        "a probe-only run has no ledger and starts no turn"
+    );
+}
