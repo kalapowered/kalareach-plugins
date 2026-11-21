@@ -290,10 +290,14 @@ fn inside_the_repository(root: &Path, out: &Path) -> bool {
                 missing.push(name.to_owned());
                 existing = parent;
             }
-            _ => break,
+            // A path that ends in `..` below a folder that is not there cannot be resolved, and
+            // what cannot be resolved is not shown to be outside.
+            _ => return true,
         }
     }
-    let mut resolved = std::fs::canonicalize(existing).unwrap_or_else(|_| existing.to_path_buf());
+    let Ok(mut resolved) = std::fs::canonicalize(existing) else {
+        return true;
+    };
     resolved.extend(missing.iter().rev());
     resolved.starts_with(&root)
 }

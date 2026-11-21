@@ -207,9 +207,21 @@ fn a_candidate_refuses_a_hosted_or_release_job() {
 #[test]
 fn a_candidate_refuses_a_folder_inside_the_checkout() {
     let inside = root().join("snapshots").join("candidate-refused");
+    // A folder that is not there, then `..` back into the checkout: the path cannot be resolved, so
+    // it is refused. The folder it names is a sibling of the checkout and is never made.
+    let missing = root()
+        .parent()
+        .expect("the checkout has a parent")
+        .join("a-folder-that-is-not-there-qr1");
+    assert!(!missing.exists(), "the case needs the folder to be absent");
+    let through = missing
+        .join("..")
+        .join(root().file_name().expect("the checkout has a name"))
+        .join("snapshots/candidate-refused-through");
     for out in [
         inside.clone(),
         root().join("snapshots/../snapshots/development"),
+        through,
     ] {
         let output = build(
             &[
@@ -228,4 +240,9 @@ fn a_candidate_refuses_a_folder_inside_the_checkout() {
         );
     }
     assert!(!inside.exists(), "nothing was written");
+    assert!(
+        !missing.exists(),
+        "the folder that was not there is not made"
+    );
+    assert!(!root().join("snapshots/candidate-refused-through").exists());
 }
