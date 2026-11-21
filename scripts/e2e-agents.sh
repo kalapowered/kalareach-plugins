@@ -46,7 +46,8 @@
 # package KR_SHELL_PACKAGES names; scripts/build-shells.sh --zsh in the core checkout builds one.
 #
 # Usage: scripts/e2e-agents.sh --core DIR [--target-dir DIR] [--tools DIR] [--turns FILE]
-#                              [--run-temp DIR] [--agent PACKAGE]... [--case PART]... [--write]
+#                              [--run-temp DIR] [--generation DIR] [--agent PACKAGE]... [--case PART]...
+#                              [--write]
 #
 #   --core DIR        the core repository checkout whose host and driver are built and run
 #   --target-dir DIR  the Cargo target directory to build in (default: CARGO_TARGET_DIR, or the
@@ -61,6 +62,9 @@
 #                     then, and takes a path in a cache directory for a doubtful command
 #   --agent PACKAGE   run this package only, as publisher/plugin; repeat for several
 #   --case PART       run this part only, such as 2b or 14.03a; repeat for several
+#   --generation DIR  the signed generation every package is installed from (default:
+#                     snapshots/development); a candidate generation made by `kalareach-catalogue
+#                     build --development --candidate` goes here, and the run says so
 #   --write           write the records into fixtures/agents
 #
 # It exits 0 when every part it ran passed, 1 when one failed, the host did not build or a login's
@@ -196,6 +200,14 @@ needs_the_scan_pipe() {
   [ "$(part_driver "$1" "$2")/$(part_route "$1" "$2")" = gateway/real ]
 }
 
+# Whether the generation at $1 lists, for the package $2, the build with the executable digest $3,
+# which a host needs before it serves the gateway route to that build.
+generation_lists_the_build() {
+  jq -e --arg id "$2" --arg digest "$3" \
+    '[.entries[] | select(.plugin_id == $id) | (.builds // [])[] | select(.executable_digest == $digest)] | length > 0' \
+    "$1/targets/index.json" >/dev/null 2>&1
+}
+
 # The most turns each part with a login can start, which the harness reserves before it runs one.
 login_turns() {
   case "$2" in
@@ -238,6 +250,7 @@ tools="${KR_AGENTS_TOOLS:-}"
 turns="${KR_AGENTS_TURNS:-}"
 run_temp="${KR_AGENTS_RUN_TEMP:-/private/tmp/kalareach-agents}"
 write=0
+generation_source="$root/snapshots/development"
 agents=()
 cases=()
 while [ "$#" -gt 0 ]; do
@@ -265,6 +278,11 @@ while [ "$#" -gt 0 ]; do
     --run-temp)
       [ "$#" -ge 2 ] || usage
       run_temp="$2"
+      shift 2
+      ;;
+    --generation)
+      [ "$#" -ge 2 ] || usage
+      generation_source="$2"
       shift 2
       ;;
     --agent)
@@ -385,7 +403,7 @@ echo
 # a part that failed. The driver launches the host binaries from beside its own test executable.
 if ! (cd "$core" &&
   CARGO_TARGET_DIR="$target_dir" cargo build --locked -p kr-cli -p kr-controller -p kr-worker \
-    -p kr-hook --bins &&
+    -p kr-hook -p kr-codex-stand-in --bins &&
   CARGO_TARGET_DIR="$target_dir" cargo build --locked -p kr-e2e-agents --bin kr-e2e-forge &&
   CARGO_TARGET_DIR="$target_dir" cargo test --locked -p kr-e2e-agents --test cases --test gateway --no-run \
     --message-format=json-render-diagnostics >"$evidence/driver.json") >"$evidence/build.log" 2>&1; then
@@ -415,7 +433,13 @@ toolchain="$(cd "$core" && jq -n --arg rustc "$(rustc -V)" --arg cargo "$(cargo 
 # The generation every package is installed from: the committed development generation, copied to
 # the internal disk.
 generation="$evidence/generation"
-cp -R "$root/snapshots/development" "$generation"
+[ -f "$generation_source/root.json" ] && [ -f "$generation_source/targets/index.json" ] &&
+  [ -f "$generation_source/metadata/targets.json" ] ||
+  refuse "$generation_source is not a generation: it holds no root.json, metadata/targets.json and targets/index.json"
+cp -R "$generation_source" "$generation"
+if [ "$(jq -r '.signed.targets["index.json"].custom.candidate // false' "$generation/metadata/targets.json")" = "true" ]; then
+  echo "this run installs from a candidate generation: it names the pinned builds with no record, and it is signed with development keys, so it is no release" >&2
+fi
 
 # The executable each named runtime is on this machine, as JSON. The driver links each into a
 # directory of the run's own, so the session's PATH names no directory another installation shares.
@@ -867,6 +891,9 @@ while IFS= read -r package; do
   fi
   manifest_version="$(jq -r '.version' "$manifest")"
   manifest_digest="$(digest_of "$manifest")"
+  if [ "$package" = "$gateway_package" ] && ! generation_lists_the_build "$generation" "$package" "$wanted_digest"; then
+    echo "$package $version: the generation lists no build with the pinned build's digest, so a host refuses the gateway route to it: name a candidate generation with --generation, or wait for a record" >&2
+  fi
   if [ -z "$blocked" ] &&
     ! generation_holds_the_package "$generation" "$package" "$manifest_digest" 2>"$directory/generation.err"; then
     blocked="the generation the run installs from does not hold this tree's package: $(cat "$directory/generation.err") (the repository)"

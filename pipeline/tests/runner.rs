@@ -535,3 +535,34 @@ fn a_part_on_a_real_gateway_route_is_given_the_scan_pipe_login_or_none() {
     );
     assert_eq!(needs("kalareach/claude-code", "8b"), "no");
 }
+
+/// A host serves the gateway route only to a build the generation's index lists for the package: the
+/// runner tells a person where the generation it installs from lists none.
+#[test]
+fn the_runner_knows_whether_the_generation_lists_the_pinned_build() {
+    let folder = tempfile::tempdir().expect("a temporary folder");
+    let targets = folder.path().join("targets");
+    std::fs::create_dir_all(&targets).expect("a folder");
+    let index = |builds: Value| {
+        std::fs::write(
+            targets.join("index.json"),
+            json!({"entries": [{"plugin_id": "kalareach/codex", "builds": builds}]}).to_string(),
+        )
+        .expect("the index is written");
+    };
+    let lists = || {
+        from_script(
+            &[&function("generation_lists_the_build")],
+            &format!(
+                "generation_lists_the_build {} kalareach/codex abc && echo yes || echo no",
+                folder.path().display()
+            ),
+        )
+    };
+    index(json!(null));
+    assert_eq!(lists(), "no", "an entry with no builds lists none");
+    index(json!([{"executable_digest": "other"}]));
+    assert_eq!(lists(), "no");
+    index(json!([{"executable_digest": "abc"}]));
+    assert_eq!(lists(), "yes");
+}
