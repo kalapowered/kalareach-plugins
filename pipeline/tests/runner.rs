@@ -223,3 +223,44 @@ fn a_part_that_has_no_real_arm_is_given_no_build_and_is_recorded_as_the_stand_in
     );
     assert!(entry.get("route").is_none(), "a real run carries no mark");
 }
+
+/// The build the driver reads carries the newer build, with the commands that say it loads nothing
+/// of the person's own where the build list gives them; a newer build that is not installed is none.
+#[test]
+fn the_build_a_driver_reads_carries_the_newer_build_and_its_isolation_probes() {
+    let entry = json!({
+        "package": "kalareach/codex", "application": "codex", "version": "1.0.0",
+        "prefix": "codex/1.0.0", "pinned": "bin/codex", "sha256": "ab", "command": "codex",
+        "launch": "native", "arguments": [], "runtime": [], "environment": {}, "home": {},
+        "ready": "Welcome", "harmless": {}, "composer": {}, "server": null, "transcript": "t",
+        "account": null,
+        "newer": {"version": "1.1.0", "prefix": "codex/1.1.0", "pinned": "bin/codex",
+            "sha256": "cd", "ready": "Welcome",
+            "isolated": [{"arguments": ["--version"], "shows": "1.1.0"}]}
+    });
+    let built = |installed: bool| {
+        jq(
+            "$entry | driver_build(\"/tools\"; \"/repo\"; {}; []; $installed)",
+            &[("entry", entry.clone()), ("installed", json!(installed))],
+        )
+    };
+    let newer = &built(true)["newer"];
+    assert_eq!(newer["version"], "1.1.0");
+    assert_eq!(newer["prefix"], "/tools/codex/1.1.0");
+    assert_eq!(
+        newer["isolated"],
+        json!([{"arguments": ["--version"], "shows": "1.1.0"}])
+    );
+    assert_eq!(built(false)["newer"], Value::Null);
+    let mut bare = entry.clone();
+    bare["newer"]["isolated"] = Value::Null;
+    let none = jq(
+        "$entry | driver_build(\"/tools\"; \"/repo\"; {}; []; true)",
+        &[("entry", bare)],
+    );
+    assert_eq!(
+        none["newer"]["isolated"],
+        json!([]),
+        "a newer build with none has none"
+    );
+}

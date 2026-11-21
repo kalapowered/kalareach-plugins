@@ -793,18 +793,10 @@ while IFS= read -r package; do
 
   # The build as the driver reads it: paths made absolute, runtimes found, the package's actions.
   actions="$(jq '[.actions[]]' "$manifest")"
-  printf '%s' "$entry" | jq --arg tools "$tools" --arg root "$root" --argjson files "$files" --argjson actions "$actions" \
-    --argjson newer_status "$newer_status" '{
-      package, actions: $actions, application, version,
-      prefix: ($tools + "/" + .prefix), pinned, sha256, command, launch, arguments,
-      runtime: [.runtime[] | $files[.]], environment, home, ready, harmless, composer,
-      server, transcript, no_account, no_newer,
-      account: (if .account.confinement then .account | .confinement.profile = ($root + "/" + .confinement.profile)
-                else .account end),
-      newer: (if .newer == null or $newer_status != true then null else
-        {version: .newer.version, prefix: ($tools + "/" + .newer.prefix), pinned: .newer.pinned,
-         sha256: .newer.sha256, ready: .newer.ready} end)
-    }' >"$directory/build.json"
+  printf '%s' "$entry" | jq -L "$root/scripts" --arg tools "$tools" --arg root "$root" \
+    --argjson files "$files" --argjson actions "$actions" --argjson newer_status "$newer_status" \
+    'include "record-redaction"; driver_build($tools; $root; $files; $actions; $newer_status)' \
+    >"$directory/build.json"
 
   steps="[$own_home_step]"
   number=1

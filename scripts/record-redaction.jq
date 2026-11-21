@@ -674,6 +674,21 @@ def part_entry($p; $r; $step_of; $command_of; $entry; $login_parts):
     + {evidence: $r.evidence}
   end;
 
+# The build as the driver reads it: the build list's entry with its paths made absolute under
+# $tools, the runtimes $files found, the package's $actions, and the newer build where it is
+# installed ($installed) with the commands that say it loads nothing of the person's own.
+def driver_build($tools; $root; $files; $actions; $installed):
+  {package, actions: $actions, application, version,
+   prefix: ($tools + "/" + .prefix), pinned, sha256, command, launch, arguments,
+   runtime: [.runtime[] | $files[.]], environment, home, ready, harmless, composer,
+   server, transcript, no_account, no_newer,
+   account: (if .account.confinement
+             then .account | .confinement.profile = ($root + "/" + .confinement.profile)
+             else .account end),
+   newer: (if .newer == null or $installed != true then null else
+     {version: .newer.version, prefix: ($tools + "/" + .newer.prefix), pinned: .newer.pinned,
+      sha256: .newer.sha256, ready: .newer.ready, isolated: (.newer.isolated // [])} end)};
+
 # A whole record, redacted: $user is the account name the run had, $entry the build list's entry
 # for the agent, and $login_parts the parts that run with the login where the entry names one.
 def redact_record($user; $entry; $login_parts):
