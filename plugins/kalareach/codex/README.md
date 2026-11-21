@@ -128,8 +128,9 @@ The host's cases for this package run against a stand-in for Codex's App Server 
 repository. The stand-in sends what a recording of the pinned 0.155.1 terminal and server showed
 them sending: the helper thread for a conversation's title, the marks on the thread objects, the old
 thread's `thread/unsubscribe` after `/new` and `/fork`, and the unsubscribe before `/quit`. Five
-things about a real session of the pinned 0.155.1 build on macOS arm64 have been measured, each in a
-passed run of a gateway case of the host's agent test driver:
+things about a real session of the pinned 0.155.1 build on macOS arm64 have been measured. Items 1,
+3, 4 and 5 come from passed runs of gateway cases of the host's agent test driver, and the frames of
+item 2 from a recording of the pinned terminal and server:
 
 1. The terminal shows a turn the host started.
 2. The terminal starts a thread of its own for the title of a conversation. At the first user message
