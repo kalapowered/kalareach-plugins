@@ -385,9 +385,12 @@ fn login_tests<'a>(record: &'a Value, entry: &Value) -> Vec<&'a Value> {
         .filter_map(|identifier| identifier["tests"].as_array())
         .flatten()
         .filter(|test| {
-            test["part"]
-                .as_str()
-                .is_some_and(|part| LOGIN_PARTS.contains(&format!("\"{part}\"")))
+            // A part the table records as not run has no driver log, and the writer leaves it as
+            // the table wrote it.
+            test["keyed_by"] != "case_table"
+                && test["part"]
+                    .as_str()
+                    .is_some_and(|part| LOGIN_PARTS.contains(&format!("\"{part}\"")))
         })
         .collect()
 }
@@ -421,9 +424,10 @@ fn spoiled(record: &Value, entry: &Value, word: &str) -> Value {
         .flat_map(|identifiers| identifiers.values_mut())
     {
         for test in identifier["tests"].as_array_mut().into_iter().flatten() {
-            let login = test["part"]
-                .as_str()
-                .is_some_and(|part| LOGIN_PARTS.contains(&format!("\"{part}\"")));
+            let login = test["keyed_by"] != "case_table"
+                && test["part"]
+                    .as_str()
+                    .is_some_and(|part| LOGIN_PARTS.contains(&format!("\"{part}\"")));
             if login {
                 spoil(&mut test["evidence"], word);
                 if test.get("reason").is_some() {
