@@ -248,6 +248,26 @@ agent_stops_after() {
   fi
 }
 
+# Whether the newer build's probe-only call, which exited $1 and whose last line of part 6b has the
+# outcome $2 (none where it wrote no line), was a complete run: one that exited 0 and wrote a
+# `not_run` line. A call that exited 0 with no such line, such as one whose test name matched nothing,
+# is not, and offers no command.
+probe_only_call_is_complete() {
+  [ "$1" -eq 0 ] && [ "$2" = not_run ]
+}
+
+# What the runner says of the probe-only call for the run $1, with the exit $2, the outcome $3 and
+# the number $4 of commands it offers to adopt.
+probe_only_call_says() {
+  if probe_only_call_is_complete "$2" "$3"; then
+    echo "$1: the newer build's probe-only call exited $2 and offers $4 command(s) to adopt"
+  elif [ "$2" -eq 0 ]; then
+    echo "$1: the newer build's probe-only call exited 0 but wrote no not_run outcome for part 6b (outcome $3), so it is not a complete run and offers no command"
+  else
+    echo "$1: the newer build's probe-only call failed (exit $2, outcome $3), so it offers none"
+  fi
+}
+
 # The words that name the pipe of the other keys' values in a part's recorded command: where the
 # part has a login or its driver is on a real gateway route, which reads the pipe without one.
 pipe_note() {
@@ -1218,17 +1238,16 @@ while IFS= read -r package; do
     echo "$probe_rc" >"$directory/newer-probes.exit"
     look_again "$package $version the newer build's probes" || exit 3
     others_not_in "$directory" "$package $version the newer build's probes" "" || exit 1
-    # A call that did not exit 0 offers no command, whatever its record says.
+    # A call that did not exit 0, or exited 0 without a not_run line, offers no command, whatever its
+    # record says.
     echo "[]" >"$directory/newer-isolated.json"
     probe_outcome="$(jq -r -s 'map(select(.part == "6b")) | (last // {}) | .outcome // "none"' "$directory/newer-probes.jsonl" 2>/dev/null || echo none)"
-    if [ "$probe_rc" -eq 0 ]; then
+    if probe_only_call_is_complete "$probe_rc" "$probe_outcome"; then
       jq -c -s -L "$root/scripts" --argjson entry "$entry" \
         'include "record-redaction"; (map(select(.part == "6b")) | last // {}) | adopted_isolation($entry)' \
         "$directory/newer-probes.jsonl" >"$directory/newer-isolated.json" || echo "[]" >"$directory/newer-isolated.json"
-      echo "$package $version: the newer build's probe-only call exited $probe_rc and offers $(jq 'length' "$directory/newer-isolated.json") command(s) to adopt" >&2
-    else
-      echo "$package $version: the newer build's probe-only call failed (exit $probe_rc, outcome $probe_outcome), so it offers none" >&2
     fi
+    probe_only_call_says "$package $version" "$probe_rc" "$probe_outcome" "$(jq 'length' "$directory/newer-isolated.json")" >&2
   fi
 
   # The record: every part, the run's identity, the build and the package it is for.

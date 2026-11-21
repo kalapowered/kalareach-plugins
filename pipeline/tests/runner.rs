@@ -366,6 +366,44 @@ fn the_newer_builds_probes_are_adopted_only_from_a_probe_only_record_that_allows
     );
 }
 
+/// A probe-only call is a complete run only where it exited 0 and wrote a `not_run` line for part 6b.
+/// One that exited 0 without one, such as a test name that matched nothing, offers no command and
+/// says it is not a complete run, and does not read as a run that found nothing to adopt.
+#[test]
+fn a_probe_only_call_that_exited_0_with_no_not_run_line_is_not_a_complete_run() {
+    let says = |exit: u32, outcome: &str| {
+        from_script(
+            &[
+                &function("probe_only_call_is_complete"),
+                &function("probe_only_call_says"),
+            ],
+            &format!("probe_only_call_says 'plugin 1.0' {exit} {outcome} 0 2>&1 || true"),
+        )
+    };
+    let complete = |exit: u32, outcome: &str| {
+        from_script(
+            &[&function("probe_only_call_is_complete")],
+            &format!("probe_only_call_is_complete {exit} {outcome} && echo yes || echo no"),
+        )
+    };
+    assert_eq!(complete(0, "not_run"), "yes");
+    assert_eq!(complete(0, "none"), "no", "it exited 0 and wrote no line");
+    assert_eq!(complete(0, "passed"), "no", "its line is not not_run");
+    assert_eq!(complete(101, "not_run"), "no", "it did not exit 0");
+    assert_eq!(
+        says(0, "not_run"),
+        "plugin 1.0: the newer build's probe-only call exited 0 and offers 0 command(s) to adopt"
+    );
+    assert_eq!(
+        says(0, "none"),
+        "plugin 1.0: the newer build's probe-only call exited 0 but wrote no not_run outcome for part 6b (outcome none), so it is not a complete run and offers no command"
+    );
+    assert_eq!(
+        says(101, "failed"),
+        "plugin 1.0: the newer build's probe-only call failed (exit 101, outcome failed), so it offers none"
+    );
+}
+
 /// The package a run installs is the generation's, so the generation the runner copies holds the
 /// package the record is for: the manifest digest of the tree's package is the one its index names.
 #[test]
