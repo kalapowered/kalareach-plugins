@@ -182,6 +182,7 @@ def known_codes: [
 # schema gives them.
 def sets: {
   modes: ["native_terminal", "gateway", "native_bridge"],
+  gateway_route: ["the application stand-in", "the pinned build"],
   bypasses: ["not_integrated", "disabled", "absolute_path", "unmanaged_shell", "not_interactive", "backend_unavailable", "session_closing"],
   refusal: ["it was not launched through the integration, so no registration names it and none of its bridges is admitted"],
   identity: ["unproven: no read the host serves names the executable or the release an instance it detected runs; the image the launched process maps is under provenance"],
@@ -498,6 +499,8 @@ def confinement_schema: {
 # The evidence of a part run with the person's login.
 def evidence_schema: {
   confinement: confinement_schema,
+  route: "in:gateway_route", run_started: "bool", turns: {charged: "count"},
+  newer_turns: {after_the_probes: "number", at_the_end: "number", new_since_the_probes: "number"},
   login_held: "bool", stop_agent: "bool", exit: "number", failure_codes: "failure_codes",
   declined_requests: "count", tools_offered: tools_offered_schema,
   key: {variable: "build:account.variable", held_by: "count", complete: "bool", run_gone: "bool"},

@@ -1662,3 +1662,31 @@ fn a_folder_named_after_a_path_is_written_relative_to_it_and_no_other_text_chang
         ])
     );
 }
+
+/// A login part the gateway driver wrote keeps the evidence it states in fixed words and numbers:
+/// the route it ran on, whether a run started, the turns charged and the turns the newer build's
+/// probes left. None of its free text is published.
+#[test]
+fn a_gateway_login_parts_fixed_evidence_survives_the_writer() {
+    let entry = json!({"package": "kalareach/codex", "account": {}});
+    let evidence = json!({
+        "route": "the pinned build", "run_started": true,
+        "turns": {"charged": 1, "in_the_agents_record": 1},
+        "newer_turns": {"after_the_probes": 0, "at_the_end": 0, "new_since_the_probes": 0},
+        "shows": {"text": "something the person's own programs said"}
+    });
+    let record = json!({"identifiers": {"KR-REQ-12.32": {"tests": [{
+        "test": "kr-e2e-agents --test gateway a_test", "part": "6b",
+        "source": "kalareach:tests/e2e/agents/tests/gateway.rs", "keyed_by": "attached_comment",
+        "outcome": "passed", "evidence": evidence.clone()}]}}});
+    let published = written(&record, &entry, "someone");
+    let kept = &published["identifiers"]["KR-REQ-12.32"]["tests"][0]["evidence"];
+    assert_eq!(kept["route"], "the pinned build");
+    assert_eq!(kept["run_started"], true);
+    assert_eq!(kept["turns"]["charged"], 1);
+    assert_eq!(kept["newer_turns"], evidence["newer_turns"]);
+    assert!(
+        kept.get("shows").is_none(),
+        "free text is not published: {kept}"
+    );
+}
