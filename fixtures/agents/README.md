@@ -57,22 +57,25 @@ also shown observations made wrong on purpose, which it must reject; the evidenc
 `checker_controls`. A launch the host does not detect fails parts 1, 2b, 2c and 7, whose properties
 need the detected instance, and the rest of their checks are kept as evidence.
 
-Parts 1, 2a, 3, 4, 6b and 7 need the person's vendor login, and run only for a build whose list
-entry names a login the person approved; 6b starts one turn. Each part not run says why and whose
+Parts 1, 2a, 3, 4 and 7 need the person's vendor login, and so does 6b of the Codex package, which
+starts one turn; they run only for a build whose list entry names a login the person approved. Each part not run says why and whose
 decision would change it. Each part the driver does not run is recorded as not run, with the reason
 and what would change it.
 
-Parts 5b, 6b and 8b run through the gateway driver, `tests/e2e/agents/tests/gateway.rs` in the core
-repository, and their record entries name that file as their source; the other parts run through
-`cases.rs`. Part 5b has no real arm, because a restart of the daemon cannot be made safe against a
-live agent's writes. The runner gives its test no build, so it runs against the stand-in agent, and
-its record entry says `"route": "stand_in"`. Such an entry shows what the host does after a daemon
-crash, and not what the agent does.
+Parts 5b, 6b and 8b of the Codex package run through the gateway driver,
+`tests/e2e/agents/tests/gateway.rs` in the core repository, and their record entries name that file
+as their source. The driver installs and guards the Codex package alone, so the same parts of any
+other package wait, as before. The other parts run through `cases.rs`. Part 5b has no real arm,
+because a restart of the daemon cannot be made safe against a live agent's writes. The runner gives
+its test no build, so it runs against the stand-in agent, and its record entry says
+`"route": "stand_in"`. The stand-in route installs the core repository's own Codex package, not this
+tree's. Such an entry shows what the host does after a daemon crash, and says nothing of this
+release or of the agent.
 
 The upgrade case also has a probe-only run. It runs the commands in the pinned entry's
 `account.isolated` against the newer build, with no login and no model call, and keeps each whole
 answer in a folder the runner makes. The run's record says in `adoption.allowed` whether its
-evidence is complete. A person reads the answers first. Only from a record that allows adoption does
+evidence is complete. The answers are read before any command is adopted. Only from a record that allows adoption does
 a command go into the entry's `newer.isolated`, and a newer build with none has no real arm.
 
 ## The record
@@ -287,6 +290,13 @@ of the typed-path rule, 14.03a and 14.03b, say nothing about the build and are n
 failed one keeps the build out. `docs/pipeline.md` describes the rest.
 
 ## Running it
+
+A host serves the gateway route only to a build that the generation's index lists for the package.
+`--generation DIR` names the signed generation every package is installed from, by default
+`snapshots/development`, which lists no build before a record exists. For a run before the record, a
+candidate generation made with `kalareach-catalogue build --development --candidate` lists the pinned
+builds with no record; it is signed with development keys only, and the run says when its generation
+is one. A candidate is for a run on one machine and is no release.
 
 ```bash
 KR_SHELL_PACKAGES=<managed shell prefix> \
