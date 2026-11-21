@@ -614,43 +614,94 @@ fn the_runner_knows_whether_the_generation_lists_the_pinned_build() {
 }
 
 /// The record names the generation a run installed from: plainly where it used the repository's own
-/// committed generation, and by the signed index's digest, length, number and candidate mark where it
-/// used another, such as a candidate.
+/// committed generation with no change to it, and by the signed index's digest, length, number and
+/// candidate mark where it used another, such as a candidate, or one that was changed.
 #[test]
 fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
-    let own = root().join("snapshots").join("development");
-    let candidate = tempfile::tempdir().expect("a temporary folder");
-    std::fs::create_dir_all(candidate.path().join("metadata")).expect("a folder");
-    std::fs::create_dir_all(candidate.path().join("targets")).expect("a folder");
-    std::fs::write(
-        candidate.path().join("metadata/targets.json"),
-        json!({"signed": {"targets": {"index.json": {
-            "hashes": {"sha256": "ab12"}, "length": 345, "custom": {"candidate": true}}}}})
-        .to_string(),
-    )
-    .expect("the targets metadata");
-    std::fs::write(
-        candidate.path().join("targets/index.json"),
-        json!({"generation": 7}).to_string(),
-    )
-    .expect("the index");
-    let identity = |source: &Path, copy: &Path| -> Value {
+    // A generation as the pipeline writes one: the signed targets name the index by its digest, its
+    // length and, for a candidate, its mark; the index's generation is a string.
+    let write_generation = |folder: &Path, generation: &str, candidate: bool| {
+        std::fs::create_dir_all(folder.join("metadata")).expect("a folder");
+        std::fs::create_dir_all(folder.join("targets")).expect("a folder");
+        std::fs::write(
+            folder.join("metadata/targets.json"),
+            json!({"signed": {"targets": {"index.json": {
+                "hashes": {"sha256": "ab12"}, "length": 345, "custom": {"candidate": candidate}}}}})
+            .to_string(),
+        )
+        .expect("the targets metadata");
+        std::fs::write(
+            folder.join("targets/index.json"),
+            json!({"generation": generation}).to_string(),
+        )
+        .expect("the index");
+    };
+    let git = |repository: &Path, arguments: &[&str]| {
+        let output = Command::new("git")
+            .arg("-C")
+            .arg(repository)
+            .args(["-c", "user.name=Test", "-c", "user.email=test@example.test"])
+            .args(["-c", "commit.gpgsign=false"])
+            .args(arguments)
+            .output()
+            .expect("git runs");
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    };
+    let identity = |repository: &Path, source: &Path, copy: &Path| -> Value {
         serde_json::from_str(&from_script(
             &[&function("generation_identity")],
             &format!(
                 "root='{}'; generation_identity '{}' '{}'",
-                root().display(),
+                repository.display(),
                 source.display(),
                 copy.display()
             ),
         ))
         .expect("the identity is JSON")
     };
-    assert_eq!(identity(&own, &own), json!("snapshots/development"));
+    let repository = tempfile::tempdir().expect("a temporary repository");
+    let own = repository.path().join("snapshots").join("development");
+    write_generation(&own, "6", false);
+    git(repository.path(), &["init", "--quiet"]);
+    git(repository.path(), &["add", "."]);
+    git(repository.path(), &["commit", "--quiet", "-m", "a committed generation"]);
     assert_eq!(
-        identity(candidate.path(), candidate.path()),
-        json!({"sha256": "ab12", "length": 345, "generation": 7, "candidate": true}),
+        identity(repository.path(), &own, &own),
+        json!("snapshots/development"),
+        "the committed generation, with no change to it"
+    );
+
+    let candidate = tempfile::tempdir().expect("a temporary folder");
+    write_generation(candidate.path(), "7", true);
+    let by_index = json!({"sha256": "ab12", "length": 345, "generation": "7", "candidate": true});
+    assert_eq!(
+        identity(repository.path(), candidate.path(), candidate.path()),
+        by_index,
         "a distinct generation is named by what its signed index says"
+    );
+
+    // The same folder, changed since it was committed: rebuilt in place, or given a candidate.
+    write_generation(&own, "7", true);
+    assert_eq!(
+        identity(repository.path(), &own, &own),
+        by_index,
+        "a changed file is named by what its signed index says"
+    );
+    git(repository.path(), &["checkout", "--quiet", "--", "snapshots/development"]);
+    assert_eq!(
+        identity(repository.path(), &own, &own),
+        json!("snapshots/development"),
+        "the change was undone"
+    );
+    std::fs::write(own.join("targets").join("added.json"), "{}").expect("a file");
+    assert_eq!(
+        identity(repository.path(), &own, &own),
+        json!({"sha256": "ab12", "length": 345, "generation": "6", "candidate": false}),
+        "a file that is not committed is a change"
     );
 }
 

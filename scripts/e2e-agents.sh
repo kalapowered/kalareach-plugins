@@ -210,10 +210,12 @@ generation_lists_the_build() {
 
 # What the record says of the generation a run installed from, where $1 is the folder it was given
 # and $2 the copy it installed from: the plain name where the run used the repository's own
-# committed generation, and otherwise the signed index's SHA-256 and length, its generation number
-# and whether the signed metadata marks it a candidate.
+# committed generation and `git status` shows no change under it, and otherwise the signed index's
+# SHA-256 and length, its generation number and whether the signed metadata marks it a candidate.
 generation_identity() {
-  if [ "$(cd "$1" && pwd -P)" = "$(cd "$root/snapshots/development" && pwd -P)" ]; then
+  local changed
+  if [ "$(cd "$1" && pwd -P)" = "$(cd "$root/snapshots/development" && pwd -P)" ] &&
+    changed="$(git -C "$root" status --porcelain -- snapshots/development 2>/dev/null)" && [ -z "$changed" ]; then
     echo '"snapshots/development"'
   else
     jq -c -s '.[0].signed.targets["index.json"] as $index
