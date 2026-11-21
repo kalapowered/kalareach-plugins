@@ -190,7 +190,8 @@ fn a_candidate_refuses_a_release_key() {
 fn a_candidate_refuses_a_hosted_or_release_job() {
     let temporary = tempfile::tempdir().expect("a temporary directory");
     let out = temporary.path().join("candidate");
-    for variable in ["GITHUB_ACTIONS", "CI"] {
+    // A variable that is set, whatever its value, marks a hosted job.
+    for (variable, value) in [("GITHUB_ACTIONS", "true"), ("CI", "true"), ("CI", "")] {
         let output = build(
             &[
                 "--development",
@@ -198,9 +199,12 @@ fn a_candidate_refuses_a_hosted_or_release_job() {
                 "--out",
                 out.to_str().expect("a path"),
             ],
-            &[(variable, "true")],
+            &[(variable, value)],
         );
-        assert!(!output.status.success());
+        assert!(
+            !output.status.success(),
+            "{variable}={value:?} marks a hosted job"
+        );
         assert!(
             stderr(&output).contains("a candidate generation is made on a person's machine"),
             "{}",

@@ -305,7 +305,7 @@ fn refuse_a_candidate_out_of_place(args: &BuildArgs) -> Result<()> {
     }
     let hosted = ["GITHUB_ACTIONS", "CI"]
         .into_iter()
-        .any(|name| std::env::var_os(name).is_some_and(|value| !value.is_empty()));
+        .any(|name| std::env::var_os(name).is_some());
     if hosted {
         return Err(Error::Layout {
             detail: "a candidate generation is made on a person's machine, not in a release or \
