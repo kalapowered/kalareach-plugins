@@ -566,3 +566,44 @@ fn the_runner_knows_whether_the_generation_lists_the_pinned_build() {
     index(json!([{"executable_digest": "abc"}]));
     assert_eq!(lists(), "yes");
 }
+
+/// The record names the generation a run installed from: plainly where it used the repository's own
+/// committed generation, and by the signed index's digest, length, number and candidate mark where it
+/// used another, such as a candidate.
+#[test]
+fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
+    let own = root().join("snapshots").join("development");
+    let candidate = tempfile::tempdir().expect("a temporary folder");
+    std::fs::create_dir_all(candidate.path().join("metadata")).expect("a folder");
+    std::fs::create_dir_all(candidate.path().join("targets")).expect("a folder");
+    std::fs::write(
+        candidate.path().join("metadata/targets.json"),
+        json!({"signed": {"targets": {"index.json": {
+            "hashes": {"sha256": "ab12"}, "length": 345, "custom": {"candidate": true}}}}})
+        .to_string(),
+    )
+    .expect("the targets metadata");
+    std::fs::write(
+        candidate.path().join("targets/index.json"),
+        json!({"generation": 7}).to_string(),
+    )
+    .expect("the index");
+    let identity = |source: &Path, copy: &Path| -> Value {
+        serde_json::from_str(&from_script(
+            &[&function("generation_identity")],
+            &format!(
+                "root='{}'; generation_identity '{}' '{}'",
+                root().display(),
+                source.display(),
+                copy.display()
+            ),
+        ))
+        .expect("the identity is JSON")
+    };
+    assert_eq!(identity(&own, &own), json!("snapshots/development"));
+    assert_eq!(
+        identity(candidate.path(), candidate.path()),
+        json!({"sha256": "ab12", "length": 345, "generation": 7, "candidate": true}),
+        "a distinct generation is named by what its signed index says"
+    );
+}

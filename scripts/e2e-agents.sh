@@ -208,6 +208,20 @@ generation_lists_the_build() {
     "$1/targets/index.json" >/dev/null 2>&1
 }
 
+# What the record says of the generation a run installed from, where $1 is the folder it was given
+# and $2 the copy it installed from: the plain name where the run used the repository's own
+# committed generation, and otherwise the signed index's SHA-256 and length, its generation number
+# and whether the signed metadata marks it a candidate.
+generation_identity() {
+  if [ "$(cd "$1" && pwd -P)" = "$(cd "$root/snapshots/development" && pwd -P)" ]; then
+    echo '"snapshots/development"'
+  else
+    jq -c -s '.[0].signed.targets["index.json"] as $index
+      | {sha256: $index.hashes.sha256, length: $index.length, generation: .[1].generation,
+         candidate: ($index.custom.candidate == true)}' "$2/metadata/targets.json" "$2/targets/index.json"
+  fi
+}
+
 # The most turns each part with a login can start, which the harness reserves before it runs one.
 login_turns() {
   case "$2" in
@@ -1199,6 +1213,7 @@ while IFS= read -r package; do
     --argjson parts "$parts_json" --argjson selection "$selection" \
     --arg manifest_version "$manifest_version" \
     --arg manifest_digest "$manifest_digest" \
+    --argjson generation_identity "$(generation_identity "$generation_source" "$generation")" \
     --arg payload "$payload" --argjson own_home "$own_home" --arg own_home_error "$own_home_error" \
     --arg evidence_real "$evidence" --arg temporary "$temporary" --arg temporary_real "$temporary_real" \
     --arg target "$target_dir" --arg target_real "$(cd "$target_dir" && pwd -P)" \
@@ -1256,7 +1271,7 @@ while IFS= read -r package; do
         toolchain: $toolchain,
         terminal_profile: {profile: "kr-vt/1", term: "ghostty"},
         packages: [{name: $package, version: $manifest_version, manifest_digest: $manifest_digest,
-                    generation: "snapshots/development"}],
+                    generation: $generation_identity}],
         applications: ([{id: $application, version: $version, status: $pinned_status,
                          url: $entry.source, sha256: $entry.sha256, build: "darwin-arm64",
                          reason: (if $blocked == "" then "the build the table is pinned to" + $payload else $blocked end)}]
