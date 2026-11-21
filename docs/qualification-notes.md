@@ -177,12 +177,9 @@ session made through `kr new` gets no command integration, so Codex ran on its t
 started by typing `codex` at a managed shell's prompt, with no upstream transport bound and no
 gateway between the terminal and the App Server. The record therefore exercises none of the table's
 classifications, none of the approval answer, the operations templates or the observation
-declaration the package adds, and none of the five things the package's README leaves for a
-real-agent run: the terminal closing its prompt on `serverRequest/resolved` for an answer the host
-gave, the terminal showing a turn the host started, `thread/start`, `thread/resume` and
-`thread/fork` being the only selection changes, the stable-name list being complete for a 0.155.1
-session, and `turn/start` over a running turn not being a queue. Status for all of them: unverified,
-and not measurable by a part that has no gateway.
+declaration the package adds, and none of what the package's README says, under "What is measured,
+and what is not", a real session shows or still assumes. This record shows none of it, and a part
+that has no gateway cannot.
 
 The build is the native executable, SHA-256
 `8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e`, and not the launcher npm puts on
@@ -274,8 +271,8 @@ Status: exercised behaviour of the host with this build on its terminal route, t
 subscription proxy. None of the table's classifications was exercised, because no upstream transport
 was bound and the host read no frame of the App Server.
 
-The package's `plugin.json` pins its source at `cb39424b9bf23de38b91d6cbc787d4824439877d`, and the
-record's `run.commit` is `fa8869d90c31c6d1450e40fb6436852f22260edb`, the commit of this repository
+Release 0.3.0's `plugin.json` pins its source at `cb39424b9bf23de38b91d6cbc787d4824439877d`, and
+the record's `run.commit` is `fa8869d90c31c6d1450e40fb6436852f22260edb`, the commit of this repository
 the run was made at. Both are commits of the branches the 0.3.0 files and the record were written
 on, and neither is in main's history, which holds the same files under other commits. The remote
 keeps them reachable as `refs/backup/task/T-BROKER-NATIVE-4`, which holds the first, and
@@ -283,10 +280,12 @@ keeps them reachable as `refs/backup/task/T-BROKER-NATIVE-4`, which holds the fi
 pinned source, run `git fetch origin refs/backup/task/T-AGENT-QUAL-1`, then
 `git show cb39424b9bf23de38b91d6cbc787d4824439877d:plugins/kalareach/codex/connector.json`. At that
 commit `plugin.json` differs from the released file in its `source.revision` member alone, which
-names the commit before it; the pin is written in the next commit. The pin stays as it is because
+names the commit before it; the pin is written in the next commit. That pin stays as it is because
 the SHA-256 of `plugin.json`,
 `5e252bd9f93856fd03c5ff4d3a2a4359dd1f4a1d663ab9d0b18479441dc0cd4b`, is the package hash the core
-repository's released-package fixture holds, and a different pin would change it.
+repository's released-package fixture holds, and a different pin would change it. Release 0.4.0 pins
+its source at `c354262454aa399a93bfd8f2d94f33994a4b3174`, the last commit that changed the package's
+files.
 
 Earlier records at this path are kept below, each with the revision to read it at.
 
