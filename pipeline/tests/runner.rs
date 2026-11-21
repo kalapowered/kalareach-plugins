@@ -615,3 +615,31 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
         "a distinct generation is named by what its signed index says"
     );
 }
+
+/// The agent stops after a login part that did not establish the login. The gateway driver writes
+/// neither `login_held` nor `stop_agent`, so a gateway part stops it where it did not pass and a turn
+/// was charged, and not where it failed before any charge.
+#[test]
+fn a_gateway_part_stops_the_agent_only_where_it_did_not_pass_after_a_turn_was_charged() {
+    let folder = tempfile::tempdir().expect("a temporary folder");
+    let results = folder.path().join("results.jsonl");
+    let stops = |lines: &[Value]| {
+        let text: Vec<String> = lines.iter().map(Value::to_string).collect();
+        std::fs::write(&results, text.join("\n")).expect("the results");
+        from_script(
+            &[&function("gateway_part_charged_and_did_not_pass")],
+            &format!(
+                "gateway_part_charged_and_did_not_pass '{}' 6b && echo yes || echo no",
+                results.display()
+            ),
+        )
+    };
+    let line = |outcome: &str, charged: u32| json!({"part": "6b", "outcome": outcome, "evidence": {"turns": {"charged": charged}}});
+    assert_eq!(
+        stops(&[line("failed", 0)]),
+        "no",
+        "a failure before any charge"
+    );
+    assert_eq!(stops(&[line("failed", 1)]), "yes");
+    assert_eq!(stops(&[line("passed", 1)]), "no");
+}

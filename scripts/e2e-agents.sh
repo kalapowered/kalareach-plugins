@@ -222,6 +222,13 @@ generation_identity() {
   fi
 }
 
+# Whether a gateway part left the login unestablished: it did not pass and a turn was charged. The
+# fields the older driver writes for this (login_held, stop_agent) are not written by the gateway
+# driver.
+gateway_part_charged_and_did_not_pass() {
+  jq -e --arg part "$2" 'select(.part == $part and .outcome != "passed" and ((.evidence.turns.charged // 0) > 0))' "$1" >/dev/null 2>&1
+}
+
 # The most turns each part with a login can start, which the harness reserves before it runs one.
 login_turns() {
   case "$2" in
@@ -1096,7 +1103,12 @@ while IFS= read -r package; do
     if [ "$need" -gt 0 ]; then
       # The agent stops when its part says so, and when a part that did not pass shows no answer
       # only its model could have given: its login is then not established.
-      if jq -e --arg part "$part" 'select(.part == $part and .evidence.stop_agent == true)' "$results" >/dev/null 2>&1; then
+      if ! writes_installed_and_pids "$package" "$part"; then
+        if gateway_part_charged_and_did_not_pass "$results" "$part"; then
+          stopped="part $part, which ended without an answer only the agent's model could have given, so its login is not established"
+          stopped_part="$part"
+        fi
+      elif jq -e --arg part "$part" 'select(.part == $part and .evidence.stop_agent == true)' "$results" >/dev/null 2>&1; then
         stopped="part $part: $(jq -r --arg part "$part" 'select(.part == $part) | .reason' "$results" | tail -1)"
         stopped_part="$part"
       elif ! jq -e --arg part "$part" 'select(.part == $part and (.outcome == "passed" or .evidence.login_held == true))' \
