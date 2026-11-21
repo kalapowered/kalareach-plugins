@@ -432,7 +432,9 @@ fn the_runners_texts_give_the_stand_in_exception_and_what_a_candidate_lists() {
         "the usage of --generation gives the exception"
     );
     assert!(
-        script.contains("it names every pinned build a host can launch, without reading a qualification record"),
+        script.contains(
+            "it names every pinned build a host can launch, without reading a qualification record"
+        ),
         "the notice says what a candidate names"
     );
     assert!(
@@ -705,7 +707,10 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
     write_generation(&own, "6", false);
     git(repository.path(), &["init", "--quiet"]);
     git(repository.path(), &["add", "."]);
-    git(repository.path(), &["commit", "--quiet", "-m", "a committed generation"]);
+    git(
+        repository.path(),
+        &["commit", "--quiet", "-m", "a committed generation"],
+    );
     assert_eq!(
         identity(repository.path(), &own, &own),
         json!("snapshots/development"),
@@ -728,7 +733,10 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
         by_index,
         "a changed file is named by what its signed index says"
     );
-    git(repository.path(), &["checkout", "--quiet", "--", "snapshots/development"]);
+    git(
+        repository.path(),
+        &["checkout", "--quiet", "--", "snapshots/development"],
+    );
     assert_eq!(
         identity(repository.path(), &own, &own),
         json!("snapshots/development"),
@@ -747,17 +755,15 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
 /// `login_held`, so its part also stops the agent where the results hold no line of it and where it
 /// did not pass after a turn was charged, and not where it failed before any charge.
 #[test]
-fn a_gateway_part_stops_the_agent_where_its_driver_says_so_wrote_no_outcome_or_did_not_pass_after_a_charge() {
+fn a_gateway_part_stops_the_agent_where_its_driver_says_so_wrote_no_outcome_or_did_not_pass_after_a_charge()
+ {
     let folder = tempfile::tempdir().expect("a temporary folder");
     let results = folder.path().join("results.jsonl");
     let decide = |driver: &str, lines: &[Value], print: &str| {
         let text: Vec<String> = lines.iter().map(Value::to_string).collect();
         std::fs::write(&results, text.join("\n")).expect("the results");
         from_script(
-            &[
-                &function("part_line_is"),
-                &function("agent_stops_after"),
-            ],
+            &[&function("part_line_is"), &function("agent_stops_after")],
             &format!(
                 "reason=\"$(agent_stops_after '{}' 6b {driver})\" && {print} || echo no",
                 results.display()
@@ -770,22 +776,46 @@ fn a_gateway_part_stops_the_agent_where_its_driver_says_so_wrote_no_outcome_or_d
     // The driver's own stop, as the scrub writes its short form: no turns, and the part's name.
     let driver_stop = json!({"part": "6b", "outcome": "failed", "reason": "a key was found", "evidence": {"stop_agent": true}});
     // The scrub's last form names neither the part nor the test.
-    let nameless_stop = json!({"part": "?", "test": "?", "outcome": "failed", "evidence": {"stop_agent": true}});
+    let nameless_stop =
+        json!({"part": "?", "test": "?", "outcome": "failed", "evidence": {"stop_agent": true}});
     let no_outcome = "part 6b did not pass after its turn was charged, or wrote no outcome, so its login is not shown to hold";
 
-    assert_eq!(stops("gateway", &[line("failed", 0)]), "no", "a failure before any charge");
+    assert_eq!(
+        stops("gateway", &[line("failed", 0)]),
+        "no",
+        "a failure before any charge"
+    );
     assert_eq!(stops("gateway", &[line("failed", 1)]), "yes");
     assert_eq!(stops("gateway", &[line("passed", 1)]), "no");
-    assert_eq!(stops("gateway", &[driver_stop.clone()]), "yes", "stop_agent with no turns");
-    assert_eq!(stops("gateway", &[nameless_stop.clone()]), "yes", "only a line that names no part");
+    assert_eq!(
+        stops("gateway", std::slice::from_ref(&driver_stop)),
+        "yes",
+        "stop_agent with no turns"
+    );
+    assert_eq!(
+        stops("gateway", std::slice::from_ref(&nameless_stop)),
+        "yes",
+        "only a line that names no part"
+    );
     assert_eq!(stops("gateway", &[]), "yes", "no line");
     assert_eq!(reason("gateway", &[line("failed", 1)]), no_outcome);
-    assert_eq!(reason("gateway", &[nameless_stop.clone()]), no_outcome);
-    assert_eq!(reason("gateway", &[driver_stop.clone()]), "part 6b: a key was found");
+    assert_eq!(
+        reason("gateway", std::slice::from_ref(&nameless_stop)),
+        no_outcome
+    );
+    assert_eq!(
+        reason("gateway", std::slice::from_ref(&driver_stop)),
+        "part 6b: a key was found"
+    );
 
-    let held = |held: bool| json!({"part": "6b", "outcome": "failed", "evidence": {"login_held": held}});
+    let held =
+        |held: bool| json!({"part": "6b", "outcome": "failed", "evidence": {"login_held": held}});
     assert_eq!(stops("cases", &[line("passed", 1)]), "no");
-    assert_eq!(stops("cases", &[held(true)]), "no", "a failed part whose login holds");
+    assert_eq!(
+        stops("cases", &[held(true)]),
+        "no",
+        "a failed part whose login holds"
+    );
     assert_eq!(stops("cases", &[held(false)]), "yes");
     assert_eq!(stops("cases", &[driver_stop]), "yes");
     assert_eq!(stops("cases", &[nameless_stop]), "yes");
