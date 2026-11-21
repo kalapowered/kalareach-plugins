@@ -635,6 +635,45 @@ def driver_line_stands($part):
                and ((.evidence.failure_codes // [])
                     | any(.code == "not_pinned" or .code == "environment_not_clear" or .code == "environment_not_read"))));
 
+# The driver's test target a part runs through, and the file that holds its test: the gateway
+# driver's, or the older driver's for a part that has not moved to it.
+def part_driver($p): $p.driver // "cases";
+def part_source($p):
+  if part_driver($p) == "gateway" then "kalareach:tests/e2e/agents/tests/gateway.rs"
+  else "kalareach:tests/e2e/agents/tests/cases.rs" end;
+def part_name($p): "kr-e2e-agents --test " + part_driver($p) + " " + $p.test;
+
+# What a part's entry says of the route it ran on: a part that ran on the stand-in route says so,
+# so that nobody reads it as a run of the real agent.
+def part_route($p): if $p.route == "stand_in" then {route: "stand_in"} else {} end;
+
+# One part's entry in the record: $p is the parts table's row, $r the driver's last result line of
+# the part or null, $step_of and $command_of the run's steps by part.
+def part_entry($p; $r; $step_of; $command_of; $entry; $login_parts):
+  if $p.test == "" then
+    {test: ("part " + $p.part), part: $p.part, source: "kalareach-plugins:fixtures/agents/README.md",
+     keyed_by: "case_table", outcome: "not_run",
+     reason: ($p.reason + " (" + $p.owner + ")"),
+     needs: [$p.needs]}
+  elif $r == null then
+    {test: part_name($p), part: $p.part, source: part_source($p), keyed_by: "attached_comment",
+     outcome: "not_run", reason: "not selected in this run"}
+    + part_route($p)
+    + (if $entry.account != null and any($login_parts[]; . == $p.part)
+       then {evidence: {failure_codes: [{code: "not_selected"}]}} else {} end)
+  else
+    {test: part_name($p), part: $p.part, source: part_source($p), keyed_by: "attached_comment",
+     outcome: $r.outcome}
+    + part_route($p)
+    + (if $r.reason != null then {reason: $r.reason} else {} end)
+    + (if $r.needs != null then {needs: $r.needs} else {} end)
+    + (if $step_of[$p.part] != null then
+         {runs: [{step: $step_of[$p.part], outcome: $r.outcome}],
+          command: $command_of[$p.part]}
+       else {} end)
+    + {evidence: $r.evidence}
+  end;
+
 # A whole record, redacted: $user is the account name the run had, $entry the build list's entry
 # for the agent, and $login_parts the parts that run with the login where the entry names one.
 def redact_record($user; $entry; $login_parts):

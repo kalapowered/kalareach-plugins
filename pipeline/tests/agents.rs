@@ -104,7 +104,7 @@ fn strings<'a>(value: &'a Value, found: &mut Vec<&'a str>) {
 }
 
 /// The parts that run with the login, as the harness names them to the record's writer.
-const LOGIN_PARTS: &str = r#"["1", "2a", "3", "4", "7"]"#;
+const LOGIN_PARTS: &str = r#"["1", "2a", "3", "4", "6b", "7"]"#;
 
 /// `record` as the record's writer, `scripts/record-redaction.jq` run with jq as the harness runs
 /// it, publishes it for the build list's `entry` and the account name `user`.

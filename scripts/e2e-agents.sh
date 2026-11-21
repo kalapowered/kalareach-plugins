@@ -87,15 +87,44 @@ parts=(
   "3|a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once|||"
   "4|a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work|||"
   "5a|a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running|||"
-  "5b||waits for the command integration: a session made through kr new gets no command integration, so no launch has a gateway holding request state|the command integration's landing|command integration"
+  "5b|gateway_a_daemon_killed_with_a_request_pending_leaves_the_agent_and_the_restarted_daemon_serves_the_same_request|||"
   "6a|a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route|||"
-  "6b||waits for the command integration: a build outside the qualified range can be refused only a typed route, and no launch has one without the integration|the command integration's landing|command integration"
+  "6b|gateway_a_process_started_after_an_upgrade_keeps_the_first_its_own_build_and_the_build_outside_the_range_is_refused_the_typed_routes|||"
   "7|a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged|||"
   "8a|forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged|||"
-  "8b||waits for the command integration: no launch has a registration the host issued, against which a forgery could fail where it passes|the command integration's landing|command integration"
+  "8b|gateway_a_launch_whose_first_presentation_carries_a_forged_credential_is_refused_at_the_launch_check_and_the_hosts_own_credential_for_the_same_launch_is_admitted|||"
   "14.03a|a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer|||"
   "14.03b||no method reads a draft's attachment state, and no adapter reports that an agent accepted one|device reads of drafts; the connector hand-over to workers|draft reads"
 )
+
+# The driver's test target each part runs through: the gateway driver's, or the older driver's for a
+# part that has not moved to it.
+part_driver() {
+  case "$1" in
+    5b | 6b | 8b) echo gateway ;;
+    *) echo cases ;;
+  esac
+}
+
+# The route a part runs on. 5b has no real arm: the real route refuses its case, because a restart
+# of the daemon cannot be made safe against a live agent's writes, so its driver is given no build,
+# runs the stand-in route, and the record says so.
+part_route() {
+  case "$1" in
+    5b) echo stand_in ;;
+    *) echo real ;;
+  esac
+}
+
+# The assignment that gives a part's driver the build, by the variable that driver reads: nothing
+# for a part on the stand-in route.
+build_variable() {
+  case "$(part_driver "$1")/$(part_route "$1")" in
+    gateway/real) echo "KR_AGENTS_GATEWAY_BUILD=$2" ;;
+    cases/real) echo "KR_AGENTS_BUILD=$2" ;;
+    *) ;;
+  esac
+}
 
 # The most turns each part with a login can start, which the harness reserves before it runs one.
 login_turns() {
@@ -104,12 +133,13 @@ login_turns() {
     2a) echo 5 ;;
     3) echo 2 ;;
     4) echo 2 ;;
+    6b) echo 1 ;;
     7) echo 2 ;;
     *) echo 0 ;;
   esac
 }
 # The parts that run with the login, for the record's writer (scripts/record-redaction.jq).
-login_parts='["1", "2a", "3", "4", "7"]'
+login_parts='["1", "2a", "3", "4", "6b", "7"]'
 
 # The environment the driver runs with, and nothing else (env -i): whatever else this shell
 # holds, a key among it, reaches no program the driver starts. A login's one variable goes to the
@@ -279,17 +309,29 @@ echo
 if ! (cd "$core" &&
   CARGO_TARGET_DIR="$target_dir" cargo build --locked -p kr-cli -p kr-controller -p kr-worker \
     -p kr-hook --bins &&
-  CARGO_TARGET_DIR="$target_dir" cargo test --locked -p kr-e2e-agents --test cases --no-run \
+  CARGO_TARGET_DIR="$target_dir" cargo build --locked -p kr-e2e-agents --bin kr-e2e-forge &&
+  CARGO_TARGET_DIR="$target_dir" cargo test --locked -p kr-e2e-agents --test cases --test gateway --no-run \
     --message-format=json-render-diagnostics >"$evidence/driver.json") >"$evidence/build.log" 2>&1; then
   tail -20 "$evidence/build.log" >&2
   echo "the host or the driver did not build, so no part ran" >&2
   exit 1
 fi
-driver="$(jq -r 'select(.reason == "compiler-artifact" and .target.name == "cases" and .profile.test == true) | .executable' \
-  "$evidence/driver.json" | tail -1)"
-[ -x "$driver" ] || {
-  echo "the driver's test executable was not found in the build's output" >&2
+driver_of() {
+  jq -r --arg target "$1" 'select(.reason == "compiler-artifact" and .target.name == $target and .profile.test == true) | .executable' \
+    "$evidence/driver.json" | tail -1
+}
+driver="$(driver_of cases)"
+gateway_driver="$(driver_of gateway)"
+[ -x "$driver" ] && [ -x "$gateway_driver" ] || {
+  echo "a driver's test executable was not found in the build's output" >&2
   exit 1
+}
+# The driver that runs a part: the gateway driver's test executable or the older one's.
+driver_for() {
+  case "$(part_driver "$1")" in
+    gateway) echo "$gateway_driver" ;;
+    *) echo "$driver" ;;
+  esac
 }
 toolchain="$(cd "$core" && jq -n --arg rustc "$(rustc -V)" --arg cargo "$(cargo -V)" '{rustc: $rustc, cargo: $cargo}')"
 
@@ -873,22 +915,25 @@ while IFS= read -r package; do
     [ "$need" -gt 0 ] && variable="$(printf '%s' "$entry" | jq -r '.account.variable // ""')"
     login_variable_note=""
     [ "$need" -le 0 ] || login_variable_note=" KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe)"
-    inputs=("KR_AGENTS_BUILD=$directory/build.json" "KR_AGENTS_GENERATION=$generation"
+    part_driver_path="$(driver_for "$part")"
+    inputs=("KR_AGENTS_GENERATION=$generation"
       "KR_AGENTS_RESULT=$results" "KR_REQUIRE_AGENTS=1" "KR_REQUIRE_SHELL_PACKAGES=1"
       "KR_AGENTS_TURNS=$turns" "KR_AGENTS_KEY_SCAN=$directory/key-scan.jsonl")
+    given_build="$(build_variable "$part" "$directory/build.json")"
+    [ -z "$given_build" ] || inputs+=("$given_build")
     if [ -n "$variable" ]; then
       # The login's value goes on a pipe the driver reads once, and nowhere else; the values of the
       # other keys this shell holds go on another, for the driver to search the run's directory for.
       env -i "${driver_environment[@]}" "${inputs[@]}" KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 \
-        "$driver" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 \
+        "$part_driver_path" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 \
         3< <(printenv "$variable") 4< <(provider_secret_values "$variable") || rc=$?
     elif [ "$need" -gt 0 ]; then
       env -i "${driver_environment[@]}" "${inputs[@]}" KR_AGENTS_SCAN_FD=4 \
-        "$driver" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 \
+        "$part_driver_path" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 \
         4< <(provider_secret_values "") || rc=$?
     else
       env -i "${driver_environment[@]}" "${inputs[@]}" \
-        "$driver" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 || rc=$?
+        "$part_driver_path" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 || rc=$?
     fi
     seconds=$(($(date +%s) - began))
     release_budget
@@ -934,7 +979,7 @@ while IFS= read -r package; do
     # The ledger's path is the person's own and says nothing of the part, so the command names it as such.
     shown_inputs="${inputs[*]}"
     [ -z "$turns" ] || shown_inputs="${shown_inputs//"$turns"/<ledger>}"
-    command_run="env -i <driver environment> $shown_inputs${variable:+ KR_AGENTS_KEY_FD=3 (the value of $variable on a pipe)}${login_variable_note} $driver --exact $test_name --nocapture --test-threads=1"
+    command_run="env -i <driver environment> $shown_inputs${variable:+ KR_AGENTS_KEY_FD=3 (the value of $variable on a pipe)}${login_variable_note} $part_driver_path --exact $test_name --nocapture --test-threads=1"
     steps="$(printf '%s' "$steps" | jq --argjson number "$number" --arg part "$part" \
       --arg command "$command_run" --argjson exit "$rc" --argjson seconds "$seconds" \
       --arg log "$plugin/$part.log" \
@@ -991,8 +1036,8 @@ while IFS= read -r package; do
 
   # The record: every part, the run's identity, the build and the package it is for.
   finished="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-  parts_json="$(for spec in "${parts[@]}"; do printf '%s\n' "$spec"; done |
-    jq -R 'split("|") | {part: .[0], test: .[1], reason: .[2], owner: .[3], needs: .[4]}' | jq -s '.')"
+  parts_json="$(for spec in "${parts[@]}"; do printf '%s|%s|%s\n' "$spec" "$(part_driver "${spec%%|*}")" "$(part_route "${spec%%|*}")"; done |
+    jq -R 'split("|") | {part: .[0], test: .[1], reason: .[2], owner: .[3], needs: .[4], driver: .[5], route: .[6]}' | jq -s '.')"
   selection="[]"
   for spec in "${parts[@]}"; do
     part="${spec%%|*}"
@@ -1050,30 +1095,8 @@ while IFS= read -r package; do
     ($steps | map(select(.group == "agents")) | map({key: (.what | ltrimstr("part ")), value: .number}) | from_entries) as $step_of |
     ($steps | map(select(.group == "agents")) | map({key: (.what | ltrimstr("part ")), value: .command}) | from_entries) as $command_of |
     [ $parts[] | . as $p |
-      ([$results[] | select(.part == $p.part)] | last) as $r |
-      if $p.test == "" then
-        {test: ("part " + $p.part), part: $p.part, source: "kalareach-plugins:fixtures/agents/README.md",
-         keyed_by: "case_table", outcome: "not_run",
-         reason: ($p.reason + " (" + $p.owner + ")"),
-         needs: [$p.needs]}
-      elif $r == null then
-        {test: ("kr-e2e-agents --test cases " + $p.test), part: $p.part,
-         source: "kalareach:tests/e2e/agents/tests/cases.rs", keyed_by: "attached_comment",
-         outcome: "not_run", reason: "not selected in this run"}
-        + (if $entry.account != null and any($login_parts[]; . == $p.part)
-           then {evidence: {failure_codes: [{code: "not_selected"}]}} else {} end)
-      else
-        {test: ("kr-e2e-agents --test cases " + $p.test), part: $p.part,
-         source: "kalareach:tests/e2e/agents/tests/cases.rs", keyed_by: "attached_comment",
-         outcome: $r.outcome}
-        + (if $r.reason != null then {reason: $r.reason} else {} end)
-        + (if $r.needs != null then {needs: $r.needs} else {} end)
-        + (if $step_of[$p.part] != null then
-             {runs: [{step: $step_of[$p.part], outcome: $r.outcome}],
-              command: $command_of[$p.part]}
-           else {} end)
-        + {evidence: $r.evidence}
-      end
+      part_entry($p; ([$results[] | select(.part == $p.part)] | last); $step_of; $command_of;
+                 $entry; $login_parts)
     ] as $tests |
     ($tests | map(select(.part | startswith("14.03") | not))) as $case_tests |
     ($tests | map(select(.part | startswith("14.03")))) as $attachment_tests |
