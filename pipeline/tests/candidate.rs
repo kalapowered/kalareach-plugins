@@ -114,6 +114,14 @@ async fn a_candidate_generation_lists_the_pinned_build_and_says_candidate_in_its
         &[],
     );
     assert!(output.status.success(), "{}", stderr(&output));
+    // What the build prints tells a person that the generation is a candidate, and which builds it
+    // names that no record shows passing.
+    let printed = String::from_utf8_lossy(&output.stdout).into_owned();
+    assert!(
+        printed.contains("candidate generation: it names"),
+        "{printed}"
+    );
+    assert!(printed.contains(&pinned_codex_digest()), "{printed}");
     let verified = tuf::verify(&candidate, false)
         .await
         .expect("the candidate generation verifies");
@@ -245,4 +253,35 @@ fn a_candidate_refuses_a_folder_inside_the_checkout() {
         "the folder that was not there is not made"
     );
     assert!(!root().join("snapshots/candidate-refused-through").exists());
+}
+
+/// `verify` says of a candidate generation that it is one, and of an ordinary one nothing of the kind.
+#[test]
+fn verify_says_that_a_candidate_generation_is_one() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let verify = |generation: &Path| {
+        let output = Command::new(env!("CARGO_BIN_EXE_kalareach-catalogue"))
+            .env_remove("KALAREACH_SIGNING_DIR")
+            .arg("--repository")
+            .arg(root())
+            .arg("verify")
+            .arg(generation)
+            .output()
+            .expect("the pipeline runs");
+        assert!(output.status.success(), "{}", stderr(&output));
+        String::from_utf8_lossy(&output.stdout).into_owned()
+    };
+    let candidate = temporary.path().join("candidate");
+    let output = build(
+        &[
+            "--development",
+            "--candidate",
+            "--out",
+            candidate.to_str().expect("a path"),
+        ],
+        &[],
+    );
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert!(verify(&candidate).contains("a candidate generation"));
+    assert!(!verify(&root().join("snapshots/development")).contains("candidate"));
 }
