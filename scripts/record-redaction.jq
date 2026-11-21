@@ -721,7 +721,10 @@ def redact_record($user; $entry; $login_parts):
   | .identifiers[].tests[] |= (
       if (.evidence | type) == "object" and (.evidence | has("person_home"))
       then .evidence.person_home |= redact_person_home($own; $roots; $named) else . end
-      | if $entry.account != null and (.part as $part | any($login_parts[]; . == $part)) then
+      # A part the build list's table records as not run has no driver log, so it is not read as a
+      # login part that stopped: it stays as the table wrote it.
+      | if $entry.account != null and .keyed_by != "case_table"
+           and (.part as $part | any($login_parts[]; . == $part)) then
           (if (.evidence | type) == "object" then
              .evidence as $evidence
              | .evidence |= published_evidence($context

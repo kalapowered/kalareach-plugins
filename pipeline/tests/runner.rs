@@ -362,3 +362,24 @@ fn the_generation_a_run_installs_from_holds_the_package_the_record_is_for() {
         String::from_utf8_lossy(&other.stderr)
     );
 }
+
+/// A part the table records as not run has no driver log: the record writer leaves it as the table
+/// wrote it when its part becomes one that runs with the login, and still rewrites the reason of a
+/// part the driver ran.
+#[test]
+fn a_part_the_table_records_as_not_run_is_not_rewritten_as_a_login_part_that_stopped() {
+    let table = json!({"test": "part 6b", "part": "6b",
+        "source": "kalareach-plugins:fixtures/agents/README.md", "keyed_by": "case_table",
+        "outcome": "not_run", "reason": "waits for a landing (the owner)", "needs": ["landing"]});
+    let driver = json!({"test": "kr-e2e-agents --test gateway a_test", "part": "6b",
+        "source": GATEWAY_FILE, "keyed_by": "attached_comment", "outcome": "not_run",
+        "reason": "whatever the driver said", "evidence": {"failure_codes": [{"code": "not_selected"}]}});
+    let record = json!({"identifiers": {"KR-REQ-12.32": {"tests": [table.clone(), driver]}}});
+    let written = jq(
+        r#"$record | redact_record("someone"; {account: {}}; ["6b"])"#,
+        &[("record", record)],
+    );
+    let tests = &written["identifiers"]["KR-REQ-12.32"]["tests"];
+    assert_eq!(tests[0], table, "the table's entry is as it was written");
+    assert_eq!(tests[1]["reason"], "not selected in this run");
+}
