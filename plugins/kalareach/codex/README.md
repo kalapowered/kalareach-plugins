@@ -142,8 +142,9 @@ item 2 from a recording of the pinned terminal and server:
    a hidden thread, and the cases read the binding after a turn and after that flow has ended.
 3. The terminal closes its approval prompt when Codex sends `serverRequest/resolved` for a request a
    device answered. The prompt closed while the turn was still open, and the command ran once.
-4. In one session, with one turn and the slash commands the case sent, the binding was never
-   suspended: that session showed no method outside the 195 stable names and the nineteen above.
+4. In one session, with one turn and one slash command that calls no model, no read of the binding
+   found it suspended: that session showed no method outside the 195 stable names and the nineteen
+   above.
 5. A prompt a device sent over a running turn is refused by the host before any `turn/start`. The
    agent's own record of the conversation holds the terminal's prompt and not the device's.
 
