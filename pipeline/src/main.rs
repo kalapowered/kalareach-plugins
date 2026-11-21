@@ -157,9 +157,10 @@ struct BuildArgs {
     /// Replace a generation that is already in the output directory.
     #[arg(long)]
     replace: bool,
-    /// Name the pinned builds that have no qualification record yet, for one run on this machine.
-    /// The signed metadata says the generation is a candidate. It is signed with the development
-    /// keys only, written outside the repository, and never made in a release or hosted job.
+    /// Name every pinned build a host can launch, without reading a qualification record, for one
+    /// run on this machine. The signed metadata says the generation is a candidate. It is signed
+    /// with the development keys only, and never made where CI or GITHUB_ACTIONS is set, or inside
+    /// any checkout of this repository.
     #[arg(long)]
     candidate: bool,
 }
@@ -275,36 +276,25 @@ async fn write_root(root: &std::path::Path, args: &RootArgs) -> Result<()> {
     Ok(())
 }
 
-/// Whether `out` is, or would be, inside the repository at `root`, where a generation is published
-/// from. The nearest folder that exists is resolved, so a link or a `..` cannot hide where it is.
-fn inside_the_repository(root: &Path, out: &Path) -> bool {
-    let Ok(root) = std::fs::canonicalize(root) else {
-        return true;
-    };
+/// The nearest folder at or above `out` that exists, resolved, or nothing where `out` cannot be
+/// resolved: a path that ends in `..` below a folder that is not there, or a folder that cannot be
+/// resolved.
+fn resolved_place(out: &Path) -> Option<PathBuf> {
     let absolute = std::path::absolute(out).unwrap_or_else(|_| out.to_path_buf());
     let mut existing = absolute.as_path();
-    let mut missing = Vec::new();
     while !existing.exists() {
         match (existing.parent(), existing.file_name()) {
-            (Some(parent), Some(name)) => {
-                missing.push(name.to_owned());
-                existing = parent;
-            }
-            // A path that ends in `..` below a folder that is not there cannot be resolved, and
-            // what cannot be resolved is not shown to be outside.
-            _ => return true,
+            (Some(parent), Some(_)) => existing = parent,
+            _ => return None,
         }
     }
-    let Ok(mut resolved) = std::fs::canonicalize(existing) else {
-        return true;
-    };
-    resolved.extend(missing.iter().rev());
-    resolved.starts_with(&root)
+    std::fs::canonicalize(existing).ok()
 }
 
 /// What keeps a candidate generation from being made: one is made with development keys, on a
-/// person's machine, outside the repository, and by nothing a release is made of.
-fn refuse_a_candidate_out_of_place(root: &Path, args: &BuildArgs) -> Result<()> {
+/// person's machine, outside every checkout of this repository, never over a generation that is
+/// there, and where neither `CI` nor `GITHUB_ACTIONS` is set.
+fn refuse_a_candidate_out_of_place(args: &BuildArgs) -> Result<()> {
     if args.signing_dir.is_some() || !args.development {
         return Err(Error::Signing {
             detail: "a candidate generation is signed with development keys only, so a host that \
@@ -323,12 +313,30 @@ fn refuse_a_candidate_out_of_place(root: &Path, args: &BuildArgs) -> Result<()> 
                 .to_owned(),
         });
     }
-    if inside_the_repository(root, &args.out) {
+    if args.replace {
+        return Err(Error::Layout {
+            detail: "a candidate generation is never written over a generation that is there: \
+                     drop --replace"
+                .to_owned(),
+        });
+    }
+    let Some(place) = resolved_place(&args.out) else {
         return Err(Error::Layout {
             detail: format!(
-                "a candidate generation is written outside the repository, not to {}, which is \
-                 where a generation is published from",
+                "a candidate generation is written outside the repository, and {} cannot be \
+                 resolved (a `..` below a folder that is not there), so it is not shown to be \
+                 outside",
                 args.out.display()
+            ),
+        });
+    };
+    if let Ok(checkout) = repository_root(&place) {
+        return Err(Error::Layout {
+            detail: format!(
+                "a candidate generation is not written inside any checkout of this repository, \
+                 and {} is inside the one at {}",
+                args.out.display(),
+                checkout.display()
             ),
         });
     }
@@ -337,10 +345,21 @@ fn refuse_a_candidate_out_of_place(root: &Path, args: &BuildArgs) -> Result<()> 
 
 async fn build(root: &std::path::Path, args: &BuildArgs) -> Result<()> {
     if args.candidate {
-        refuse_a_candidate_out_of_place(root, args)?;
+        refuse_a_candidate_out_of_place(args)?;
     }
     keys::refuse_keys_in_tree(root)?;
     let mut repository = validate(root)?;
+    let ordinary: Vec<_> = repository
+        .builds
+        .named()
+        .map(|(plugin_id, release, build)| {
+            (
+                plugin_id.to_owned(),
+                release.to_owned(),
+                build.executable_digest.to_string(),
+            )
+        })
+        .collect();
     if args.candidate {
         repository.builds =
             kalareach_catalogue::builds::load_candidate(root, &repository.packages)?;
@@ -387,10 +406,20 @@ async fn build(root: &std::path::Path, args: &BuildArgs) -> Result<()> {
         outcome.target_count
     );
     if args.candidate {
-        let named: Vec<_> = repository.builds.named().collect();
+        let named: Vec<_> = repository
+            .builds
+            .named()
+            .filter(|(plugin_id, release, build)| {
+                !ordinary.contains(&(
+                    (*plugin_id).to_owned(),
+                    (*release).to_owned(),
+                    build.executable_digest.to_string(),
+                ))
+            })
+            .collect();
         println!(
-            "candidate generation: it names {} pinned build(s) that no qualification record shows \
-             passing, and it is signed with development keys, so it is no release:",
+            "candidate generation: it names {} pinned build(s) that the ordinary load leaves out \
+             for want of a record, and it is signed with development keys, so it is no release:",
             named.len()
         );
         for (plugin_id, release, build) in named {
@@ -477,6 +506,13 @@ async fn rotate_root(root: &std::path::Path, args: &RotateArgs) -> Result<()> {
 }
 
 async fn check_generation(args: &CheckArgs) -> Result<()> {
+    if tuf::verify(&args.generation, false).await?.candidate {
+        return Err(Error::Layout {
+            detail: "the generation is a candidate, which is no successor: a candidate is made \
+                     for one run"
+                .to_owned(),
+        });
+    }
     let lineage =
         kalareach_catalogue::lineage::check_generation(&args.generation, &args.previous).await?;
     println!(
@@ -511,8 +547,8 @@ async fn verify(args: &VerifyArgs) -> Result<()> {
     );
     if verified.candidate {
         println!(
-            "{}: a candidate generation: its signed metadata says its builds were named without a \
-             qualification record, so it is no release",
+            "{}: a candidate generation: its signed metadata says its builds were named without \
+             requiring a qualification record, so it is no release",
             args.generation.display()
         );
     }
