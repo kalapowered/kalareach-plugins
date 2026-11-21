@@ -474,3 +474,32 @@ fn the_gateway_parts_of_another_package_wait_as_they_did_before_the_driver_had_t
     );
     assert_eq!(calls, "cases real KR_AGENTS_BUILD=/b.json 0");
 }
+
+/// The checks after a part read the process numbers and the installed package that only the older
+/// driver writes; the gateway driver's parts are not held to fields it does not write.
+#[test]
+fn the_checks_after_a_part_read_only_what_its_driver_writes() {
+    let writes = |package: &str, part: &str| {
+        from_script(
+            &[
+                "/^gateway_package=/p",
+                &function("part_driver"),
+                &function("writes_installed_and_pids"),
+            ],
+            &format!("writes_installed_and_pids {package} {part} && echo yes || echo no"),
+        )
+    };
+    for part in ["5b", "6b", "8b"] {
+        assert_eq!(
+            writes("kalareach/codex", part),
+            "no",
+            "the gateway driver's part {part}"
+        );
+    }
+    assert_eq!(writes("kalareach/codex", "2b"), "yes");
+    assert_eq!(
+        writes("kalareach/claude-code", "6b"),
+        "yes",
+        "6b of another package is the older driver's"
+    );
+}

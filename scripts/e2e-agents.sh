@@ -183,6 +183,13 @@ generation_holds_the_package() {
   return 1
 }
 
+# Whether the part's driver writes the fields the checks after a part read: the process numbers its
+# sessions ran and the package the host installed. The older driver does; the gateway driver writes
+# neither.
+writes_installed_and_pids() {
+  [ "$(part_driver "$1" "$2")" = cases ]
+}
+
 # The most turns each part with a login can start, which the harness reserves before it runs one.
 login_turns() {
   case "$2" in
@@ -1015,7 +1022,11 @@ while IFS= read -r package; do
       fi
       # The process numbers the part's sessions ran, from the driver's own outcome, which has them
       # however the part ended; without them what coreauthd logged about the part cannot be told.
-      if jq -e --arg part "$part" 'select(.part == $part and (.evidence.provenance.pids | type) == "array")' \
+      if ! writes_installed_and_pids "$package" "$part"; then
+        # The gateway driver's outcome names no process numbers, so what coreauthd and tccd logged is
+        # attributed by the paths of the run's programs alone.
+        no_prompt_since "$part_began" "$package $version part $part" "" || dialog=3
+      elif jq -e --arg part "$part" 'select(.part == $part and (.evidence.provenance.pids | type) == "array")' \
         "$results" >/dev/null 2>&1; then
         pids="$(jq -r --arg part "$part" 'select(.part == $part) | .evidence.provenance.pids // [] | .[]' \
           "$results" | tr '\n' ' ')"
@@ -1083,8 +1094,11 @@ while IFS= read -r package; do
             evidence: ({exit: $exit} + (if $need > 0 then {failure_codes: [{code: "exited_after_outcome"}]} else {} end))}' \
           >>"$results"
       fi
-    else
+    elif writes_installed_and_pids "$package" "$part"; then
       # What the host installed is what the part ran against, and it has to be this tree's package.
+      # The gateway driver writes no such field: it installs from the generation the run names, whose
+      # package this runner has compared with the tree's, and its own check compares the digest it
+      # installed with the generation's index.
       installed="$(jq -c --arg part "$part" 'select(.part == $part) | .evidence.installed // null' "$results" | tail -1)"
       if [ "$(printf '%s' "$installed" | jq -r '.version // ""')" != "$manifest_version" ] ||
         [ "$(printf '%s' "$installed" | jq -r '.manifest_digest // ""')" != "$manifest_digest" ]; then
