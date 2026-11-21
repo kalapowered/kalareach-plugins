@@ -76,7 +76,7 @@ The upgrade case also has a probe-only run. It runs the commands in the pinned e
 `account.isolated` against the newer build, with no login and no model call, and keeps each whole
 answer in a folder the runner makes. The run's record says in `adoption.allowed` whether its
 evidence is complete. The answers are read before any command is adopted. Only from a record that allows adoption does
-a command go into the entry's `newer.isolated`, and a newer build with none has no real arm.
+a command go into the entry's `newer.isolated`, and a newer build with none has no real arm. A probe-only run that stopped, or whose call did not exit 0, offers no command.
 
 ## The record
 

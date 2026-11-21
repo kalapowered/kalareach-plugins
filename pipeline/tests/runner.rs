@@ -327,6 +327,14 @@ fn the_newer_builds_probes_are_adopted_only_from_a_probe_only_record_that_allows
         json!([]),
         "no adoption where it is refused"
     );
+    // A run that ended with a stop is written as failed, whatever its probes found.
+    let mut stopped = result(true, true);
+    stopped["outcome"] = json!("failed");
+    assert_eq!(
+        adopted(stopped),
+        json!([]),
+        "a failed probe-only run offers nothing"
+    );
     let silent = json!({"part": "6b", "outcome": "passed", "evidence": {"shows": {}}});
     assert_eq!(
         adopted(silent),

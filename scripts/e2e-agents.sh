@@ -1186,10 +1186,19 @@ while IFS= read -r package; do
     # What the call exited with is kept beside what it found, so an empty list of commands is not
     # taken for a run that found nothing to adopt.
     echo "$probe_rc" >"$directory/newer-probes.exit"
-    others_not_in "$probes" "$package $version the newer build's probes" "" || exit 1
-    jq -c -s -L "$root/scripts" --argjson entry "$entry" \
-      'include "record-redaction"; (map(select(.part == "6b")) | last // {}) | adopted_isolation($entry)' \
-      "$directory/newer-probes.jsonl" >"$directory/newer-isolated.json" || echo "[]" >"$directory/newer-isolated.json"
+    look_again "$package $version the newer build's probes" || exit 3
+    others_not_in "$directory" "$package $version the newer build's probes" "" || exit 1
+    # A call that did not exit 0 offers no command, whatever its record says.
+    echo "[]" >"$directory/newer-isolated.json"
+    probe_outcome="$(jq -r -s 'map(select(.part == "6b")) | (last // {}) | .outcome // "none"' "$directory/newer-probes.jsonl" 2>/dev/null || echo none)"
+    if [ "$probe_rc" -eq 0 ]; then
+      jq -c -s -L "$root/scripts" --argjson entry "$entry" \
+        'include "record-redaction"; (map(select(.part == "6b")) | last // {}) | adopted_isolation($entry)' \
+        "$directory/newer-probes.jsonl" >"$directory/newer-isolated.json" || echo "[]" >"$directory/newer-isolated.json"
+      echo "$package $version: the newer build's probe-only call exited $probe_rc and offers $(jq 'length' "$directory/newer-isolated.json") command(s) to adopt" >&2
+    else
+      echo "$package $version: the newer build's probe-only call failed (exit $probe_rc, outcome $probe_outcome), so it offers none" >&2
+    fi
   fi
 
   # The record: every part, the run's identity, the build and the package it is for.

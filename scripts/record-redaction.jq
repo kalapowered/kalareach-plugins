@@ -698,7 +698,7 @@ def driver_build($tools; $root; $files; $actions; $installed):
 # a person to read; nothing here judges the answers.
 def adopted_isolation($entry):
   (.evidence.shows // {}) as $shows
-  | if $shows.probe_only == true and $shows.adoption.allowed == true then
+  | if .outcome == "not_run" and $shows.probe_only == true and $shows.adoption.allowed == true then
       [($entry.account.isolated // [])[]
        | select(.arguments as $arguments
                 | any($shows.probes[]?; .arguments == $arguments and .adoptable == true))]
