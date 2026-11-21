@@ -61,8 +61,8 @@
     {
       "role": "asset",
       "path": "README.md",
-      "digest": "06440e7b7b010e2d2e7efb351164d64ee4575af7a4a55bc03d8572bcb3d23d57",
-      "size_bytes": "14173"
+      "digest": "a8bf8dec068699fbbe37b39f6937f9edd11caa9228a5ce896722d951518edbf0",
+      "size_bytes": "14217"
     },
     {
       "role": "connector",

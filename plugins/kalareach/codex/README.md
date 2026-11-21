@@ -140,8 +140,9 @@ item 2 from a recording of the pinned terminal and server:
    seconds. The recap and the rename suggestion use the same thread. The same flow follows a prompt
    a device sent. The conditions the table states on the start route are the terminal's own test for
    a hidden thread, and the cases read the binding after a turn and after that flow has ended.
-3. The terminal closes its approval prompt when Codex sends `serverRequest/resolved` for a request a
-   device answered. The prompt closed while the turn was still open, and the command ran once.
+3. After a device answered an approval, the terminal closed its prompt while the turn was still
+   open, and the command ran once. The run kept no frames, so the cause, `serverRequest/resolved`,
+   comes from the order and is not measured.
 4. In one session, with one turn and one slash command that calls no model, no read of the binding
    found it suspended: that session showed no method outside the 195 stable names and the nineteen
    above.
