@@ -231,7 +231,8 @@ its agent stops. A part whose login cannot be
 established that way, whose agent does not reach its composer with it or shows it is signed out,
 or that ends without passing while its latest request to the model has no answer only the model
 could have given (a sum, the part's code in upper case, a tool request), stops that agent's
-remaining parts in the run. An
+remaining parts in the run. Part 6b of the Codex package stops them where its driver says the
+agent stops, where it wrote no outcome, or where it did not pass after its turn was charged. An
 entry without one names under `no_account` why its parts with a login do not run. The harness
 checks each build's digest before it runs anything with it, and for a build installed from a wheel,
 every file digest the wheel's `RECORD` lists against the installed code, and the launcher a person

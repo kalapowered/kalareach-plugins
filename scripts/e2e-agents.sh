@@ -222,11 +222,30 @@ generation_identity() {
   fi
 }
 
-# Whether a gateway part left the login unestablished: it did not pass and a turn was charged. The
-# fields the older driver writes for this (login_held, stop_agent) are not written by the gateway
-# driver.
-gateway_part_charged_and_did_not_pass() {
-  jq -e --arg part "$2" 'select(.part == $part and .outcome != "passed" and ((.evidence.turns.charged // 0) > 0))' "$1" >/dev/null 2>&1
+# Whether the file $1 of results holds a line of the part $2 that satisfies the jq test $3.
+part_line_is() {
+  jq -e --arg part "$2" "select(.part == \$part and ($3))" "$1" >/dev/null 2>&1
+}
+
+# Whether the agent stops after the part $2, whose results are the lines of the file $1 and whose
+# driver is $3 (cases or gateway); where it does, its reason is the one line printed. Both drivers
+# write `stop_agent` on a line that says the agent stops, and that comes first. The older driver's
+# part otherwise stops it where it neither passed nor held the login. The gateway driver writes no
+# `login_held`, so its part stops it where the results hold no line of it (a driver that ended
+# after its charge, or a result scrubbed to a line of another name) and where it did not pass after
+# a turn was charged; one that failed before any charge leaves the login as it was.
+agent_stops_after() {
+  if part_line_is "$1" "$2" '.evidence.stop_agent == true'; then
+    echo "part $2: $(jq -r --arg part "$2" 'select(.part == $part and .evidence.stop_agent == true) | .reason' "$1" | tail -1)"
+  elif [ "$3" = gateway ]; then
+    ! part_line_is "$1" "$2" 'true' ||
+      part_line_is "$1" "$2" '.outcome != "passed" and ((.evidence.turns.charged // 0) > 0)' || return 1
+    echo "part $2 did not pass after its turn was charged, or wrote no outcome, so its login is not shown to hold"
+  elif part_line_is "$1" "$2" '.outcome == "passed" or .evidence.login_held == true'; then
+    return 1
+  else
+    echo "part $2, which ended without an answer only the agent's model could have given, so its login is not established"
+  fi
 }
 
 # The words that name the pipe of the other keys' values in a part's recorded command: where the
@@ -1109,19 +1128,10 @@ while IFS= read -r package; do
     [ "$dialog" -eq 0 ] || exit "$dialog"
     [ "$checked" -eq 0 ] || exit "$checked"
     if [ "$need" -gt 0 ]; then
-      # The agent stops when its part says so, and when a part that did not pass shows no answer
-      # only its model could have given: its login is then not established.
-      if ! writes_installed_and_pids "$package" "$part"; then
-        if gateway_part_charged_and_did_not_pass "$results" "$part"; then
-          stopped="part $part, which ended without an answer only the agent's model could have given, so its login is not established"
-          stopped_part="$part"
-        fi
-      elif jq -e --arg part "$part" 'select(.part == $part and .evidence.stop_agent == true)' "$results" >/dev/null 2>&1; then
-        stopped="part $part: $(jq -r --arg part "$part" 'select(.part == $part) | .reason' "$results" | tail -1)"
-        stopped_part="$part"
-      elif ! jq -e --arg part "$part" 'select(.part == $part and (.outcome == "passed" or .evidence.login_held == true))' \
-        "$results" >/dev/null 2>&1; then
-        stopped="part $part, which ended without an answer only the agent's model could have given, so its login is not established"
+      # The agent stops when its part says so, and where a part that did not pass shows no answer only
+      # its model could have given: its login is then not established.
+      if stopped_reason="$(agent_stops_after "$results" "$part" "$(part_driver "$package" "$part")")"; then
+        stopped="$stopped_reason"
         stopped_part="$part"
       fi
     fi

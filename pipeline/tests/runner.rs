@@ -616,32 +616,58 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
     );
 }
 
-/// The agent stops after a login part that did not establish the login. The gateway driver writes
-/// neither `login_held` nor `stop_agent`, so a gateway part stops it where it did not pass and a turn
-/// was charged, and not where it failed before any charge.
+/// The agent stops after a login part that did not establish the login. Both drivers write
+/// `stop_agent` where the agent stops, and that is read first. The gateway driver writes no
+/// `login_held`, so its part also stops the agent where the results hold no line of it and where it
+/// did not pass after a turn was charged, and not where it failed before any charge.
 #[test]
-fn a_gateway_part_stops_the_agent_only_where_it_did_not_pass_after_a_turn_was_charged() {
+fn a_gateway_part_stops_the_agent_where_its_driver_says_so_wrote_no_outcome_or_did_not_pass_after_a_charge() {
     let folder = tempfile::tempdir().expect("a temporary folder");
     let results = folder.path().join("results.jsonl");
-    let stops = |lines: &[Value]| {
+    let decide = |driver: &str, lines: &[Value], print: &str| {
         let text: Vec<String> = lines.iter().map(Value::to_string).collect();
         std::fs::write(&results, text.join("\n")).expect("the results");
         from_script(
-            &[&function("gateway_part_charged_and_did_not_pass")],
+            &[
+                &function("part_line_is"),
+                &function("agent_stops_after"),
+            ],
             &format!(
-                "gateway_part_charged_and_did_not_pass '{}' 6b && echo yes || echo no",
+                "reason=\"$(agent_stops_after '{}' 6b {driver})\" && {print} || echo no",
                 results.display()
             ),
         )
     };
+    let stops = |driver: &str, lines: &[Value]| decide(driver, lines, "echo yes");
+    let reason = |driver: &str, lines: &[Value]| decide(driver, lines, r#"echo "$reason""#);
     let line = |outcome: &str, charged: u32| json!({"part": "6b", "outcome": outcome, "evidence": {"turns": {"charged": charged}}});
+    // The driver's own stop, as the scrub writes its short form: no turns, and the part's name.
+    let driver_stop = json!({"part": "6b", "outcome": "failed", "reason": "a key was found", "evidence": {"stop_agent": true}});
+    // The scrub's last form names neither the part nor the test.
+    let nameless_stop = json!({"part": "?", "test": "?", "outcome": "failed", "evidence": {"stop_agent": true}});
+    let no_outcome = "part 6b did not pass after its turn was charged, or wrote no outcome, so its login is not shown to hold";
+
+    assert_eq!(stops("gateway", &[line("failed", 0)]), "no", "a failure before any charge");
+    assert_eq!(stops("gateway", &[line("failed", 1)]), "yes");
+    assert_eq!(stops("gateway", &[line("passed", 1)]), "no");
+    assert_eq!(stops("gateway", &[driver_stop.clone()]), "yes", "stop_agent with no turns");
+    assert_eq!(stops("gateway", &[nameless_stop.clone()]), "yes", "only a line that names no part");
+    assert_eq!(stops("gateway", &[]), "yes", "no line");
+    assert_eq!(reason("gateway", &[line("failed", 1)]), no_outcome);
+    assert_eq!(reason("gateway", &[nameless_stop.clone()]), no_outcome);
+    assert_eq!(reason("gateway", &[driver_stop.clone()]), "part 6b: a key was found");
+
+    let held = |held: bool| json!({"part": "6b", "outcome": "failed", "evidence": {"login_held": held}});
+    assert_eq!(stops("cases", &[line("passed", 1)]), "no");
+    assert_eq!(stops("cases", &[held(true)]), "no", "a failed part whose login holds");
+    assert_eq!(stops("cases", &[held(false)]), "yes");
+    assert_eq!(stops("cases", &[driver_stop]), "yes");
+    assert_eq!(stops("cases", &[nameless_stop]), "yes");
+    assert_eq!(stops("cases", &[]), "yes", "no line");
     assert_eq!(
-        stops(&[line("failed", 0)]),
-        "no",
-        "a failure before any charge"
+        reason("cases", &[held(false)]),
+        "part 6b, which ended without an answer only the agent's model could have given, so its login is not established"
     );
-    assert_eq!(stops(&[line("failed", 1)]), "yes");
-    assert_eq!(stops(&[line("passed", 1)]), "no");
 }
 
 /// The recorded command of a part names the pipe it was given: 8b's too, which has no login.
