@@ -58,7 +58,7 @@ also shown observations made wrong on purpose, which it must reject; the evidenc
 need the detected instance, and the rest of their checks are kept as evidence.
 
 Parts 1, 2a, 3, 4 and 7 need the person's vendor login, and so does 6b of the Codex package, which
-starts one turn; they run only for a build whose list entry names a login the person approved. Each part not run says why and whose
+starts at most one turn; they run only for a build whose list entry names a login the person approved. Each part not run says why and whose
 decision would change it. Each part the driver does not run is recorded as not run, with the reason
 and what would change it.
 
@@ -292,8 +292,9 @@ failed one keeps the build out. `docs/pipeline.md` describes the rest.
 ## Running it
 
 A host serves the gateway route only to a build that the generation's index lists for the package.
-`--generation DIR` names the signed generation every package is installed from, by default
-`snapshots/development`, which lists no build before a record exists. For a run before the record, a
+`--generation DIR` names the signed generation the real routes install packages from, by default
+`snapshots/development`, which lists no build before a record exists. Part 5b on the stand-in route
+installs the core repository's own fixture package whatever the generation is. For a run before the record, a
 candidate generation made with `kalareach-catalogue build --development --candidate` lists the pinned
 builds with no record; it is signed with development keys only, and the run says when its generation
 is one. A candidate is for a run on one machine and is no release.
@@ -301,7 +302,7 @@ is one. A candidate is for a run on one machine and is no release.
 ```bash
 KR_SHELL_PACKAGES=<managed shell prefix> \
   scripts/e2e-agents.sh --core <core checkout> --tools <agent builds> [--turns <ledger>] \
-    [--run-temp <directory>] [--agent kalareach/codex] [--case 2b] [--write]
+    [--run-temp <directory>] [--generation <dir>] [--agent kalareach/codex] [--case 2b] [--write]
 ```
 
 The managed shell is built in the core checkout with `scripts/build-shells.sh --zsh`. A part that

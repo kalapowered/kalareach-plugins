@@ -17,7 +17,7 @@
 #      execution context the host gives it, names their login keychain as its default.
 #   4. For each package, and each selected part the driver has a test for, the driver starts a host
 #      from those binaries on the internal disk, pairs an owner device, installs the package from a
-#      copy of snapshots/development on that device's confirmation, starts the agent by typing its
+#      copy of the generation --generation names (snapshots/development by default) on that device's confirmation, starts the agent by typing its
 #      command at the prompt of a managed shell, and checks the part and its control. A part whose
 #      session searched or ran anything but the pinned build, its runtime, the run's own and the
 #      system's did not test the build, and is recorded as not run, naming what ran. A part whose
@@ -32,8 +32,8 @@
 # The driver runs with a cleared environment (the home, the user, the temporary directory, the
 # system's PATH and the harness's inputs). A part that needs no login runs the agent with its home
 # inside the run's own directory, a keychain of the run's own as that home's default, and every
-# proxy variable at a loopback port nothing listens on, and starts no turn. Parts 1, 2a, 3, 4 and 7
-# need the person's vendor login: they run only for a build whose list entry names an approved
+# proxy variable at a loopback port nothing listens on, and starts no turn. Parts 1, 2a, 3, 4 and 7,
+# and 6b of the Codex package, need the person's vendor login: they run only for a build whose list entry names an approved
 # login (`account`), as that entry says (whose home, the one variable a login may be, handed to the
 # driver on a pipe, the arguments), and each turn they start is charged to the ledger --turns names
 # before it is submitted; the harness holds the agent's budget through the part and does not run a
@@ -459,8 +459,8 @@ driver_for() {
 }
 toolchain="$(cd "$core" && jq -n --arg rustc "$(rustc -V)" --arg cargo "$(cargo -V)" '{rustc: $rustc, cargo: $cargo}')"
 
-# The generation every package is installed from: the committed development generation, copied to
-# the internal disk.
+# The generation the real routes install packages from: the one --generation names (the committed
+# development generation by default), copied to the internal disk.
 generation="$evidence/generation"
 [ -f "$generation_source/root.json" ] && [ -f "$generation_source/targets/index.json" ] &&
   [ -f "$generation_source/metadata/targets.json" ] ||
