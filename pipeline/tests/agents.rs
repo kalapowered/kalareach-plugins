@@ -106,6 +106,18 @@ fn strings<'a>(value: &'a Value, found: &mut Vec<&'a str>) {
 /// The parts that run with the login, as the harness names them to the record's writer.
 const LOGIN_PARTS: &str = r#"["1", "2a", "3", "4", "6b", "7"]"#;
 
+/// The same for the packages whose 6b is not run: the gateway driver tests the Codex package alone.
+const LOGIN_PARTS_OTHER: &str = r#"["1", "2a", "3", "4", "7"]"#;
+
+/// The login parts of the package the build list's `entry` is for.
+fn login_parts_of(entry: &Value) -> &'static str {
+    if entry["package"] == "kalareach/codex" {
+        LOGIN_PARTS
+    } else {
+        LOGIN_PARTS_OTHER
+    }
+}
+
 /// `record` as the record's writer, `scripts/record-redaction.jq` run with jq as the harness runs
 /// it, publishes it for the build list's `entry` and the account name `user`.
 fn written(record: &Value, entry: &Value, user: &str) -> Value {
@@ -114,7 +126,7 @@ fn written(record: &Value, entry: &Value, user: &str) -> Value {
         .arg(root().join("scripts"))
         .args(["--arg", "user", user, "--argjson", "entry"])
         .arg(entry.to_string())
-        .args(["--argjson", "login_parts", LOGIN_PARTS])
+        .args(["--argjson", "login_parts", login_parts_of(entry)])
         .arg(r#"include "record-redaction"; redact_record($user; $entry; $login_parts)"#)
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -318,7 +330,7 @@ fn named_beyond_the_run(record: &Value, entry: &Value) -> Vec<String> {
                 }
             }
         }
-        let login = !account.is_null() && LOGIN_PARTS.contains(&format!("\"{part}\""));
+        let login = !account.is_null() && login_parts_of(entry).contains(&format!("\"{part}\""));
         if login {
             let mut texts = Vec::new();
             strings(test, &mut texts);
@@ -390,7 +402,7 @@ fn login_tests<'a>(record: &'a Value, entry: &Value) -> Vec<&'a Value> {
             test["keyed_by"] != "case_table"
                 && test["part"]
                     .as_str()
-                    .is_some_and(|part| LOGIN_PARTS.contains(&format!("\"{part}\"")))
+                    .is_some_and(|part| login_parts_of(entry).contains(&format!("\"{part}\"")))
         })
         .collect()
 }
@@ -427,7 +439,7 @@ fn spoiled(record: &Value, entry: &Value, word: &str) -> Value {
             let login = test["keyed_by"] != "case_table"
                 && test["part"]
                     .as_str()
-                    .is_some_and(|part| LOGIN_PARTS.contains(&format!("\"{part}\"")));
+                    .is_some_and(|part| login_parts_of(entry).contains(&format!("\"{part}\"")));
             if login {
                 spoil(&mut test["evidence"], word);
                 if test.get("reason").is_some() {

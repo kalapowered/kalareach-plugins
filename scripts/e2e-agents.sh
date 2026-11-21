@@ -97,11 +97,35 @@ parts=(
   "14.03b||no method reads a draft's attachment state, and no adapter reports that an agent accepted one|device reads of drafts; the connector hand-over to workers|draft reads"
 )
 
-# The driver's test target each part runs through: the gateway driver's, or the older driver's for a
-# part that has not moved to it.
+# The gateway driver installs and guards the Codex package alone, so only that package's parts 5b,
+# 6b and 8b run through it. The same parts of another package wait, as they did before the driver
+# had them.
+gateway_package="kalareach/codex"
+waiting_rows=(
+  "5b||waits for the command integration: a session made through kr new gets no command integration, so no launch has a gateway holding request state|the command integration's landing|command integration"
+  "6b||waits for the command integration: a build outside the qualified range can be refused only a typed route, and no launch has one without the integration|the command integration's landing|command integration"
+  "8b||waits for the command integration: no launch has a registration the host issued, against which a forgery could fail where it passes|the command integration's landing|command integration"
+)
+
+# The table's rows for $1: the rows as they are for the gateway package, and with the gateway parts
+# waiting for any other.
+agent_parts() {
+  local package="$1" spec waiting
+  for spec in "${parts[@]}"; do
+    if [ "$package" != "$gateway_package" ]; then
+      for waiting in "${waiting_rows[@]}"; do
+        if [ "${waiting%%|*}" = "${spec%%|*}" ]; then spec="$waiting"; fi
+      done
+    fi
+    printf '%s\n' "$spec"
+  done
+}
+
+# The driver's test target each part of package $1 runs through: the gateway driver's, or the older
+# driver's for a part that has not moved to it.
 part_driver() {
-  case "$1" in
-    5b | 6b | 8b) echo gateway ;;
+  case "$1/$2" in
+    "$gateway_package"/5b | "$gateway_package"/6b | "$gateway_package"/8b) echo gateway ;;
     *) echo cases ;;
   esac
 }
@@ -110,8 +134,8 @@ part_driver() {
 # of the daemon cannot be made safe against a live agent's writes, so its driver is given no build,
 # runs the stand-in route, and the record says so.
 part_route() {
-  case "$1" in
-    5b) echo stand_in ;;
+  case "$1/$2" in
+    "$gateway_package"/5b) echo stand_in ;;
     *) echo real ;;
   esac
 }
@@ -119,9 +143,9 @@ part_route() {
 # The assignment that gives a part's driver the build, by the variable that driver reads: nothing
 # for a part on the stand-in route.
 build_variable() {
-  case "$(part_driver "$1")/$(part_route "$1")" in
-    gateway/real) echo "KR_AGENTS_GATEWAY_BUILD=$2" ;;
-    cases/real) echo "KR_AGENTS_BUILD=$2" ;;
+  case "$(part_driver "$1" "$2")/$(part_route "$1" "$2")" in
+    gateway/real) echo "KR_AGENTS_GATEWAY_BUILD=$3" ;;
+    cases/real) echo "KR_AGENTS_BUILD=$3" ;;
     *) ;;
   esac
 }
@@ -161,18 +185,25 @@ generation_holds_the_package() {
 
 # The most turns each part with a login can start, which the harness reserves before it runs one.
 login_turns() {
-  case "$1" in
+  case "$2" in
     1) echo 2 ;;
     2a) echo 5 ;;
     3) echo 2 ;;
     4) echo 2 ;;
-    6b) echo 1 ;;
+    6b) if [ "$1" = "$gateway_package" ]; then echo 1; else echo 0; fi ;;
     7) echo 2 ;;
     *) echo 0 ;;
   esac
 }
-# The parts that run with the login, for the record's writer (scripts/record-redaction.jq).
-login_parts='["1", "2a", "3", "4", "6b", "7"]'
+# The parts of package $1 that run with the login, for the record's writer
+# (scripts/record-redaction.jq).
+login_parts_for() {
+  if [ "$1" = "$gateway_package" ]; then
+    echo '["1", "2a", "3", "4", "6b", "7"]'
+  else
+    echo '["1", "2a", "3", "4", "7"]'
+  fi
+}
 
 # The environment the driver runs with, and nothing else (env -i): whatever else this shell
 # holds, a key among it, reaches no program the driver starts. A login's one variable goes to the
@@ -361,7 +392,7 @@ gateway_driver="$(driver_of gateway)"
 }
 # The driver that runs a part: the gateway driver's test executable or the older one's.
 driver_for() {
-  case "$(part_driver "$1")" in
+  case "$(part_driver "$1" "$2")" in
     gateway) echo "$gateway_driver" ;;
     *) echo "$driver" ;;
   esac
@@ -835,6 +866,9 @@ while IFS= read -r package; do
     'include "record-redaction"; driver_build($tools; $root; $files; $actions; $newer_status)' \
     >"$directory/build.json"
 
+  agent_rows=()
+  while IFS= read -r spec; do agent_rows+=("$spec"); done < <(agent_parts "$package")
+  login_parts="$(login_parts_for "$package")"
   steps="[$own_home_step]"
   number=1
   stopped=""
@@ -846,11 +880,11 @@ while IFS= read -r package; do
   # the same environment with nothing taken out is refused by name. It starts no agent and no turn.
   if [ -z "$blocked" ] && [ "$(printf '%s' "$entry" | jq '.account != null')" = "true" ]; then
     wants_login=0
-    for spec in "${parts[@]}"; do
+    for spec in "${agent_rows[@]}"; do
       part="${spec%%|*}"
       rest="${spec#*|}"
       test_name="${rest%%|*}"
-      if [ -n "$test_name" ] && selected_part "$part" && [ "$(login_turns "$part")" -gt 0 ]; then wants_login=1; fi
+      if [ -n "$test_name" ] && selected_part "$part" && [ "$(login_turns "$package" "$part")" -gt 0 ]; then wants_login=1; fi
     done
     if [ "$wants_login" -eq 1 ]; then
       keys_log="$directory/provider-keys.log"
@@ -867,7 +901,7 @@ while IFS= read -r package; do
       look_again "$package $version provider keys" || exit 3
     fi
   fi
-  for spec in "${parts[@]}"; do
+  for spec in "${agent_rows[@]}"; do
     part="${spec%%|*}"
     rest="${spec#*|}"
     test_name="${rest%%|*}"
@@ -877,7 +911,7 @@ while IFS= read -r package; do
     # What a part that did not run says of why, for a record: the failure as a code and what varies
     # in it, since the reason's own text can hold a path or a name of the person's. Only a part with
     # a login has one.
-    need="$(login_turns "$part")"
+    need="$(login_turns "$package" "$part")"
     if [ -n "$blocked" ]; then
       jq -cn --arg part "$part" --arg test "$test_name" --arg reason "$blocked" --argjson need "$need" \
         '{part: $part, test: $test, outcome: "not_run", reason: $reason,
@@ -944,11 +978,11 @@ while IFS= read -r package; do
     [ "$need" -gt 0 ] && variable="$(printf '%s' "$entry" | jq -r '.account.variable // ""')"
     login_variable_note=""
     [ "$need" -le 0 ] || login_variable_note=" KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe)"
-    part_driver_path="$(driver_for "$part")"
+    part_driver_path="$(driver_for "$package" "$part")"
     inputs=("KR_AGENTS_GENERATION=$generation"
       "KR_AGENTS_RESULT=$results" "KR_REQUIRE_AGENTS=1" "KR_REQUIRE_SHELL_PACKAGES=1"
       "KR_AGENTS_TURNS=$turns" "KR_AGENTS_KEY_SCAN=$directory/key-scan.jsonl")
-    given_build="$(build_variable "$part" "$directory/build.json")"
+    given_build="$(build_variable "$package" "$part" "$directory/build.json")"
     [ -z "$given_build" ] || inputs+=("$given_build")
     if [ -n "$variable" ]; then
       # The login's value goes on a pipe the driver reads once, and nowhere else; the values of the
@@ -1067,7 +1101,7 @@ while IFS= read -r package; do
   # isolation commands yet: the pinned entry's commands run against the newer build, with no login
   # and no model call, and every whole answer is kept in a folder the runner makes. The commands a
   # person may adopt from the run are written beside it, and none is adopted here.
-  if [ -z "$blocked" ] && [ "$newer_status" = "true" ] && selected_part 6b &&
+  if [ -z "$blocked" ] && [ "$package" = "$gateway_package" ] && [ "$newer_status" = "true" ] && selected_part 6b &&
     [ "$(printf '%s' "$entry" | jq '(.newer.isolated // []) | length')" = "0" ]; then
     probes="$directory/newer-probes"
     mkdir -p "$probes"
@@ -1084,10 +1118,10 @@ while IFS= read -r package; do
 
   # The record: every part, the run's identity, the build and the package it is for.
   finished="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-  parts_json="$(for spec in "${parts[@]}"; do printf '%s|%s|%s\n' "$spec" "$(part_driver "${spec%%|*}")" "$(part_route "${spec%%|*}")"; done |
+  parts_json="$(for spec in "${agent_rows[@]}"; do printf '%s|%s|%s\n' "$spec" "$(part_driver "$package" "${spec%%|*}")" "$(part_route "$package" "${spec%%|*}")"; done |
     jq -R 'split("|") | {part: .[0], test: .[1], reason: .[2], owner: .[3], needs: .[4], driver: .[5], route: .[6]}' | jq -s '.')"
   selection="[]"
-  for spec in "${parts[@]}"; do
+  for spec in "${agent_rows[@]}"; do
     part="${spec%%|*}"
     rest="${spec#*|}"
     if [ -n "${rest%%|*}" ] && selected_part "$part"; then

@@ -121,7 +121,10 @@ fn every_part_that_names_a_test_runs_through_the_driver_that_holds_that_test() {
         if test.is_empty() {
             continue;
         }
-        let driver = from_script(&[&function("part_driver")], &format!("part_driver {part}"));
+        let driver = from_script(
+            &["/^gateway_package=/p", &function("part_driver")],
+            &format!("part_driver kalareach/codex {part}"),
+        );
         assert_eq!(
             driver == "gateway",
             test.starts_with("gateway_"),
@@ -141,9 +144,12 @@ fn every_part_that_names_a_test_runs_through_the_driver_that_holds_that_test() {
 #[test]
 fn the_login_lists_name_the_parts_that_charge_a_turn_and_no_other() {
     let turns = |part: &str| -> u32 {
-        from_script(&[&function("login_turns")], &format!("login_turns {part}"))
-            .parse()
-            .expect("a number of turns")
+        from_script(
+            &["/^gateway_package=/p", &function("login_turns")],
+            &format!("login_turns kalareach/codex {part}"),
+        )
+        .parse()
+        .expect("a number of turns")
     };
     let mut charged: Vec<String> = parts_table()
         .iter()
@@ -163,16 +169,34 @@ fn the_login_lists_name_the_parts_that_charge_a_turn_and_no_other() {
         "5b runs on the stand-in route, which has no login"
     );
     assert_eq!(turns("8b"), 0, "8b is run with no login");
-    let list: Value = serde_json::from_str(&from_script(
-        &["/^login_parts=/p"],
-        r#"printf '%s' "$login_parts""#,
-    ))
-    .expect("the script's list is JSON");
+    let list_of = |package: &str| -> Value {
+        serde_json::from_str(&from_script(
+            &["/^gateway_package=/p", &function("login_parts_for")],
+            &format!("login_parts_for {package}"),
+        ))
+        .expect("the script's list is JSON")
+    };
+    let list = list_of("kalareach/codex");
     assert_eq!(list, json!(charged));
+    // Another package's 6b is not run, so it is no login part there.
+    assert_eq!(
+        list_of("kalareach/claude-code"),
+        json!(["1", "2a", "3", "4", "7"])
+    );
     let writers = include_str!("agents.rs");
     let expected = format!(
         "const LOGIN_PARTS: &str = r#\"{}\"#;",
         list.to_string().replace(',', ", ")
+    );
+    let others = format!(
+        "const LOGIN_PARTS_OTHER: &str = r#\"{}\"#;",
+        list_of("kalareach/claude-code")
+            .to_string()
+            .replace(',', ", ")
+    );
+    assert!(
+        writers.contains(&others),
+        "the record writer's cases hold the other packages' list: {others}"
     );
     assert!(
         writers.contains(&expected),
@@ -185,7 +209,12 @@ fn the_login_lists_name_the_parts_that_charge_a_turn_and_no_other() {
 /// variable its driver reads.
 #[test]
 fn a_part_that_has_no_real_arm_is_given_no_build_and_is_recorded_as_the_stand_in_route() {
-    let route = |part: &str| from_script(&[&function("part_route")], &format!("part_route {part}"));
+    let route = |part: &str| {
+        from_script(
+            &["/^gateway_package=/p", &function("part_route")],
+            &format!("part_route kalareach/codex {part}"),
+        )
+    };
     assert_eq!(route("5b"), "stand_in");
     for part in ["1", "2a", "6b", "8b"] {
         assert_eq!(route(part), "real", "part {part}");
@@ -193,11 +222,12 @@ fn a_part_that_has_no_real_arm_is_given_no_build_and_is_recorded_as_the_stand_in
     let given = |part: &str| {
         from_script(
             &[
+                "/^gateway_package=/p",
                 &function("part_driver"),
                 &function("part_route"),
                 &function("build_variable"),
             ],
-            &format!("build_variable {part} /run/build.json"),
+            &format!("build_variable kalareach/codex {part} /run/build.json"),
         )
     };
     assert_eq!(given("5b"), "", "the stand-in route is given no build");
@@ -382,4 +412,65 @@ fn a_part_the_table_records_as_not_run_is_not_rewritten_as_a_login_part_that_sto
     let tests = &written["identifiers"]["KR-REQ-12.32"]["tests"];
     assert_eq!(tests[0], table, "the table's entry is as it was written");
     assert_eq!(tests[1]["reason"], "not selected in this run");
+}
+
+/// The gateway driver installs and guards the Codex package alone: another package's parts 5b, 6b
+/// and 8b wait with their earlier reason, run through the older driver's path, and are no login
+/// part or build variable of the gateway.
+#[test]
+fn the_gateway_parts_of_another_package_wait_as_they_did_before_the_driver_had_them() {
+    let rows = |package: &str| -> Vec<String> {
+        from_script(
+            &[
+                "/^parts=(/,/^)/p",
+                "/^gateway_package=/p",
+                "/^waiting_rows=(/,/^)/p",
+                &function("agent_parts"),
+            ],
+            &format!("agent_parts {package}"),
+        )
+        .lines()
+        .map(str::to_owned)
+        .collect()
+    };
+    let codex = rows("kalareach/codex");
+    let other = rows("kalareach/claude-code");
+    assert_eq!(
+        codex.len(),
+        other.len(),
+        "the same parts, in the same order"
+    );
+    for part in ["5b", "6b", "8b"] {
+        let find = |rows: &[String]| {
+            rows.iter()
+                .find(|table_row| row(table_row).0 == part)
+                .cloned()
+                .expect("the part is in the table")
+        };
+        assert!(
+            row(&find(&codex)).1.starts_with("gateway_"),
+            "part {part} of Codex"
+        );
+        let waiting = find(&other);
+        assert_eq!(
+            row(&waiting).1,
+            "",
+            "part {part} of another package has no test"
+        );
+        assert!(
+            waiting.contains("waits for the command integration"),
+            "part {part} of another package says why it waits: {waiting}"
+        );
+    }
+    let calls = from_script(
+        &[
+            "/^gateway_package=/p",
+            &function("part_driver"),
+            &function("part_route"),
+            &function("build_variable"),
+            &function("login_turns"),
+        ],
+        r#"printf '%s %s %s %s\n' "$(part_driver kalareach/claude-code 6b)" "$(part_route kalareach/claude-code 5b)" "$(build_variable kalareach/claude-code 8b /b.json)" "$(login_turns kalareach/claude-code 6b)""#,
+    );
+    assert_eq!(calls, "cases real KR_AGENTS_BUILD=/b.json 0");
 }
