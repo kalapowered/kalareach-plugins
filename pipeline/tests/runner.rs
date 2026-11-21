@@ -643,3 +643,26 @@ fn a_gateway_part_stops_the_agent_only_where_it_did_not_pass_after_a_turn_was_ch
     assert_eq!(stops(&[line("failed", 1)]), "yes");
     assert_eq!(stops(&[line("passed", 1)]), "no");
 }
+
+/// The recorded command of a part names the pipe it was given: 8b's too, which has no login.
+#[test]
+fn the_recorded_command_of_a_part_on_a_real_gateway_route_names_its_pipe() {
+    let note = |need: u32, part: &str| {
+        from_script(
+            &[
+                "/^gateway_package=/p",
+                &function("part_driver"),
+                &function("part_route"),
+                &function("needs_the_scan_pipe"),
+                &function("pipe_note"),
+            ],
+            &format!("pipe_note {need} kalareach/codex {part}"),
+        )
+    };
+    assert!(
+        note(0, "8b").contains("KR_AGENTS_SCAN_FD=4"),
+        "8b has a pipe and no login"
+    );
+    assert!(note(2, "1").contains("KR_AGENTS_SCAN_FD=4"));
+    assert_eq!(note(0, "5b"), "", "the stand-in route has none");
+}

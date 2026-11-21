@@ -229,6 +229,14 @@ gateway_part_charged_and_did_not_pass() {
   jq -e --arg part "$2" 'select(.part == $part and .outcome != "passed" and ((.evidence.turns.charged // 0) > 0))' "$1" >/dev/null 2>&1
 }
 
+# The words that name the pipe of the other keys' values in a part's recorded command: where the
+# part has a login or its driver is on a real gateway route, which reads the pipe without one.
+pipe_note() {
+  if [ "$1" -gt 0 ] || needs_the_scan_pipe "$2" "$3"; then
+    echo " KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe)"
+  fi
+}
+
 # The most turns each part with a login can start, which the harness reserves before it runs one.
 login_turns() {
   case "$2" in
@@ -1038,7 +1046,7 @@ while IFS= read -r package; do
     variable=""
     [ "$need" -gt 0 ] && variable="$(printf '%s' "$entry" | jq -r '.account.variable // ""')"
     login_variable_note=""
-    [ "$need" -le 0 ] || login_variable_note=" KR_AGENTS_SCAN_FD=4 (the values of the other keys this shell holds, on a pipe)"
+    login_variable_note="$(pipe_note "$need" "$package" "$part")"
     part_driver_path="$(driver_for "$package" "$part")"
     inputs=("KR_AGENTS_GENERATION=$generation"
       "KR_AGENTS_RESULT=$results" "KR_REQUIRE_AGENTS=1" "KR_REQUIRE_SHELL_PACKAGES=1"
