@@ -146,6 +146,19 @@ test_of() {
   done
 }
 
+# Fails unless the generation at $1 names the package $2 with the manifest digest $3: a real run
+# installs the package from that generation, so the digest the record names must be its own.
+generation_holds_the_package() {
+  local named
+  named="$(jq -r --arg id "$2" '[.entries[] | select(.plugin_id == $id) | .manifest_digest] | join(" ")' \
+    "$1/targets/index.json")" || return 1
+  case " $named " in
+    *" $3 "*) return 0 ;;
+  esac
+  echo "the generation at $1 names another package for $2 than this tree's (its digests: ${named:-none}; the tree's: $3)" >&2
+  return 1
+}
+
 # The most turns each part with a login can start, which the harness reserves before it runs one.
 login_turns() {
   case "$1" in
@@ -810,6 +823,10 @@ while IFS= read -r package; do
   fi
   manifest_version="$(jq -r '.version' "$manifest")"
   manifest_digest="$(digest_of "$manifest")"
+  if [ -z "$blocked" ] &&
+    ! generation_holds_the_package "$generation" "$package" "$manifest_digest" 2>"$directory/generation.err"; then
+    blocked="the generation the run installs from does not hold this tree's package: $(cat "$directory/generation.err") (the repository)"
+  fi
 
   # The build as the driver reads it: paths made absolute, runtimes found, the package's actions.
   actions="$(jq '[.actions[]]' "$manifest")"

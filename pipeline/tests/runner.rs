@@ -325,3 +325,40 @@ fn the_newer_builds_probes_are_adopted_only_from_a_probe_only_record_that_allows
         "a probe-only run has no ledger and starts no turn"
     );
 }
+
+/// The package a run installs is the generation's, so the generation the runner copies holds the
+/// package the record is for: the manifest digest of the tree's package is the one its index names.
+#[test]
+fn the_generation_a_run_installs_from_holds_the_package_the_record_is_for() {
+    let generation = root().join("snapshots").join("development");
+    let manifest = root().join("plugins/kalareach/codex/plugin.json");
+    let check = |digest: &str| {
+        Command::new("bash")
+            .arg("-c")
+            .arg(format!(
+                r#"eval "$(sed -n '{}' "$0")"; generation_holds_the_package "$1" kalareach/codex "$2""#,
+                function("generation_holds_the_package")
+            ))
+            .arg(root().join("scripts/e2e-agents.sh"))
+            .arg(&generation)
+            .arg(digest)
+            .output()
+            .expect("bash runs")
+    };
+    let digest: String =
+        <sha2::Sha256 as sha2::Digest>::digest(std::fs::read(&manifest).expect("the manifest"))
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+    assert!(
+        check(&digest).status.success(),
+        "the tree's package is the generation's"
+    );
+    let other = check(&"0".repeat(64));
+    assert!(!other.status.success(), "another digest is not");
+    assert!(
+        String::from_utf8_lossy(&other.stderr).contains("names another package"),
+        "{}",
+        String::from_utf8_lossy(&other.stderr)
+    );
+}
