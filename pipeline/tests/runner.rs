@@ -56,7 +56,9 @@ fn from_script(definitions: &[&str], shell: &str) -> String {
         "{}",
         String::from_utf8_lossy(&output.stderr)
     );
-    String::from_utf8_lossy(&output.stdout).trim_end().to_owned()
+    String::from_utf8_lossy(&output.stdout)
+        .trim_end()
+        .to_owned()
 }
 
 /// The script's function `name`, as a range for [`from_script`].
@@ -66,13 +68,10 @@ fn function(name: &str) -> String {
 
 /// The parts table of the script, one row to a line.
 fn parts_table() -> Vec<String> {
-    from_script(
-        &["/^parts=(/,/^)/p"],
-        r#"printf '%s\n' "${parts[@]}""#,
-    )
-    .lines()
-    .map(str::to_owned)
-    .collect()
+    from_script(&["/^parts=(/,/^)/p"], r#"printf '%s\n' "${parts[@]}""#)
+        .lines()
+        .map(str::to_owned)
+        .collect()
 }
 
 /// The part a table row is of, and its test, which is empty for a part that waits.
@@ -153,8 +152,16 @@ fn the_login_lists_name_the_parts_that_charge_a_turn_and_no_other() {
         .collect();
     charged.sort();
     assert_eq!(charged, ["1", "2a", "3", "4", "6b", "7"]);
-    assert_eq!(turns("6b"), 1, "6b starts one turn, which the ledger reserves");
-    assert_eq!(turns("5b"), 0, "5b runs on the stand-in route, which has no login");
+    assert_eq!(
+        turns("6b"),
+        1,
+        "6b starts one turn, which the ledger reserves"
+    );
+    assert_eq!(
+        turns("5b"),
+        0,
+        "5b runs on the stand-in route, which has no login"
+    );
     assert_eq!(turns("8b"), 0, "8b is run with no login");
     let list: Value = serde_json::from_str(&from_script(
         &["/^login_parts=/p"],
@@ -163,7 +170,10 @@ fn the_login_lists_name_the_parts_that_charge_a_turn_and_no_other() {
     .expect("the script's list is JSON");
     assert_eq!(list, json!(charged));
     let writers = include_str!("agents.rs");
-    let expected = format!("const LOGIN_PARTS: &str = r#\"{}\"#;", list.to_string().replace(',', ", "));
+    let expected = format!(
+        "const LOGIN_PARTS: &str = r#\"{}\"#;",
+        list.to_string().replace(',', ", ")
+    );
     assert!(
         writers.contains(&expected),
         "the record writer's cases hold a copy of the list: {expected}"
