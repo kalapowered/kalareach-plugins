@@ -336,7 +336,7 @@ fn the_newer_builds_probes_are_adopted_only_from_a_probe_only_record_that_allows
 
     let inputs = from_script(
         &[&function("probe_only_inputs")],
-        "probe_only_inputs /run/build.json /run/gen /run/probes /run/probe.jsonl",
+        "probe_only_inputs /run/build.json /run/gen /run/probes /run/probe.jsonl /run/scan.jsonl",
     );
     let lines: Vec<&str> = inputs.lines().collect();
     for wanted in [
@@ -345,6 +345,8 @@ fn the_newer_builds_probes_are_adopted_only_from_a_probe_only_record_that_allows
         "KR_AGENTS_GATEWAY_PROBE_ONLY=1",
         "KR_AGENTS_GATEWAY_EVIDENCE=/run/probes",
         "KR_AGENTS_RESULT=/run/probe.jsonl",
+        "KR_AGENTS_KEY_SCAN=/run/scan.jsonl",
+        "KR_AGENTS_SCAN_FD=4",
     ] {
         assert!(lines.contains(&wanted), "{wanted} is in {lines:?}");
     }
@@ -502,4 +504,34 @@ fn the_checks_after_a_part_read_only_what_its_driver_writes() {
         "yes",
         "6b of another package is the older driver's"
     );
+}
+
+/// A part on a real gateway route reads the values of the other keys this shell holds from a pipe,
+/// with no login too: 8b is given one, and the stand-in route and the older driver's parts are not.
+#[test]
+fn a_part_on_a_real_gateway_route_is_given_the_scan_pipe_login_or_none() {
+    let needs = |package: &str, part: &str| {
+        from_script(
+            &[
+                "/^gateway_package=/p",
+                &function("part_driver"),
+                &function("part_route"),
+                &function("needs_the_scan_pipe"),
+            ],
+            &format!("needs_the_scan_pipe {package} {part} && echo yes || echo no"),
+        )
+    };
+    assert_eq!(needs("kalareach/codex", "8b"), "yes");
+    assert_eq!(needs("kalareach/codex", "6b"), "yes");
+    assert_eq!(
+        needs("kalareach/codex", "5b"),
+        "no",
+        "the stand-in route reads no pipe"
+    );
+    assert_eq!(
+        needs("kalareach/codex", "2b"),
+        "no",
+        "the older driver's part has its own"
+    );
+    assert_eq!(needs("kalareach/claude-code", "8b"), "no");
 }

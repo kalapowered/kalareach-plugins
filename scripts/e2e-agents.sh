@@ -156,7 +156,7 @@ build_variable() {
 probe_only_inputs() {
   printf '%s\n' "KR_AGENTS_GATEWAY_BUILD=$1" "KR_AGENTS_GENERATION=$2" \
     "KR_AGENTS_GATEWAY_PROBE_ONLY=1" "KR_AGENTS_GATEWAY_EVIDENCE=$3" "KR_AGENTS_RESULT=$4" \
-    "KR_REQUIRE_AGENTS=1" "KR_REQUIRE_SHELL_PACKAGES=1"
+    "KR_AGENTS_KEY_SCAN=$5" "KR_AGENTS_SCAN_FD=4" "KR_REQUIRE_AGENTS=1" "KR_REQUIRE_SHELL_PACKAGES=1"
 }
 
 # The test of a part, from the parts table.
@@ -188,6 +188,12 @@ generation_holds_the_package() {
 # neither.
 writes_installed_and_pids() {
   [ "$(part_driver "$1" "$2")" = cases ]
+}
+
+# Whether the part's driver is on a real gateway route, which reads the values of the other keys this
+# shell holds from a pipe also where the part has no login.
+needs_the_scan_pipe() {
+  [ "$(part_driver "$1" "$2")/$(part_route "$1" "$2")" = gateway/real ]
 }
 
 # The most turns each part with a login can start, which the harness reserves before it runs one.
@@ -1001,6 +1007,11 @@ while IFS= read -r package; do
       env -i "${driver_environment[@]}" "${inputs[@]}" KR_AGENTS_SCAN_FD=4 \
         "$part_driver_path" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 \
         4< <(provider_secret_values "") || rc=$?
+    elif needs_the_scan_pipe "$package" "$part"; then
+      # A real route reads the values of the other keys this shell holds also where it has no login.
+      env -i "${driver_environment[@]}" "${inputs[@]}" KR_AGENTS_SCAN_FD=4 \
+        "$part_driver_path" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 \
+        4< <(provider_secret_values "") || rc=$?
     else
       env -i "${driver_environment[@]}" "${inputs[@]}" \
         "$part_driver_path" --exact "$test_name" --nocapture --test-threads=1 >"$log" 2>&1 || rc=$?
@@ -1035,6 +1046,9 @@ while IFS= read -r package; do
         echo "$package $version part $part: the driver wrote no outcome with the process numbers the part ran, so what coreauthd logged about them cannot be told apart; stopping" >&2
         dialog=3
       fi
+    fi
+    if [ "$need" -le 0 ] && needs_the_scan_pipe "$package" "$part"; then
+      others_not_in "$evidence" "$package $version part $part" "" || checked=1
     fi
     [ "$dialog" -eq 0 ] || exit "$dialog"
     [ "$checked" -eq 0 ] || exit "$checked"
@@ -1121,13 +1135,20 @@ while IFS= read -r package; do
     mkdir -p "$probes"
     probe_inputs=()
     while IFS= read -r line; do probe_inputs+=("$line"); done < <(
-      probe_only_inputs "$directory/build.json" "$generation" "$probes" "$directory/newer-probes.jsonl")
+      probe_only_inputs "$directory/build.json" "$generation" "$probes" "$directory/newer-probes.jsonl" \
+        "$directory/newer-probes-key-scan.jsonl")
     : >"$directory/newer-probes.jsonl"
+    probe_rc=0
     env -i "${driver_environment[@]}" "${probe_inputs[@]}" "$gateway_driver" \
-      --exact "$(test_of 6b)" --nocapture --test-threads=1 >"$directory/newer-probes.log" 2>&1 || true
+      --exact "$(test_of 6b)" --nocapture --test-threads=1 >"$directory/newer-probes.log" 2>&1 \
+      4< <(provider_secret_values "") || probe_rc=$?
+    # What the call exited with is kept beside what it found, so an empty list of commands is not
+    # taken for a run that found nothing to adopt.
+    echo "$probe_rc" >"$directory/newer-probes.exit"
+    others_not_in "$probes" "$package $version the newer build's probes" "" || exit 1
     jq -c -s -L "$root/scripts" --argjson entry "$entry" \
       'include "record-redaction"; (map(select(.part == "6b")) | last // {}) | adopted_isolation($entry)' \
-      "$directory/newer-probes.jsonl" >"$directory/newer-isolated.json" || true
+      "$directory/newer-probes.jsonl" >"$directory/newer-isolated.json" || echo "[]" >"$directory/newer-isolated.json"
   fi
 
   # The record: every part, the run's identity, the build and the package it is for.
