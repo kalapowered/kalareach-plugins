@@ -690,17 +690,20 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
             String::from_utf8_lossy(&output.stderr)
         );
     };
-    let identity = |repository: &Path, source: &Path, copy: &Path| -> Value {
+    let identity_under = |settings: &str, repository: &Path, source: &Path, copy: &Path| -> Value {
         serde_json::from_str(&from_script(
             &[&function("generation_identity")],
             &format!(
-                "root='{}'; generation_identity '{}' '{}'",
+                "{settings} root='{}'; generation_identity '{}' '{}'",
                 repository.display(),
                 source.display(),
                 copy.display()
             ),
         ))
         .expect("the identity is JSON")
+    };
+    let identity = |repository: &Path, source: &Path, copy: &Path| -> Value {
+        identity_under("", repository, source, copy)
     };
     let repository = tempfile::tempdir().expect("a temporary repository");
     let own = repository.path().join("snapshots").join("development");
@@ -742,11 +745,54 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
         json!("snapshots/development"),
         "the change was undone"
     );
-    std::fs::write(own.join("targets").join("added.json"), "{}").expect("a file");
+
+    // A run that copied a candidate that stood in the committed folder, and a person who put the
+    // committed generation back before the record was written: the run installed from the copy.
+    write_generation(&own, "7", true);
+    let copies = tempfile::tempdir().expect("a temporary folder");
+    let copy = copies.path().join("generation");
+    let copied = Command::new("cp")
+        .arg("-R")
+        .arg(&own)
+        .arg(&copy)
+        .status()
+        .expect("cp runs");
+    assert!(copied.success(), "the copy is made");
+    git(
+        repository.path(),
+        &["checkout", "--quiet", "--", "snapshots/development"],
+    );
     assert_eq!(
         identity(repository.path(), &own, &own),
-        json!({"sha256": "ab12", "length": 345, "generation": "6", "candidate": false}),
+        json!("snapshots/development"),
+        "the folder is the committed generation again"
+    );
+    assert_eq!(
+        identity(repository.path(), &own, &copy),
+        by_index,
+        "a copy that is not the committed folder is named by what its signed index says"
+    );
+
+    // A file that is not committed is a change, with or without the person's setting that hides
+    // such files from `git status`.
+    std::fs::write(own.join("targets").join("added.json"), "{}").expect("a file");
+    let not_committed =
+        json!({"sha256": "ab12", "length": 345, "generation": "6", "candidate": false});
+    assert_eq!(
+        identity(repository.path(), &own, &own),
+        not_committed,
         "a file that is not committed is a change"
+    );
+    assert_eq!(
+        identity_under(
+            "export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=status.showUntrackedFiles \
+             GIT_CONFIG_VALUE_0=no;",
+            repository.path(),
+            &own,
+            &own
+        ),
+        not_committed,
+        "a file that is not committed is a change where the person's settings hide it from git"
     );
 }
 
