@@ -61,6 +61,29 @@ fn from_script(definitions: &[&str], shell: &str) -> String {
         .to_owned()
 }
 
+/// What the shell of a case that runs git starts with: no repository, settings or hooks of the
+/// person's, and none of the variables that a hook exports to the program that runs the tests.
+const BARE_GIT: &str = "unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_COMMON_DIR \
+    GIT_CONFIG_PARAMETERS; export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 \
+    GIT_CONFIG_COUNT=0;";
+
+/// `command` with the same environment as [`BARE_GIT`] gives a shell.
+fn bare_git(command: &mut Command) -> &mut Command {
+    for name in [
+        "GIT_DIR",
+        "GIT_WORK_TREE",
+        "GIT_INDEX_FILE",
+        "GIT_COMMON_DIR",
+        "GIT_CONFIG_PARAMETERS",
+    ] {
+        command.env_remove(name);
+    }
+    command
+        .env("GIT_CONFIG_GLOBAL", "/dev/null")
+        .env("GIT_CONFIG_NOSYSTEM", "1")
+        .env("GIT_CONFIG_COUNT", "0")
+}
+
 /// The script's function `name`, as a range for [`from_script`].
 fn function(name: &str) -> String {
     format!("/^{name}() {{/,/^}}/p")
@@ -676,11 +699,16 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
         .expect("the index");
     };
     let git = |repository: &Path, arguments: &[&str]| {
-        let output = Command::new("git")
+        let output = bare_git(&mut Command::new("git"))
             .arg("-C")
             .arg(repository)
             .args(["-c", "user.name=Test", "-c", "user.email=test@example.test"])
-            .args(["-c", "commit.gpgsign=false"])
+            .args([
+                "-c",
+                "commit.gpgsign=false",
+                "-c",
+                "core.hooksPath=/dev/null",
+            ])
             .args(arguments)
             .output()
             .expect("git runs");
@@ -694,7 +722,7 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
         serde_json::from_str(&from_script(
             &[&function("generation_identity")],
             &format!(
-                "{settings} root='{}'; generation_identity '{}' '{}'",
+                "{BARE_GIT} {settings} root='{}'; generation_identity '{}' '{}'",
                 repository.display(),
                 source.display(),
                 copy.display()
