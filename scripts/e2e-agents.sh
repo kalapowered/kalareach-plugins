@@ -514,7 +514,7 @@ generation="$evidence/generation"
   refuse "$generation_source is not a generation: it holds no root.json, metadata/targets.json and targets/index.json"
 cp -R "$generation_source" "$generation"
 if [ "$(jq -r '.signed.targets["index.json"].custom.candidate // false' "$generation/metadata/targets.json")" = "true" ]; then
-  echo "this run installs from a candidate generation: it names every pinned build a host can launch, without reading a qualification record, and it is signed with development keys, so it is no release" >&2
+  echo "this run installs from a candidate generation: it names every pinned build with a native or child launch, without reading a qualification record, and it is signed with development keys, so it is no release" >&2
 fi
 
 # The executable each named runtime is on this machine, as JSON. The driver links each into a

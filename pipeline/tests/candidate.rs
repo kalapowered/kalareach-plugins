@@ -1,5 +1,5 @@
-//! A candidate generation names the pinned builds that have no qualification record yet, for one
-//! run on one machine, and for nothing a release is made of.
+//! A candidate generation names every pinned build with a `native` or `child` launch, without
+//! reading a qualification record, for one run on one machine, and for nothing a release is made of.
 
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};

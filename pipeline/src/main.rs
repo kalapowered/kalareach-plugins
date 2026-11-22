@@ -157,10 +157,10 @@ struct BuildArgs {
     /// Replace a generation that is already in the output directory.
     #[arg(long)]
     replace: bool,
-    /// Name every pinned build a host can launch, without reading a qualification record, for one
-    /// run on this machine. The signed metadata says the generation is a candidate. It is signed
-    /// with the development keys only, and never made where CI or GITHUB_ACTIONS is set, or inside
-    /// any checkout of this repository.
+    /// Name every pinned build with a `native` or `child` launch, without reading a qualification
+    /// record, for one run on this machine. The signed metadata says the generation is a
+    /// candidate. It is signed with the development keys only, and never made where CI or
+    /// GITHUB_ACTIONS is set, or inside any checkout of this repository.
     #[arg(long)]
     candidate: bool,
 }

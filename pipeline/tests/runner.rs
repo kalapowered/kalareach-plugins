@@ -429,8 +429,8 @@ fn a_probe_only_call_that_exited_0_with_no_not_run_line_is_not_a_complete_run() 
 
 /// What the runner's header and usage say of the generation a run installs from is true of every
 /// part: part 5b on the stand-in route installs the core repository's own fixture package whatever
-/// the generation is, and a candidate lists every pinned build a host can launch, not those with no
-/// record.
+/// the generation is, and a candidate lists every pinned build with a `native` or `child` launch,
+/// whether or not it has a record, and no build that a script or a wheel launches.
 #[test]
 fn the_runners_texts_give_the_stand_in_exception_and_what_a_candidate_lists() {
     let script = std::fs::read_to_string(root().join("scripts").join("e2e-agents.sh"))
@@ -456,13 +456,45 @@ fn the_runners_texts_give_the_stand_in_exception_and_what_a_candidate_lists() {
     );
     assert!(
         script.contains(
-            "it names every pinned build a host can launch, without reading a qualification record"
+            "it names every pinned build with a native or child launch, without reading a qualification record"
         ),
         "the notice says what a candidate names"
     );
     assert!(
         !script.contains("pinned builds with no record"),
         "a candidate names builds that have a record too"
+    );
+    // The other places that say what a candidate lists, a person's text read as words.
+    let words = |path: &[&str]| -> String {
+        let text =
+            std::fs::read_to_string(path.iter().fold(root(), |folder, part| folder.join(part)))
+                .expect("the text reads");
+        text.split_whitespace()
+            .filter(|word| !matches!(*word, "///" | "//!"))
+            .collect::<Vec<_>>()
+            .join(" ")
+    };
+    let lists = "every pinned build with a `native` or `child` launch, without reading a qualification record";
+    for path in [
+        ["fixtures", "agents", "README.md"],
+        ["pipeline", "src", "main.rs"],
+        ["pipeline", "tests", "candidate.rs"],
+    ] {
+        let text = words(&path);
+        assert!(
+            text.contains(lists),
+            "{} says what a candidate lists",
+            path.join("/")
+        );
+        assert!(
+            !text.contains("a host can launch"),
+            "{} names a build a script or a wheel launches as one a host can launch",
+            path.join("/")
+        );
+    }
+    assert!(
+        !script.contains("a host can launch"),
+        "the runner names no build as one a host can launch"
     );
 }
 
