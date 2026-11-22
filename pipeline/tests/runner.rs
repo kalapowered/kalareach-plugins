@@ -872,15 +872,21 @@ fn the_texts_say_which_ends_of_part_6b_stop_the_agent_and_which_probe_only_runs_
          it did not pass after its turn was charged. One that ends before its turn is charged, \
          because its agent does not reach its composer for instance, stops them only where its \
          driver says so.",
-        "A key that reaches either stops the agent, except in part 6b of the Codex package when the \
-         part ends before its turn is charged: a key that its driver finds in the run's directory \
-         then does not make the driver say the agent stops, and the harness's other stop checks \
-         still apply.",
         "A probe-only run that stopped, or whose call did not exit 0 or wrote no `not_run` line, \
          offers no command.",
     ] {
         assert!(readme.contains(sentence), "the README lacks: {sentence}");
     }
+    // Core's gateway outcome marks a stop of a real route, a key found in its run's directory
+    // included, so a key stops the agent in every part.
+    assert!(
+        readme.contains("A key that reaches either stops the agent."),
+        "the README says a key that reaches either stops the agent"
+    );
+    assert!(
+        !readme.contains("except in part 6b"),
+        "the README names no part where a key does not stop the agent"
+    );
     let script = words_of(&["scripts", "e2e-agents.sh"]);
     assert!(
         script.contains(
