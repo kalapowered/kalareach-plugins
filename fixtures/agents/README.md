@@ -76,7 +76,7 @@ The upgrade case also has a probe-only run. It runs the commands in the pinned e
 `account.isolated` against the newer build, with no login and no model call, and keeps each whole
 answer in a folder the runner makes. The run's record says in `adoption.allowed` whether its
 evidence is complete. The answers are read before any command is adopted. Only from a record that allows adoption does
-a command go into the entry's `newer.isolated`, and a newer build with none has no real arm. A probe-only run that stopped, or whose call did not exit 0, offers no command.
+a command go into the entry's `newer.isolated`, and a newer build with none has no real arm. A probe-only run that stopped, or whose call did not exit 0 or wrote no `not_run` line, offers no command.
 
 ## The record
 
@@ -231,9 +231,10 @@ its agent stops. A part whose login cannot be
 established that way, whose agent does not reach its composer with it or shows it is signed out,
 or that ends without passing while its latest request to the model has no answer only the model
 could have given (a sum, the part's code in upper case, a tool request), stops that agent's
-remaining parts in the run. Part 6b of the Codex package stops them where its driver says the
-agent stops, where it wrote no outcome, or where it did not pass after its turn was charged. An
-entry without one names under `no_account` why its parts with a login do not run. The harness
+remaining parts with a login in the run. Part 6b of the Codex package stops them only where its
+driver says the agent stops, where it wrote no outcome, or where it did not pass after its turn was
+charged. One that ends before its turn is charged, because its agent does not reach its composer
+for instance, stops them only where its driver says so. An entry without one names under `no_account` why its parts with a login do not run. The harness
 checks each build's digest before it runs anything with it, and for a build installed from a wheel,
 every file digest the wheel's `RECORD` lists against the installed code, and the launcher a person
 types against the `RECORD` the wheel's own distribution installed, which must be the only one naming
@@ -241,7 +242,7 @@ it.
 
 ## Agents that run on a provider's key
 
-OpenCode and Gemini CLI have no login file of their own to borrow here, only a provider's key in the person's shell: `OPENROUTER_API_KEY` for OpenCode and `GEMINI_API_KEY` for Gemini CLI. Their entries run with the run's own home and name that variable (`account.variable`). The harness hands its value to the driver on a pipe; the agent's session and the status and isolation probes of its entry get it, and nothing else does. The provider keys, tokens, secrets and base addresses that the agents' own catalogues name, and the families around them, are cleared from the session (`cleared`: a list that is a name, a prefix or a suffix, the same for every entry and added to by an agent's own names). The run's directory and the harness's evidence are searched for the values of the keys the harness's own shell holds whose names end in one of the secret shapes or begin with `AWS_BEARER_TOKEN_` (a name of another shape is cleared but its value is not searched for). A key that reaches either stops the agent, except in part 6b of the Codex package: where its driver finds the key in the run's directory before the part's turn is charged, the driver does not say the agent stops, and the agent's later parts run.
+OpenCode and Gemini CLI have no login file of their own to borrow here, only a provider's key in the person's shell: `OPENROUTER_API_KEY` for OpenCode and `GEMINI_API_KEY` for Gemini CLI. Their entries run with the run's own home and name that variable (`account.variable`). The harness hands its value to the driver on a pipe; the agent's session and the status and isolation probes of its entry get it, and nothing else does. The provider keys, tokens, secrets and base addresses that the agents' own catalogues name, and the families around them, are cleared from the session (`cleared`: a list that is a name, a prefix or a suffix, the same for every entry and added to by an agent's own names). The run's directory and the harness's evidence are searched for the values of the keys the harness's own shell holds whose names end in one of the secret shapes or begin with `AWS_BEARER_TOKEN_` (a name of another shape is cleared but its value is not searched for). A key that reaches either stops the agent, except in part 6b of the Codex package when the part ends before its turn is charged: a key that its driver finds in the run's directory then does not make the driver say the agent stops, and the harness's other stop checks still apply.
 
 An entry turns the agent's updater, sharing, telemetry and project and external configuration off through variables (OpenCode: `OPENCODE_CONFIG_CONTENT` and the `OPENCODE_DISABLE_*` variables) or through a settings file in a configuration directory of the run's own (Gemini CLI: `GEMINI_CLI_HOME`). OpenCode runs and edits without asking unless it is told to ask, so its configuration makes both ask and the approval case has a dialog to answer.
 

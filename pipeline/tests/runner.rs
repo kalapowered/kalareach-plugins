@@ -84,6 +84,17 @@ fn bare_git(command: &mut Command) -> &mut Command {
         .env("GIT_CONFIG_COUNT", "0")
 }
 
+/// The words of the file at `path` below the repository root, comment markers left out, so a
+/// sentence that wraps across lines is read as one.
+fn words_of(path: &[&str]) -> String {
+    let text = std::fs::read_to_string(path.iter().fold(root(), |folder, part| folder.join(part)))
+        .expect("the text reads");
+    text.split_whitespace()
+        .filter(|word| !matches!(*word, "///" | "//!" | "#"))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 /// The script's function `name`, as a range for [`from_script`].
 fn function(name: &str) -> String {
     format!("/^{name}() {{/,/^}}/p")
@@ -464,16 +475,8 @@ fn the_runners_texts_give_the_stand_in_exception_and_what_a_candidate_lists() {
         !script.contains("pinned builds with no record"),
         "a candidate names builds that have a record too"
     );
-    // The other places that say what a candidate lists, a person's text read as words.
-    let words = |path: &[&str]| -> String {
-        let text =
-            std::fs::read_to_string(path.iter().fold(root(), |folder, part| folder.join(part)))
-                .expect("the text reads");
-        text.split_whitespace()
-            .filter(|word| !matches!(*word, "///" | "//!"))
-            .collect::<Vec<_>>()
-            .join(" ")
-    };
+    // The other places that say what a candidate lists.
+    let words = words_of;
     let lists = "every pinned build with a `native` or `child` launch, without reading a qualification record";
     for path in [
         ["fixtures", "agents", "README.md"],
@@ -853,6 +856,43 @@ fn the_record_names_the_generation_the_run_installed_from_in_both_forms() {
         ),
         not_committed,
         "a file that is not committed is a change where the person's settings hide it from git"
+    );
+}
+
+/// What a person reads of the agent's stops is true of every end of a gateway part: one that ends
+/// before its turn is charged stops the agent only where its driver says so, and the driver does
+/// not say so for every such end; and a probe-only run offers no command from a call that wrote no
+/// `not_run` line.
+#[test]
+fn the_texts_say_which_ends_of_part_6b_stop_the_agent_and_which_probe_only_runs_offer_no_command() {
+    let readme = words_of(&["fixtures", "agents", "README.md"]);
+    for sentence in [
+        "stops that agent's remaining parts with a login in the run. Part 6b of the Codex package \
+         stops them only where its driver says the agent stops, where it wrote no outcome, or where \
+         it did not pass after its turn was charged. One that ends before its turn is charged, \
+         because its agent does not reach its composer for instance, stops them only where its \
+         driver says so.",
+        "A key that reaches either stops the agent, except in part 6b of the Codex package when the \
+         part ends before its turn is charged: a key that its driver finds in the run's directory \
+         then does not make the driver say the agent stops, and the harness's other stop checks \
+         still apply.",
+        "A probe-only run that stopped, or whose call did not exit 0 or wrote no `not_run` line, \
+         offers no command.",
+    ] {
+        assert!(readme.contains(sentence), "the README lacks: {sentence}");
+    }
+    let script = words_of(&["scripts", "e2e-agents.sh"]);
+    assert!(
+        script.contains(
+            "One that failed before any charge stops it only where its driver says so, and its \
+             driver does not say so for every such failure (an agent that does not reach its \
+             composer, for instance)."
+        ),
+        "the comment of the stop rule says when a part that failed before its charge stops the agent"
+    );
+    assert!(
+        !script.contains("leaves the login as it was"),
+        "a part that failed before any charge does not always leave the login as it was"
     );
 }
 

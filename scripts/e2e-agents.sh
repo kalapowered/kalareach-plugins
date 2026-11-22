@@ -241,7 +241,9 @@ part_line_is() {
 # part otherwise stops it where it neither passed nor held the login. The gateway driver writes no
 # `login_held`, so its part stops it where the results hold no line of it (a driver that ended
 # after its charge, or a result scrubbed to a line of another name) and where it did not pass after
-# a turn was charged; one that failed before any charge leaves the login as it was.
+# a turn was charged. One that failed before any charge stops it only where its driver says so, and
+# its driver does not say so for every such failure (an agent that does not reach its composer, for
+# instance).
 agent_stops_after() {
   if part_line_is "$1" "$2" '.evidence.stop_agent == true'; then
     echo "part $2: $(jq -r --arg part "$2" 'select(.part == $part and .evidence.stop_agent == true) | .reason' "$1" | tail -1)"
