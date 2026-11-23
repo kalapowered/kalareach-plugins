@@ -417,41 +417,67 @@ fn e2e_agents_assembles_through_the_same_function() {
 #[test]
 fn a_staged_login_part_keeps_the_fixed_evidence_of_a_gateway_login_part() {
     let mut inputs = inputs_for_the_package(&["2a", "7"]);
+    // A staged result carries the outer fields of every gateway result, and what the part itself
+    // shows sits under `shows`.
+    let staged_result = |charged: u64, shows: Value| {
+        json!({
+            "route": "the pinned build", "run_started": true,
+            "turns": {
+                "charged": charged, "counted_by_occurrence_of_their_line": 0,
+                "forms_of_the_names_that_are_no_uuid": [], "in_the_agents_record": charged,
+                "named_by_a_name_that_is_no_uuid": 0, "named_by_uuid": charged,
+                "record_files_read": 1,
+            },
+            "keys": {
+                "complete": true, "held_by": [], "held_by_not_listed": 0, "run_gone": true,
+                "unread_not_listed": 0, "variable": "AGENT_ACCOUNT",
+            },
+            "person_files": {"trees": [{
+                "changed": false, "entries_after": 10, "entries_before": 10, "path": "~/.codex",
+            }]},
+            "moved_work_directory": "none beside the run",
+            "shows": shows,
+        })
+    };
     let staged = [
         (
             "2a",
-            json!({
-                "route": "the pinned build", "run_started": true,
-                "turns": {"charged": 3, "in_the_agents_record": 3},
-                "arm": "pinned build", "login": "a login", "turns_charged": 3,
-                "slash": {"seen": true}, "interrupt": {"seen": true},
-                "control": {"breaks_property": false},
-                "shows": {"text": "something the person's own programs said"},
-            }),
+            5,
+            staged_result(
+                5,
+                json!({
+                    "arm": "pinned build", "login": "a login", "turns_charged": 5,
+                    "slash": {"seen": true}, "interrupt": {"seen": true},
+                    "control": {"breaks_property": false},
+                    "text": "something the person's own programs said",
+                }),
+            ),
         ),
         (
             "7",
-            json!({
-                "route": "the pinned build", "run_started": true,
-                "turns": {"charged": 2},
-                "arm": "pinned build", "login": "a login", "files_before_the_second_start": [],
-                "session_a": {"detection": {}}, "session_b": {"same_conversation": false},
-                "resume": {"outcome": "refused"},
-                "shows": {"text": "something the person's own programs said"},
-            }),
+            2,
+            staged_result(
+                2,
+                json!({
+                    "arm": "pinned build", "login": "a login", "files_before_the_second_start": [],
+                    "session_a": {"detection": {}}, "session_b": {"same_conversation": false},
+                    "resume": {"outcome": "refused"},
+                    "text": "something the person's own programs said",
+                }),
+            ),
         ),
     ];
     for line in inputs["results"].as_array_mut().expect("results") {
-        if let Some((_, evidence)) = staged.iter().find(|(part, _)| line["part"] == *part) {
+        if let Some((_, _, evidence)) = staged.iter().find(|(part, _, _)| line["part"] == *part) {
             line["evidence"] = evidence.clone();
         }
     }
     let record = assembled(&inputs);
-    for (part, evidence) in &staged {
+    for (part, charged, evidence) in &staged {
         let kept = &test_of(&record, part)["evidence"];
         assert_eq!(kept["route"], "the pinned build", "part {part}");
         assert_eq!(kept["run_started"], true, "part {part}");
-        assert!(kept["turns"]["charged"].is_u64(), "part {part}");
+        assert_eq!(kept["turns"]["charged"], *charged, "part {part}");
         assert!(
             kept.get("shows").is_none(),
             "free text is not published in part {part}: {kept}"
