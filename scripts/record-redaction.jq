@@ -638,12 +638,14 @@ def driver_line_stands($part):
                and ((.evidence.failure_codes // [])
                     | any(.code == "not_pinned" or .code == "environment_not_clear" or .code == "environment_not_read"))));
 
-# The driver's test target a part runs through, and the file that holds its test: the gateway
-# driver's, or the older driver's for a part that has not moved to it.
+# The driver's test target a part runs through, and the file that holds its test: the one the
+# parts table's row names, else the gateway driver's, or the older driver's for a part that has not
+# moved to it.
 def part_driver($p): $p.driver // "cases";
 def part_source($p):
-  if part_driver($p) == "gateway" then "kalareach:tests/e2e/agents/tests/gateway.rs"
-  else "kalareach:tests/e2e/agents/tests/cases.rs" end;
+  $p.source //
+  (if part_driver($p) == "gateway" then "kalareach:tests/e2e/agents/tests/gateway.rs"
+   else "kalareach:tests/e2e/agents/tests/cases.rs" end);
 def part_name($p): "kr-e2e-agents --test " + part_driver($p) + " " + $p.test;
 
 # What a part's entry says of the route it ran on: a part that ran on the stand-in route says so,
@@ -742,3 +744,116 @@ def redact_record($user; $entry; $login_parts):
         | split("/Library/Managed Preferences/" + $user + "/")
         | join("/Library/Managed Preferences/{user}/")
       else . end);
+
+# A whole record, as one run of a driver is written: $package is the connector package's name,
+# $application and $version the build the parts ran against, $started and $finished the run's
+# times, $evidence the run's evidence directory, $release the operating system's release,
+# $plugins_commit and $core_commit the two repositories' commits, $toolchain the compiler's and
+# cargo's versions, $entry the build list's entry for the agent, $steps the run's steps, $parts the
+# parts table (one row per part: part, test, reason, owner, needs, driver, route, and the file
+# that holds the part's test where it is not the driver's own), $selection the parts that were
+# selected, $manifest_version and $manifest_digest the package's release, $generation_identity
+# what the run installed packages from, $payload a note on the pinned build, $own_home and
+# $own_home_error what the own-home check found or why it failed, $evidence_real, $temporary,
+# $temporary_real, $target, $target_real, $shells, $tools, $tools_real and $home the run's
+# folders (written relative to themselves in the record), $manifest the package's manifest,
+# $pinned_status and $blocked whether the pinned build was installed and why not, $newer_status
+# whether the newer build was installed, $user the account name the run had, $login_parts the
+# parts that run with the login and $results the driver's result lines, one per outcome. The
+# record is redacted by redact_record.
+def assemble_record($package; $application; $version; $started; $finished; $evidence; $release;
+    $plugins_commit; $core_commit; $toolchain; $entry; $steps; $parts; $selection;
+    $manifest_version; $manifest_digest; $generation_identity; $payload; $own_home;
+    $own_home_error; $evidence_real; $temporary; $temporary_real; $target; $target_real; $shells;
+    $manifest; $pinned_status; $blocked; $newer_status; $tools; $tools_real; $home; $user;
+    $login_parts; $results):
+  def counts($tests): reduce ("passed", "failed", "ignored", "not_run", "not_built", "known_difference") as $o
+    ({}; . + {($o): ([$tests[] | select(.outcome == $o)] | length)});
+  # A path in the evidence directory, the temporary directory, the build's target directory, the
+  # managed shell's packages, the tools directory or the home directory of whoever ran this is
+  # written relative to it, and so is the name an agent gives a folder after such a path (the
+  # slashes joined by dashes, or every character that is not a letter or a digit turned into a
+  # dash); a system or runtime executable is named as it is, since which one ran is the evidence.
+  def local_paths: if type == "string" then
+      (split($evidence_real) | join("<evidence>"))
+      | (split($temporary_real) | join("<tmp>")) | (split($temporary) | join("<tmp>"))
+      | hide_folder_named_after($temporary_real; "<tmp>") | hide_folder_named_after($temporary; "<tmp>")
+      | (split($target_real) | join("<target>")) | (split($target) | join("<target>"))
+      | (if $shells == "" then . else split($shells) | join("<shells>") end)
+      | (split($tools_real) | join("<tools>")) | (split($tools) | join("<tools>"))
+      | (if $home == "" then . elif . == $home then "~"
+         else split($home + "/") | join("~/")
+           | gsub(($home | literal_pattern) + "(?![A-Za-z0-9._-])"; "~")
+           | hide_folder_named_after($home; "~") end)
+    else . end;
+  def verdict($tests): if any($tests[]; .outcome == "failed") then "failed"
+    elif any($tests[]; .outcome == "passed") then "passed" else "not_run" end;
+  def declared: ($manifest.attachments // null) as $a |
+    if $a == null then null
+    elif $a.insertion == "upstream_upload" then "typed_submission"
+    elif $a.insertion == "native_composer" then "verified_composer_insertion"
+    else $a.insertion end;
+  ($steps | map(select(.group == "agents")) | map({key: (.what | ltrimstr("part ")), value: .number}) | from_entries) as $step_of |
+  ($steps | map(select(.group == "agents")) | map({key: (.what | ltrimstr("part ")), value: .command}) | from_entries) as $command_of |
+  [ $parts[] | . as $p |
+    part_entry($p; ([$results[] | select(.part == $p.part)] | last); $step_of; $command_of;
+               $entry; $login_parts)
+  ] as $tests |
+  ($tests | map(select(.part | startswith("14.03") | not))) as $case_tests |
+  ($tests | map(select(.part | startswith("14.03")))) as $attachment_tests |
+  {
+    schema: "kalareach.conformance/1",
+    extension: "kalareach.agent-qualification/1",
+    repository: "kalareach-plugins",
+    run: {
+      started: $started, finished: $finished, platform: "macos",
+      system: {os: "macos", release: $release, arch: "aarch64", target: "aarch64-apple-darwin"},
+      commit: $plugins_commit,
+      host: {repository: "kalareach", commit: $core_commit},
+      toolchain: $toolchain,
+      terminal_profile: {profile: "kr-vt/1", term: "ghostty"},
+      packages: [{name: $package, version: $manifest_version, manifest_digest: $manifest_digest,
+                  generation: $generation_identity}],
+      applications: ([{id: $application, version: $version, status: $pinned_status,
+                       url: $entry.source, sha256: $entry.sha256, build: "darwin-arm64",
+                       reason: (if $blocked == "" then "the build the table is pinned to" + $payload else $blocked end)}]
+        + (if $entry.newer == null then [] else
+            [{id: $application, version: $entry.newer.version,
+              status: (if $newer_status == true then "installed" else "not_installed" end),
+              url: $entry.newer.source, sha256: $entry.newer.sha256, build: "darwin-arm64",
+              reason: "the newer build the upgrade part moves to"}] end)),
+      selection: $selection,
+      all_terminals: false,
+      evidence_directory: $evidence,
+      own_home: $own_home
+    },
+    steps: $steps,
+    identifiers: {
+      "KR-REQ-12.32": {family: "requirement", verdict: verdict($case_tests),
+                       counts: counts($case_tests), tests: $case_tests},
+      "KR-REQ-14.03": {family: "requirement", verdict: verdict($attachment_tests),
+                       counts: counts($attachment_tests), tests: $attachment_tests}
+    },
+    attachment_paths: (
+      [$manifest.actions[] | select(.effect == "upstream.prompt" or .effect == "upstream.attachment") |
+        {operation: .id, declared: declared, source: "plugin.json", package_digest: $manifest_digest}]
+      + [{operation: "terminal", declared: null, source: "plugin.json", package_digest: $manifest_digest}]),
+    failures_outside_identifiers: (if $own_home_error == "" then [] else
+      [{test: "kr-e2e-agents --test cases a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default",
+        source: "kalareach:tests/e2e/agents/tests/cases.rs", step: 1, reason: $own_home_error}] end),
+    known_differences: [],
+    problems: [],
+    warnings: [],
+    summary: {
+      identifiers: 2,
+      passed: ([verdict($case_tests), verdict($attachment_tests)] | map(select(. == "passed")) | length),
+      failed: ([verdict($case_tests), verdict($attachment_tests)] | map(select(. == "failed")) | length),
+      known_difference: 0,
+      not_run: ([verdict($case_tests), verdict($attachment_tests)] | map(select(. == "not_run")) | length),
+      known_differences: 0,
+      tests: counts($tests),
+      failed_steps: [$steps[] | select(.exit != 0) | .number]
+    }
+  } | walk(local_paths) | .run.evidence_directory = $evidence
+    # What the record may not name of the person: record-redaction.jq.
+    | redact_record($user; $entry + {actions: [$manifest.actions[].id], grants: [$manifest.capabilities[].capability]}; $login_parts);

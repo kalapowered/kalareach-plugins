@@ -1,0 +1,254 @@
+{
+  "schema": "kalareach.conformance/1",
+  "extension": "kalareach.agent-qualification/1",
+  "repository": "kalareach-plugins",
+  "run": {
+    "started": "2026-01-02T03:04:05Z",
+    "finished": "2026-01-02T03:14:15Z",
+    "platform": "macos",
+    "system": {
+      "os": "macos",
+      "release": "26.6.2, Darwin 25.6.0",
+      "arch": "aarch64",
+      "target": "aarch64-apple-darwin"
+    },
+    "commit": {
+      "id": "0123456789abcdef0123456789abcdef01234567",
+      "modified": false
+    },
+    "host": {
+      "repository": "kalareach",
+      "commit": {
+        "id": "89abcdef0123456789abcdef0123456789abcdef",
+        "modified": false
+      }
+    },
+    "toolchain": {
+      "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+      "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)"
+    },
+    "terminal_profile": {
+      "profile": "kr-vt/1",
+      "term": "ghostty"
+    },
+    "packages": [
+      {
+        "name": "kalareach/codex",
+        "version": "0.4.0",
+        "manifest_digest": "93bf159ccfc1cc8cd222db2225f4a7ac2b476e76e318b9362ff5d34fb374c716",
+        "generation": "snapshots/development"
+      }
+    ],
+    "applications": [
+      {
+        "id": "codex",
+        "version": "0.155.1",
+        "status": "installed",
+        "url": "https://registry.example/codex-0.155.1.tgz",
+        "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
+        "build": "darwin-arm64",
+        "reason": "the build the table is pinned to"
+      },
+      {
+        "id": "codex",
+        "version": "0.156.1",
+        "status": "not_installed",
+        "url": "https://registry.example/codex-0.156.1.tgz",
+        "sha256": "0196e89f00000000000000000000000000000000000000000000000000000000",
+        "build": "darwin-arm64",
+        "reason": "the newer build the upgrade part moves to"
+      }
+    ],
+    "selection": [
+      "2b",
+      "5a"
+    ],
+    "all_terminals": false,
+    "evidence_directory": "/private/tmp/sample-run/evidence",
+    "own_home": {
+      "default_keychain": "login.keychain-db",
+      "home": "~",
+      "worker_profile": "user",
+      "bound_to_a_desktop": false,
+      "show_keychain_info_status": 0
+    }
+  },
+  "steps": [
+    {
+      "number": 1,
+      "group": "own-home",
+      "what": "a session started with the person's own home names their login keychain",
+      "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl <target>/debug/deps/cases --exact an_own_home_case --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 7,
+      "log": "own-home.log",
+      "error": null
+    },
+    {
+      "number": 2,
+      "group": "agents",
+      "what": "part 2b",
+      "command": "env -i <driver environment> <target>/debug/deps/gateway --exact a_terminal_route_case --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 31,
+      "log": "codex/2b.log",
+      "error": null
+    },
+    {
+      "number": 3,
+      "group": "agents",
+      "what": "part 5a",
+      "command": "env -i <driver environment> <target>/debug/deps/gateway --exact a_daemon_crash_case --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 101,
+      "seconds": 44,
+      "log": "codex/5a.log",
+      "error": null
+    }
+  ],
+  "identifiers": {
+    "KR-REQ-12.32": {
+      "family": "requirement",
+      "verdict": "failed",
+      "counts": {
+        "passed": 1,
+        "failed": 1,
+        "ignored": 0,
+        "not_run": 1,
+        "not_built": 0,
+        "known_difference": 0
+      },
+      "tests": [
+        {
+          "test": "kr-e2e-agents --test gateway a_terminal_route_case",
+          "part": "2b",
+          "source": "kalareach:tests/e2e/agents/tests/gateway.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "passed",
+          "runs": [
+            {
+              "step": 2,
+              "outcome": "passed"
+            }
+          ],
+          "command": "env -i <driver environment> <target>/debug/deps/gateway --exact a_terminal_route_case --nocapture --test-threads=1",
+          "evidence": {
+            "resources": 2,
+            "checked": "<tools>/codex"
+          }
+        },
+        {
+          "test": "kr-e2e-agents --test gateway a_raced_approval_case",
+          "part": "3",
+          "source": "kalareach:tests/e2e/agents/tests/gateway.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "not_run",
+          "reason": "not selected in this run"
+        },
+        {
+          "test": "kr-e2e-agents --test gateway a_daemon_crash_case",
+          "part": "5a",
+          "source": "kalareach:tests/e2e/agents/tests/gateway.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "failed",
+          "route": "stand_in",
+          "reason": "the agent did not keep running",
+          "runs": [
+            {
+              "step": 3,
+              "outcome": "failed"
+            }
+          ],
+          "command": "env -i <driver environment> <target>/debug/deps/gateway --exact a_daemon_crash_case --nocapture --test-threads=1",
+          "evidence": {
+            "arm": "stand-in"
+          }
+        }
+      ]
+    },
+    "KR-REQ-14.03": {
+      "family": "requirement",
+      "verdict": "not_run",
+      "counts": {
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0,
+        "not_run": 2,
+        "not_built": 0,
+        "known_difference": 0
+      },
+      "tests": [
+        {
+          "test": "kr-e2e-agents --test gateway a_typed_path_case",
+          "part": "14.03a",
+          "source": "kalareach:tests/e2e/agents/tests/gateway.rs",
+          "keyed_by": "attached_comment",
+          "outcome": "not_run",
+          "reason": "not selected in this run"
+        },
+        {
+          "test": "part 14.03b",
+          "part": "14.03b",
+          "source": "kalareach-plugins:fixtures/agents/README.md",
+          "keyed_by": "case_table",
+          "outcome": "not_run",
+          "reason": "no method reads a draft's attachment state (device reads of drafts)",
+          "needs": [
+            "draft reads"
+          ]
+        }
+      ]
+    }
+  },
+  "attachment_paths": [
+    {
+      "operation": "send_prompt",
+      "declared": "typed_submission",
+      "source": "plugin.json",
+      "package_digest": "93bf159ccfc1cc8cd222db2225f4a7ac2b476e76e318b9362ff5d34fb374c716"
+    },
+    {
+      "operation": "attach_image",
+      "declared": "typed_submission",
+      "source": "plugin.json",
+      "package_digest": "93bf159ccfc1cc8cd222db2225f4a7ac2b476e76e318b9362ff5d34fb374c716"
+    },
+    {
+      "operation": "terminal",
+      "declared": null,
+      "source": "plugin.json",
+      "package_digest": "93bf159ccfc1cc8cd222db2225f4a7ac2b476e76e318b9362ff5d34fb374c716"
+    }
+  ],
+  "failures_outside_identifiers": [],
+  "known_differences": [],
+  "problems": [],
+  "warnings": [],
+  "summary": {
+    "identifiers": 2,
+    "passed": 0,
+    "failed": 1,
+    "known_difference": 0,
+    "not_run": 1,
+    "known_differences": 0,
+    "tests": {
+      "passed": 1,
+      "failed": 1,
+      "ignored": 0,
+      "not_run": 3,
+      "not_built": 0,
+      "known_difference": 0
+    },
+    "failed_steps": [
+      3
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "package": "kalareach/codex",
+  "application": "codex",
+  "version": "0.155.1",
+  "started": "2026-01-02T03:04:05Z",
+  "finished": "2026-01-02T03:14:15Z",
+  "evidence": "/private/tmp/sample-run/evidence",
+  "release": "26.6.2, Darwin 25.6.0",
+  "plugins_commit": {"id": "0123456789abcdef0123456789abcdef01234567", "modified": false},
+  "core_commit": {"id": "89abcdef0123456789abcdef0123456789abcdef", "modified": false},
+  "toolchain": {"rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)", "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)"},
+  "entry": {
+    "package": "kalareach/codex",
+    "application": "codex",
+    "version": "0.155.1",
+    "source": "https://registry.example/codex-0.155.1.tgz",
+    "sha256": "8eaf1ad12fe6bf89b1710330f58900014322c7c5af677e43be116d8ac5fc0a9e",
+    "newer": {
+      "version": "0.156.1",
+      "source": "https://registry.example/codex-0.156.1.tgz",
+      "sha256": "0196e89f00000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "steps": [
+    {"number": 1, "group": "own-home", "what": "a session started with the person's own home names their login keychain",
+     "command": "env -i <driver environment> KR_AGENTS_RESULT=<evidence>/own-home.jsonl <target>/debug/deps/cases --exact an_own_home_case --nocapture --test-threads=1",
+     "needs": ["KR_SHELL_PACKAGES"], "exit": 0, "seconds": 7, "log": "own-home.log", "error": null},
+    {"number": 2, "group": "agents", "what": "part 2b",
+     "command": "env -i <driver environment> <target>/debug/deps/gateway --exact a_terminal_route_case --nocapture --test-threads=1",
+     "needs": ["KR_SHELL_PACKAGES"], "exit": 0, "seconds": 31, "log": "codex/2b.log", "error": null},
+    {"number": 3, "group": "agents", "what": "part 5a",
+     "command": "env -i <driver environment> <target>/debug/deps/gateway --exact a_daemon_crash_case --nocapture --test-threads=1",
+     "needs": ["KR_SHELL_PACKAGES"], "exit": 101, "seconds": 44, "log": "codex/5a.log", "error": null}
+  ],
+  "parts": [
+    {"part": "2b", "test": "a_terminal_route_case", "reason": "", "owner": "", "needs": "", "driver": "gateway", "route": "real"},
+    {"part": "3", "test": "a_raced_approval_case", "reason": "", "owner": "", "needs": "", "driver": "gateway", "route": "real"},
+    {"part": "5a", "test": "a_daemon_crash_case", "reason": "", "owner": "", "needs": "", "driver": "gateway", "route": "stand_in"},
+    {"part": "14.03a", "test": "a_typed_path_case", "reason": "", "owner": "", "needs": "", "driver": "gateway", "route": "real"},
+    {"part": "14.03b", "test": "", "reason": "no method reads a draft's attachment state", "owner": "device reads of drafts", "needs": "draft reads", "driver": "gateway", "route": "real"}
+  ],
+  "selection": ["2b", "5a"],
+  "manifest_version": "0.4.0",
+  "manifest_digest": "93bf159ccfc1cc8cd222db2225f4a7ac2b476e76e318b9362ff5d34fb374c716",
+  "generation_identity": "snapshots/development",
+  "payload": "",
+  "own_home": {"default_keychain": "login.keychain-db", "home": "~", "worker_profile": "user", "bound_to_a_desktop": false, "show_keychain_info_status": 0},
+  "own_home_error": "",
+  "evidence_real": "/private/tmp/sample-run/evidence",
+  "temporary": "/tmp/sample-run/tmp",
+  "temporary_real": "/private/tmp/sample-run/tmp",
+  "target": "/Volumes/Storage/sample/target",
+  "target_real": "/Volumes/Storage/sample/target",
+  "shells": "/Users/sample/Library/Caches/shells",
+  "manifest": {
+    "capabilities": [{"capability": "terminal.session"}],
+    "actions": [
+      {"id": "send_prompt", "effect": "upstream.prompt"},
+      {"id": "attach_image", "effect": "upstream.attachment"},
+      {"id": "cancel", "effect": "upstream.cancel"}
+    ],
+    "attachments": {"insertion": "upstream_upload"}
+  },
+  "pinned_status": "installed",
+  "blocked": "",
+  "newer_status": false,
+  "tools": "/Users/sample/Library/Caches/builds",
+  "tools_real": "/Users/sample/Library/Caches/builds",
+  "home": "/Users/sample",
+  "user": "sample",
+  "login_parts": ["1", "2a", "3", "4", "6b", "7"],
+  "results": [
+    {"part": "2b", "test": "a_terminal_route_case", "outcome": "passed", "reason": null,
+     "evidence": {"resources": 2, "checked": "/Users/sample/Library/Caches/builds/codex"}},
+    {"part": "5a", "test": "a_daemon_crash_case", "outcome": "failed", "reason": "the agent did not keep running",
+     "evidence": {"arm": "stand-in"}}
+  ]
+}

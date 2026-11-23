@@ -394,3 +394,5 @@ configured, released or evaluated a context not interactively, and coreauthd eva
 interactively for anyone during the part. It also stops when the part's outcome does not list its
 process numbers. Each of these checks, the search of its evidence for a login's variable and the
 look at SecurityAgent's log runs whatever another found before the run stops.
+
+`scripts/assemble-record.sh <inputs.json>` assembles a record from a run's steps, its parts table and the driver's result lines, in the form above and as the harness writes it. The run may come from any driver.
