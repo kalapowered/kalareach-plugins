@@ -14,7 +14,8 @@ fixtures/agents/<publisher>/<plugin>/<application version>/<os>-<arch>.json
 has the record for the build its table is pinned to, and that every record, pinned or kept after its
 build was withdrawn, is for this release of its package and was run against the build its path
 names. A record states outcomes; it does not qualify a case by existing. A case qualifies for an
-agent only when every part of it passed.
+agent only when every part of it passed, with the one exception stated under "What the index takes
+from them" below.
 
 ## The parts
 
@@ -267,10 +268,13 @@ The catalogue pipeline names a pinned build in its release's index entry only wh
 that release, build and platform is in good form, is a whole run of this release whose parts ran
 against this build (the first of its `run.applications`, installed, with the pinned SHA-256), shows
 no part failed, and shows every part of the eight cases (1 to 8b above) passed. A part not run
-is not a pass. The pinned file must be what a process runs: a build whose `launch` is `script` or
-`wheel` is never named, since a script runs as its interpreter and a wheel is an archive. The parts
-of the typed-path rule, 14.03a and 14.03b, say nothing about the build and are not required, but a
-failed one keeps the build out. `docs/pipeline.md` describes the rest.
+is not a pass, with one exception. OpenCode (`kalareach/opencode`) can be named on what its
+terminal route shows: its parts 5b, 6b and 8b run against a gateway, no shipped launch gives
+OpenCode one, and the pipeline counts them as not applicable where a record shows them not run. The
+pinned file must be what a process runs: a build whose `launch` is `script` or `wheel` is never
+named, since a script runs as its interpreter and a wheel is an archive. The parts of the
+typed-path rule, 14.03a and 14.03b, say nothing about the build and are not required, but a failed
+one keeps the build out. `docs/pipeline.md` describes the rest.
 
 ## Running it
 
