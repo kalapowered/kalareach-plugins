@@ -27,7 +27,8 @@
 //! - the record's run is whole: no failure outside its identifiers, no problem, no failed step;
 //! - no part failed, and every part of section 12's eight cases ([`REQUIRED_PARTS`]) passed. A part
 //!   not run is not a pass, whatever the reason it could not run, except a gateway part of a
-//!   package on [`TERMINAL_EVIDENCE_PACKAGES`].
+//!   package on [`TERMINAL_EVIDENCE_PACKAGES`] while its release declares no command integration
+//!   and no native bridge.
 //!
 //! A build that misses any of them is left out, and [`Builds::omitted`] says why. Input that
 //! cannot be read for what it shows is refused instead: a build list or a record that breaks its
@@ -440,8 +441,9 @@ fn reasons_to_leave_out(
 }
 
 /// What a record in good form lacks for its build to be named: a whole run, no failed part, and
-/// every part of section 12's cases passed, or, for a package on [`TERMINAL_EVIDENCE_PACKAGES`], is
-/// a gateway part that did not run.
+/// every part of section 12's cases passed, or, for a package on [`TERMINAL_EVIDENCE_PACKAGES`]
+/// whose release declares no command integration and no native bridge, is a gateway part that did
+/// not run.
 fn qualification_gaps(record: &Value, package: &LoadedPackage) -> Vec<String> {
     let mut gaps = Vec::new();
     if record["failures_outside_identifiers"]
