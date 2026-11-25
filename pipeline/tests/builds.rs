@@ -599,8 +599,36 @@ const OPENCODE_ATTACH_RECORD: &str =
 /// The parts of section 12's cases that run against a gateway.
 const OPENCODE_GATEWAY_PARTS: [&str; 3] = ["5b", "6b", "8b"];
 
+/// Sets the release and the digests the record names to those of the copy of the package `plugin` in
+/// `directory`, so that a case holds whichever release the repository publishes.
+fn record_follows_package(directory: &Path, plugin: &str, record: &mut Value) {
+    let manifest_path = directory
+        .join("plugins/kalareach")
+        .join(plugin)
+        .join("plugin.json");
+    let bytes = std::fs::read(&manifest_path).expect("the manifest reads");
+    let manifest: Value = serde_json::from_slice(&bytes).expect("the manifest is JSON");
+    let digest = PayloadDigest::of(&bytes).to_string();
+    for named in record["run"]["packages"]
+        .as_array_mut()
+        .expect("the record lists its packages")
+    {
+        if named["name"] == format!("kalareach/{plugin}") {
+            named["version"] = manifest["version"].clone();
+            named["manifest_digest"] = json!(digest);
+        }
+    }
+    for path in record["attachment_paths"]
+        .as_array_mut()
+        .expect("the record lists its attachment paths")
+    {
+        path["package_digest"] = json!(digest);
+    }
+}
+
 /// A repository in `directory` holding the publisher record, a copy of the package `plugin`, a build
-/// list pinning the OpenCode build for it, and `record` as the record for that build.
+/// list pinning the OpenCode build for it, and `record` as the record for that build, made to name
+/// the copy's release and digests.
 fn opencode_repository(directory: &Path, plugin: &str, record_path: &str, record: &Value) {
     std::fs::create_dir_all(directory.join("publishers")).expect("publishers directory");
     std::fs::copy(
@@ -624,7 +652,9 @@ fn opencode_repository(directory: &Path, plugin: &str, record_path: &str, record
             None,
         )],
     );
-    write_json(&directory.join(record_path), record);
+    let mut record = record.clone();
+    record_follows_package(directory, plugin, &mut record);
+    write_json(&directory.join(record_path), &record);
 }
 
 /// The record of OpenCode's pinned build with every part passed except `not_run`, which did not run.
@@ -822,24 +852,9 @@ fn declare_in_opencode_copy(directory: &Path, member: &str, capability: &str) {
         .expect("the manifest lists its capabilities")
         .push(asked);
     write_json(&manifest_path, &manifest);
-    let digest =
-        PayloadDigest::of(&std::fs::read(&manifest_path).expect("the manifest reads")).to_string();
     let record_path = directory.join(OPENCODE_RECORD);
     let mut record = read_json(&record_path);
-    for named in record["run"]["packages"]
-        .as_array_mut()
-        .expect("the record lists its packages")
-    {
-        if named["name"] == "kalareach/opencode" {
-            named["manifest_digest"] = json!(digest);
-        }
-    }
-    for path in record["attachment_paths"]
-        .as_array_mut()
-        .expect("the record lists its attachment paths")
-    {
-        path["package_digest"] = json!(digest);
-    }
+    record_follows_package(directory, "opencode", &mut record);
     write_json(&record_path, &record);
 }
 
@@ -893,6 +908,10 @@ fn no_other_package_gains_the_gateway_exemption() {
             with_outcome(&record, part, "not_run")
         });
     claude_code_repository(&claude_code, &record);
+    let record_path = claude_code.join(CLAUDE_CODE_RECORD);
+    let mut record = read_json(&record_path);
+    record_follows_package(&claude_code, "claude-code", &mut record);
+    write_json(&record_path, &record);
     assert_eq!(
         left_out_because(&claude_code),
         vec!["section 12 parts 5b, 6b, 8b did not pass".to_owned()]
