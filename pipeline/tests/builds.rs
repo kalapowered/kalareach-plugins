@@ -467,12 +467,12 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         "section 12 parts 1, 2a, 5b, 6b, 8b did not pass",
     ];
     // OpenCode's record is a run with a provider's key in the person's shell: every part that ran
-    // passed but the device's upload, and the parts that wait for the command integration did not
-    // run.
+    // passed but the device's upload. Its gateway parts did not run, and are carried as not
+    // applicable.
     let opencode: &[&str] = &[
         "steps 2 did not exit cleanly",
         "parts 1 failed",
-        "section 12 parts 1, 5b, 6b, 8b did not pass",
+        "section 12 parts 1 did not pass",
     ];
     let script = "the pinned file is a script, whose process is its interpreter, so it names no \
                   executable a host runs";
@@ -586,6 +586,316 @@ fn a_failed_part_leaves_the_build_out_and_a_typed_path_part_not_run_does_not() {
     assert_eq!(
         claude_code_entry_builds(&typed_path_not_run),
         vec![claude_code_build()]
+    );
+}
+
+/// The record of this repository's OpenCode package for the build its table is pinned to.
+const OPENCODE_RECORD: &str = "fixtures/agents/kalareach/opencode/1.18.31/macos-aarch64.json";
+
+/// The record of this repository's OpenCode attach package for the same build.
+const OPENCODE_ATTACH_RECORD: &str =
+    "fixtures/agents/kalareach/opencode-attach/1.18.31/macos-aarch64.json";
+
+/// The parts of section 12's cases that run against a gateway.
+const OPENCODE_GATEWAY_PARTS: [&str; 3] = ["5b", "6b", "8b"];
+
+/// A repository in `directory` holding the publisher record, a copy of the package `plugin`, a build
+/// list pinning the OpenCode build for it, and `record` as the record for that build.
+fn opencode_repository(directory: &Path, plugin: &str, record_path: &str, record: &Value) {
+    std::fs::create_dir_all(directory.join("publishers")).expect("publishers directory");
+    std::fs::copy(
+        root().join("publishers/kalareach.json"),
+        directory.join("publishers/kalareach.json"),
+    )
+    .expect("the publisher record copies");
+    copy_tree(
+        &root().join("plugins/kalareach").join(plugin),
+        &directory.join("plugins/kalareach").join(plugin),
+    );
+    write_list(
+        directory,
+        &[pin(
+            &format!("kalareach/{plugin}"),
+            plugin,
+            "1.18.31",
+            "npm opencode-ai",
+            "native",
+            OPENCODE_SHA256,
+            None,
+        )],
+    );
+    write_json(&directory.join(record_path), record);
+}
+
+/// The record of OpenCode's pinned build with every part passed except `not_run`, which did not run.
+fn opencode_record_with(not_run: &[&str]) -> Value {
+    not_run.iter().fold(
+        every_part_passed(&read_json(&root().join(OPENCODE_RECORD))),
+        |record, part| with_outcome(&record, part, "not_run"),
+    )
+}
+
+/// The build the list pins for the OpenCode package whose application is `application`.
+fn opencode_build(application: &str) -> QualifiedBuild {
+    QualifiedBuild {
+        application: Label::new(application).expect("a label"),
+        distribution: Label::new("npm opencode-ai").expect("a label"),
+        version: PackageVersion::parse("1.18.31").expect("a version"),
+        os: OperatingSystem::MacOs,
+        architecture: Architecture::Aarch64,
+        executable_digest: PayloadDigest::parse(OPENCODE_SHA256).expect("a digest"),
+    }
+}
+
+/// The builds the index entry for `plugin_id` names when the repository in `directory` is built.
+fn entry_builds(directory: &Path, plugin_id: &str) -> Vec<QualifiedBuild> {
+    let loaded = packages::load(directory).expect("the repository loads");
+    index_of(&loaded.repository)
+        .entries
+        .iter()
+        .find(|entry| entry.plugin_id.as_str() == plugin_id)
+        .unwrap_or_else(|| {
+            panic!(
+                "the index carries the package; rejected: {:?}",
+                loaded.rejected
+            )
+        })
+        .builds
+        .clone()
+}
+
+/// Why the one build pinned in the repository in `directory` is left out of the entry for
+/// `plugin_id`.
+fn left_out_of(directory: &Path, plugin_id: &str) -> Vec<String> {
+    assert!(entry_builds(directory, plugin_id).is_empty());
+    let loaded = packages::load(directory).expect("the repository loads");
+    assert!(loaded.rejected.is_empty(), "{:?}", loaded.rejected);
+    assert_eq!(loaded.repository.builds.named().count(), 0);
+    let omitted = loaded.repository.builds.omitted();
+    assert_eq!(omitted.len(), 1, "{omitted:?}");
+    omitted[0].reasons.clone()
+}
+
+/// OpenCode is named on what its terminal route shows: its gateway parts, 5b, 6b and 8b, run against
+/// a gateway no shipped launch gives it, so a part of them that did not run counts as not applicable,
+/// alone or all three together.
+#[test]
+fn opencode_is_named_on_terminal_evidence_when_only_its_gateway_parts_did_not_run() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let mut cases: Vec<Vec<&str>> = OPENCODE_GATEWAY_PARTS
+        .iter()
+        .map(|part| vec![*part])
+        .collect();
+    cases.push(OPENCODE_GATEWAY_PARTS.to_vec());
+    for (number, not_run) in cases.iter().enumerate() {
+        let repository = temporary.path().join(format!("repository-{number}"));
+        opencode_repository(
+            &repository,
+            "opencode",
+            OPENCODE_RECORD,
+            &opencode_record_with(not_run),
+        );
+        assert_eq!(
+            entry_builds(&repository, "kalareach/opencode"),
+            vec![opencode_build("opencode")],
+            "not run: {not_run:?}"
+        );
+        let loaded = packages::load(&repository).expect("the repository loads");
+        assert!(loaded.repository.builds.omitted().is_empty());
+    }
+}
+
+/// A gateway part that passed is a pass for OpenCode, as for any package.
+#[test]
+fn opencode_with_every_part_passed_is_named() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    opencode_repository(
+        &repository,
+        "opencode",
+        OPENCODE_RECORD,
+        &opencode_record_with(&[]),
+    );
+    assert_eq!(
+        entry_builds(&repository, "kalareach/opencode"),
+        vec![opencode_build("opencode")]
+    );
+}
+
+/// The exemption is for the three gateway parts and no other: any other part of OpenCode's cases
+/// that did not run keeps the build out, alone or beside the gateway parts that did not run.
+#[test]
+fn the_gateway_exemption_hides_no_other_part_of_opencode() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let others = builds::REQUIRED_PARTS
+        .iter()
+        .copied()
+        .filter(|part| !OPENCODE_GATEWAY_PARTS.contains(part));
+    for part in others {
+        for with_gateway_parts in [false, true] {
+            let mut not_run = vec![part];
+            if with_gateway_parts {
+                not_run.extend(OPENCODE_GATEWAY_PARTS);
+            }
+            let repository = temporary
+                .path()
+                .join(format!("repository-{part}-{with_gateway_parts}"));
+            opencode_repository(
+                &repository,
+                "opencode",
+                OPENCODE_RECORD,
+                &opencode_record_with(&not_run),
+            );
+            assert_eq!(
+                left_out_of(&repository, "kalareach/opencode"),
+                vec![format!("section 12 parts {part} did not pass")],
+                "not run: {not_run:?}"
+            );
+        }
+    }
+}
+
+/// A gateway part that failed still keeps OpenCode's build out, whether or not the other gateway
+/// parts ran.
+#[test]
+fn a_failed_gateway_part_of_opencode_still_leaves_the_build_out() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let record = with_outcome(&opencode_record_with(&["5b", "8b"]), "6b", "failed");
+    let step = record["identifiers"]["KR-REQ-12.32"]["tests"]
+        .as_array()
+        .expect("tests")
+        .iter()
+        .find(|test| test["part"] == "6b")
+        .expect("part 6b")["runs"][0]["step"]
+        .clone();
+    let repository = temporary.path().join("repository");
+    opencode_repository(&repository, "opencode", OPENCODE_RECORD, &record);
+    assert_eq!(
+        left_out_of(&repository, "kalareach/opencode"),
+        vec![
+            format!("steps {step} did not exit cleanly"),
+            "parts 6b failed".to_owned(),
+            "section 12 parts 6b did not pass".to_owned(),
+        ]
+    );
+}
+
+/// Declares a gateway in the copy of the OpenCode package in `directory`, as the Claude Code package
+/// declares its own: `member` of the manifest and the capability it asks for, and the record's
+/// manifest digest follows the changed manifest.
+fn declare_in_opencode_copy(directory: &Path, member: &str, capability: &str) {
+    let claude_code = read_json(&root().join("plugins/kalareach/claude-code/plugin.json"));
+    let manifest_path = directory.join("plugins/kalareach/opencode/plugin.json");
+    let mut manifest = read_json(&manifest_path);
+    manifest[member] = claude_code[member].clone();
+    if member == "command_integration" {
+        manifest[member]["command"] = json!("opencode");
+    }
+    if member == "native_bridge" {
+        copy_tree(
+            &root().join("plugins/kalareach/claude-code/bridge"),
+            &directory.join("plugins/kalareach/opencode/bridge"),
+        );
+        let payloads = manifest["payloads"]
+            .as_array_mut()
+            .expect("the manifest lists its payloads");
+        payloads.extend(
+            claude_code["payloads"]
+                .as_array()
+                .expect("the manifest lists its payloads")
+                .iter()
+                .filter(|payload| payload["role"] == "native_bridge")
+                .cloned(),
+        );
+        payloads.sort_by_key(|payload| payload["path"].as_str().map(str::to_owned));
+    }
+    manifest["sdk_range"] = claude_code["sdk_range"].clone();
+    let asked = claude_code["capabilities"]
+        .as_array()
+        .expect("the manifest lists its capabilities")
+        .iter()
+        .find(|asked| asked["capability"] == capability)
+        .expect("Claude Code asks for the capability")
+        .clone();
+    manifest["capabilities"]
+        .as_array_mut()
+        .expect("the manifest lists its capabilities")
+        .push(asked);
+    write_json(&manifest_path, &manifest);
+    let digest =
+        PayloadDigest::of(&std::fs::read(&manifest_path).expect("the manifest reads")).to_string();
+    let record_path = directory.join(OPENCODE_RECORD);
+    let mut record = read_json(&record_path);
+    for named in record["run"]["packages"]
+        .as_array_mut()
+        .expect("the record lists its packages")
+    {
+        if named["name"] == "kalareach/opencode" {
+            named["manifest_digest"] = json!(digest);
+        }
+    }
+    for path in record["attachment_paths"]
+        .as_array_mut()
+        .expect("the record lists its attachment paths")
+    {
+        path["package_digest"] = json!(digest);
+    }
+    write_json(&record_path, &record);
+}
+
+/// The exemption lasts while the release gives OpenCode no gateway: a release that declares a command
+/// integration or a native bridge has its gateway parts required again.
+#[test]
+fn a_release_that_declares_a_command_integration_or_a_native_bridge_has_its_gateway_parts_required()
+{
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    for (member, capability) in [
+        ("command_integration", "command_integration.launch"),
+        ("native_bridge", "native_bridge.install"),
+    ] {
+        let repository = temporary.path().join(member);
+        opencode_repository(
+            &repository,
+            "opencode",
+            OPENCODE_RECORD,
+            &opencode_record_with(&OPENCODE_GATEWAY_PARTS),
+        );
+        declare_in_opencode_copy(&repository, member, capability);
+        assert_eq!(
+            left_out_of(&repository, "kalareach/opencode"),
+            vec!["section 12 parts 5b, 6b, 8b did not pass".to_owned()],
+            "{member}"
+        );
+    }
+}
+
+/// No other package gains the exemption: OpenCode's attach package, which pins the same executable,
+/// and Claude Code are left out for gateway parts that did not run.
+#[test]
+fn no_other_package_gains_the_gateway_exemption() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+
+    let attach = temporary.path().join("attach");
+    let record = OPENCODE_GATEWAY_PARTS.iter().fold(
+        every_part_passed(&read_json(&root().join(OPENCODE_ATTACH_RECORD))),
+        |record, part| with_outcome(&record, part, "not_run"),
+    );
+    opencode_repository(&attach, "opencode-attach", OPENCODE_ATTACH_RECORD, &record);
+    assert_eq!(
+        left_out_of(&attach, "kalareach/opencode-attach"),
+        vec!["section 12 parts 5b, 6b, 8b did not pass".to_owned()]
+    );
+
+    let claude_code = temporary.path().join("claude-code");
+    let record = OPENCODE_GATEWAY_PARTS
+        .iter()
+        .fold(qualified_record(), |record, part| {
+            with_outcome(&record, part, "not_run")
+        });
+    claude_code_repository(&claude_code, &record);
+    assert_eq!(
+        left_out_because(&claude_code),
+        vec!["section 12 parts 5b, 6b, 8b did not pass".to_owned()]
     );
 }
 
