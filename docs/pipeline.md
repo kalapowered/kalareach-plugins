@@ -82,6 +82,16 @@ build is named in its release's entry only when all of these hold:
 - no part failed, and every part of the eight cases passed. A part that did not run is not a pass,
   whatever kept it from running.
 
+One package is named on weaker evidence than the list above asks for. OpenCode
+(`kalareach/opencode`) is named on what its terminal route shows: its parts 5b, 6b and 8b run
+against a gateway, no shipped launch gives OpenCode one, and a record that shows them not run counts
+them as not applicable. Every other part of the eight cases still has to pass, and a failed part
+still keeps the build out. This does not give KalaReach a view of what OpenCode does inside its
+terminal: it sees no request state, no turn and no approval there, and the specification's "through
+the gateway" for OpenCode is not met by it. The exemption covers no other package,
+`kalareach/opencode-attach` included, and it ends for a release that declares a command integration
+or a native bridge.
+
 `validate` prints each build it names and each pinned build it leaves out, with every condition that
 build does not meet. Input that cannot be read for what it shows stops the pipeline instead: a record
 in bad form (a record has the top-level members its form names and no others, so a `capabilities`
