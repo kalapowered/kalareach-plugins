@@ -295,6 +295,11 @@ named, since a script runs as its interpreter and a wheel is an archive. The par
 typed-path rule, 14.03a and 14.03b, say nothing about the build and are not required, but a failed
 one keeps the build out. `docs/pipeline.md` describes the rest.
 
+The index also takes the record's bytes. Each qualification result of a named build carries the
+SHA-256 of the record file, so a change to the file, a change of whitespace included, gives a new
+signed digest, and the generation that names the build is then built again. For OpenCode, the
+result's statement names each gateway part the record shows not run.
+
 ## Running it
 
 A host serves the gateway route only to a build that the generation's index lists for the package.

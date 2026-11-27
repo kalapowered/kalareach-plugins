@@ -99,10 +99,41 @@ or a `grant` member added there is refused), a record run on another platform th
 says, a platform the list does not know, a build pinned twice or for a package this repository
 does not publish with a connector table, and one executable named as two versions.
 
-The pipeline writes an entry's `builds` and leaves its `qualification` list empty. The host release
-record in the core repository refuses a listed build whose plugin entry cites no qualification
-result, so the release record for a build's platform stops at the first build the pipeline names,
-until the results are written.
+An entry that names a build also carries the qualification results that state it: for each build,
+in the order the entry lists the builds, one result for each capability the release declares, in
+the order of the capability identifiers. The host release record in the core repository refuses a
+listed build whose plugin entry carries no result. A result is written for one build from the one
+record that qualified it, and has these fields:
+
+- `capability_id` is `plugin.<capability>/1`, with the capability's name as the manifest declares it,
+  such as `plugin.approval.respond/1`;
+- `capability_version` is the release's version;
+- `subject` is the build's application and version, such as `claude-code 2.1.278`;
+- `state` is `version_qualified` and `source` is `signed_record`. The result says that the version
+  was qualified. It does not say that a host has been checked, and it grants nothing;
+- `profile_digest` is the SHA-256 of the record file's bytes, as `sha256sum` prints it. A change to
+  the file, a change of whitespace included, gives a new digest;
+- `statement` names the platform of the build and says what the record shows. For a build whose
+  every part passed it reads `every case of the version qualification passed on macos-aarch64`.
+  For OpenCode, whose gateway parts may be carried as not applicable, it names each part that did
+  not run and says that every other part passed, as in
+  `5b, 6b not run (no gateway); every other part passed on macos-aarch64`. A statement is at most 75
+  characters, short enough for a host's reason that quotes it to stay within its 200 character bound.
+
+An entry that names no build carries no result, and still has `"qualification":[]`. A candidate
+generation names builds that no record qualifies, so none of its entries carries a result either.
+A release that declares no capability has nothing a result could state; the pipeline refuses the
+generation that names a build of it.
+
+What a reader of a generation can verify: the signature over the index, which covers the results;
+that every entry's results agree with its builds, which `build` checks before it signs and `verify`
+checks again; that each `profile_digest` equals the SHA-256 of
+`fixtures/agents/<publisher>/<plugin>/<build version>/<platform>.json` at the commit the generation
+was built from; and, by running `validate` at that commit, that the build qualifies. A generation
+does not record that commit. For the generation the core repository bundles, its
+`bundled-plugins.lock` names it (`source.commit`); for another, a reader rebuilds the generation at a
+commit and compares. A result does not show that the run was honest, and the digest binds the
+result to the bytes of the record, not to the truth of them.
 
 The builds are signed with the index and kept apart from the package's bytes, so a generation adds or
 withdraws a build without a new package. A build is added when its record newly qualifies, and
@@ -114,6 +145,15 @@ Before anything is signed, `build` holds every entry's builds to the SDK's own r
 `MAX_QUALIFIED_BUILDS` (256) in one entry, each on a platform the release lists, and one version for
 each executable. A generation that breaks it is refused, naming the entry, in the SDK's words, and
 `verify` refuses a generation that carries one, as a host does.
+
+After the builds, `build` holds each entry's results to its builds, and `verify` does the same:
+results only with builds, and builds only with results. An entry that names builds declares a
+capability and carries exactly one result for each capability of each build, in the order above,
+with the identifier, version, subject, state, source and statement the pipeline writes; the
+statement must name the platform that the index gives the build. An entry that names no build carries
+no result, and a generation signed as a candidate carries none at all. A generation that breaks it is
+refused, naming the entry and the result. The digest is checked for its form, since the index does
+not hold the record.
 
 ## The generation
 
@@ -319,6 +359,7 @@ Each property of a signed catalogue has a check that fails when the property is 
 | A generation altered after it was signed does not verify: an index, a package file or a revocation | `release.rs`, and `kr_req_25_21_a_revocation_altered_after_signing_fails_verification` |
 | A qualification record has only the top-level members its form names, so a `capabilities` or `grant` member added at the top level is refused; what an index carries for a build is what the SDK's types allow, which core's index parse holds | `kr_req_11_18_a_record_with_an_added_capabilities_or_grant_member_is_refused` |
 | Every connector package has a qualification record for the build its table is pinned to, in good form and matching its package | `every_connector_package_has_a_qualification_record_for_its_pinned_build`, which this repository's continuous integration runs with the rest of the tests |
+| An entry carries one qualification result for each declared capability of each build it names, with the digest of the record's bytes and a statement of what the record shows, and no result without a build, nor a build without results, nor a result in a candidate generation; `build` and `verify` refuse the rest | `an_entry_carries_one_result_for_each_declared_capability_of_a_build_it_names`, `the_statement_names_the_gateway_parts_that_did_not_run_and_no_others`, `results_with_no_build_are_refused`, `a_build_with_no_result_is_refused` and `a_candidate_generation_that_carries_results_is_refused` |
 
 That check shows that each connector package has a record that reads and matches its package. It
 does not decide that a build qualifies: a record can name a part as not run, and the index names a
