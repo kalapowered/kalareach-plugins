@@ -194,7 +194,7 @@ fifteen steps, and each ended with exit status 0. The record lists them in the o
 keeps their login keychain as its default, then parts 8b, 5a, 5b, 2b, 2c, 8a, 6a and 14.03a. Each
 step's command is the command that ran, one test program started for one part or for the check,
 with the private values written as the placeholders `{user}`, `<shells>`, `<entry>`,
-`<generation>` and `<turns>`.
+`<generation>`, `<turns>` and `<target>`, and the person's home written as `~` in `HOME=~`.
 Six parts, each with a login, ran before the own-home check. The check therefore shows the default
 keychain as a session saw it after them, the person's login keychain with `show-keychain-info`
 status 0, and nothing of the state before them. The record lists no failed step, no problem, no
@@ -348,19 +348,23 @@ These limits of the record follow.
   names the executable or the release that an instance it detected runs. The record shows no request
   that a typed route carried to Codex.
 - It holds no frame of Codex's App Server, no method name of it and no row of the connector table.
-  It measures none of the three assumptions and closes none of the three limits that the package
-  README states under "What is measured, and what is not". Part 3 passed, and the record keeps its
-  observation and its control. That leaves the README's third assumption, an approval that a device
-  and the terminal answer together, as the README states it: the README is a package file, and this
-  record does not change it.
+  It measures neither of the first two of the three assumptions and closes none of the three limits
+  that the package README states under "What is measured, and what is not". Part 3 passed, and the
+  record keeps its observation and its control. The observation is one answer: in the race of a
+  local answer and a device's answer to one approval, the device's answer came back
+  `QUESTION_RESOLVED`, the device did not win, and the agent's record holds one answer; the driver
+  checks that result against the agent's record. That is a limited measurement of the third
+  assumption, an approval that a device and the terminal answer together. It does not show that
+  every such race leaves one decision, and the README states the assumption as it did: the README is
+  a package file, and this record does not change it.
 - It does not say how the run reached the model, which provider or account served the turns, or
   which model answered. It repeats the build list's description of the login, `vendor subscription
   account served by the local subscription proxy`, in parts 2a and 7. Parts 1, 2a, 3, 4, 6b and 7
   each hold a `keys` check of the login's variable: the search of the run's folder was complete, it
   found no key held, and the run's folder was gone. Parts 2b, 2c, 6a, 8a, 8b and 14.03a hold only
-  the last of the three. The record repeats none of the rest of what the build list declares for the
-  account: its `account.home` is `run`, and its `config_directory`
-  sets a Codex home of the run's own whose `config.toml` selects a provider at a loopback address
+  the last of the three. Of what the build list declares for the account, the record repeats nothing
+  about how the run reached the model beyond that description: its `account.home` is `run`, and its
+  `config_directory` sets a Codex home of the run's own whose `config.toml` selects a provider at a loopback address
   with the Responses wire API and no request retries. It shows none of the sign-in with a ChatGPT
   account, `codex login status`, the token refresh, the vendor's own endpoint and its websocket
   transport.
