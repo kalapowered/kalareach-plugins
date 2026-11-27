@@ -28,21 +28,25 @@
 //! - no part failed, and every part of section 12's eight cases ([`REQUIRED_PARTS`]) passed. A part
 //!   not run is not a pass, whatever the reason it could not run, except a gateway part of a
 //!   package on [`TERMINAL_EVIDENCE_PACKAGES`] while its release declares no command integration
-//!   and no native bridge.
+//!   and no native bridge;
+//! - its release declares a capability, since a result is written for each one: a release that
+//!   declares none names no build, whatever its record shows.
 //!
 //! A build that misses any of them is left out, and [`Builds::omitted`] says why. Input that
 //! cannot be read for what it shows is refused instead: a build list or a record that breaks its
 //! form, a platform the list does not know, a build pinned for a package this repository does not
 //! publish or publishes without a connector table, or one executable named as two versions.
 //!
-//! A host admits a build only with the results that state what its record shows, so a build the
-//! index names comes with them: for each capability its release declares, one
+//! The host release record in the core repository lists a build only with results that state what
+//! the build's qualification record shows, so a build the index names comes with them: for each
+//! capability its release declares, one
 //! [`QualificationResult`] of the version that was qualified, from the signed record, carrying the
 //! SHA-256 of the record file's bytes and a statement of what the record shows. The statement names
 //! the platform of the build. It says that every case passed, or, for a package on
-//! [`TERMINAL_EVIDENCE_PACKAGES`], which gateway parts did not run and that every other part
-//! passed. Nothing else writes a result, and a candidate generation, whose builds no record
-//! qualifies, carries none ([`Builds::results_for`]).
+//! [`TERMINAL_EVIDENCE_PACKAGES`], which gateway parts did not run and that every other case part
+//! passed; it speaks of the parts of section 12's cases only. Nothing else writes a result, and a
+//! candidate generation, whose builds are named without requiring a record that qualifies them,
+//! carries none ([`Builds::results_for`]).
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -353,8 +357,8 @@ pub fn load(root: &Path, packages: &[LoadedPackage]) -> Result<Builds> {
 /// named.
 ///
 /// A candidate generation exists so that a real run can install the package and have the host
-/// serve its route to a build no record shows passing yet. It says nothing of whether the build
-/// qualifies, and the build that names it carries the mark that says so.
+/// serve its route to a build whose record is not required to show it passing. It says nothing of
+/// whether the build qualifies, and the build that names it carries the mark that says so.
 ///
 /// # Errors
 ///
@@ -545,6 +549,13 @@ fn assess(
     ));
     let gaps = qualification_gaps(&record, package);
     reasons.extend(gaps.reasons);
+    if package.package.manifest.capabilities.is_empty() {
+        reasons.push(
+            "the release declares no capability, so no qualification result can state what \
+             its record shows of the build"
+                .to_owned(),
+        );
+    }
     Ok(Assessment {
         reasons,
         basis: Some(Basis {
@@ -662,14 +673,14 @@ pub fn subject(build: &QualifiedBuild) -> String {
     format!("{} {}", build.application.as_str(), build.version)
 }
 
-/// What a result states about a build on `platform` whose record shows every part passed except
-/// `gateway_not_run`, which did not run and are not applicable to the package.
+/// What a result states about a build on `platform` whose record shows every part of section 12's
+/// cases passed except `gateway_not_run`, which did not run and are not applicable to the package.
 fn statement(gateway_not_run: &[&str], platform: &str) -> String {
     if gateway_not_run.is_empty() {
         format!("every case of the version qualification passed on {platform}")
     } else {
         format!(
-            "{} not run (no gateway); every other part passed on {platform}",
+            "{} not run (no gateway); every other case part passed on {platform}",
             gateway_not_run.join(", ")
         )
     }

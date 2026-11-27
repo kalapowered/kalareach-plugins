@@ -2053,8 +2053,8 @@ fn an_entry_that_names_no_build_carries_no_result() {
     assert!(!rendered.contains("\"builds\""));
 }
 
-/// A candidate generation names the builds that no record qualifies, so it states no result: every
-/// list is empty. It signs and verifies, and says it is a candidate.
+/// A candidate generation names builds without requiring a record that qualifies them, so it states
+/// no result: every list is empty. It signs and verifies, and says it is a candidate.
 #[tokio::test]
 async fn a_candidate_generation_names_builds_and_carries_no_result() {
     let temporary = tempfile::tempdir().expect("a temporary directory");

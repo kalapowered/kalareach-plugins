@@ -85,8 +85,9 @@ pub fn check_builds(index: &CatalogueIndex) -> Result<()> {
     Ok(())
 }
 
-/// Checks that what every entry carries as qualification results agrees with the builds it names,
-/// as a host that reads them does: results only with builds, and builds only with results.
+/// Checks that what every entry carries as qualification results agrees with the builds it names:
+/// results only with builds, and builds only with results. The host release record in the core
+/// repository holds the second rule only.
 ///
 /// An entry that names builds carries, for each build in the order the entry lists them, one result
 /// for each capability the entry declares, in the order of their identifiers: the identifier the
@@ -95,7 +96,7 @@ pub fn check_builds(index: &CatalogueIndex) -> Result<()> {
 /// the statements the pipeline writes ([`builds::statements`]) for the platform the index gives the
 /// build. An entry that names builds and declares no capability is refused, since no result could
 /// state them. An entry that names no build carries no result, and in a candidate generation, whose
-/// builds were named without a record, no entry carries one.
+/// builds were named without requiring a record that qualifies them, no entry carries one.
 ///
 /// The digest each result carries is of the record file, which the index does not hold, so it is
 /// checked for its form alone.
