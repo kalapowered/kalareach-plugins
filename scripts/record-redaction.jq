@@ -13,6 +13,14 @@
 # what a probe found offered a count. Everything else stays in the part's log and the run's
 # evidence directory, which are not published.
 #
+# A part of the gateway driver writes what it observed under "shows", and beside it the keys it
+# searched for, its turn counts, the directories it watched and where the work directory moved.
+# Each part has a schema of its own observations (shows_schemas), and a leaf is kept as the
+# validator named at its place says, so a change of what a part publishes of a leaf is a change of
+# that one line. A watched directory is published only where it is one of watched_directories,
+# as the directory, whether it changed and its two entry counts, never a name of an entry; and the
+# member, like "shows", is left out where nothing of it is published (without_empty_members).
+#
 # The driver lists every change in the agent's directories in the person's home, and the person's
 # own programs change them too while a part runs: another session's conversation, its lock, a
 # cache, a file of their own. A record names a changed file only where it names a conversation a
@@ -169,6 +177,11 @@ def stop_classes: {
   uncharged_turns: "the agent's record holds prompts the part did not charge, or they could not be counted"
 };
 
+# The host's error codes, and the name the host's own code gives each (AMBIGUOUS_ATTACHMENT is
+# AmbiguousAttachment), which a part writes where it names the error a call was refused with.
+def known_error_codes: ["INVALID_ARGUMENT", "UNSUPPORTED_SCHEMA", "UNSUPPORTED_CAPABILITY", "PERMISSION_DENIED", "PAIRING_EXPIRED", "PAIRING_REJECTED", "PAIRING_AUTH_FAILED", "PAIRING_ATTEMPTS_EXHAUSTED", "RENDEZVOUS_UNAVAILABLE", "RENDEZVOUS_CONFIG_ERROR", "UNKNOWN_SESSION", "AMBIGUOUS_SESSION", "AMBIGUOUS_ATTACHMENT", "TERMINAL_UNAVAILABLE", "TERMINAL_PROBE_FAILED", "INPUT_INCOMPATIBLE", "SESSION_CLOSED", "SESSION_LIMIT", "RESOURCE_UNAVAILABLE", "HOST_NOT_CONFIGURED", "ENVIRONMENT_UNAVAILABLE", "DESKTOP_UNAVAILABLE", "STALE_SESSION", "LEASE_LOST", "GEOMETRY_NOT_OWNER", "DRAFT_CONFLICT", "EDITOR_BUSY", "ID_CONFLICT", "UPSTREAM_UNAVAILABLE", "OUTCOME_UNKNOWN", "RESYNC_REQUIRED", "QUOTA_EXCEEDED", "RATE_LIMITED", "SERVICE_CAPACITY", "CLOCK_UNTRUSTED", "STORAGE_UNAVAILABLE", "SHELL_INTEGRATION_UNSUPPORTED", "ATTACHMENT_INTEGRITY", "REPOSITORY_UNTRUSTED", "PACKAGE_UNAVAILABLE_OFFLINE", "PLUGIN_GRANT_REQUIRED", "PLUGIN_DISABLED", "QUESTION_RESOLVED", "QUESTION_EXPIRED", "NOT_IN_KR_SESSION", "OWNER_CONFIRMATION_REQUIRED", "CAUSAL_LIMIT", "SOURCE_CHANGED"];
+def host_name_of_code: ascii_downcase | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("");
+
 # The failure codes a part can carry.
 def known_codes: [
   "not_selected", "build_blocked", "no_account", "agent_stopped", "no_ledger", "variable_missing",
@@ -194,19 +207,27 @@ def sets: {
   colour: ["red"],
   checks: ["queued", "steered"],
   wrongs: ["a turn started between the prompts", "entered with no turn running", "the agent kept no record of the prompt as queued", "the prompt joined before the turn finished", "the prompt joined the running turn", "the turn finished its work"],
-  control_what: ["a second approval with the local terminal holding the lease: it denied and the device's allow was refused", "orders made wrong on purpose, which the queue and steering checks reject", "session B's marker typed into session A", "the same prompt sent again"],
-  control_why_not: ["the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead"],
+  control_what: ["a second approval with the local terminal holding the lease: it denied and the device's allow was refused", "orders made wrong on purpose, which the queue and steering checks reject", "session B's marker typed into session A", "the same prompt sent again", "a second approval answered by the local terminal alone"],
+  control_why_not: ["the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead", "the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead (the guard cases)", "no second execution ran, so there was no second session to type a marker from"],
   origins: ["build", "newer build", "runtime", "run", "shell", "system", "elsewhere"],
   sessions: ["A", "B"],
   parts: ["1", "2a", "2b", "2c", "3", "4", "5a", "5b", "6a", "6b", "7", "8a", "8b", "14.03a", "14.03b"],
   codes: known_codes,
   stop_classes: (stop_classes | keys),
-  error_codes: ["INVALID_ARGUMENT", "UNSUPPORTED_SCHEMA", "UNSUPPORTED_CAPABILITY", "PERMISSION_DENIED", "PAIRING_EXPIRED", "PAIRING_REJECTED", "PAIRING_AUTH_FAILED", "PAIRING_ATTEMPTS_EXHAUSTED", "RENDEZVOUS_UNAVAILABLE", "RENDEZVOUS_CONFIG_ERROR", "UNKNOWN_SESSION", "AMBIGUOUS_SESSION", "AMBIGUOUS_ATTACHMENT", "TERMINAL_UNAVAILABLE", "TERMINAL_PROBE_FAILED", "INPUT_INCOMPATIBLE", "SESSION_CLOSED", "SESSION_LIMIT", "RESOURCE_UNAVAILABLE", "HOST_NOT_CONFIGURED", "ENVIRONMENT_UNAVAILABLE", "DESKTOP_UNAVAILABLE", "STALE_SESSION", "LEASE_LOST", "GEOMETRY_NOT_OWNER", "DRAFT_CONFLICT", "EDITOR_BUSY", "ID_CONFLICT", "UPSTREAM_UNAVAILABLE", "OUTCOME_UNKNOWN", "RESYNC_REQUIRED", "QUOTA_EXCEEDED", "RATE_LIMITED", "SERVICE_CAPACITY", "CLOCK_UNTRUSTED", "STORAGE_UNAVAILABLE", "SHELL_INTEGRATION_UNSUPPORTED", "ATTACHMENT_INTEGRITY", "REPOSITORY_UNTRUSTED", "PACKAGE_UNAVAILABLE_OFFLINE", "PLUGIN_GRANT_REQUIRED", "PLUGIN_DISABLED", "QUESTION_RESOLVED", "QUESTION_EXPIRED", "NOT_IN_KR_SESSION", "OWNER_CONFIRMATION_REQUIRED", "CAUSAL_LIMIT", "SOURCE_CHANGED"],
+  error_codes: known_error_codes,
+  refusal_names: (known_error_codes | map(host_name_of_code)),
   capabilities: ["agent.prompt", "agent.prompt.queue", "agent.steer", "agent.cancel", "agent.approval", "agent.approval.inspect", "agent.approval.respond", "agent.approval.respond/1", "agent.attachment", "agent.binding", "agent.commands", "agent.snapshot", "agent.turn.steer", "agent.turn.cancel", "agent.draft.add_attachment", "terminal.direct", "terminal.input", "terminal.write", "terminal.resize", "terminal.geometry", "terminal.geometry.transfer", "terminal.palette", "terminal.palette.set"],
   causes: ["ended", "not_one_instance", "another_package", "not_native_terminal", "no_refusal", "no_binding", "binding_not_native_terminal", "binding_profile", "no_live_binding"],
   calls: ["upload.begin", "agent.approval.respond", "agent.capabilities", "agent.commands", "agent.draft.add_attachment", "agent.prompt.queue", "agent.prompt.submit", "agent.turn.cancel", "agent.turn.steer"],
   system_programs: ["/bin/ps", "/usr/bin/top", "/usr/bin/sudo", "/usr/bin/su", "/usr/bin/login"],
-  categories: ["created_and_left", "appended", "rewritten", "changed_uncompared", "removed_by_something_else", "left_holding_the_part", "left_unsearched", "unread_after"]
+  categories: ["created_and_left", "appended", "rewritten", "changed_uncompared", "removed_by_something_else", "left_holding_the_part", "left_unsearched", "unread_after"],
+  arms: ["pinned build"],
+  transfers: ["paired device", "kr-client uploads::send", "paired host's data streams"],
+  media_types: ["image/png"],
+  capability_states: ["qualified_available", "version_qualified", "missing_installation", "permission_required", "incompatible", "temporarily_unavailable", "not_tested"],
+  resume_outcomes: ["refused", "merged", "forked", "ended"],
+  moved_work: ["none beside the run"],
+  watched_directories: ["~/.codex"]
 };
 
 # The regular expression a build list path stands for: "{config}" is a directory of the run's own,
@@ -248,7 +269,8 @@ def context($entry; $user; $servers; $own; $roots; $named):
         arguments: ($account.arguments // []), cleared: ($account.cleared // []),
         decision_calls: ($account.decision_calls // []), call_lines: ($account.call_lines // []),
         hosts: ($account.confinement.hosts // []), unasked_tools: ($account.confinement.unasked_tools // []),
-        reported: ($account.confinement.reported // []), residuals: ($account.confinement.residuals // [])
+        reported: ($account.confinement.reported // []), residuals: ($account.confinement.residuals // []),
+        resume_refused: ($account.resume_refused // [])
       },
       probe_strings: ($raw | unique),
       control_names: ([($account.isolated // [])[] | (.lacks // [])[] | select(. != "{servers}")] | unique),
@@ -323,6 +345,31 @@ def valid($v; $c):
              and ((test(shapes.conversation[0]; "i")
                    and (ascii_downcase | sub("^session_"; "") as $id | any($c.own[]; . == $id)))
                   or (. as $s | any($c.resume_words[]; . == $s))))
+    elif $v == "started_word" then
+      select(type == "string")
+      | if . == "{conversation}" or (. as $s | any(($c.account.resume // [])[]; . == $s)) then .
+        elif test(shapes.conversation[0]; shapes.conversation[1]) then "{conversation}"
+        else empty end
+    elif $v == "code_within" then
+      select(type == "string")
+      | . as $text
+      | [sets.error_codes[] | select(. as $code | $text | test("(^|[^A-Z0-9_])" + $code + "($|[^A-Z0-9_])"))]
+      | select(length == 1)
+      | .[0]
+    elif $v == "capability_state" then
+      select(type == "array" and length == 2 and all(.[]; type == "string")
+             and (.[0] as $id | any($c.grants[]; ("plugin." + . + "/1") == $id))
+             and (.[1] as $state | any(sets.capability_states[]; . == $state)))
+    elif $v == "watched_trees" then
+      select(type == "array")
+      | [.[] | select(type == "object"
+                      and (.path | type) == "string"
+                      and (.path as $path | any(sets.watched_directories[]; . == $path))
+                      and (.changed | type) == "boolean"
+                      and (.entries_before | type) == "number"
+                      and (.entries_after | type) == "number")
+         | {path, changed, entries_before, entries_after}]
+      | select(length > 0)
     elif $v == "servers" then select(type == "array") | map(select(type == "string") | placeholder_of($c.servers))
     elif $v == "grant" then select(type == "string" and (. as $s | any($c.grants[]; . == $s)))
     elif $v == "switches" then published_switches($c)
@@ -444,8 +491,14 @@ def person_files_schema: {
   }],
   lines_removed: [{file: "named_file", removed: "number", error: "flag"}],
   searched_for: {mark: "mark", run_directory: "run_dir"},
-  keychain_item_rewritten: "bool", config_directory_removed: "bool"
+  keychain_item_rewritten: "bool", config_directory_removed: "bool",
+  trees: "watched_trees?"
 };
+
+# A member of a part's evidence that holds nothing of what the schema keeps is left out, not
+# published as an empty object.
+def without_empty_members:
+  reduce ("person_files", "shows") as $key (.; if .[$key] == {} then del(.[$key]) else . end);
 
 def person_home_schema: {
   created_and_removed: ["own_path?"], created_and_left: ["home_path?"], appended: ["home_path?"],
@@ -496,10 +549,101 @@ def confinement_schema: {
   }]
 };
 
+# What a gateway part says of the keys of the login that it searched for, and of its turns: the
+# entry's own variable name, counts and booleans.
+def keys_schema: {
+  variable: "build:account.variable", held_by: "count", held_by_not_listed: "number",
+  unread_not_listed: "number", complete: "bool", run_gone: "bool"
+};
+
+def turns_schema: {
+  charged: "count", counted_by_occurrence_of_their_line: "number", in_the_agents_record: "number",
+  named_by_a_name_that_is_no_uuid: "number", named_by_uuid: "number", record_files_read: "number",
+  forms_of_the_names_that_are_no_uuid: "count"
+};
+
+def slash_schema: {typed: "build:account.slash.input", shows: "build:account.slash.shows", seen: "bool"};
+def interrupt_schema: {key: "build:account.interrupt.input", shows: "build:account.interrupt.shows", seen: "bool"};
+
+# What every gateway part that names its arm and its login says of them.
+def shows_common: {arm: "in:arms", login: "build:account.login", turns_charged: "number"};
+
+# What each gateway part published as its own observations, by part: the leaves of its "shows", each
+# with the validator that says what is kept of it. A leaf that is not named here is not published.
+def shows_schemas: {
+  "1": (shows_common + {
+    prompt: {question: "question", answer: "sum"},
+    image: {syntax: "build:account.image", answer: "in:colour", code: "code_mark"},
+    images_in_the_record: "number", published_is_the_sent: "bool",
+    transfer: {
+      caller: "in:transfers", driver: "in:transfers", route: "in:transfers",
+      published: {
+        byte_len: "number", content_digest: "sha256", declared_media_type: "in:media_types",
+        presented_as_image: "bool"
+      }
+    }
+  }),
+  "2a": {
+    arm: "in:arms",
+    driven: (shows_common + {
+      interrupt: interrupt_schema, slash: slash_schema,
+      queued: {answer: "sum", order: order_schema},
+      steering: {steered: "bool", order: order_schema},
+      control: {what: "in:control_what", why_not: "in:control_why_not", breaks_property: "bool"}
+    }),
+    agent_reads: [answer_schema],
+    surface: {answers: [answer_schema], resources: "number", backend_files: "count", capability_records: "count"},
+    capability_states: ["capability_state"],
+    detection: detection_schema
+  },
+  "3": (shows_common + {
+    answers_in_the_record: "number", command_ran: "number",
+    control: {
+      command_ran: "number", device_refused: "bool", breaks_property: "bool",
+      what: "in:control_what", check: "flag"
+    },
+    device_answer: "code_within", device_won: "bool"
+  }),
+  "4": (shows_common + {
+    at_the_drop: {prompts: "number", finished_replies: "number"},
+    after_reconnect: {prompts: "number", finished_replies: "number", screen_rows_holding_it: "number", shows: "mark_end"},
+    cutoff: {
+      fresh_screens: "number", reader_stopped: "bool", resyncs: "number", code_on_a_screen: "bool",
+      code_or_reply_mark_in_the_output: "bool", event_not_applied: "bool"
+    },
+    control: {
+      what: "in:control_what", check: "flag", breaks_property: "bool", prompts: "number",
+      finished_replies: "number"
+    },
+    markers: {reply_ends: "mark_end"},
+    stale_input: {refused_with: "in:refusal_names"}
+  }),
+  "6b": {
+    first_process_image_unchanged: "bool", fresh_approval_interpreted_by_the_pinned_table: "bool",
+    second_instance_has_no_gateway: "bool", second_process_runs_the_newer_image: "bool",
+    servers: "number"
+  },
+  "7": (shows_common + {
+    control: {what: "in:control_what", why_not: "in:control_why_not", breaks_property: "bool"},
+    files_before_the_second_start: "count",
+    resume: {outcome: "in:resume_outcomes", shown: "member:resume_refused"},
+    session_a: {detection: detection_schema},
+    session_b: {
+      same_conversation: "bool", still_running_read_only: "bool", ended_after_the_refusal: "bool",
+      started_with: ["started_word"]
+    }
+  })
+};
+
+# The schema of a part's "shows", as the member of the evidence's schema that names it, and none for
+# a part that has no observations of its own.
+def shows_schema($part): (shows_schemas[$part | tostring] // empty) | {shows: .};
+
 # The evidence of a part run with the person's login.
 def evidence_schema: {
   confinement: confinement_schema,
-  route: "in:gateway_route", run_started: "bool", turns: {charged: "count"},
+  route: "in:gateway_route", run_started: "bool", turns: turns_schema, keys: keys_schema,
+  moved_work_directory: "in:moved_work",
   newer_turns: {after_the_probes: "number", at_the_end: "number", new_since_the_probes: "number"},
   login_held: "bool", stop_agent: "bool", exit: "number", failure_codes: "failure_codes",
   declined_requests: "count", tools_offered: tools_offered_schema,
@@ -521,8 +665,8 @@ def evidence_schema: {
   cutoff: {reader_stopped: "bool", fresh_screens: "number"},
   reconciled: {attachment: "uuid", epoch: "number", next_sequence: "number", stale_input: "code_of"},
   after_reconnect: {prompts: "number", finished_replies: "number", shows: "mark_end", seen: "bool"},
-  slash: {typed: "build:account.slash.input", shows: "build:account.slash.shows", seen: "bool"},
-  interrupt: {key: "build:account.interrupt.input", shows: "build:account.interrupt.shows", seen: "bool"},
+  slash: slash_schema,
+  interrupt: interrupt_schema,
   queued: {answer: "sum", order: order_schema},
   steering: {steered: "bool", why: "in:steering_why", order: order_schema},
   checker_controls: [{check: "in:checks", wrong: "in:wrongs", rejected: "bool"}],
@@ -574,7 +718,8 @@ def with_server_controls:
 def published_evidence($c):
   with_launch_command($c)
   | with_server_controls
-  | project(evidence_schema; $c);
+  | project(evidence_schema + (shows_schema($c.part) // {}); $c)
+  | without_empty_members;
 
 # What a launch's failure to be detected says of its cause.
 def cause_text:
@@ -732,8 +877,9 @@ def redact_record($user; $entry; $login_parts):
            and (.part as $part | any($login_parts[]; . == $part)) then
           (if (.evidence | type) == "object" then
              .evidence as $evidence
+             | .part as $part
              | .evidence |= published_evidence($context
-                 + {part_servers: ($evidence.account.isolation.servers_switched_off // [])})
+                 + {part: $part, part_servers: ($evidence.account.isolation.servers_switched_off // [])})
            else . end)
           | . as $test
           | (if $test.outcome == "passed" then del(.reason)

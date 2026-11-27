@@ -411,84 +411,638 @@ fn e2e_agents_assembles_through_the_same_function() {
     assert_eq!(assembled(&fixture("inputs.json")), fixture("expected.json"));
 }
 
-/// A part the staged driver wrote for a login keeps the evidence it states in fixed words and
-/// numbers, and none of its free text is published. The evidence keys of a staged result that the
-/// schema does not keep are printed.
-#[test]
-fn a_staged_login_part_keeps_the_fixed_evidence_of_a_gateway_login_part() {
-    let mut inputs = inputs_for_the_package(&["2a", "7"]);
-    // A staged result carries the outer fields of every gateway result, and what the part itself
-    // shows sits under `shows`.
-    let staged_result = |charged: u64, shows: Value| {
-        json!({
-            "route": "the pinned build", "run_started": true,
-            "turns": {
-                "charged": charged, "counted_by_occurrence_of_their_line": 0,
-                "forms_of_the_names_that_are_no_uuid": [], "in_the_agents_record": charged,
-                "named_by_a_name_that_is_no_uuid": 0, "named_by_uuid": charged,
-                "record_files_read": 1,
-            },
-            "keys": {
-                "complete": true, "held_by": [], "held_by_not_listed": 0, "run_gone": true,
-                "unread_not_listed": 0, "variable": "AGENT_ACCOUNT",
-            },
-            "person_files": {"trees": [{
-                "changed": false, "entries_after": 10, "entries_before": 10, "path": "~/.codex",
-            }]},
-            "moved_work_directory": "none beside the run",
-            "shows": shows,
-        })
-    };
-    let staged = [
-        (
-            "2a",
-            5,
-            staged_result(
-                5,
-                json!({
-                    "arm": "pinned build", "login": "a login", "turns_charged": 5,
-                    "slash": {"seen": true}, "interrupt": {"seen": true},
-                    "control": {"breaks_property": false},
-                    "text": "something the person's own programs said",
-                }),
-            ),
+// What a gateway part run with the person's login publishes. Every row below is made up: its
+// identifiers, its paths under a made-up home, its texts. The driver's fixed words and the build
+// list's own values are the real ones, since the redaction keeps a text only where it is one of those.
+
+/// The parts that run with the person's login.
+const LOGIN_PARTS: [&str; 6] = ["1", "2a", "3", "4", "6b", "7"];
+
+/// Made-up identifiers of a conversation and of a host's instance.
+const CONVERSATION: &str = "0a1b2c3d-1111-4222-8333-444455556666";
+const OTHER_CONVERSATION: &str = "ses_aB3dE5gH7jK9mN1pQ3sT";
+const INSTANCE: &str = "5e6f7a8b-9999-4aaa-8bbb-ccccddddeeee";
+const MARK_END: &str = "KR0123456789AB-END";
+const FREE_WORDS: &str = "hello-from-the-persons-programs";
+
+/// The two texts the entry gives the agent's refusal of a second process, made up for the cases.
+const REFUSED: [&str; 2] = [
+    "this made-up conversation is open in another window",
+    "close it there, then try again here",
+];
+
+/// The host's words of a launch it did not integrate, which the redaction keeps as a fixed text.
+const REFUSAL: &str = "it was not launched through the integration, so no registration names it and none of its bridges is admitted";
+
+/// What the driver says of its two controls in the parts that name them.
+const WHAT_PART_2A: &str =
+    "orders made wrong on purpose, which the queue and steering checks reject";
+const WHY_NOT_PART_2A: &str = "the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead (the guard cases)";
+const WHAT_PART_3: &str = "a second approval answered by the local terminal alone";
+const WHAT_PART_7: &str = "session B's marker typed into session A";
+const WHY_NOT_PART_7: &str =
+    "no second execution ran, so there was no second session to type a marker from";
+
+/// The words of a value the redaction does not publish.
+const NOT_PUBLISHED: &str = "<not published>";
+
+/// The private-looking values the cases offer to the new members. The token is built from pieces
+/// so that no pattern of a scanner stands in this file as one literal.
+fn private_values() -> Vec<String> {
+    vec![
+        format!("{HOME}/.codex/diary-2026.md"),
+        ["tok", "en-", "9f8e7d6c5b4a39281706f5e4d3c2b1a0"].concat(),
+        ["someone", "@", "example.invalid"].concat(),
+        CONVERSATION.to_owned(),
+        OTHER_CONVERSATION.to_owned(),
+        "diary-2026.md".to_owned(),
+        FREE_WORDS.to_owned(),
+    ]
+}
+
+/// `value` with the member at `pointer` replaced by `new`.
+fn put(value: &mut Value, pointer: &str, new: Value) {
+    *value
+        .pointer_mut(pointer)
+        .unwrap_or_else(|| panic!("the made-up row has {pointer}")) = new;
+}
+
+/// `value` without the member at `pointer`.
+fn drop_at(value: &mut Value, pointer: &str) {
+    let (parent, key) = pointer.rsplit_once('/').expect("a pointer with a key");
+    let parent = value
+        .pointer_mut(parent)
+        .unwrap_or_else(|| panic!("the made-up row has {pointer}"));
+    parent
+        .as_object_mut()
+        .expect("the parent is an object")
+        .remove(key);
+}
+
+/// `base` with the members of `extra` added.
+fn merged(mut base: Value, extra: Value) -> Value {
+    base.as_object_mut()
+        .expect("an object")
+        .extend(extra.as_object().expect("an object").clone());
+    base
+}
+
+/// Inputs for one made-up staged result per part of `ran`, with the resume words the cases hold
+/// the entry to.
+fn staged_inputs(ran: &[&str], poison: impl Fn(&str, &mut Value)) -> Value {
+    let mut inputs = inputs_for_the_package(ran);
+    inputs["entry"]["account"]["resume"] = json!(["resume", "{conversation}"]);
+    inputs["entry"]["account"]["resume_refused"] = json!(REFUSED);
+    let account = inputs["entry"]["account"].clone();
+    for line in inputs["results"].as_array_mut().expect("results") {
+        let part = line["part"].as_str().expect("a part").to_owned();
+        let mut evidence = staged(&part, &account);
+        poison(&part, &mut evidence);
+        line["evidence"] = evidence;
+    }
+    inputs
+}
+
+/// A made-up host instance in a detection, as the driver lists it.
+fn instance() -> Value {
+    json!({
+        "application_instance_id": INSTANCE, "bypass": "not_integrated", "ended_at": null,
+        "mode": "native_terminal", "plugin_id": "kalareach/codex",
+        "profile_id": format!("lp-1-{INSTANCE}"), "refusal": REFUSAL,
+        "started_at": "1760000000000",
+    })
+}
+
+/// The order a queue or steering check reads, made up.
+fn order() -> Value {
+    json!({
+        "after": {"busy": false, "unfinished": false}, "before": {"busy": true, "unfinished": true},
+        "busy_at_submission": true, "first_finished": 1, "new_turn": false, "queued_record": null,
+        "records_queue": true, "second_answered": 1, "second_prompt": 1,
+    })
+}
+
+/// What a part shows, as the staged driver writes it under `shows`, with the build list's own
+/// values where the part types them.
+fn observations(part: &str, account: &Value) -> Value {
+    let common = |turns: u64| json!({"arm": "pinned build", "login": account["login"], "turns_charged": turns});
+    match part {
+        "1" => merged(
+            common(2),
+            json!({
+                "prompt": {"question": "What is 123 plus 456? Reply with only the number.", "answer": "579"},
+                "image": {"syntax": account["image"], "answer": "red", "code": "KR0123456789AB"},
+                "images_in_the_record": 1, "published_is_the_sent": true,
+                "transfer": {
+                    "caller": "paired device", "driver": "kr-client uploads::send",
+                    "route": "paired host's data streams",
+                    "published": {
+                        "byte_len": 321, "content_digest": "ab".repeat(32),
+                        "declared_media_type": "image/png", "presented_as_image": true,
+                    },
+                },
+            }),
         ),
+        "2a" => json!({
+            "arm": "pinned build",
+            "driven": merged(common(5), json!({
+                "interrupt": {
+                    "key": account["interrupt"]["input"], "seen": true,
+                    "shows": account["interrupt"]["shows"],
+                },
+                "slash": {
+                    "typed": account["slash"]["input"], "seen": true,
+                    "shows": account["slash"]["shows"],
+                },
+                "queued": {"answer": "579", "order": order()},
+                "steering": {"steered": true, "order": order()},
+                "control": {"what": WHAT_PART_2A, "breaks_property": false, "why_not": WHY_NOT_PART_2A},
+            })),
+            "agent_reads": [{
+                "call": "agent.capabilities", "error": null, "refused": null,
+                "detail": format!("instance {INSTANCE} answered near {HOME}/x"),
+            }],
+            "surface": {
+                "answers": [{
+                    "call": "agent.commands", "error": null, "refused": "PERMISSION_DENIED",
+                    "detail": format!("instance {INSTANCE} refused near {HOME}/x"),
+                }],
+                "resources": 3, "backend_files": ["a made-up file", "another"],
+                "capability_records": [
+                    {"capability": "agent.prompt", "usable": true},
+                    {"capability": "agent.steer", "usable": false},
+                ],
+            },
+            "capability_states": [
+                ["plugin.metadata.match/1", "qualified_available"],
+                ["plugin.approval.respond/1", "not_tested"],
+            ],
+            "detection": {"waited_ms": 120, "instances": [instance()]},
+        }),
+        "3" => merged(
+            common(2),
+            json!({
+                "answers_in_the_record": 1, "command_ran": 1,
+                "control": {
+                    "command_ran": 0, "device_refused": true, "breaks_property": false,
+                    "what": WHAT_PART_3, "check": "the control's check, in words",
+                },
+                "device_answer": "refused: PERMISSION_DENIED: the lease is held",
+                "device_won": true,
+            }),
+        ),
+        "4" => merged(
+            common(3),
+            json!({
+                "at_the_drop": {"prompts": 1, "finished_replies": 0},
+                "after_reconnect": {
+                    "prompts": 1, "finished_replies": 1, "screen_rows_holding_it": 2,
+                    "shows": MARK_END,
+                },
+                "cutoff": {
+                    "fresh_screens": 2, "reader_stopped": true, "resyncs": 1,
+                    "code_on_a_screen": false, "code_or_reply_mark_in_the_output": false,
+                    "event_not_applied": true,
+                },
+                "control": {
+                    "what": "the same prompt sent again", "check": true, "breaks_property": false,
+                    "prompts": 2, "finished_replies": 1,
+                },
+                "markers": {"reply_ends": MARK_END},
+                "stale_input": {
+                    "refused_with": "AmbiguousAttachment",
+                    "detail": format!("attachment {INSTANCE} is not the one"),
+                },
+            }),
+        ),
+        "6b" => json!({
+            "first_process_image_unchanged": true,
+            "fresh_approval_interpreted_by_the_pinned_table": true,
+            "second_instance_has_no_gateway": true, "second_process_runs_the_newer_image": true,
+            "servers": 2,
+        }),
+        "7" => merged(
+            common(2),
+            json!({
+                "control": {"what": WHAT_PART_7, "breaks_property": false, "why_not": WHY_NOT_PART_7},
+                "conversation": CONVERSATION, "files_before_the_second_start": 4,
+                "resume": {"outcome": "refused", "shown": REFUSED[0]},
+                "session_a": {"detection": {"waited_ms": 90, "instances": [instance()]}},
+                "session_b": {
+                    "ended_after_the_refusal": true, "same_conversation": false,
+                    "still_running_read_only": true,
+                    "started_with": ["resume", CONVERSATION],
+                },
+            }),
+        ),
+        other => panic!("part {other} does not run with the login"),
+    }
+}
+
+/// A made-up staged result: the outer fields of every gateway result, and what the part shows.
+fn staged(part: &str, account: &Value) -> Value {
+    let mut result = json!({
+        "route": "the pinned build", "run_started": true,
+        "turns": {
+            "charged": 2, "counted_by_occurrence_of_their_line": 0,
+            "forms_of_the_names_that_are_no_uuid": [], "in_the_agents_record": 2,
+            "named_by_a_name_that_is_no_uuid": 0, "named_by_uuid": 2, "record_files_read": 1,
+        },
+        "keys": {
+            "complete": true, "held_by": [], "held_by_not_listed": 0, "run_gone": true,
+            "unread_not_listed": 0, "variable": account["variable"],
+        },
+        "person_files": {"trees": [{
+            "changed": false, "entries_after": 10, "entries_before": 9, "path": "~/.codex",
+        }]},
+        "moved_work_directory": "none beside the run",
+        "shows": observations(part, account),
+    });
+    if part == "6b" {
+        result["newer_turns"] =
+            json!({"after_the_probes": 0, "at_the_end": 1, "new_since_the_probes": 1});
+    }
+    result
+}
+
+/// What the record publishes of `staged(part, ..)`: the same, but for the counts that stand for a
+/// list, the facts that stand for a text, and what is left out.
+fn published(part: &str, account: &Value) -> Value {
+    let mut kept = staged(part, account);
+    put(
+        &mut kept,
+        "/turns/forms_of_the_names_that_are_no_uuid",
+        json!(0),
+    );
+    put(&mut kept, "/keys/held_by", json!(0));
+    match part {
+        "2a" => {
+            drop_at(&mut kept, "/shows/agent_reads/0/detail");
+            drop_at(&mut kept, "/shows/surface/answers/0/detail");
+            put(&mut kept, "/shows/surface/backend_files", json!(2));
+            put(&mut kept, "/shows/surface/capability_records", json!(2));
+        }
+        "3" => {
+            put(&mut kept, "/shows/control/check", json!(true));
+            put(
+                &mut kept,
+                "/shows/device_answer",
+                json!("PERMISSION_DENIED"),
+            );
+        }
+        "4" => drop_at(&mut kept, "/shows/stale_input/detail"),
+        "7" => {
+            drop_at(&mut kept, "/shows/conversation");
+            put(
+                &mut kept,
+                "/shows/session_b/started_with",
+                json!(["resume", "{conversation}"]),
+            );
+        }
+        _ => {}
+    }
+    kept
+}
+
+/// The part's evidence in the record assembled from its made-up staged result, and the record's
+/// writer applied to the record again changes nothing.
+fn kept_evidence(part: &str, inputs: &Value) -> Value {
+    let record = assembled(inputs);
+    assert_eq!(
+        written(&record, inputs),
+        record,
+        "the writer changes the record of part {part}"
+    );
+    test_of(&record, part)["evidence"].clone()
+}
+
+/// The evidence a part run with the login keeps is every member the driver fills from the build
+/// list, the run and the part's own marks, and counts, with none of its free text.
+fn a_login_part_keeps_what_its_row_observed(part: &str) {
+    let inputs = staged_inputs(&[part], |_, _| {});
+    let account = inputs["entry"]["account"].clone();
+    assert_eq!(
+        kept_evidence(part, &inputs),
+        published(part, &account),
+        "part {part}"
+    );
+}
+
+#[test]
+fn part_1_keeps_what_its_row_observed() {
+    a_login_part_keeps_what_its_row_observed("1");
+}
+
+#[test]
+fn part_2a_keeps_what_its_row_observed() {
+    a_login_part_keeps_what_its_row_observed("2a");
+}
+
+#[test]
+fn part_3_keeps_what_its_row_observed() {
+    a_login_part_keeps_what_its_row_observed("3");
+}
+
+#[test]
+fn part_4_keeps_what_its_row_observed() {
+    a_login_part_keeps_what_its_row_observed("4");
+}
+
+#[test]
+fn part_6b_keeps_what_its_row_observed() {
+    a_login_part_keeps_what_its_row_observed("6b");
+}
+
+#[test]
+fn part_7_keeps_what_its_row_observed() {
+    a_login_part_keeps_what_its_row_observed("7");
+}
+
+/// Private-looking values in the new members, by part: where each is put, and what the record
+/// publishes there instead. A member that is left out has `None`.
+fn poisons(part: &str) -> Vec<(&'static str, Value, Option<Value>)> {
+    let values = private_values();
+    let (home_file, token, address) = (values[0].clone(), values[1].clone(), values[2].clone());
+    let words = || json!(FREE_WORDS);
+    let np = || Some(json!(NOT_PUBLISHED));
+    let mut all = vec![
         (
-            "7",
-            2,
-            staged_result(
-                2,
-                json!({
-                    "arm": "pinned build", "login": "a login", "files_before_the_second_start": [],
-                    "session_a": {"detection": {}}, "session_b": {"same_conversation": false},
-                    "resume": {"outcome": "refused"},
-                    "text": "something the person's own programs said",
-                }),
-            ),
+            "/moved_work_directory",
+            json!(format!("{home_file} {token}")),
+            np(),
+        ),
+        ("/keys/variable", json!(token), np()),
+        (
+            "/turns/forms_of_the_names_that_are_no_uuid",
+            json!([CONVERSATION, "diary-2026.md"]),
+            Some(json!(2)),
         ),
     ];
-    for line in inputs["results"].as_array_mut().expect("results") {
-        if let Some((_, _, evidence)) = staged.iter().find(|(part, _, _)| line["part"] == *part) {
-            line["evidence"] = evidence.clone();
+    let own: Vec<(&'static str, Value, Option<Value>)> = match part {
+        "1" => vec![
+            ("/shows/arm", json!(address), np()),
+            ("/shows/login", json!(token), np()),
+            ("/shows/prompt/question", words(), np()),
+            ("/shows/prompt/answer", words(), np()),
+            ("/shows/image/syntax", words(), np()),
+            ("/shows/transfer/caller", json!(home_file), np()),
+            (
+                "/shows/transfer/published/declared_media_type",
+                json!(address),
+                np(),
+            ),
+            (
+                "/shows/transfer/published/content_digest",
+                json!(token),
+                np(),
+            ),
+        ],
+        "2a" => vec![
+            ("/shows/driven/slash/typed", words(), np()),
+            ("/shows/driven/control/what", words(), np()),
+            ("/shows/driven/control/why_not", words(), np()),
+            ("/shows/driven/queued/answer", words(), np()),
+            (
+                "/shows/agent_reads/0/call",
+                json!(format!("agent.prompt {token}")),
+                np(),
+            ),
+            ("/shows/surface/answers/0/refused", json!(address), np()),
+            (
+                "/shows/capability_states/0",
+                json!([token, "qualified_available"]),
+                np(),
+            ),
+            ("/shows/detection/instances/0/plugin_id", json!(token), np()),
+        ],
+        "3" => vec![
+            (
+                "/shows/device_answer",
+                json!(format!("PERMISSION_DENIED: {home_file} {token} {address}")),
+                Some(json!("PERMISSION_DENIED")),
+            ),
+            ("/shows/control/what", words(), np()),
+            ("/shows/control/check", words(), Some(json!(true))),
+        ],
+        "4" => vec![
+            ("/shows/stale_input/refused_with", words(), np()),
+            ("/shows/markers/reply_ends", json!(token), np()),
+            ("/shows/after_reconnect/shows", words(), np()),
+            ("/shows/control/what", words(), np()),
+        ],
+        "6b" => vec![
+            ("/shows/servers", words(), np()),
+            ("/shows/first_process_image_unchanged", words(), np()),
+        ],
+        "7" => vec![
+            ("/shows/login", json!(address), np()),
+            ("/shows/control/why_not", words(), np()),
+            ("/shows/resume/shown", words(), np()),
+            ("/shows/resume/outcome", words(), np()),
+            (
+                "/shows/session_b/started_with",
+                json!([
+                    "resume",
+                    CONVERSATION,
+                    OTHER_CONVERSATION,
+                    FREE_WORDS,
+                    token
+                ]),
+                Some(json!([
+                    "resume",
+                    "{conversation}",
+                    "{conversation}",
+                    NOT_PUBLISHED,
+                    NOT_PUBLISHED
+                ])),
+            ),
+        ],
+        other => panic!("part {other} does not run with the login"),
+    };
+    all.extend(own);
+    all
+}
+
+/// A value of the person's, or one that looks like it, in a member the record now keeps for a part
+/// run with the login, reaches no text of the record: the member reads `<not published>`, or is
+/// the code or the count the value stands for.
+#[test]
+fn private_looking_values_in_the_new_members_do_not_reach_the_record() {
+    for part in LOGIN_PARTS {
+        let poisons = poisons(part);
+        let inputs = staged_inputs(&[part], |_, evidence| {
+            for (pointer, value, _) in &poisons {
+                put(evidence, pointer, value.clone());
+            }
+        });
+        let record = assembled(&inputs);
+        assert_eq!(written(&record, &inputs), record, "part {part}");
+        let kept = &test_of(&record, part)["evidence"];
+        for (pointer, _, published) in &poisons {
+            assert_eq!(
+                kept.pointer(pointer),
+                published.as_ref(),
+                "part {part} at {pointer}"
+            );
+        }
+        let private = private_values();
+        let mut all = Vec::new();
+        strings(&record, &mut all);
+        for text in all {
+            for private in private.iter().map(String::as_str).chain(LOCAL) {
+                assert!(
+                    !text.contains(private),
+                    "part {part}: the record names {private}: {text}"
+                );
+            }
         }
     }
-    let record = assembled(&inputs);
-    for (part, charged, evidence) in &staged {
-        let kept = &test_of(&record, part)["evidence"];
-        assert_eq!(kept["route"], "the pinned build", "part {part}");
-        assert_eq!(kept["run_started"], true, "part {part}");
-        assert_eq!(kept["turns"]["charged"], *charged, "part {part}");
-        assert!(
-            kept.get("shows").is_none(),
-            "free text is not published in part {part}: {kept}"
+}
+
+/// The directories a part's tree lists are the watched ones, in the shape five other parts
+/// publish: the directory, the changed flag and the two counts, and no name of an entry. A tree
+/// outside them, and any other member of a tree, is not published.
+#[test]
+fn a_tree_outside_the_watched_directories_or_naming_an_entry_is_not_published() {
+    let watched =
+        json!({"path": "~/.codex", "changed": true, "entries_before": 4, "entries_after": 5});
+    for part in LOGIN_PARTS {
+        let trees = json!([
+            {"path": "~/Documents", "changed": true, "entries_before": 1, "entries_after": 2},
+            {
+                "path": "~/.codex", "changed": true, "entries_before": 4, "entries_after": 5,
+                "names": ["diary-2026.md"], "entries": [{"name": "diary-2026.md"}],
+            },
+            {"path": "~/.codex", "changed": "yes", "entries_before": 4, "entries_after": 5},
+            {"path": "~/.codex", "changed": false, "entries_before": "4", "entries_after": 5},
+            {"path": "~/.codex/sessions", "changed": false, "entries_before": 1, "entries_after": 1},
+        ]);
+        let inputs = staged_inputs(&[part], |_, evidence| {
+            put(evidence, "/person_files/trees", trees.clone());
+        });
+        let record = assembled(&inputs);
+        assert_eq!(written(&record, &inputs), record, "part {part}");
+        assert_eq!(
+            test_of(&record, part)["evidence"]["person_files"],
+            json!({"trees": [watched]}),
+            "part {part}"
         );
-        let dropped: Vec<&str> = evidence
-            .as_object()
-            .expect("evidence is an object")
-            .keys()
-            .filter(|key| kept.get(key.as_str()).is_none())
-            .map(String::as_str)
-            .collect();
-        println!("part {part}: evidence keys the schema does not keep: {dropped:?}");
+        let mut all = Vec::new();
+        strings(&record, &mut all);
+        for text in all {
+            for outside in ["~/Documents", "diary-2026.md", "~/.codex/sessions"] {
+                assert!(!text.contains(outside), "part {part}: {outside} in {text}");
+            }
+        }
+    }
+}
+
+/// A part's `person_files` is left out where nothing of it is published: no tree in a watched
+/// directory, no tree at all, or an empty member. Members of it that the schema keeps stay.
+#[test]
+fn person_files_is_left_out_when_nothing_of_it_is_published() {
+    let outside =
+        json!([{"path": "~/Documents", "changed": true, "entries_before": 1, "entries_after": 2}]);
+    for part in LOGIN_PARTS {
+        for person_files in [
+            json!({"trees": outside}),
+            json!({"trees": []}),
+            json!({"trees": "~/.codex"}),
+            json!({}),
+        ] {
+            let inputs = staged_inputs(&[part], |_, evidence| {
+                put(evidence, "/person_files", person_files.clone());
+            });
+            let kept = kept_evidence(part, &inputs);
+            assert!(
+                kept.get("person_files").is_none(),
+                "part {part} with {person_files}: {kept}"
+            );
+        }
+        let inputs = staged_inputs(&[part], |_, evidence| {
+            drop_at(evidence, "/person_files");
+        });
+        assert!(kept_evidence(part, &inputs).get("person_files").is_none());
+        let inputs = staged_inputs(&[part], |_, evidence| {
+            put(
+                evidence,
+                "/person_files",
+                json!({"keychain_item_rewritten": false, "trees": outside}),
+            );
+        });
+        assert_eq!(
+            kept_evidence(part, &inputs)["person_files"],
+            json!({"keychain_item_rewritten": false}),
+            "part {part}"
+        );
+    }
+}
+
+/// A part's `shows` is left out where none of it is published: a part whose observations are
+/// free words, or an empty member, publishes no `shows`.
+#[test]
+fn shows_is_left_out_when_nothing_of_it_is_published() {
+    for part in LOGIN_PARTS {
+        for shows in [json!({"text": FREE_WORDS}), json!({})] {
+            let inputs = staged_inputs(&[part], |_, evidence| {
+                put(evidence, "/shows", shows.clone());
+            });
+            let kept = kept_evidence(part, &inputs);
+            assert!(
+                kept.get("shows").is_none(),
+                "part {part} with {shows}: {kept}"
+            );
+            assert_eq!(kept["route"], "the pinned build", "part {part}");
+        }
+    }
+}
+
+/// Part 7 publishes the agent's refusal only in the entry's own words, and no identifier of a
+/// conversation: the second start's words keep the entry's words and name the conversation by its
+/// placeholder.
+#[test]
+fn part_7_publishes_the_entrys_refusal_words_and_no_conversation_identifier() {
+    for (shown, kept) in [
+        (REFUSED[0], REFUSED[0]),
+        (REFUSED[1], REFUSED[1]),
+        ("this is some other made-up text", NOT_PUBLISHED),
+    ] {
+        let inputs = staged_inputs(&["7"], |_, evidence| {
+            put(evidence, "/shows/resume/shown", json!(shown));
+        });
+        let evidence = kept_evidence("7", &inputs);
+        assert_eq!(evidence["shows"]["resume"]["shown"], kept);
+        assert_eq!(evidence["shows"]["resume"]["outcome"], "refused");
+        assert_eq!(
+            evidence["shows"]["session_b"]["started_with"],
+            json!(["resume", "{conversation}"])
+        );
+        assert_eq!(evidence["shows"]["session_b"]["same_conversation"], false);
+        assert!(evidence["shows"].get("conversation").is_none());
+    }
+}
+
+/// A device's answer is published as the one error code its text holds, and as nothing where it
+/// holds none or more than one.
+#[test]
+fn a_device_answer_is_published_as_the_one_code_it_holds() {
+    for (answer, kept) in [
+        (
+            "refused: PERMISSION_DENIED: the lease is held",
+            "PERMISSION_DENIED",
+        ),
+        ("PERMISSION_DENIED", "PERMISSION_DENIED"),
+        ("PERMISSION_DENIED and then SESSION_CLOSED", NOT_PUBLISHED),
+        ("a refusal that names no code", NOT_PUBLISHED),
+        ("XPERMISSION_DENIEDX", NOT_PUBLISHED),
+    ] {
+        let inputs = staged_inputs(&["3"], |_, evidence| {
+            put(evidence, "/shows/device_answer", json!(answer));
+        });
+        assert_eq!(
+            kept_evidence("3", &inputs)["shows"]["device_answer"],
+            kept,
+            "{answer}"
+        );
     }
 }
