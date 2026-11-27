@@ -1228,6 +1228,56 @@ fn every_account_entry_switches_its_agents_updates_and_installs_off_and_names_ea
     );
 }
 
+/// The Codex entry resumes, forks, shows its drafts and refuses a held conversation as the entry
+/// the live parts read does: `resume` resumes, `fork` starts a conversation of its own from a
+/// saved one, no `resume_forks` says the resume forks, and the newer build holds the four
+/// isolation commands a probe-only run adopted, each whole, as the pinned entry has them.
+#[test]
+fn the_codex_entry_resumes_forks_and_refuses_as_the_entry_the_live_parts_read_does() {
+    let list: Value = serde_json::from_slice(
+        &std::fs::read(root().join("fixtures").join("agents").join("builds.json"))
+            .expect("the build list reads"),
+    )
+    .expect("the build list is JSON");
+    let entry = list["builds"]
+        .as_array()
+        .expect("the builds")
+        .iter()
+        .find(|entry| entry["package"] == "kalareach/codex")
+        .expect("the Codex entry is in the list");
+    let account = &entry["account"];
+    assert_eq!(account["resume"], json!(["resume", "{conversation}"]));
+    assert_eq!(account["fork"], json!(["fork", "{conversation}"]));
+    assert_eq!(
+        account["draft"],
+        json!(["loading", "Resuming session…", "Forking session…"])
+    );
+    assert_eq!(
+        account["resume_refused"],
+        json!([
+            "This conversation is open in another app",
+            "Close it there and press R to continue here."
+        ])
+    );
+    assert_eq!(
+        account["commands"],
+        json!({"fork": "/fork", "new": "/new", "quit": "/quit"})
+    );
+    assert_eq!(account["image_line"], json!("\"type\":\"input_image\""));
+    assert!(
+        account.get("resume_forks").is_none(),
+        "the entry says the resume forks, which the entry the live parts read does not"
+    );
+    let adopted = entry["newer"]["isolated"]
+        .as_array()
+        .expect("the newer build holds the isolation commands a probe-only run adopted");
+    assert_eq!(adopted.len(), 4, "the four commands of the probe-only run");
+    assert_eq!(
+        entry["newer"]["isolated"], account["isolated"],
+        "each adopted command is the pinned entry's command, whole"
+    );
+}
+
 /// An entry whose agent keeps its conversations in a database names the query the driver reads them
 /// with: a `SELECT` that writes nothing, whose two columns are a conversation's identifier and a
 /// line of JSON, and whose lines carry the members the entry's marks look for, so a mark that

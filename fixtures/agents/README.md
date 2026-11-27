@@ -208,9 +208,12 @@ call or answer without an identifier, or an answer tied to no call leaves the co
 fails the part. Since one call of a tool that runs code can ask more than once whatever its text
 holds, part 3 also requires that the part refused nothing from its prompt to the end of its
 control: any request besides the one it answers reaches a dialog, which the part refuses and
-records, and that fails the part. `resume_forks` says the resume arguments start a new conversation from
-the saved one because the agent lets no second process write a conversation another writes; the
-second-process part then says it did not show two processes on one conversation's identifier. The
+records, and that fails the part. `fork` gives the arguments that start a conversation of its own
+from a saved one, where the agent has such a command. `resume_refused` gives the texts the agent
+shows when it refuses to resume a conversation another process holds. The second-process part
+passes on that refusal, since no second execution exists to merge, and shows the refusal. Where
+the resume arguments themselves start a new conversation from the saved one, the part says
+`resume_forks` and did not show two processes on one conversation's identifier. The
 composer waits for a prompt while the screen shows `composer` and not `busy`. While a part's own
 steps run, the probes among them, a thread of its own reads the files no part may change, those
 the person's own programs also write, and those only appended to (for their earlier lines), every

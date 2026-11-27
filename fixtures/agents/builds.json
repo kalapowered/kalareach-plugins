@@ -241,7 +241,83 @@
         "prefix": "codex/0.156.1-native",
         "pinned": "bin/codex",
         "sha256": "0196e89fe5a7598f816ee54232c3d7c26d75e502ab5cfe2c9240e81d90f7255a",
-        "ready": "Welcome to Codex"
+        "ready": "Welcome to Codex",
+        "isolated": [
+          {
+            "arguments": [
+              "mcp",
+              "list"
+            ],
+            "shows": [
+              "No MCP servers configured"
+            ],
+            "lacks": [
+              "enabled"
+            ]
+          },
+          {
+            "arguments": [
+              "features",
+              "list"
+            ],
+            "lines": [
+              "apps stable false",
+              "browser_use stable false",
+              "computer_use stable false",
+              "goals stable false",
+              "hooks stable false",
+              "image_generation stable false",
+              "memories stable false",
+              "multi_agent stable false",
+              "plugins stable false",
+              "remote_plugin stable false",
+              "shell_snapshot stable false",
+              "skill_mcp_dependency_install stable false",
+              "skill_search stable false",
+              "tool_suggest stable false"
+            ]
+          },
+          {
+            "arguments": [
+              "debug",
+              "prompt-input"
+            ],
+            "shows": [
+              "Network access is restricted",
+              "`sandbox_mode` is `read-only`"
+            ],
+            "lacks": [
+              "{servers}",
+              "## Skills",
+              "### Available skills"
+            ],
+            "shows_within": "<permissions instructions>"
+          },
+          {
+            "arguments": [
+              "exec",
+              "--ephemeral",
+              "--skip-git-repo-check",
+              "--disable",
+              "enable_request_compression",
+              "-c",
+              "model_provider=\"kr-stub\"",
+              "-c",
+              "model_providers.kr-stub={name=\"kr-stub\", base_url=\"{stub}/v1\", experimental_bearer_token=\"stub\", wire_api=\"responses\", request_max_retries=0, stream_max_retries=0}",
+              "Say nothing."
+            ],
+            "shows": [
+              "custom functions/exec",
+              "nested functions/exec/exec_command"
+            ],
+            "lacks": [
+              "skill",
+              "mcp",
+              "deferred",
+              "{servers}"
+            ]
+          }
+        ]
       },
       "account": {
         "login": "vendor subscription account served by the local subscription proxy",
@@ -464,11 +540,25 @@
           "refuse": "\u001b"
         },
         "resume": [
+          "resume",
+          "{conversation}"
+        ],
+        "fork": [
           "fork",
           "{conversation}"
         ],
-        "resume_forks": true,
         "image": "paste",
+        "image_line": "\"type\":\"input_image\"",
+        "commands": { "fork": "/fork", "new": "/new", "quit": "/quit" },
+        "draft": [
+          "loading",
+          "Resuming session…",
+          "Forking session…"
+        ],
+        "resume_refused": [
+          "This conversation is open in another app",
+          "Close it there and press R to continue here."
+        ],
         "cleared": [
           "OPENAI_*",
           "ANTHROPIC_*",
