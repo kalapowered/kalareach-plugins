@@ -431,19 +431,65 @@ fn an_entry_names_the_build_its_record_qualifies_with_its_digest_and_version() {
     );
 }
 
-/// The records as they stand name no build: each pinned build is left out for the parts of section
-/// 12's cases that did not pass, and a script or a wheel for naming no executable at all. So the
-/// index this repository builds is the one it built before an entry could name a build. The check
-/// goes through the builds the list pins, so a pin removed to withdraw a build does not break it.
+/// The Codex build's qualification record.
+const CODEX_RECORD: &str = "fixtures/agents/kalareach/codex/0.155.1/macos-aarch64.json";
+
+/// The SHA-256 of the Codex record's bytes as the repository holds them: what each of the entry's
+/// results states as its profile digest. A change to the record, a change of whitespace included,
+/// is a new digest, and the case that reads it then says so.
+const CODEX_RECORD_SHA256: &str =
+    "6e835e156eb55ebf89a433b323e51e8f2a09abb4f9853f0e95c435506c17e8d5";
+
+/// The identifier a result gives each capability Codex's release declares, in the order a list of
+/// results writes them: by identifier.
+const CODEX_CAPABILITY_IDS: [&str; 7] = [
+    "plugin.approval.decode/1",
+    "plugin.approval.respond/1",
+    "plugin.broker.semantic_events/1",
+    "plugin.command_integration.launch/1",
+    "plugin.metadata.match/1",
+    "plugin.presentation.declarative/1",
+    "plugin.upstream.action/1",
+];
+
+/// The Codex build the list pins.
+fn codex_build() -> QualifiedBuild {
+    QualifiedBuild {
+        application: Label::new("codex").expect("a label"),
+        distribution: Label::new("npm @openai/codex").expect("a label"),
+        version: PackageVersion::parse("0.155.1").expect("a version"),
+        os: OperatingSystem::MacOs,
+        architecture: Architecture::Aarch64,
+        executable_digest: PayloadDigest::parse(CODEX_SHA256).expect("a digest"),
+    }
+}
+
+/// The records as they stand name one build, Codex's: its record shows every one of the thirteen
+/// parts of section 12's cases passed against this release and the pinned executable, so the build
+/// is named, and its entry carries one result for each capability the release declares, each with
+/// the digest of the record file. Every other pinned build is left out for the parts of its own
+/// record that did not pass, and a script or a wheel for naming no executable at all, and its entry
+/// names no build and carries no result. The check goes through the builds the list pins, so a pin
+/// removed to withdraw a build does not break it.
 #[test]
-fn no_build_is_named_while_a_section_12_part_has_not_passed() {
+fn the_records_as_they_stand_name_the_codex_build_and_leave_the_others_out() {
     let loaded = packages::load(&root()).expect("the repository loads");
     let builds = &loaded.repository.builds;
-    assert_eq!(builds.named().count(), 0);
+    let named: Vec<_> = builds.named().collect();
+    assert_eq!(
+        named,
+        vec![("kalareach/codex", "0.4.0", &codex_build())],
+        "the builds the repository names"
+    );
     let list = builds::read_list(&root())
         .expect("the build list reads")
         .expect("the repository has a build list");
-    assert_eq!(builds.omitted().len(), list.builds.len());
+    assert_eq!(builds.omitted().len(), list.builds.len() - 1);
+    assert_eq!(
+        digest_of_file(&root(), CODEX_RECORD),
+        PayloadDigest::parse(CODEX_RECORD_SHA256).expect("a digest"),
+        "the Codex record's bytes changed"
+    );
 
     let and_upgrade = "section 12 parts 1, 2a, 2c, 3, 4, 5b, 6a, 6b, 7, 8b did not pass";
     // Claude Code's record is a run with the person's login: every part that ran passed but the
@@ -452,15 +498,6 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         "steps 2 did not exit cleanly",
         "parts 1 failed",
         "section 12 parts 1, 5b, 6b, 8b did not pass",
-    ];
-    // Codex's record is a run with a pooled subscription account, from the build's native
-    // executable: the host detected the launch, the device's upload was refused, the hook
-    // forwarder's first timed answer came after its bound, and the account's turns ran out before
-    // parts 4 and 7 started.
-    let codex: &[&str] = &[
-        "steps 2, 11 did not exit cleanly",
-        "parts 1, 8a failed",
-        "section 12 parts 1, 4, 5b, 6b, 7, 8a, 8b did not pass",
     ];
     // Kimi Code's record is a run with the person's login: part 1 failed at the check of the image's
     // colour in the agent's answer, before the answer to the device's upload was kept, and the agent
@@ -482,7 +519,7 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
                   executable a host runs";
     let wheel = "the pinned file is a wheel, an archive, so it names no executable a host runs";
     // Gemini CLI's record is a run with a provider's key in the person's shell: a node-run build,
-    // so the host detected no launch of it, and the parts that need that failed, as for Codex.
+    // so the host detected no launch of it, and the parts that need that failed.
     let gemini_cli: &[&str] = &[
         script,
         "steps 2, 4, 5, 10 did not exit cleanly",
@@ -492,9 +529,8 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
     // Qoder CLI's record is a run with no login, which the user did not approve for it: the parts
     // that need none passed, and the parts that need one were not run.
     let qoder_cli: &[&str] = &["section 12 parts 1, 2a, 3, 4, 5b, 6b, 7, 8b did not pass"];
-    let expected: [(&str, &[&str]); 8] = [
+    let expected: [(&str, &[&str]); 7] = [
         ("kalareach/claude-code", claude_code),
-        ("kalareach/codex", codex),
         ("kalareach/gemini-cli", gemini_cli),
         ("kalareach/kimi-cli", &[wheel, and_upgrade]),
         ("kalareach/kimi-code-cli", kimi_code),
@@ -502,7 +538,11 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         ("kalareach/opencode-attach", &[and_upgrade]),
         ("kalareach/qoder-cli", qoder_cli),
     ];
-    for pinned in &list.builds {
+    for pinned in list
+        .builds
+        .iter()
+        .filter(|pinned| pinned.package != "kalareach/codex")
+    {
         let reasons = expected
             .iter()
             .find(|(plugin, _)| *plugin == pinned.package)
@@ -516,11 +556,39 @@ fn no_build_is_named_while_a_section_12_part_has_not_passed() {
         assert_eq!(omitted.reasons, reasons, "{omitted}");
         assert_eq!(omitted.platform, "macos-aarch64");
     }
+    assert!(
+        builds
+            .omitted()
+            .iter()
+            .all(|omitted| omitted.plugin_id != "kalareach/codex"),
+        "the Codex build is named, so it is not left out"
+    );
 
     let index = index_of(&loaded.repository);
-    assert!(index.entries.iter().all(|entry| entry.builds.is_empty()));
+    for entry in &index.entries {
+        if entry.plugin_id.as_str() == "kalareach/codex" {
+            assert_eq!(entry.builds, vec![codex_build()]);
+            assert_eq!(
+                entry.qualification,
+                results_of(
+                    &CODEX_CAPABILITY_IDS,
+                    "0.4.0",
+                    "codex 0.155.1",
+                    PayloadDigest::parse(CODEX_RECORD_SHA256).expect("a digest"),
+                    PASSED_ON_MACOS,
+                )
+            );
+        } else {
+            assert!(entry.builds.is_empty(), "{}", entry.plugin_id.as_str());
+            assert!(
+                entry.qualification.is_empty(),
+                "{}",
+                entry.plugin_id.as_str()
+            );
+        }
+    }
     assert!(
-        !index
+        index
             .canonical_json()
             .expect("the index renders")
             .contains("\"builds\"")
