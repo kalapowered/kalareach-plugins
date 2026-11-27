@@ -119,6 +119,16 @@ pub enum Error {
         /// What the builds break, in the SDK's words.
         source: Box<kr_plugin_sdk::catalogue::BuildsError>,
     },
+    /// An index entry's qualification results do not agree with the builds it names.
+    #[error("{plugin_id} {version}: {detail}")]
+    Results {
+        /// The package the entry is for.
+        plugin_id: String,
+        /// The release.
+        version: String,
+        /// What the results break.
+        detail: String,
+    },
 }
 
 impl From<tough::error::Error> for Error {

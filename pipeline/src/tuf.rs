@@ -133,8 +133,9 @@ pub fn stage_targets(
 ///
 /// # Errors
 ///
-/// Returns an error when an entry names builds an index may not carry, a target cannot be staged,
-/// a key cannot be read, or the metadata cannot be signed or written.
+/// Returns an error when an entry names builds an index may not carry, an entry's qualification
+/// results do not agree with its builds ([`crate::index::check_results`]), a target cannot be
+/// staged, a key cannot be read, or the metadata cannot be signed or written.
 pub async fn build(
     repository: &Repository,
     index: &CatalogueIndex,
@@ -144,9 +145,12 @@ pub async fn build(
     replace: bool,
 ) -> Result<BuildOutcome> {
     // Everything that can be checked is checked before anything is written or removed: what the
-    // entries say about their builds, the generation number, the destination, and the keys. A build
-    // that fails afterwards leaves the destination as it found it.
+    // entries say about their builds and the results that state them, the generation number, the
+    // destination, and the keys. A build that fails afterwards leaves the destination as it found
+    // it. The results are checked after the builds, so an entry whose builds break a rule is
+    // refused for that.
     crate::index::check_builds(index)?;
+    crate::index::check_results(index, repository.builds.is_candidate())?;
     let version = generation_version(index)?;
     let existing = describe_destination(out_dir)?;
     if existing == Destination::Occupied && !replace {
@@ -638,7 +642,9 @@ pub struct Verified {
 /// # Errors
 ///
 /// Returns an error when the metadata does not verify against the trust root, a target's digest
-/// does not match, the index cannot be read, or an entry names builds an index may not carry.
+/// does not match, the index cannot be read, an entry names builds an index may not carry, or an
+/// entry's qualification results do not agree with its builds ([`crate::index::check_results`], for
+/// a candidate generation as its signed metadata says).
 pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verified> {
     let root_bytes = read(&generation_dir.join("root.json"))?;
     let absolute = std::fs::canonicalize(generation_dir).map_err(|source| Error::Io {
@@ -708,8 +714,10 @@ pub async fn verify(generation_dir: &Path, enforce_expiry: bool) -> Result<Verif
             source,
         })?;
     // What an entry says about its builds is a signed statement a host takes an executable's version
-    // from, and a host refuses a generation whose entries break the SDK's rules for them.
+    // from, and a host refuses a generation whose entries break the SDK's rules for them. The results
+    // that state the builds are held to the pipeline's own, after the builds.
     crate::index::check_builds(&index)?;
+    crate::index::check_results(&index, candidate)?;
 
     // The metadata proves the targets are the bytes it signed. The index says which bytes each
     // package consists of. Comparing the two is what makes a target name mean one package's file

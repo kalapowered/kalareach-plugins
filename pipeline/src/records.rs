@@ -142,6 +142,22 @@ impl std::fmt::Display for Platform {
     }
 }
 
+/// The name of the platform an index names by `os` and `architecture`, as a record's file name
+/// writes it: `macos-aarch64` for `mac_os` and `aarch64`.
+#[must_use]
+pub fn platform_name(os: OperatingSystem, architecture: Architecture) -> String {
+    let os = match os {
+        OperatingSystem::MacOs => "macos",
+        OperatingSystem::Linux => "linux",
+        OperatingSystem::Windows => "windows",
+    };
+    let architecture = match architecture {
+        Architecture::Aarch64 => "aarch64",
+        Architecture::X86_64 => "x86_64",
+    };
+    format!("{os}-{architecture}")
+}
+
 /// Where the record for one release's build of an application on one platform is, relative to the
 /// repository root.
 #[must_use]

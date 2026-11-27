@@ -15,8 +15,8 @@ use kalareach_catalogue::development::DevelopmentSigning;
 use kalareach_catalogue::keys::{SigningDirectory, SigningMaterial};
 use kalareach_catalogue::packages::{self, Repository};
 use kalareach_catalogue::tuf::{self, Expiries, METADATA_DIR, TARGETS_DIR};
-use kalareach_catalogue::{Error, builds, index, repository_root};
-use kr_plugin_sdk::capability::{CapabilityState, EvidenceSource};
+use kalareach_catalogue::{Error, builds, index, records, repository_root};
+use kr_plugin_sdk::capability::{CapabilityState, EvidenceSource, PluginCapability};
 use kr_plugin_sdk::catalogue::{
     BuildsError, CatalogueIndex, IndexEntry, MAX_QUALIFIED_BUILDS, QualificationResult,
     QualifiedBuild,
@@ -25,7 +25,7 @@ use kr_plugin_sdk::digest::PayloadDigest;
 use kr_plugin_sdk::ids::{CapabilityId, RepositoryGeneration};
 use kr_plugin_sdk::matching::{Architecture, OperatingSystem};
 use kr_plugin_sdk::scalars::TimestampMs;
-use kr_plugin_sdk::text::{Label, Summary};
+use kr_plugin_sdk::text::{DisabledReason, Label, Summary};
 use kr_plugin_sdk::version::PackageVersion;
 use serde_json::{Value, json};
 
@@ -2309,4 +2309,88 @@ async fn a_statement_that_names_the_platform_of_its_build_is_accepted_on_each_pl
             .await
             .unwrap_or_else(|refusal| panic!("{name}: {refusal}"));
     }
+}
+
+/// A platform is named as a record's file name writes it, for each operating system and architecture
+/// the SDK spells.
+#[test]
+fn a_platform_is_named_as_a_record_file_names_it() {
+    for os in OperatingSystem::ALL {
+        for architecture in Architecture::ALL {
+            let name = records::platform_name(*os, *architecture);
+            let platform = records::Platform::parse(&name).expect("a platform of this repository");
+            assert_eq!(
+                (platform.os(), platform.architecture()),
+                (*os, *architecture)
+            );
+        }
+    }
+    assert_eq!(
+        records::platform_name(OperatingSystem::MacOs, Architecture::Aarch64),
+        "macos-aarch64"
+    );
+}
+
+/// The host writes a result's statement after the capability and a fixed explanation, and holds the
+/// reason to its bound: every statement fits it for every capability on every platform, and the
+/// longest is the one that names all three gateway parts on the platform with the longest name.
+#[test]
+fn every_statement_fits_the_host_s_reason_for_every_capability_on_every_platform() {
+    let explanation = "this release was qualified against it, and this host has not been checked";
+    let mut longest = 0;
+    for os in ["linux", "macos", "windows"] {
+        for architecture in ["aarch64", "x86_64"] {
+            let platform = format!("{os}-{architecture}");
+            let statements = builds::statements(&platform);
+            assert_eq!(statements.len(), 8, "{platform}");
+            let mut distinct = statements.clone();
+            distinct.sort();
+            distinct.dedup();
+            assert_eq!(distinct.len(), 8, "{platform}");
+            for statement in &statements {
+                Summary::new(statement).expect("a statement is a summary");
+                longest = longest.max(statement.chars().count());
+                for capability in PluginCapability::ALL {
+                    let id = builds::capability_id(*capability);
+                    CapabilityId::new(id.as_str()).expect("an identifier");
+                    let reason = format!("{}: {explanation}. {statement}", capability.as_str());
+                    assert!(reason.chars().count() <= DisabledReason::LIMIT, "{reason}");
+                }
+            }
+        }
+    }
+    assert_eq!(longest, 75);
+}
+
+/// A subject is an application and a version in a label, which the SDK bounds; a build whose pair
+/// is longer cannot be stated, and the repository is refused when it loads.
+#[test]
+fn a_subject_longer_than_a_label_is_refused_when_the_repository_loads() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    let application = "a".repeat(74);
+    let mut record = qualified_record();
+    record["run"]["applications"][0]["id"] = json!(application);
+    claude_code_repository(&repository, &record);
+    write_list(
+        &repository,
+        &[pin(
+            "kalareach/claude-code",
+            &application,
+            "2.1.278",
+            "npm @anthropic-ai/claude-code-darwin-arm64",
+            "native",
+            CLAUDE_CODE_SHA256,
+            None,
+        )],
+    );
+
+    let refusal = refused(&repository);
+    assert!(
+        refusal.starts_with(&format!(
+            "{}: the build of {application} 2.1.278 cannot be named as a result's subject",
+            builds::LIST
+        )),
+        "{refusal}"
+    );
 }

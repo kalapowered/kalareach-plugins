@@ -34,20 +34,33 @@
 //! cannot be read for what it shows is refused instead: a build list or a record that breaks its
 //! form, a platform the list does not know, a build pinned for a package this repository does not
 //! publish or publishes without a connector table, or one executable named as two versions.
+//!
+//! A host admits a build only with the results that state what its record shows, so a build the
+//! index names comes with them: for each capability its release declares, one
+//! [`QualificationResult`] of the version that was qualified, from the signed record, carrying the
+//! SHA-256 of the record file's bytes and a statement of what the record shows. The statement names
+//! the platform of the build. It says that every case passed, or, for a package on
+//! [`TERMINAL_EVIDENCE_PACKAGES`], which gateway parts did not run and that every other part
+//! passed. Nothing else writes a result, and a candidate generation, whose builds no record
+//! qualifies, carries none ([`Builds::results_for`]).
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use kr_plugin_sdk::catalogue::QualifiedBuild;
+use kr_plugin_sdk::capability::{
+    CapabilityRequest, CapabilityState, EvidenceSource, PluginCapability,
+};
+use kr_plugin_sdk::catalogue::{QualificationResult, QualifiedBuild};
 use kr_plugin_sdk::digest::PayloadDigest;
-use kr_plugin_sdk::text::Label;
+use kr_plugin_sdk::ids::CapabilityId;
+use kr_plugin_sdk::text::{Label, Summary};
 use kr_plugin_sdk::version::PackageVersion;
 use serde::Deserialize;
 use serde_json::Value;
 
 use crate::packages::LoadedPackage;
 use crate::records::{self, Platform};
-use crate::{Error, Result, read_json};
+use crate::{Error, Result, read, read_json};
 
 /// The build list, relative to the repository root.
 pub const LIST: &str = "fixtures/agents/builds.json";
@@ -256,11 +269,19 @@ impl std::fmt::Display for Omitted {
     }
 }
 
+/// One build a release names, with the results that state what its record shows of it.
+#[derive(Clone, Debug)]
+struct Named {
+    build: QualifiedBuild,
+    /// One for each capability the release declares; none for a candidate's build.
+    results: Vec<QualificationResult>,
+}
+
 /// The builds each release names, and the pinned builds left out.
 #[derive(Clone, Debug, Default)]
 pub struct Builds {
     /// By package and release.
-    named: BTreeMap<(String, String), Vec<QualifiedBuild>>,
+    named: BTreeMap<(String, String), Vec<Named>>,
     omitted: Vec<Omitted>,
     /// Whether the builds were named without a record ([`load_candidate`]).
     candidate: bool,
@@ -278,7 +299,23 @@ impl Builds {
     pub fn for_release(&self, plugin_id: &str, release: &str) -> Vec<QualifiedBuild> {
         self.named
             .get(&(plugin_id.to_owned(), release.to_owned()))
-            .cloned()
+            .map(|named| named.iter().map(|named| named.build.clone()).collect())
+            .unwrap_or_default()
+    }
+
+    /// The results one release carries: for each of its builds, in their canonical order, one for
+    /// each capability the release declares, in the order of their identifiers. None for a
+    /// release that names no build, and none for a candidate's.
+    #[must_use]
+    pub fn results_for(&self, plugin_id: &str, release: &str) -> Vec<QualificationResult> {
+        self.named
+            .get(&(plugin_id.to_owned(), release.to_owned()))
+            .map(|named| {
+                named
+                    .iter()
+                    .flat_map(|named| named.results.iter().cloned())
+                    .collect()
+            })
             .unwrap_or_default()
     }
 
@@ -289,7 +326,7 @@ impl Builds {
             .flat_map(|((plugin_id, release), builds)| {
                 builds
                     .iter()
-                    .map(move |build| (plugin_id.as_str(), release.as_str(), build))
+                    .map(move |named| (plugin_id.as_str(), release.as_str(), &named.build))
             })
     }
 
@@ -348,24 +385,34 @@ fn load_with(root: &Path, packages: &[LoadedPackage], candidate: bool) -> Result
             &pinned.version.to_string(),
             &list.platform,
         );
-        let reasons = if candidate {
-            launch_reasons(pinned)
+        let assessment = if candidate {
+            Assessment {
+                reasons: launch_reasons(pinned),
+                basis: None,
+            }
         } else {
-            reasons_to_leave_out(root, &relative, &list.platform, pinned, package)?
+            assess(root, &relative, &list.platform, pinned, package)?
         };
-        if reasons.is_empty() {
+        if assessment.reasons.is_empty() {
+            let build = QualifiedBuild {
+                application: pinned.application.clone(),
+                distribution: pinned.distribution.clone(),
+                version: pinned.version.clone(),
+                os: list.platform.os(),
+                architecture: list.platform.architecture(),
+                executable_digest: pinned.sha256,
+            };
+            let results = match &assessment.basis {
+                Some(basis) => {
+                    results_of(&manifest.capabilities, &manifest.version, &build, basis)?
+                }
+                None => Vec::new(),
+            };
             builds
                 .named
                 .entry((pinned.package.clone(), release))
                 .or_default()
-                .push(QualifiedBuild {
-                    application: pinned.application.clone(),
-                    distribution: pinned.distribution.clone(),
-                    version: pinned.version.clone(),
-                    os: list.platform.os(),
-                    architecture: list.platform.architecture(),
-                    executable_digest: pinned.sha256,
-                });
+                .push(Named { build, results });
         } else {
             builds.omitted.push(Omitted {
                 plugin_id: pinned.package.clone(),
@@ -373,12 +420,12 @@ fn load_with(root: &Path, packages: &[LoadedPackage], candidate: bool) -> Result
                 application: pinned.application.to_string(),
                 version: pinned.version.to_string(),
                 platform: list.platform.name().to_owned(),
-                reasons,
+                reasons: assessment.reasons,
             });
         }
     }
     for named in builds.named.values_mut() {
-        named.sort_by(|left, right| canonical(left).cmp(&canonical(right)));
+        named.sort_by(|left, right| canonical(&left.build).cmp(&canonical(&right.build)));
     }
     Ok(builds)
 }
@@ -441,22 +488,43 @@ fn launch_reasons(pinned: &Pinned) -> Vec<String> {
     }
 }
 
-/// Everything that keeps one pinned build out of its release's entry; nothing when it is named.
-fn reasons_to_leave_out(
+/// What one record shows of the build it qualifies, for the results written about it.
+struct Basis {
+    /// The SHA-256 of the record file's bytes.
+    digest: PayloadDigest,
+    /// The gateway parts that did not run and were carried as not applicable, in the order of
+    /// [`GATEWAY_PARTS`].
+    gateway_not_run: Vec<&'static str>,
+}
+
+/// Whether one pinned build is named: everything that keeps it out, and, when nothing does, what
+/// its record shows.
+struct Assessment {
+    reasons: Vec<String>,
+    /// What the record shows; none where no record was read.
+    basis: Option<Basis>,
+}
+
+/// Decides whether one pinned build is named for its release.
+fn assess(
     root: &Path,
     relative: &Path,
     platform: &Platform,
     pinned: &Pinned,
     package: &LoadedPackage,
-) -> Result<Vec<String>> {
+) -> Result<Assessment> {
     let path = root.join(relative);
     if !path.is_file() {
-        return Ok(vec![format!(
-            "no qualification record at {}",
-            relative.display()
-        )]);
+        return Ok(Assessment {
+            reasons: vec![format!("no qualification record at {}", relative.display())],
+            basis: None,
+        });
     }
-    let record: Value = read_json(&path)?;
+    let bytes = read(&path)?;
+    let record: Value = serde_json::from_slice(&bytes).map_err(|source| Error::Json {
+        path: path.clone(),
+        source,
+    })?;
     let form = records::form_problems(&record, platform);
     if !form.is_empty() {
         return Err(Error::Layout {
@@ -475,15 +543,33 @@ fn reasons_to_leave_out(
         &pinned.version.to_string(),
         &pinned.sha256.to_string(),
     ));
-    reasons.extend(qualification_gaps(&record, package));
-    Ok(reasons)
+    let gaps = qualification_gaps(&record, package);
+    reasons.extend(gaps.reasons);
+    Ok(Assessment {
+        reasons,
+        basis: Some(Basis {
+            digest: PayloadDigest::of(&bytes),
+            gateway_not_run: gaps.gateway_not_run,
+        }),
+    })
+}
+
+/// What a record in good form lacks for its build to be named, and which gateway parts it was not
+/// asked to show.
+struct Gaps {
+    /// What is lacking; nothing when the build is named.
+    reasons: Vec<String>,
+    /// The gateway parts that did not run and were accepted as not applicable, in the order of
+    /// [`GATEWAY_PARTS`]. Each is accepted on its own, so this is some of the three, all of them or
+    /// none.
+    gateway_not_run: Vec<&'static str>,
 }
 
 /// What a record in good form lacks for its build to be named: a whole run, no failed part, and
 /// every part of section 12's cases passed, or, for a package on [`TERMINAL_EVIDENCE_PACKAGES`]
 /// whose release declares no command integration and no native bridge, is a gateway part that did
 /// not run.
-fn qualification_gaps(record: &Value, package: &LoadedPackage) -> Vec<String> {
+fn qualification_gaps(record: &Value, package: &LoadedPackage) -> Gaps {
     let mut gaps = Vec::new();
     if record["failures_outside_identifiers"]
         .as_array()
@@ -544,7 +630,112 @@ fn qualification_gaps(record: &Value, package: &LoadedPackage) -> Vec<String> {
             not_passed.join(", ")
         ));
     }
-    gaps
+    let gateway_not_run = if gateway_not_applicable {
+        GATEWAY_PARTS
+            .iter()
+            .copied()
+            .filter(|part| {
+                cases
+                    .get(part)
+                    .is_some_and(|test| test["outcome"] == "not_run")
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    Gaps {
+        reasons: gaps,
+        gateway_not_run,
+    }
+}
+
+/// The identifier a result gives a declared capability: the plugin namespace, the capability's name
+/// and version 1.
+#[must_use]
+pub fn capability_id(capability: PluginCapability) -> String {
+    format!("plugin.{}/1", capability.as_str())
+}
+
+/// What a result names a build by: its application and version.
+#[must_use]
+pub fn subject(build: &QualifiedBuild) -> String {
+    format!("{} {}", build.application.as_str(), build.version)
+}
+
+/// What a result states about a build on `platform` whose record shows every part passed except
+/// `gateway_not_run`, which did not run and are not applicable to the package.
+fn statement(gateway_not_run: &[&str], platform: &str) -> String {
+    if gateway_not_run.is_empty() {
+        format!("every case of the version qualification passed on {platform}")
+    } else {
+        format!(
+            "{} not run (no gateway); every other part passed on {platform}",
+            gateway_not_run.join(", ")
+        )
+    }
+}
+
+/// Every statement the pipeline writes about a build on `platform`: that every case passed, and
+/// each combination of the gateway parts that did not run.
+#[must_use]
+pub fn statements(platform: &str) -> Vec<String> {
+    (0..1_usize << GATEWAY_PARTS.len())
+        .map(|combination| {
+            let not_run: Vec<&str> = GATEWAY_PARTS
+                .iter()
+                .enumerate()
+                .filter(|(position, _)| combination & (1 << position) != 0)
+                .map(|(_, part)| *part)
+                .collect();
+            statement(&not_run, platform)
+        })
+        .collect()
+}
+
+/// The results for one named build: one for each capability its release declares, in the order of
+/// their identifiers. Each states that the version was qualified, from the signed record whose bytes
+/// `basis` digests.
+fn results_of(
+    capabilities: &[CapabilityRequest],
+    release: &PackageVersion,
+    build: &QualifiedBuild,
+    basis: &Basis,
+) -> Result<Vec<QualificationResult>> {
+    let layout = |what: String| Error::Layout { detail: what };
+    let subject = Label::new(subject(build)).map_err(|source| {
+        layout(format!(
+            "{LIST}: the build of {} {} cannot be named as a result's subject: {source}",
+            build.application, build.version
+        ))
+    })?;
+    let platform = records::platform_name(build.os, build.architecture);
+    let statement =
+        Summary::new(statement(&basis.gateway_not_run, &platform)).map_err(|source| {
+            layout(format!(
+                "{LIST}: the statement for {subject} cannot be written: {source}",
+                subject = subject.as_str()
+            ))
+        })?;
+    let mut ids: Vec<String> = capabilities
+        .iter()
+        .map(|request| capability_id(request.capability))
+        .collect();
+    ids.sort();
+    ids.into_iter()
+        .map(|id| {
+            Ok(QualificationResult {
+                capability_id: CapabilityId::new(id.as_str()).map_err(|source| {
+                    layout(format!("{id} is not a capability identifier: {source}"))
+                })?,
+                capability_version: release.clone(),
+                subject: subject.clone(),
+                state: CapabilityState::VersionQualified,
+                source: EvidenceSource::SignedRecord,
+                profile_digest: basis.digest,
+                statement: statement.clone(),
+            })
+        })
+        .collect()
 }
 
 /// Everything that keeps the repository's records from matching its packages and its build list.
