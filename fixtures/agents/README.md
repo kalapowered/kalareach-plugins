@@ -40,8 +40,9 @@ record names each part on its own. The case numbers are the specification's.
 | 14.03a | A path typed at the agent's prompt is terminal input, and reaches the agent's own composer |
 | 14.03b | The host never reports a typed path as an attachment the agent accepted |
 
-Each part the driver runs has a control, and its evidence says whether the control breaks the
-part's property (`breaks_property`). For 2c, 3, 4, 5a, 6a and 14.03a it does: the part passes
+Parts 2a, 2b, 2c, 3, 4, 5a, 6a, 7, 8a and 14.03a, where the driver runs them, publish a control,
+and the evidence says whether the control breaks the part's property (`breaks_property`). Parts 1,
+5b, 6b and 8b publish none. For 2c, 3, 4, 5a, 6a and 14.03a it does: the part passes
 only when its check fails under the control. Part 7 has the same control where a second process runs. Where the agent refuses or ends the second
 start, no second execution exists to test: the part passes when the agent refuses or ends the second
 start and session A is as it was, `breaks_property` is false and says why, and the evidence shows
