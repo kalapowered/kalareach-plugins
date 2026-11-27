@@ -41,8 +41,11 @@ record names each part on its own. The case numbers are the specification's.
 | 14.03b | The host never reports a typed path as an attachment the agent accepted |
 
 Each part the driver runs has a control, and its evidence says whether the control breaks the
-part's property (`breaks_property`). For 2c, 3, 4, 5a, 6a, 7 and 14.03a it does: the part passes
-only when its check fails under the control. For 2a, 2b and 8a it cannot: only the agent could
+part's property (`breaks_property`). For 2c, 3, 4, 5a, 6a and 14.03a it does: the part passes
+only when its check fails under the control. Part 7 has the same control where a second process
+runs. Where the agent refuses the second process, no second execution exists to test: the agent's
+refusal is the pass, `breaks_property` is false and says why, and the evidence shows the words the
+agent printed. For 2a, 2b and 8a it cannot: only the agent could
 refuse its own terminal keys, only a typed route could advertise or accept a typed action, and only
 a registration the host issued could change its state. Their controls show instead that the same
 connection's accepted path works, and the evidence says why no breaking control ran.
@@ -63,15 +66,22 @@ starts at most one turn; they run only for a build whose list entry names a logi
 decision would change it. Each part the driver does not run is recorded as not run, with the reason
 and what would change it.
 
-Parts 5b, 6b and 8b of the Codex package run through the gateway driver,
-`tests/e2e/agents/tests/gateway.rs` in the core repository, and their record entries name that file
-as their source. The driver installs and guards the Codex package alone, so the same parts of any
-other package wait, as before. The other parts run through `cases.rs`. Part 5b has no real arm,
-because a restart of the daemon cannot be made safe against a live agent's writes. The runner gives
-its test no build, so it runs against the stand-in agent, and its record entry says
-`"route": "stand_in"`. The stand-in route installs the core repository's own Codex package, not this
-tree's. Such an entry shows what the host does after a daemon crash, and says nothing of this
-release or of the agent.
+All thirteen parts of the Codex package run through the gateway driver,
+`tests/e2e/agents/tests/gateway.rs` and its staged modules in the core repository, and their record
+entries name the file that holds each test as their source. The driver installs and guards the
+Codex package alone, so parts 5b, 6b and 8b of any other package wait, as before, and the other
+parts of the other packages run through `cases.rs`. Parts 5a and 5b have no real arm: a kill or restart of the
+control daemon cannot be made safe beside a live agent that writes with a person's login. Their
+tests run against the stand-in agent, the runner gives them no build, and their record entries say
+`"route": "stand_in"`. The stand-in route installs the core repository's own Codex package, not
+this tree's. Such an entry shows what the host does after a daemon crash, and says nothing of this
+release or of the agent. For this package parts 5a and 5b count from the stand-in route; no other
+part may. A core that gives part 5a an arm against a real agent makes a record that needs part 5a
+against the pinned build. The index's statement for the build names the parts that passed on the
+stand-in agent. `scripts/e2e-agents.sh` at this commit sends the Codex parts other than 5b, 6b and
+8b to `cases.rs` and puts only 5b on the stand-in route; it does not run the Codex parts against
+that core. The Codex record was made by starting the gateway driver's test programs one part at a
+time, not by that script.
 
 The upgrade case also has a probe-only run. It runs the commands in the pinned entry's
 `account.isolated` against the newer build, with no login and no model call, and keeps each whole
@@ -92,14 +102,14 @@ common form:
 
 | Member | Meaning |
 | --- | --- |
-| `run.host` | `{repository, commit: {id, modified}}`: the core repository and commit the host and the driver were built from, as `run.commit` names the commit of this repository the harness ran from |
-| `run.own_home` | What the check before the first agent read: the default keychain a session started with the person's own home and no agent names, and the execution context the host gave that session (`worker_profile`, and `bound_to_a_desktop`). The check is the first step of every record, group `own-home`; when it fails, `failures_outside_identifiers` names it |
+| `run.host` | `{repository, commit: {id, modified}}`: the core repository and commit the host and the driver were built from, as `run.commit` names the commit of this repository the harness ran from; `modified` says whether this repository's tree differed from that commit when the run began, and says nothing of files outside the tree that a part read, such as a build list entry kept elsewhere |
+| `run.own_home` | What the own-home check read: the default keychain a session started with the person's own home and no agent names, and the execution context the host gave that session (`worker_profile`, and `bound_to_a_desktop`). The record has one step of the group `own-home`, at the place and time it ran: the harness script runs it once per run, before the first agent, and a record made from rows run one at a time lists it where it ran, with the parts that ran before it ahead of it. It reads the default keychain as a session sees it at that point, so a check after a part with a login shows the keychain after that part. No part reads its result. When it fails, `failures_outside_identifiers` names it |
 | `run.packages[]` | The package the parts ran against, except a part whose entry says `"route": "stand_in"`, which ran against the core repository's fixture package: `name`, `version`, `manifest_digest` (the SHA-256 of its `plugin.json`) and the `generation` it was installed from: `snapshots/development` where the run used the repository's own committed generation and `git status` shows no change under it, and otherwise an object with the `sha256` and `length` of the signed index, its `generation` number and `candidate`, whether the signed metadata marks it a candidate. The check requires the version and digest of the package in this tree, so a package released again needs its parts run again |
-| `run.applications[]` | The pinned build every part ran against (except a part whose entry says `"route": "stand_in"`, which ran against the core repository's fixture package), first, then the newer build where the upgrade part uses one: `id`, `version`, `url` it came from, `sha256` of its pinned file, `status` and `reason`. The first is the only build the record says anything about |
+| `run.applications[]` | The pinned build every part ran against (except a part whose entry says `"route": "stand_in"`, which ran against the core repository's fixture package), first, then the newer build where the upgrade part uses one: `id`, `version`, `url` it came from, `sha256` of its pinned file, `status` and `reason`. The first is the only build the record says anything about, and the record says nothing of the build for a part whose entry says `"route": "stand_in"` |
 | `tests[].part` | The part the test is, from the table above |
 | `tests[].source` | Where the test is, prefixed by its repository: `kalareach:` for the driver's tests, `kalareach-plugins:` for a part recorded from the table above |
 | `tests[].needs` | For a part not run, what it needs: a vendor account, a connector binding, a launch registration or draft reads |
-| `tests[].evidence` | What a part observed, its control included; under `detection`, what the host announced about the launch; under `checker_controls`, each check shown a wrong observation and whether it rejected it; for a part with a login, under `account`, the login's kind, where it is kept, whose home the agent ran with and the turns the part started, never an identifier or a value, and, where the agent ran with the person's home, under `person_home`, what the part created there and removed, and every other change it saw; under `installed`, the package the host installed, which must be the one in `run.packages`; and under `provenance`, the PATH the session's shell searched, what each launch ran and how it reached the pinned file, and each executable image seen beneath the agent's sessions, with the SHA-256 of the file whose inode the process maps and where it lies (`build`, `newer build`, `runtime`, `run`, `shell` or `system`), from looks every `sample_interval_ms` from just before each launch until the part's sessions ended, and one more when the part's own steps ended; each look reads every process's mapped image, so an image that changes under the same process is seen, and hashes it through one handle on the mapped file. `pids` lists every process number seen beneath the sessions, and `system_programs_of_another_user` each of the system's own set-user-ID programs seen there (such as `/bin/ps`, which an agent runs), which the kernel will not describe to the person's user, by number and the protected file it runs. A process that started and ended between two looks is not there, and one that ended before its image was read is named under `ended_before_read`. `launches` says how each launch reached the pinned file |
+| `tests[].evidence` | What a part observed, its control included; under `detection`, what the host announced about the launch; under `checker_controls`, each check shown a wrong observation and whether it rejected it; for a part with a login, under `account`, the login's kind, where it is kept, whose home the agent ran with and the turns the part started, never an identifier or a value, and, where the agent ran with the person's home, under `person_home`, what the part created there and removed, and every other change it saw; under `installed`, the package the host installed, which must be the one in `run.packages`; and under `provenance`, the PATH the session's shell searched, what each launch ran and how it reached the pinned file, and each executable image seen beneath the agent's sessions, with the SHA-256 of the file whose inode the process maps and where it lies (`build`, `newer build`, `runtime`, `run`, `shell` or `system`), from looks every `sample_interval_ms` from just before each launch until the part's sessions ended, and one more when the part's own steps ended; each look reads every process's mapped image, so an image that changes under the same process is seen, and hashes it through one handle on the mapped file. `pids` lists every process number seen beneath the sessions, and `system_programs_of_another_user` each of the system's own set-user-ID programs seen there (such as `/bin/ps`, which an agent runs), which the kernel will not describe to the person's user, by number and the protected file it runs. A process that started and ended between two looks is not there, and one that ended before its image was read is named under `ended_before_read`. `launches` says how each launch reached the pinned file. For a part the gateway driver ran with a login, `shows` holds what the part itself observed, in fixed words, numbers and shapes (the prompt and its answer, the image and its transfer, the control and whether it broke the property, each launch's detection, the order of queued and steering prompts, the process images of the upgrade part, the second process and the agent's refusal of it in part 7); `keys` the check of the login's variable; `person_files.trees` the entry count of the agent's directory in the person's home before and after, and whether it changed; and `turns` how the agent's record counts the turns. A text that is not the driver's fixed words, the build list's, or a shape the driver makes reads `<not published>` |
 | `tests[].condition` | On a part a vendor gate held: `{gate, observed, fallback}`, where `observed` is `untested` or `unavailable` and `fallback` names the test of the same record that ran the path used instead. The gated part stays `not_run`; the fallback carries its own outcome |
 | `attachment_paths[]` | The attachment path each operation declares: every action whose effect carries a prompt or an attachment, then the terminal route; `declared` is `typed_submission`, `verified_composer_insertion`, `terminal_draft_path`, or `null` for nothing declared, and `package_digest` is the manifest digest the declaration was read from |
 
@@ -109,8 +119,10 @@ enhanced keyboard protocols. Each step's `command` is the driver's command as th
 and a test's `command` is its step's. A path in the evidence directory is written `<evidence>/...`,
 one in the temporary directory, where each run's own directory is, `<tmp>/...`, one in the Cargo
 target directory the host and the driver were built in `<target>/...`, one in the managed shell's
-packages `<shells>/...`, one in the tools directory `<tools>/...` and one in the home directory of
-whoever ran it `~/...`; the evidence directory itself is named as it is, and so is a system or
+packages `<shells>/...`, one in the tools directory `<tools>/...`, the build list entry file a driver
+reads `<entry>`, the generation folder it installs from `<generation>`, the file the driver's turns variable
+names `<turns>`, the account's name, where a step's words carry it, `{user}` and one in the home
+directory of whoever ran it `~/...`; the evidence directory itself is named as it is, and so is a system or
 runtime executable, since which one ran is the evidence.
 
 ## The build list
@@ -307,8 +319,8 @@ result's statement names each gateway part the record shows not run.
 
 A host serves the gateway route only to a build that the generation's index lists for the package.
 `--generation DIR` names the signed generation the real routes install packages from, by default
-`snapshots/development`, which lists a build only after a record shows it passing. Part 5b on the
-stand-in route installs the core repository's own fixture package whatever the generation is. For a run before the record, a
+`snapshots/development`, which lists a build only after a record shows it passing. Parts 5a and 5b on
+the stand-in route install the core repository's own fixture package whatever the generation is. For a run before the record, a
 candidate generation made with `kalareach-catalogue build --development --candidate` lists every
 pinned build with a `native` or `child` launch, without reading a qualification record; it is signed with development keys only, and the run says when its generation
 is one. A candidate is for a run on one machine and is no release.
@@ -391,7 +403,7 @@ runtimes and the system's directories. A part whose session searched or ran anyt
 launch did not run the pinned file, did not test the pinned build, and is recorded as not run,
 naming what ran.
 
-Before the first agent, the harness starts one session the way a person does, `kr new` with their
+The harness script, before the first agent, starts one session the way a person does, `kr new` with their
 own home, no agent and no choice of execution context, and checks that it names their login
 keychain as its default. After that check and after each part it reads everything SecurityAgent,
 which shows the system's keychain and authorisation dialogs, logged since a minute before its
@@ -405,6 +417,7 @@ answers from the stored decision and asks nobody, each coreauthd entry about the
 configured, released or evaluated a context not interactively, and coreauthd evaluated nothing
 interactively for anyone during the part. It also stops when the part's outcome does not list its
 process numbers. Each of these checks, the search of its evidence for a login's variable and the
-look at SecurityAgent's log runs whatever another found before the run stops.
+look at SecurityAgent's log runs whatever another found before the run stops. A record made from
+rows run one at a time shows none of these reads unless its steps do.
 
 `scripts/assemble-record.sh <inputs.json>` assembles a record from a run's steps, its parts table and the driver's result lines, in the form above and as the harness writes it. The run may come from any driver.

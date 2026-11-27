@@ -465,7 +465,8 @@ fn codex_build() -> QualifiedBuild {
 }
 
 /// The records as they stand name one build, Codex's: its record shows every one of the thirteen
-/// parts of section 12's cases passed against this release and the pinned executable, so the build
+/// parts of section 12's cases passed: eleven against this release and the pinned executable, and
+/// parts 5a and 5b on the stand-in agent, which ran the core repository's own package. So the build
 /// is named, and its entry carries one result for each capability the release declares, each with
 /// the digest of the record file. Every other pinned build is left out for the parts of its own
 /// record that did not pass, and a script or a wheel for naming no executable at all, and its entry
@@ -587,11 +588,14 @@ fn the_records_as_they_stand_name_the_codex_build_and_leave_the_others_out() {
             );
         }
     }
-    assert!(
+    assert_eq!(
         index
             .canonical_json()
             .expect("the index renders")
-            .contains("\"builds\"")
+            .matches("\"builds\"")
+            .count(),
+        1,
+        "the index names builds under one entry, and once"
     );
 }
 

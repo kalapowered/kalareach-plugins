@@ -76,8 +76,12 @@ build is named in its release's entry only when all of these hold:
   interpreter and a wheel is an archive, so neither names an executable a host runs;
 - its record is in good form and is for this release and this build: the release's version,
   manifest digest and attachment paths, and, as the build every part ran against, the first of the
-  record's `run.applications`, installed, with the build's application, version and SHA-256. The
-  newer build an upgrade part moved to is listed after it and qualifies nothing;
+  record's `run.applications`, installed, with the build's application, version and SHA-256. A part
+  whose entry says `"route": "stand_in"` ran against the core repository's own package and not
+  against the build. The pipeline counts such a pass for parts 5a and 5b only; a passed part
+  elsewhere on that route keeps the build out, and the build's statement names the parts that
+  passed on the stand-in agent. This holds while the core has no arm of part 5a against a real
+  agent. The newer build an upgrade part moved to is listed after it and qualifies nothing;
 - the record's run is whole: no failure outside its identifiers, no problem and no failed step;
 - no part failed, and every part of the eight cases passed. A part that did not run is not a pass,
   whatever kept it from running;

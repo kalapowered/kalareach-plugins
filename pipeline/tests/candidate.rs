@@ -88,6 +88,22 @@ fn a_pinned_build_whose_record_does_not_qualify_is_named_by_a_candidate_and_by_n
     let loaded = packages::load(&root()).expect("the repository loads");
     let release = unqualified_release(&loaded);
     let digest = pinned_unqualified_digest();
+    let omitted = loaded
+        .repository
+        .builds
+        .omitted()
+        .iter()
+        .find(|omitted| omitted.plugin_id == UNQUALIFIED)
+        .expect("the ordinary load leaves the pinned build out");
+    assert_eq!(
+        omitted.reasons,
+        [
+            "steps 2 did not exit cleanly",
+            "parts 1 failed",
+            "section 12 parts 1, 5b, 6b, 8b did not pass",
+        ],
+        "why the ordinary load leaves the pinned build of {UNQUALIFIED} out"
+    );
     assert!(
         !named_for(&loaded.repository.builds, &release).contains(&digest),
         "the pinned build of {UNQUALIFIED} {release} has a record that qualifies it, so a candidate \

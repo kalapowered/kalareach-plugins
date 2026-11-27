@@ -428,7 +428,7 @@ pub fn parts<'a>(record: &'a Value, identifier: &str) -> BTreeMap<&'a str, &'a V
 }
 
 /// Checks the steps: each one the run ran, with its command as run, its exit status and its log;
-/// the own-home check first, and a failure outside the identifiers exactly when it failed; and
+/// exactly one own-home check, and a failure outside the identifiers exactly when it failed; and
 /// every test that ran naming a part's step, with that step's command and outcome.
 fn check_steps(record: &Value, problems: &mut Vec<String>) {
     let steps = entries(&record["steps"]);
