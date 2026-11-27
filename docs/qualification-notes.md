@@ -172,16 +172,33 @@ unknown request, are the gateway's to establish. Status: not covered here.
 `fixtures/agents/kalareach/codex/0.155.1/macos-aarch64.json` records section 12's cases for Codex
 0.155.1 and version 0.4.0 of this package on macOS arm64. It has the `kalareach.conformance/1` form
 and the `kalareach.agent-qualification/1` extension. The run started at 2026-11-26T18:53:57Z and
-finished at 2026-11-27T17:18:33Z. The record names the core repository's commit `bf2938bae5f7` as
+finished at 2026-11-27T17:46:15Z. The record names the core repository's commit `bf2938bae5f7` as
 the host's and this repository's commit `4b08ad9745bd` as the one the run was made at, and marks
-neither as modified. It names the package by its version and by the SHA-256 of its `plugin.json`,
+neither as modified. For this repository, `modified` says whether the tree differed from that commit
+when the run began (`fixtures/agents/README.md`). The record names the package by its version and by
+the SHA-256 of its `plugin.json`,
 `93bf159ccfc1cc8cd222db2225f4a7ac2b476e76e318b9362ff5d34fb374c716`. That is the digest of the file
 in this tree.
 
-The run selected thirteen parts: 1, 2a, 2b, 2c, 3, 4, 5a, 5b, 6a, 6b, 7, 8a and 8b. It has fourteen
-steps, and each ended with exit status 0: a check that a session started with the person's own home
-keeps their login keychain as its default, then one step for each part. The record lists no failed
-step, no problem, no warning, no known difference and no failure outside its identifiers.
+The rows were started one at a time, by a runner script that this repository does not hold, and not
+by `scripts/e2e-agents.sh`. They read the build list's entry for this build from a file outside this
+tree, whose SHA-256 is `ff7381df4f41a0c651378655348886d57e11510677749ee5d97e2e7ac955f4fd`. This tree
+holds the same entry, from commit `42c1f1145dff73555e1c8dd27af11816177c51bc`, member for member,
+except `distribution`, `source` and `prefix` of the entry and of its `newer` build: the file lacks
+the first two, and it writes `prefix` differently from the list. `modified` says nothing of a file
+outside the tree, so the record states this in its one warning.
+
+The run selected fourteen parts: 1, 2a, 2b, 2c, 3, 4, 5a, 5b, 6a, 6b, 7, 8a, 8b and 14.03a. It has
+fifteen steps, and each ended with exit status 0. The record lists them in the order they ran: part
+6b, then parts 1, 7, 3, 4 and 2a, then a check that a session started with the person's own home
+keeps their login keychain as its default, then parts 8b, 5a, 5b, 2b, 2c, 8a, 6a and 14.03a. Each
+step's command is the command that ran, one test program started for one part or for the check,
+with the private values written as the placeholders `{user}`, `<shells>`, `<entry>`,
+`<generation>` and `<turns>`.
+Six parts, each with a login, ran before the own-home check. The check therefore shows the default
+keychain as a session saw it after them, the person's login keychain with `show-keychain-info`
+status 0, and nothing of the state before them. The record lists no failed step, no problem, no
+known difference and no failure outside its identifiers.
 
 The run installed the package from a candidate generation. The record names that generation by the
 SHA-256 and length of its signed index
@@ -191,13 +208,21 @@ every pinned build with a `native` or `child` launch without reading a record, a
 one machine (`fixtures/agents/README.md`). It is not the generation in `snapshots/development`. That
 generation, number 7, was built after this record, and its index names this build.
 
+A reader can rebuild the candidate generation. Take the tree of this repository's commit
+`4b08ad9745bd`, and run the catalogue program's `build --development --candidate --out <folder>
+--generation 6 --produced-at 1760000000000 --expires-at 2046-10-01T00:00:00Z`, with a folder outside
+every checkout and no `--replace`. The keys are the development keys that derive from the published
+phrase, so no key file is needed. The index that this writes has the SHA-256 and the length that the
+record gives.
+
 The record meets each condition that `docs/pipeline.md` sets for naming a build. The pinned file is
 a `native` launch. The record's first application is the pinned build, installed, with the build's
 application, version and SHA-256. The run is whole. No part failed, and every part of the eight
 cases passed. The release declares seven capabilities, and generation 7 carries one result for each,
-with the SHA-256 of this file, `6e835e156eb55ebf89a433b323e51e8f2a09abb4f9853f0e95c435506c17e8d5`. A
-result says that the version qualified. It does not say that a host exercised the capability
-(`docs/pipeline.md`).
+with the SHA-256 of this file,
+`b47aeca9af3f3d309d9bdf31e35f99e2ae968604e5a9f3aa1d943085aaeebcfa`, and the statement `parts 5a and
+5b passed on the stand-in agent; every other case part passed on macos-aarch64`. A result says that
+the version qualified. It does not say that a host exercised the capability (`docs/pipeline.md`).
 
 The pinned build is Codex 0.155.1, installed from
 `https://registry.npmjs.org/@openai/codex/-/codex-0.155.1.tgz` as the `darwin-arm64` build. The
@@ -209,22 +234,36 @@ list pins the same file as `bin/codex` in the prefix `codex/0.155.1-native` and 
 that the upgrade part moves to. It qualifies nothing. The record does not show how the prefix was
 laid out.
 
-The record gives each part a route. Eleven parts name the route `the pinned build`. Parts 5a and 5b
-name `the application stand-in`, and their entries say `"route": "stand_in"`. By the rule in
+The record gives each part a route. Eleven of the thirteen required parts name the route `the
+pinned build`, and so does part 14.03a. Parts 5a and 5b name `the application stand-in`, and their
+entries say `"route": "stand_in"`. They ran against the stand-in agent, which runs the core
+repository's own Codex package and not this tree's, because a kill or restart of the control
+daemon cannot be made safe beside a live agent that writes with a person's login. By the rule in
 `fixtures/agents/README.md`, a stand-in entry shows what the host does and says nothing of this
-release or of the agent.
+release or of the agent. The pipeline counts a stand-in pass for parts 5a and 5b only, and the
+statement above names them.
 
-The parts, as the record states them. All thirteen passed. Each entry below follows the words of the
-part's test in the record:
+The parts, as the record states them. All thirteen required parts passed. Each entry below follows
+the words of the part's test in the record:
 
 - Part 1, pinned build, 2 turns: a device prompts the agent and adds an image, and the local
-  terminal shows the same execution.
+  terminal shows the same execution. The prompt asked for the sum of 901 and 775, and the agent
+  answered 1676. The paired device uploaded a 96-byte image of type `image/png`, the host presented
+  it as an image, and the agent named its colour, `red`. The record holds one image, and what it
+  publishes of the prompt is what was sent.
 - Part 2a, pinned build, 5 turns: slash commands, interrupts, queued prompts and steering each work
-  from a device at the agent's terminal.
+  from a device at the agent's terminal. The agent answered the reads `agent.capabilities` and
+  `agent.commands` without error. The slash command `/pwd` showed `Current working directory:`, and
+  the interrupt key was followed by `Conversation interrupted`. A prompt queued while the agent was
+  busy was answered, `1450`, in a new turn. A steering prompt reached the turn that was running
+  (`steered` is true) and started no new turn. The detection reads one `native_terminal` instance,
+  and the typed calls of part 2b are refused as there. The part's control cannot break the property
+  (`breaks_property` is false). The record gives the reason: the controls are the agent's own
+  terminal keys, which only the agent could refuse, so the checks were shown wrong orders instead.
 - Part 2b, pinned build: an agent on its terminal route is advertised no typed capability, and every
-  typed action is refused. The evidence shows the launched execution as one instance in
-  `native_terminal` mode. It was not launched through the integration, so no registration names it
-  and none of its bridges is admitted. `agent.prompt.submit`, `agent.prompt.queue`,
+  typed action is refused. Each of the part's two reads shows the launched execution as one
+  instance in `native_terminal` mode. It was not launched through the integration, so no
+  registration names it and none of its bridges is admitted. `agent.prompt.submit`, `agent.prompt.queue`,
   `agent.turn.steer` and `agent.turn.cancel` were refused with `UNSUPPORTED_CAPABILITY` because the
   instance has no upstream transport bound, and `agent.approval.respond` with `STALE_SESSION`. All
   seven capability states read `not_tested`. Ten observations made wrong on purpose were rejected.
@@ -233,12 +272,20 @@ part's test in the record:
   refused again. After the agent ended, `thread.refresh` was refused with `STALE_SESSION`, which is
   the part's control.
 - Part 3, pinned build, 2 turns: a local and a remote answer raced to one approval resolve it once.
+  The device's answer came back `QUESTION_RESOLVED` and the device did not win (`device_won` is
+  false), and the agent's record holds one answer. The control, a second approval answered by the
+  local terminal alone, breaks the property, and the check noticed (`breaks_property` and `check`
+  are true).
 - Part 4, pinned build, 2 turns: a disconnection after the agent took a prompt leaves one reply and
-  no duplicate work.
-- Part 5a, stand-in route: a control daemon crash leaves the agent and its local terminal running.
+  no duplicate work. At the drop the agent held 1 prompt and had finished no reply. After the
+  reconnect it still held 1 prompt, it had finished 1 reply, and one row of the screen held the
+  reply's end marker. The stale input was refused with `AMBIGUOUS_ATTACHMENT`. The control, the same
+  prompt sent again, gave 2 prompts and 2 finished replies, so it breaks the property, and the check
+  noticed.
+- Part 5a, stand-in agent: a control daemon crash leaves the agent and its local terminal running.
   After the restart the instance was still one `native_terminal` instance, with the refusals of part
-  2b.
-- Part 5b, stand-in route: a daemon killed with a request pending leaves the agent, and the
+  2b. The control, the agent ended by its recorded identity, breaks the property.
+- Part 5b, stand-in agent: a daemon killed with a request pending leaves the agent, and the
   restarted daemon serves the same request. The server received 1 answer, and the pending resource
   was compared field for field. After the worker ended, three requests were refused with
   `SessionClosed` and the session read `Closed`.
@@ -246,66 +293,112 @@ part's test in the record:
   gets the terminal route. The first agent's image was unchanged, and both detections show one
   `native_terminal` instance. The newer build was charged no turn.
 - Part 6b, pinned build, 1 turn: a process started after an upgrade keeps its first build, and a
-  build outside the range is refused the typed routes. The newer build was charged no turn.
+  build outside the range is refused the typed routes. The first process's image was unchanged and
+  the second process ran the newer image. The second instance has no gateway, a fresh approval was
+  interpreted by the pinned table, and one server ran. The newer build was charged no turn.
 - Part 7, pinned build, 1 turn: a second process on the same saved conversation is another execution
-  and is not merged.
+  and is not merged. The second process started with `resume` and the saved conversation, on the
+  same conversation as the first (`same_conversation` is true), and the agent refused it with the
+  words `This conversation is open in another app`. The record gives the second process's start as
+  `resume` and a placeholder for the conversation. It says that the second process did not end after
+  the refusal and that it kept running read-only. It also says that no second execution ran, so
+  there was no second session to type a marker from. The part's control, the second session's marker
+  typed into the first, cannot break the property (`breaks_property` is false), and the record gives
+  that reason. The first session shows one `native_terminal` instance.
 - Part 8a, pinned build: forged titles, transcripts, identifiers and hook input leave the host
   unchanged. The evidence lists a forged title, a forged transcript path and twelve timed probes of
   the hook forwarder and the channel. One warm-up run of the forwarder came before them. It took
   455 ms, and the record says its time is not held to the bound, because the system assesses a file
   the first time a process under the host's daemon runs it. The twelve timed probes took 5 to 7 ms
-  each. The part's control cannot break the property (`breaks_property` is false). The record gives the
-  reason: a forgery that changes the host's state needs a registration the host issued, and this
+  each. The part's control cannot break the property (`breaks_property` is false). The record gives
+  the reason: a forgery that changes the host's state needs a registration the host issued, and this
   host issues one to no connector.
 - Part 8b, pinned build: a launch whose first presentation carries a forged credential is refused at
   the launch check, and the host's own credential for the same launch is admitted. The record shows
   the forged presentation refused, the gateway serving after the same launch was admitted, one
   process identity and one server.
 
-The parts charged 13 turns to the account: 2 in part 1, 5 in 2a, 2 in 3, 2 in 4, 1 in 6b and 1 in 7.
+The parts charged 13 turns to the account: 2 in part 1, 5 in 2a, 2 in 3, 2 in 4, 1 in 6b and 1 in
+7. The other parts charged none.
 
-The two typed-path parts, 14.03a and 14.03b, did not run, and the pipeline does not require them.
-Part 14.03a, a path typed at the agent is terminal input that reaches its composer, has the outcome
-`not_run` and the reason `not selected in this run`. The record gives no other reason, so it does not
-say whether the part was tried or why it ended. The record of 2026-11-06 gave a reason: the build
-shows no composer without an account. Part 14.03b, which needs draft reads, did not run because no
-method reads a draft's attachment state and no adapter reports that an agent accepted one. That
-reason has not changed since the record of 2026-11-06.
+The two typed-path parts, 14.03a and 14.03b, did not pass, and the pipeline requires neither. Part
+14.03a, a path typed at the agent is terminal input that reaches its composer, ran as the fifteenth
+step against the pinned build and ended `not_run`, with the reason `the build shows no composer
+without an account`. It charged no turn. Part 14.03b, which needs draft reads, did not run because
+no method reads a draft's attachment state and no adapter reports that an agent accepted one. The
+record of 2026-11-06 gave the same reason for part 14.03b, and gave the reason of part 14.03a with a
+note on where an account comes from.
 
-Four limits of the record follow.
+These limits of the record follow.
 
-- It holds an observation for seven parts only: 2b, 2c, 5a, 5b, 6a, 8a and 8b. For parts 1, 2a, 3,
-  4, 6b and 7 it holds the test's name, the outcome, the route, the turns charged and an empty
-  `person_files`. It holds no control for them, and `fixtures/agents/README.md` says that parts 3, 4
-  and 7 have one. Parts 1, 2a, 3, 4, 6b and 7 charged turns to the account, so the record does not
-  show the route their requests took.
-- Where it shows a launch (2b, 2c, 5a, 6a and 8a), the launch is a `native_terminal` instance that
-  no registration names. Parts 2b, 2c, 5a and 6a show every typed call refused. Part 2b states all
-  seven capabilities `not_tested`, and states that detection is unproven: no read the host serves
+- Parts 5a and 5b show what the host does with the stand-in agent. They say nothing of Codex 0.155.1
+  or of this release, and no other part may count from the stand-in route.
+- Controls. Parts 1, 5b, 6b and 8b state no control. The control of parts 2a, 7 and 8a cannot break
+  the property (`breaks_property` is false), and each gives its reason. The control of part 2b,
+  terminal input under the lease, cannot either, and gives none; its second control, the agent ended
+  by its recorded identity, does break the property. Parts 2c, 3, 4, 5a and 6a state controls that
+  break it.
+- The record shows twelve instances, in parts 2a, 2b, 2c, 5a, 6a, 7 and 8a. Each is a
+  `native_terminal` instance with bypass `disabled`, and each carries the same refusal words: it was
+  not launched through the integration, so no registration names it and none of its bridges is
+  admitted. Parts 2b, 2c and 8a also hold a `native_terminal` mark that carries no such words. It
+  belongs to the host's binding of the thread, which reads revision 1 and no suspension, and not to
+  an instance. Parts 2a, 2b, 2c, 5a and 6a show typed calls refused. Parts 2a and 2b state all seven
+  capabilities `not_tested`, and part 2b states that detection is unproven: no read the host serves
   names the executable or the release that an instance it detected runs. The record shows no request
   that a typed route carried to Codex.
 - It holds no frame of Codex's App Server, no method name of it and no row of the connector table.
   It measures none of the three assumptions and closes none of the three limits that the package
-  README states under "What is measured, and what is not". Part 3 passed, but the record keeps no
-  observation of it, so the README's third assumption, an approval that a device and the terminal
-  answer together, stays as the README states it.
+  README states under "What is measured, and what is not". Part 3 passed, and the record keeps its
+  observation and its control. That leaves the README's third assumption, an approval that a device
+  and the terminal answer together, as the README states it: the README is a package file, and this
+  record does not change it.
 - It does not say how the run reached the model, which provider or account served the turns, or
-  which model answered. The build list declares the account for this build: its `account.login`
-  reads `vendor subscription account served by the local subscription proxy`, its `account.home` is
-  `run`, and its `config_directory` sets a Codex home of the run's own whose `config.toml` selects a
-  provider at a loopback address with the Responses wire API and no request retries. The record
-  repeats none of this. It shows none of the sign-in with a ChatGPT account, `codex login status`,
-  the token refresh, the vendor's own endpoint and its websocket transport.
+  which model answered. It repeats the build list's description of the login, `vendor subscription
+  account served by the local subscription proxy`, in parts 2a and 7. Parts 1, 2a, 3, 4, 6b and 7
+  each hold a `keys` check of the login's variable: the search of the run's folder was complete, it
+  found no key held, and the run's folder was gone. Parts 2b, 2c, 6a, 8a, 8b and 14.03a hold only
+  the last of the three. The record repeats none of the rest of what the build list declares for the
+  account: its `account.home` is `run`, and its `config_directory`
+  sets a Codex home of the run's own whose `config.toml` selects a provider at a loopback address
+  with the Responses wire API and no request retries. It shows none of the sign-in with a ChatGPT
+  account, `codex login status`, the token refresh, the vendor's own endpoint and its websocket
+  transport.
+- The rows were not run by `scripts/e2e-agents.sh`, which reads the system log for SecurityAgent
+  after each part and for coreauthd and tccd after each part with a login. The record's steps are
+  the driver's test programs alone, it holds no result of those reads, and the logs of its fifteen
+  rows, kept outside this repository, show none. The record therefore does not show that no system dialog opened during a
+  part. Its one trace of the system's authorisation state is the own-home check, which ran after
+  six parts.
 
 The record compares the entry count of `~/.codex`, the Codex directory in the home of the person who
-ran the harness, before and after parts 2b, 2c, 6a, 8a and 8b. The counts are equal in each part,
-and `changed` is false. The count differs between parts, from 12,981 to 12,997, so something outside
-these parts changed the directory between them. The record does not say what. The record names no
-file of the directory and no digest. A count cannot show a read, or a change that keeps the count.
+ran the harness, before and after each part that ran against the pinned build: parts 1, 2a, 2b, 2c,
+3, 4, 6a, 6b, 7, 8a and 8b, and 14.03a. The counts are equal in each part, and `changed` is false.
+Parts 5a and 5b, on the stand-in agent, hold no count. In the order the steps ran, the counts rise
+from 12,790 in part 6b to 12,999 in part 14.03a and never fall, so something outside these parts
+changed the directory between them. The record does not say what. The record names no file of the
+directory and no digest. A count cannot show a read, or a change that keeps the count.
+
+The record was searched for private values before it was committed. Four searches ran, and each
+found nothing:
+
+- an address: 0 texts of the form name@domain, and 0 occurrences of the one address that the person's
+  git settings name;
+- the account's digest: 0 occurrences of any of the 15 digests that the rows' logs name;
+- the identifier of part 7's saved conversation: 0 occurrences of its one identifier;
+- token forms: 0 texts of any of nine forms (an `sk-` key, a signed token, a GitHub token, a Slack
+  token, an AWS key identifier, a bearer value, an authorization header, a private key block, and a
+  long mixed-case secret).
+
+The search for the value of the login variable did not run. The rows' logs hold a digest of the
+account's identifier only under a salt that was made at random for each attempt and kept nowhere, so
+the record cannot be searched for the value by digest, and no one read the value to search for it
+directly.
 
 Status: exercised behaviour of the host with this build and release 0.4.0, part by part as above.
-All thirteen required parts passed, two of them on the stand-in route. The record shows none of the
-table's classifications at work, because it keeps no frame of Codex's App Server.
+All thirteen required parts passed, eleven against the pinned build and two, 5a and 5b, on the
+stand-in agent, which shows what the host does and says nothing of Codex. The record shows none of
+the table's classifications at work, because it keeps no frame of Codex's App Server.
 
 Release 0.3.0's `plugin.json` pins its source at `cb39424b9bf23de38b91d6cbc787d4824439877d`. The
 record of 2026-11-06, made for that release, named `fa8869d90c31c6d1450e40fb6436852f22260edb` as its
