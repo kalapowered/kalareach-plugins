@@ -201,10 +201,10 @@ applicable where a record shows them not run. `docs/pipeline.md` says what that 
 is added by committing a record that qualifies it, and withdrawn by removing its pin or by a newly
 measured record that no longer qualifies; the next generation names it or leaves it out, and the
 release keeps its version and digest. Each of the qualification results are written by the pipeline
-into the entry beside the respective build, from the same record. The pipeline writes one result for
-each of the capabilities the release declares, each containing the digest of the record's bytes (a
-candidate generation will not have any). A host's release record, in the core repository, refuses a
-listed build whose plugin entry carries no result.
+into the entry beside the respective build, from the same record. For each named build, the
+pipeline writes one result for each capability the release declares, each containing the digest of
+the record's bytes (a candidate generation will not have any). A host's release record, in the core
+repository, refuses a listed build whose plugin entry carries no result.
 For details about the content of these results, as well as the checks which can be performed when
 inspecting a generation, see `docs/pipeline.md`
 

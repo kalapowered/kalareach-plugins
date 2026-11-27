@@ -80,7 +80,9 @@ build is named in its release's entry only when all of these hold:
   newer build an upgrade part moved to is listed after it and qualifies nothing;
 - the record's run is whole: no failure outside its identifiers, no problem and no failed step;
 - no part failed, and every part of the eight cases passed. A part that did not run is not a pass,
-  whatever kept it from running.
+  whatever kept it from running;
+- its release declares a capability, since a result is written for each one. A release that declares
+  none names no build in an ordinary generation, whatever its record shows.
 
 One package is named on weaker evidence than the list above asks for. OpenCode
 (`kalareach/opencode`) can be named on what its terminal route shows: its parts 5b, 6b and 8b run
@@ -111,9 +113,9 @@ record that qualified it, and has these fields:
 - `subject` is the build's application and version, such as `claude-code 2.1.278`;
 - `state` is `version_qualified` and `source` is `signed_record`. The result says that the version
   was qualified. It does not say that a host has been checked, and it grants nothing;
-- `profile_digest` is the SHA-256 of the record file's bytes as committed, which
-  `git show <commit>:<path> | sha256sum` prints. A change to the file, a change of whitespace
-  included, gives a new digest;
+- `profile_digest` is the SHA-256 of the record file's bytes as read from the checkout, which
+  `git show <commit>:<path> | sha256sum` prints only when those bytes equal the committed blob. A
+  change to the file, a change of whitespace included, gives a new digest;
 - `statement` names the platform of the build and says what the record shows. For a build whose
   every part of section 12's cases passed it reads
   `every case of the version qualification passed on macos-aarch64`. For OpenCode, whose gateway
@@ -133,10 +135,11 @@ refuse any other generation whose entry names a build and declares no capability
 
 What a reader of a generation can verify: the signature over the index, which covers the results;
 that every entry's results agree with its builds, which `build` checks before it signs and `verify`
-checks again; that each `profile_digest` equals the SHA-256 of
-`fixtures/agents/<publisher>/<plugin>/<build version>/<platform>.json` as committed at the commit
-the generation was built from (`git show <commit>:<path> | sha256sum`); and, by running `validate`
-at that commit, that the build qualifies. A generation does not record that commit. For the
+checks again; that each `profile_digest` equals the SHA-256 of the bytes of
+`fixtures/agents/<publisher>/<plugin>/<build version>/<platform>.json` as read from a checkout of the
+commit the generation was built from (`git show <commit>:<path> | sha256sum` prints the same digest
+only when those bytes equal the committed blob); and, by running `validate` at that commit, that the
+build qualifies. A generation does not record that commit. For the
 generation the core repository bundles, its `bundled-plugins.lock` names it (`source.commit`); for
 another, a reader rebuilds the generation at a commit and compares. A result does not show that
 the run was honest, and the digest binds the result to the bytes of the record, not to the truth of

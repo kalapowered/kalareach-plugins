@@ -30,7 +30,7 @@
 //!   package on [`TERMINAL_EVIDENCE_PACKAGES`] while its release declares no command integration
 //!   and no native bridge;
 //! - its release declares a capability, since a result is written for each one: a release that
-//!   declares none names no build, whatever its record shows.
+//!   declares none names no build in an ordinary generation, whatever its record shows.
 //!
 //! A build that misses any of them is left out, and [`Builds::omitted`] says why. Input that
 //! cannot be read for what it shows is refused instead: a build list or a record that breaks its
