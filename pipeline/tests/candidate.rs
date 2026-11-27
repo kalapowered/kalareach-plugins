@@ -6,14 +6,17 @@ use std::process::{Command, Output};
 
 use kalareach_catalogue::{builds, development, packages, repository_root, tuf};
 
-const CODEX: &str = "kalareach/codex";
+/// A package whose pinned build has a `native` launch and whose record does not qualify it, so the
+/// ordinary load leaves the build out and a candidate names it. Name another package here if a
+/// record ever qualifies this one.
+const UNQUALIFIED: &str = "kalareach/claude-code";
 
 fn root() -> PathBuf {
     repository_root(Path::new(env!("CARGO_MANIFEST_DIR"))).expect("the repository root is above us")
 }
 
-/// The SHA-256 the build list pins for the Codex build, which no record yet shows passing.
-fn pinned_codex_digest() -> String {
+/// The SHA-256 the build list pins for the build of `UNQUALIFIED`, which no record shows passing.
+fn pinned_unqualified_digest() -> String {
     let list: serde_json::Value = serde_json::from_slice(
         &std::fs::read(root().join("fixtures/agents/builds.json")).expect("the build list reads"),
     )
@@ -22,30 +25,30 @@ fn pinned_codex_digest() -> String {
         .as_array()
         .into_iter()
         .flatten()
-        .find(|build| build["package"] == CODEX)
+        .find(|build| build["package"] == UNQUALIFIED)
         .and_then(|build| build["sha256"].as_str())
-        .expect("the build list pins a Codex build")
+        .expect("the build list pins a build of the package")
         .to_owned()
 }
 
-/// The digests of the executables the Codex release `release` names in `builds`.
+/// The digests of the executables the release `release` of `UNQUALIFIED` names in `builds`.
 fn named_for(builds: &builds::Builds, release: &str) -> Vec<String> {
     builds
-        .for_release(CODEX, release)
+        .for_release(UNQUALIFIED, release)
         .iter()
         .map(|build| build.executable_digest.to_string())
         .collect()
 }
 
-/// The release of the Codex package this repository publishes.
-fn codex_release(loaded: &packages::Loaded) -> String {
+/// The release of the `UNQUALIFIED` package this repository publishes.
+fn unqualified_release(loaded: &packages::Loaded) -> String {
     loaded
         .repository
         .packages
         .iter()
-        .find(|package| package.package.manifest.plugin_id().to_string() == CODEX)
+        .find(|package| package.package.manifest.plugin_id().to_string() == UNQUALIFIED)
         .map(|package| package.package.manifest.version.to_string())
-        .expect("the repository publishes the Codex package")
+        .expect("the repository publishes the package")
 }
 
 /// Runs `kalareach-catalogue build` over this repository with `arguments`, in an environment with no
@@ -78,15 +81,17 @@ fn stderr(output: &Output) -> String {
     String::from_utf8_lossy(&output.stderr).into_owned()
 }
 
-/// A pinned build with no record is left out of a release's entry, and a candidate names it.
+/// A pinned build whose record does not qualify it is left out of a release's entry, and a
+/// candidate names it.
 #[test]
-fn a_pinned_build_with_no_record_is_named_by_a_candidate_and_by_no_other_load() {
+fn a_pinned_build_whose_record_does_not_qualify_is_named_by_a_candidate_and_by_no_other_load() {
     let loaded = packages::load(&root()).expect("the repository loads");
-    let release = codex_release(&loaded);
-    let digest = pinned_codex_digest();
+    let release = unqualified_release(&loaded);
+    let digest = pinned_unqualified_digest();
     assert!(
         !named_for(&loaded.repository.builds, &release).contains(&digest),
-        "the Codex build has a record for release {release}, so a candidate shows nothing new"
+        "the pinned build of {UNQUALIFIED} {release} has a record that qualifies it, so a candidate \
+         shows nothing new"
     );
     assert!(!loaded.repository.builds.is_candidate());
     let candidate = builds::load_candidate(&root(), &loaded.repository.packages)
@@ -94,7 +99,7 @@ fn a_pinned_build_with_no_record_is_named_by_a_candidate_and_by_no_other_load() 
     assert!(candidate.is_candidate());
     assert!(
         named_for(&candidate, &release).contains(&digest),
-        "a candidate names the pinned Codex build whose digest is {digest}"
+        "a candidate names the pinned build of {UNQUALIFIED} whose digest is {digest}"
     );
 }
 
@@ -125,17 +130,17 @@ async fn a_candidate_generation_lists_the_pinned_build_and_says_candidate_in_its
         printed.contains("pinned build(s) that no qualification record shows passing"),
         "{printed}"
     );
-    assert!(printed.contains(&pinned_codex_digest()), "{printed}");
+    assert!(printed.contains(&pinned_unqualified_digest()), "{printed}");
     let verified = tuf::verify(&candidate, false)
         .await
         .expect("the candidate generation verifies");
     assert!(verified.candidate, "the signed metadata says candidate");
-    let digest = pinned_codex_digest();
+    let digest = pinned_unqualified_digest();
     let listed = verified
         .index
         .entries
         .iter()
-        .filter(|entry| format!("{}/{}", entry.publisher_id, entry.plugin_name) == CODEX)
+        .filter(|entry| format!("{}/{}", entry.publisher_id, entry.plugin_name) == UNQUALIFIED)
         .flat_map(|entry| entry.builds.iter())
         .any(|build| build.executable_digest.to_string() == digest);
     assert!(listed, "the index lists the pinned build {digest}");
