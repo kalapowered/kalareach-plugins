@@ -589,9 +589,12 @@ fn check_identifier(
             ));
         }
         // A gateway test says its route twice, in its own `route` member and in the route its
-        // evidence names; a record whose two marks differ says two things of one part.
-        if (test["route"] == "stand_in")
-            != (test["evidence"]["route"] == "the application stand-in")
+        // evidence names; a record whose two marks differ says two things of one part. A part with
+        // no result line has the table's mark and no evidence, so it says its route once.
+        let says_it_twice = outcome != "not_run" || test["evidence"].get("route").is_some();
+        if says_it_twice
+            && (test["route"] == "stand_in")
+                != (test["evidence"]["route"] == "the application stand-in")
         {
             problems.push(format!(
                 "{identifier} part {part}: the test's route and its evidence's route disagree"

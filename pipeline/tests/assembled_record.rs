@@ -311,6 +311,23 @@ fn an_assembled_record_is_in_the_form_records_are_held_to() {
     assert_eq!(compared, 5, "every part that ran names its step");
 }
 
+/// A stand-in part with no result line, here the second one (5b), says its route once, by the
+/// table's mark, and has no evidence to say it twice: the record is still in the form records are
+/// held to.
+#[test]
+fn a_stand_in_part_with_no_result_line_leaves_the_record_in_the_form_records_are_held_to() {
+    let record = assembled(&inputs_for_the_package(&["2b", "5a"]));
+    let unselected = test_of(&record, "5b");
+    assert_eq!(unselected["outcome"], "not_run");
+    assert_eq!(unselected["route"], "stand_in");
+    assert!(unselected.get("evidence").is_none());
+    let platform = records::Platform::parse("macos-aarch64").expect("a platform");
+    assert_eq!(
+        records::form_problems(&record, &platform),
+        Vec::<String>::new()
+    );
+}
+
 /// An assembled record is what the record's writer publishes: the writer, applied to it again,
 /// changes nothing, and no text of it names the run's account, its home or the folders it ran in.
 #[test]

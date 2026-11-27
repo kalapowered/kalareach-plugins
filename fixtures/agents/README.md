@@ -327,7 +327,8 @@ and 5b is not a pass and keeps the build out, and a record that shows both gatew
 and parts on that route keeps it out too, since one statement cannot name both. A gateway test
 says its route twice, in its own `route` member and in the route its evidence names (`the
 application stand-in` or `the pinned build`); a record whose two marks disagree is not in good
-form, and the repository is refused.
+form, and the repository is refused. A part with no result line has no evidence, so it says its
+route once and this rule does not apply to it.
 
 ## Running it
 
