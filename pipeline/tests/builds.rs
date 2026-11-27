@@ -814,6 +814,85 @@ fn a_failed_gateway_part_of_opencode_still_leaves_the_build_out() {
     );
 }
 
+/// Makes the copy of the OpenCode package in `directory` ask for no capability: the manifest lists
+/// none and declares no action, and the presentation keeps its text and drops the progress and the
+/// controls, which need a capability and an action. The manifest follows the changed document's
+/// digest and size, and the record follows the changed manifest. The SDK's own check accepts what
+/// is left.
+fn ask_for_no_capability_in_opencode_copy(directory: &Path) {
+    let package = directory.join("plugins/kalareach/opencode");
+    let presentation_path = package.join("presentation.json");
+    let mut presentation = read_json(&presentation_path);
+    presentation["nodes"] = json!([presentation["nodes"][0].clone()]);
+    presentation["voice"] = json!({
+        "status_nodes": [],
+        "choice_controls": [],
+        "detail_nodes": ["overview"],
+    });
+    write_json(&presentation_path, &presentation);
+    let document = std::fs::read(&presentation_path).expect("the document reads");
+
+    let manifest_path = package.join("plugin.json");
+    let mut manifest = read_json(&manifest_path);
+    manifest["capabilities"] = json!([]);
+    manifest["actions"] = json!([]);
+    for payload in manifest["payloads"]
+        .as_array_mut()
+        .expect("the manifest lists its payloads")
+    {
+        if payload["role"] == "presentation" {
+            payload["digest"] = json!(PayloadDigest::of(&document).to_string());
+            payload["size_bytes"] = json!(document.len().to_string());
+        }
+    }
+    write_json(&manifest_path, &manifest);
+    let record_path = directory.join(OPENCODE_RECORD);
+    let mut record = read_json(&record_path);
+    record_follows_package(directory, "opencode", &mut record);
+    write_json(&record_path, &record);
+}
+
+/// A release that declares no capability has nothing a result could state, so its build is left out
+/// with a reason, whatever its record shows, and its entry names no build. The package is one the
+/// SDK's check accepts, so the repository loads and the build is not refused; it is left out.
+#[test]
+fn a_build_of_a_release_that_declares_no_capability_is_left_out() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    opencode_repository(
+        &repository,
+        "opencode",
+        OPENCODE_RECORD,
+        &opencode_record_with(&[]),
+    );
+    ask_for_no_capability_in_opencode_copy(&repository);
+
+    let loaded = packages::load(&repository).expect("the repository loads");
+    assert!(
+        loaded.rejected.is_empty(),
+        "the package passes the SDK's check: {:?}",
+        loaded.rejected
+    );
+    assert_eq!(loaded.repository.builds.named().count(), 0);
+    let omitted = loaded.repository.builds.omitted();
+    assert_eq!(omitted.len(), 1, "{omitted:?}");
+    assert_eq!(omitted[0].reasons.len(), 1, "{:?}", omitted[0].reasons);
+    assert!(
+        omitted[0].reasons[0].contains("declares no capability"),
+        "{:?}",
+        omitted[0].reasons
+    );
+    let index = index_of(&loaded.repository);
+    let entry = index
+        .entries
+        .iter()
+        .find(|entry| entry.plugin_id.as_str() == "kalareach/opencode")
+        .expect("the index carries the package");
+    assert!(entry.capabilities.is_empty());
+    assert!(entry.builds.is_empty());
+    assert!(entry.qualification.is_empty());
+}
+
 /// Declares a gateway in the copy of the OpenCode package in `directory`, as the Claude Code package
 /// declares its own: `member` of the manifest and the capability it asks for, and the record's
 /// manifest digest follows the changed manifest.
@@ -1850,7 +1929,7 @@ fn the_results_of_two_builds_follow_the_builds_order() {
 
 /// The statement says exactly what the record shows. OpenCode is named on its terminal evidence, so
 /// a gateway part that did not run is carried as not applicable, each on its own: the statement
-/// names the parts that did not run and says that every other part passed.
+/// names the parts that did not run and says that every other case part passed.
 #[test]
 fn the_statement_names_the_gateway_parts_that_did_not_run_and_no_others() {
     let temporary = tempfile::tempdir().expect("a temporary directory");
@@ -1858,31 +1937,31 @@ fn the_statement_names_the_gateway_parts_that_did_not_run_and_no_others() {
         (&[], PASSED_ON_MACOS),
         (
             &["5b"],
-            "5b not run (no gateway); every other part passed on macos-aarch64",
+            "5b not run (no gateway); every other case part passed on macos-aarch64",
         ),
         (
             &["6b"],
-            "6b not run (no gateway); every other part passed on macos-aarch64",
+            "6b not run (no gateway); every other case part passed on macos-aarch64",
         ),
         (
             &["8b"],
-            "8b not run (no gateway); every other part passed on macos-aarch64",
+            "8b not run (no gateway); every other case part passed on macos-aarch64",
         ),
         (
             &["5b", "6b"],
-            "5b, 6b not run (no gateway); every other part passed on macos-aarch64",
+            "5b, 6b not run (no gateway); every other case part passed on macos-aarch64",
         ),
         (
             &["5b", "8b"],
-            "5b, 8b not run (no gateway); every other part passed on macos-aarch64",
+            "5b, 8b not run (no gateway); every other case part passed on macos-aarch64",
         ),
         (
             &["6b", "8b"],
-            "6b, 8b not run (no gateway); every other part passed on macos-aarch64",
+            "6b, 8b not run (no gateway); every other case part passed on macos-aarch64",
         ),
         (
             &["5b", "6b", "8b"],
-            "5b, 6b, 8b not run (no gateway); every other part passed on macos-aarch64",
+            "5b, 6b, 8b not run (no gateway); every other case part passed on macos-aarch64",
         ),
     ];
     for (number, (not_run, statement)) in cases.iter().enumerate() {
@@ -1905,6 +1984,28 @@ fn the_statement_names_the_gateway_parts_that_did_not_run_and_no_others() {
             "not run: {not_run:?}"
         );
     }
+}
+
+/// The statement speaks of the parts of section 12's cases only. A record can carry a typed-path
+/// part, 14.03a or 14.03b, as not run and its build is still named, so a statement must not say that
+/// every part passed: OpenCode's record with 5b and 14.03b not run is stated as 5b not run and every
+/// other case part passed.
+#[test]
+fn the_statement_speaks_of_the_cases_only_when_a_typed_path_part_did_not_run() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    let record = with_outcome(&opencode_record_with(&["5b"]), "14.03b", "not_run");
+    opencode_repository(&repository, "opencode", OPENCODE_RECORD, &record);
+    assert_eq!(
+        entry_results(&repository, "kalareach/opencode"),
+        results_of(
+            &OPENCODE_CAPABILITY_IDS,
+            "0.2.1",
+            "opencode 1.18.31",
+            digest_of_file(&repository, OPENCODE_RECORD),
+            "5b not run (no gateway); every other case part passed on macos-aarch64",
+        )
+    );
 }
 
 /// An entry that names no build carries no result: a build left out for a part that did not pass
@@ -2354,12 +2455,13 @@ fn every_statement_fits_the_host_s_reason_for_every_capability_on_every_platform
                     let id = builds::capability_id(*capability);
                     CapabilityId::new(id.as_str()).expect("an identifier");
                     let reason = format!("{}: {explanation}. {statement}", capability.as_str());
-                    assert!(reason.chars().count() <= DisabledReason::LIMIT, "{reason}");
+                    DisabledReason::new(reason.as_str())
+                        .unwrap_or_else(|source| panic!("{reason}: {source}"));
                 }
             }
         }
     }
-    assert_eq!(longest, 75);
+    assert_eq!(longest, 80);
 }
 
 /// A subject is an application and a version in a label, which the SDK bounds; a build whose pair
