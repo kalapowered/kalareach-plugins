@@ -178,7 +178,9 @@ def stop_classes: {
 };
 
 # The host's error codes, and the name the host's own code gives each (AMBIGUOUS_ATTACHMENT is
-# AmbiguousAttachment), which a part writes where it names the error a call was refused with.
+# AmbiguousAttachment), which a part writes where it names the error a call was refused with. A
+# record publishes that error as the code (code_named), never as the written name; a code stands as
+# it is, since the redaction is applied to a published record again.
 def known_error_codes: ["INVALID_ARGUMENT", "UNSUPPORTED_SCHEMA", "UNSUPPORTED_CAPABILITY", "PERMISSION_DENIED", "PAIRING_EXPIRED", "PAIRING_REJECTED", "PAIRING_AUTH_FAILED", "PAIRING_ATTEMPTS_EXHAUSTED", "RENDEZVOUS_UNAVAILABLE", "RENDEZVOUS_CONFIG_ERROR", "UNKNOWN_SESSION", "AMBIGUOUS_SESSION", "AMBIGUOUS_ATTACHMENT", "TERMINAL_UNAVAILABLE", "TERMINAL_PROBE_FAILED", "INPUT_INCOMPATIBLE", "SESSION_CLOSED", "SESSION_LIMIT", "RESOURCE_UNAVAILABLE", "HOST_NOT_CONFIGURED", "ENVIRONMENT_UNAVAILABLE", "DESKTOP_UNAVAILABLE", "STALE_SESSION", "LEASE_LOST", "GEOMETRY_NOT_OWNER", "DRAFT_CONFLICT", "EDITOR_BUSY", "ID_CONFLICT", "UPSTREAM_UNAVAILABLE", "OUTCOME_UNKNOWN", "RESYNC_REQUIRED", "QUOTA_EXCEEDED", "RATE_LIMITED", "SERVICE_CAPACITY", "CLOCK_UNTRUSTED", "STORAGE_UNAVAILABLE", "SHELL_INTEGRATION_UNSUPPORTED", "ATTACHMENT_INTEGRITY", "REPOSITORY_UNTRUSTED", "PACKAGE_UNAVAILABLE_OFFLINE", "PLUGIN_GRANT_REQUIRED", "PLUGIN_DISABLED", "QUESTION_RESOLVED", "QUESTION_EXPIRED", "NOT_IN_KR_SESSION", "OWNER_CONFIRMATION_REQUIRED", "CAUSAL_LIMIT", "SOURCE_CHANGED"];
 def host_name_of_code: ascii_downcase | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("");
 
@@ -215,7 +217,6 @@ def sets: {
   codes: known_codes,
   stop_classes: (stop_classes | keys),
   error_codes: known_error_codes,
-  refusal_names: (known_error_codes | map(host_name_of_code)),
   capabilities: ["agent.prompt", "agent.prompt.queue", "agent.steer", "agent.cancel", "agent.approval", "agent.approval.inspect", "agent.approval.respond", "agent.approval.respond/1", "agent.attachment", "agent.binding", "agent.commands", "agent.snapshot", "agent.turn.steer", "agent.turn.cancel", "agent.draft.add_attachment", "terminal.direct", "terminal.input", "terminal.write", "terminal.resize", "terminal.geometry", "terminal.geometry.transfer", "terminal.palette", "terminal.palette.set"],
   causes: ["ended", "not_one_instance", "another_package", "not_native_terminal", "no_refusal", "no_binding", "binding_not_native_terminal", "binding_profile", "no_live_binding"],
   calls: ["upload.begin", "agent.approval.respond", "agent.capabilities", "agent.commands", "agent.draft.add_attachment", "agent.prompt.queue", "agent.prompt.submit", "agent.turn.cancel", "agent.turn.steer"],
@@ -354,6 +355,12 @@ def valid($v; $c):
       select(type == "string")
       | . as $text
       | [sets.error_codes[] | select(. as $code | $text | test("(^|[^A-Z0-9_])" + $code + "($|[^A-Z0-9_])"))]
+      | select(length == 1)
+      | .[0]
+    elif $v == "code_named" then
+      select(type == "string")
+      | . as $name
+      | [sets.error_codes[] | select(. == $name or host_name_of_code == $name)]
       | select(length == 1)
       | .[0]
     elif $v == "capability_state" then
@@ -616,7 +623,7 @@ def shows_schemas: {
       finished_replies: "number"
     },
     markers: {reply_ends: "mark_end"},
-    stale_input: {refused_with: "in:refusal_names"}
+    stale_input: {refused_with: "code_named"}
   }),
   "6b": {
     first_process_image_unchanged: "bool", fresh_approval_interpreted_by_the_pinned_table: "bool",

@@ -443,6 +443,19 @@ const WHAT_PART_3: &str = "a second approval answered by the local terminal alon
 const WHAT_PART_7: &str = "session B's marker typed into session A";
 const WHY_NOT_PART_7: &str =
     "no second execution ran, so there was no second session to type a marker from";
+/// Part 2a's control reason as the records of the other packages say it.
+const WHY_NOT_PART_2A_BEFORE: &str = "the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead";
+
+/// The state names of the plugin SDK's `CapabilityState`.
+const SDK_CAPABILITY_STATES: [&str; 7] = [
+    "qualified_available",
+    "version_qualified",
+    "missing_installation",
+    "permission_required",
+    "incompatible",
+    "temporarily_unavailable",
+    "not_tested",
+];
 
 /// The words of a value the redaction does not publish.
 const NOT_PUBLISHED: &str = "<not published>";
@@ -691,7 +704,14 @@ fn published(part: &str, account: &Value) -> Value {
                 json!("PERMISSION_DENIED"),
             );
         }
-        "4" => drop_at(&mut kept, "/shows/stale_input/detail"),
+        "4" => {
+            drop_at(&mut kept, "/shows/stale_input/detail");
+            put(
+                &mut kept,
+                "/shows/stale_input/refused_with",
+                json!("AMBIGUOUS_ATTACHMENT"),
+            );
+        }
         "7" => {
             drop_at(&mut kept, "/shows/conversation");
             put(
@@ -705,16 +725,21 @@ fn published(part: &str, account: &Value) -> Value {
     kept
 }
 
-/// The part's evidence in the record assembled from its made-up staged result, and the record's
-/// writer applied to the record again changes nothing.
-fn kept_evidence(part: &str, inputs: &Value) -> Value {
+/// The record assembled from a made-up staged result, and the record's writer applied to the
+/// record again changes nothing.
+fn kept_record(part: &str, inputs: &Value) -> Value {
     let record = assembled(inputs);
     assert_eq!(
         written(&record, inputs),
         record,
         "the writer changes the record of part {part}"
     );
-    test_of(&record, part)["evidence"].clone()
+    record
+}
+
+/// The part's evidence in the record assembled from its made-up staged result.
+fn kept_evidence(part: &str, inputs: &Value) -> Value {
+    test_of(&kept_record(part, inputs), part)["evidence"].clone()
 }
 
 /// The evidence a part run with the login keeps is every member the driver fills from the build
@@ -1044,6 +1069,275 @@ fn a_device_answer_is_published_as_the_one_code_it_holds() {
             kept_evidence("3", &inputs)["shows"]["device_answer"],
             kept,
             "{answer}"
+        );
+    }
+}
+
+/// The record assembled from a made-up row of `part`, with the member at each pointer replaced.
+fn record_with(part: &str, replaced: &[(&str, Value)]) -> Value {
+    let inputs = staged_inputs(&[part], |_, evidence| {
+        for (pointer, value) in replaced {
+            put(evidence, pointer, value.clone());
+        }
+    });
+    kept_record(part, &inputs)
+}
+
+/// No text of `record` names a value of the person's, or any of `values`.
+fn assert_names_none_of(record: &Value, values: &[&str], context: &str) {
+    let mut all = Vec::new();
+    strings(record, &mut all);
+    for text in all {
+        for value in values.iter().copied().chain(LOCAL) {
+            assert!(
+                !text.contains(value),
+                "{context}: the record names {value}: {text}"
+            );
+        }
+    }
+}
+
+/// Part 4 publishes the error its stale input was refused with as the protocol's own code, never
+/// as the name the driver wrote, and as nothing where that name is not the name of a code. The
+/// code stands as it is, since the writer applies the redaction to a published record again.
+#[test]
+fn part_4_publishes_the_protocols_code_of_the_refusal_and_not_the_name_written() {
+    let with_path = format!("AmbiguousAttachment {HOME}/.codex/diary-2026.md");
+    for (written, kept) in [
+        ("AmbiguousAttachment", "AMBIGUOUS_ATTACHMENT"),
+        ("PermissionDenied", "PERMISSION_DENIED"),
+        ("IdConflict", "ID_CONFLICT"),
+        ("NotInKrSession", "NOT_IN_KR_SESSION"),
+        ("AMBIGUOUS_ATTACHMENT", "AMBIGUOUS_ATTACHMENT"),
+        ("AMBIGUOUS_ATTACHMENT AMBIGUOUS_SESSION", NOT_PUBLISHED),
+        ("Ambiguous_Attachment", NOT_PUBLISHED),
+        ("ambiguousattachment", NOT_PUBLISHED),
+        ("AmbiguousAttachments", NOT_PUBLISHED),
+        ("AmbiguousAttachment AmbiguousSession", NOT_PUBLISHED),
+        ("NoSuchCode", NOT_PUBLISHED),
+        ("", NOT_PUBLISHED),
+        (with_path.as_str(), NOT_PUBLISHED),
+    ] {
+        let record = record_with("4", &[("/shows/stale_input/refused_with", json!(written))]);
+        assert_eq!(
+            test_of(&record, "4")["evidence"]["shows"]["stale_input"],
+            json!({"refused_with": kept}),
+            "{written}"
+        );
+        let names: &[&str] = if written.is_empty() || written == kept {
+            &[]
+        } else {
+            &[written]
+        };
+        assert_names_none_of(&record, names, written);
+    }
+}
+
+/// A moved work directory that names a path is not published: the one verdict the driver writes
+/// when nothing moved stands, and any other text of the member reads `<not published>`.
+#[test]
+fn a_moved_work_directory_that_names_a_path_is_not_published() {
+    let rows = [
+        format!("{HOME}/Documents/moved-work-1"),
+        format!("{SCRATCH}/moved-work-2"),
+        "~/Documents/moved-work-3".to_owned(),
+        format!("none beside the run: {HOME}/Documents/moved-work-4"),
+        format!("moved-work-5 {HOME}/.codex/diary-2026.md"),
+    ];
+    for part in LOGIN_PARTS {
+        for row in &rows {
+            let record = record_with(part, &[("/moved_work_directory", json!(row))]);
+            assert_eq!(
+                test_of(&record, part)["evidence"]["moved_work_directory"],
+                NOT_PUBLISHED,
+                "part {part}: {row}"
+            );
+            let context = format!("part {part}: {row}");
+            assert_names_none_of(&record, &["moved-work-", "diary-2026.md"], &context);
+        }
+        let record = record_with(part, &[]);
+        assert_eq!(
+            test_of(&record, part)["evidence"]["moved_work_directory"],
+            "none beside the run",
+            "part {part}"
+        );
+    }
+}
+
+/// A device's answer that holds a path and a code is published as the code alone, and one that
+/// holds a path and no code or two codes as nothing.
+#[test]
+fn a_device_answer_that_holds_a_path_and_a_code_publishes_the_code_and_not_the_path() {
+    for (answer, kept) in [
+        (
+            format!("refused: PERMISSION_DENIED: no lease for {HOME}/.codex/diary-2026.md"),
+            "PERMISSION_DENIED",
+        ),
+        (
+            format!("{HOME}/.codex/diary-2026.md: PERMISSION_DENIED"),
+            "PERMISSION_DENIED",
+        ),
+        (
+            format!("PERMISSION_DENIED {SCRATCH}/device-answer-3 {HOME}/Documents/device-answer-4"),
+            "PERMISSION_DENIED",
+        ),
+        (
+            format!("refused near {HOME}/.codex/diary-2026.md"),
+            NOT_PUBLISHED,
+        ),
+        (
+            format!("{HOME}/.codex/diary-2026.md: PERMISSION_DENIED, SESSION_CLOSED"),
+            NOT_PUBLISHED,
+        ),
+    ] {
+        let record = record_with("3", &[("/shows/device_answer", json!(answer))]);
+        assert_eq!(
+            test_of(&record, "3")["evidence"]["shows"]["device_answer"],
+            kept,
+            "{answer}"
+        );
+        assert_names_none_of(&record, &["diary-2026.md", "device-answer-"], &answer);
+    }
+}
+
+/// A `resume.shown` is published only as one of the entry's own refusal texts: the same text with
+/// words before or after it, two of the texts joined, or a part of one reads `<not published>`.
+#[test]
+fn a_resume_shown_longer_than_the_refusal_text_is_not_published() {
+    let first = REFUSED[0];
+    let rows = [
+        format!("{first} {HOME}/.codex/diary-2026.md"),
+        format!("{first} {}", REFUSED[1]),
+        format!("{first}."),
+        format!("{}\n", REFUSED[1]),
+        format!("note: {}", REFUSED[1]),
+        format!("{first} {CONVERSATION}"),
+        first[..first.len() - 1].to_owned(),
+    ];
+    for shown in &rows {
+        let record = record_with("7", &[("/shows/resume/shown", json!(shown))]);
+        let resume = &test_of(&record, "7")["evidence"]["shows"]["resume"];
+        assert_eq!(resume["shown"], NOT_PUBLISHED, "{shown}");
+        assert_eq!(resume["outcome"], "refused", "{shown}");
+        assert_names_none_of(&record, &["diary-2026.md", CONVERSATION], shown);
+    }
+}
+
+/// A pair of `capability_states` is published only where its first member is the form of a
+/// capability the manifest grants and its second is one of the SDK's state names; any other text
+/// of a state, or a pair of another shape, reads `<not published>` in the pair's place.
+#[test]
+fn a_capability_pair_with_a_free_text_state_is_not_published() {
+    let id = "plugin.metadata.match/1";
+    let states: Vec<Value> = SDK_CAPABILITY_STATES
+        .iter()
+        .map(|state| json!([id, state]))
+        .collect();
+    let record = record_with("2a", &[("/shows/capability_states", json!(states))]);
+    assert_eq!(
+        test_of(&record, "2a")["evidence"]["shows"]["capability_states"],
+        json!(states)
+    );
+    let free_states = [
+        FREE_WORDS.to_owned(),
+        format!("qualified_available {HOME}/.codex/diary-2026.md"),
+        "Qualified_Available".to_owned(),
+        "qualified_available ".to_owned(),
+        "available".to_owned(),
+        String::new(),
+    ];
+    for state in &free_states {
+        let pairs = json!([[id, state], [id, "not_tested"]]);
+        let record = record_with("2a", &[("/shows/capability_states", pairs)]);
+        assert_eq!(
+            test_of(&record, "2a")["evidence"]["shows"]["capability_states"],
+            json!([NOT_PUBLISHED, [id, "not_tested"]]),
+            "{state:?}"
+        );
+        assert_names_none_of(&record, &[FREE_WORDS, "diary-2026.md"], state);
+    }
+    let other_shapes = [
+        json!([id]),
+        json!([id, "not_tested", FREE_WORDS]),
+        json!([id, 7]),
+        json!([id, ["not_tested"]]),
+        json!([FREE_WORDS, "not_tested"]),
+        json!(FREE_WORDS),
+    ];
+    for pair in other_shapes {
+        let record = record_with("2a", &[("/shows/capability_states", json!([pair]))]);
+        assert_eq!(
+            test_of(&record, "2a")["evidence"]["shows"]["capability_states"],
+            json!([NOT_PUBLISHED]),
+            "{pair}"
+        );
+        assert_names_none_of(&record, &[FREE_WORDS], &pair.to_string());
+    }
+}
+
+/// The words a second start was given are published as the entry's words and the placeholder for
+/// a conversation; a word beyond them, or two words in one, reads `<not published>`.
+#[test]
+fn a_started_with_with_one_more_word_publishes_the_extra_word_as_not_published() {
+    let path = format!("{HOME}/.codex/diary-2026.md");
+    let np = NOT_PUBLISHED;
+    for (row, kept) in [
+        (
+            json!(["resume", CONVERSATION, path]),
+            json!(["resume", "{conversation}", np]),
+        ),
+        (
+            json!(["resume", CONVERSATION, "--last"]),
+            json!(["resume", "{conversation}", np]),
+        ),
+        (
+            json!(["resume", CONVERSATION, FREE_WORDS]),
+            json!(["resume", "{conversation}", np]),
+        ),
+        (
+            json!(["resume", format!("resume {CONVERSATION}")]),
+            json!(["resume", np]),
+        ),
+        (json!([format!("resume {CONVERSATION}")]), json!([np])),
+        (json!(format!("resume {CONVERSATION}")), json!(np)),
+    ] {
+        let record = record_with("7", &[("/shows/session_b/started_with", row.clone())]);
+        assert_eq!(
+            test_of(&record, "7")["evidence"]["shows"]["session_b"]["started_with"],
+            kept,
+            "{row}"
+        );
+        let names = [CONVERSATION, "diary-2026.md", FREE_WORDS, "--last"];
+        assert_names_none_of(&record, &names, &row.to_string());
+    }
+}
+
+/// Both texts of part 2a's control reason stand as written: the one the records of the other
+/// packages hold, and the one the Codex part says now. A text that differs from them does not.
+#[test]
+fn both_texts_of_part_2as_control_reason_stand_in_their_set() {
+    for why_not in [WHY_NOT_PART_2A_BEFORE, WHY_NOT_PART_2A] {
+        let record = record_with("2a", &[("/shows/driven/control/why_not", json!(why_not))]);
+        assert_eq!(
+            test_of(&record, "2a")["evidence"]["shows"]["driven"]["control"]["why_not"],
+            why_not
+        );
+    }
+    for other in [
+        format!("{WHY_NOT_PART_2A} {HOME}/.codex/diary-2026.md"),
+        WHY_NOT_PART_2A.replace("wrong orders", "right orders"),
+        format!("{WHY_NOT_PART_2A_BEFORE} (the cases)"),
+    ] {
+        let record = record_with("2a", &[("/shows/driven/control/why_not", json!(other))]);
+        assert_eq!(
+            test_of(&record, "2a")["evidence"]["shows"]["driven"]["control"]["why_not"],
+            NOT_PUBLISHED,
+            "{other}"
+        );
+        assert_names_none_of(
+            &record,
+            &["diary-2026.md", "right orders", "(the cases)"],
+            &other,
         );
     }
 }
