@@ -438,7 +438,7 @@ const CODEX_RECORD: &str = "fixtures/agents/kalareach/codex/0.155.1/macos-aarch6
 /// results states as its profile digest. A change to the record, a change of whitespace included,
 /// is a new digest, and the case that reads it then says so.
 const CODEX_RECORD_SHA256: &str =
-    "6e835e156eb55ebf89a433b323e51e8f2a09abb4f9853f0e95c435506c17e8d5";
+    "beb16c6f233623c00c12d1cf38014bc3003c3ee5a99b2383df665ddb50d1dfeb";
 
 /// The identifier a result gives each capability Codex's release declares, in the order a list of
 /// results writes them: by identifier.

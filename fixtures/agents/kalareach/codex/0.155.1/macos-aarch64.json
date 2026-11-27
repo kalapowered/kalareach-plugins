@@ -4,7 +4,7 @@
   "repository": "kalareach-plugins",
   "run": {
     "started": "2026-11-26T18:53:57Z",
-    "finished": "2026-11-27T17:18:33Z",
+    "finished": "2026-11-27T17:46:15Z",
     "platform": "macos",
     "system": {
       "os": "macos",
@@ -77,7 +77,8 @@
       "6b",
       "7",
       "8a",
-      "8b"
+      "8b",
+      "14.03a"
     ],
     "all_terminals": false,
     "evidence_directory": "evidence/agents-live",
@@ -92,22 +93,22 @@
   "steps": [
     {
       "number": 1,
-      "group": "own-home",
-      "what": "a session started with the person's own home names their login keychain",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/cases-4779e488825089c9 a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --exact --nocapture --test-threads=1",
+      "group": "agents",
+      "what": "part 6b",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_process_started_after_an_upgrade_keeps_the_first_its_own_build_and_the_build_outside_the_range_is_refused_the_typed_routes --exact --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 10,
-      "log": "lrown-home-1127134645/live.log",
+      "seconds": 29,
+      "log": "lr6b-1126184541/live.log",
       "error": null
     },
     {
       "number": 2,
       "group": "agents",
       "what": "part 1",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --exact --nocapture --test-threads=1",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --exact --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
@@ -119,125 +120,8 @@
     {
       "number": 3,
       "group": "agents",
-      "what": "part 2a",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_c::gateway_slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device_at_the_agents_terminal --exact --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 66,
-      "log": "lrs-2a-1127132823/live.log",
-      "error": null
-    },
-    {
-      "number": 4,
-      "group": "agents",
-      "what": "part 2b",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --exact --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 16,
-      "log": "lrs-2b-1127153654/live.log",
-      "error": null
-    },
-    {
-      "number": 5,
-      "group": "agents",
-      "what": "part 2c",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --exact --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 15,
-      "log": "lrs-2c-1127161026/live.log",
-      "error": null
-    },
-    {
-      "number": 6,
-      "group": "agents",
-      "what": "part 3",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --exact --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 37,
-      "log": "lrs-3-1127113650/live.log",
-      "error": null
-    },
-    {
-      "number": 7,
-      "group": "agents",
-      "what": "part 4",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --exact --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 30,
-      "log": "lrs-4-1127124540/live.log",
-      "error": null
-    },
-    {
-      "number": 8,
-      "group": "agents",
-      "what": "part 5a",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --exact --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 19,
-      "log": "lrsi-5a-1127144003/live.log",
-      "error": null
-    },
-    {
-      "number": 9,
-      "group": "agents",
-      "what": "part 5b",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_daemon_killed_with_a_request_pending_leaves_the_agent_and_the_restarted_daemon_serves_the_same_request --exact --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 16,
-      "log": "lrsi-5b-1127150533/live.log",
-      "error": null
-    },
-    {
-      "number": 10,
-      "group": "agents",
-      "what": "part 6a",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --exact --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 23,
-      "log": "lrs-6a-1127170229/live.log",
-      "error": null
-    },
-    {
-      "number": 11,
-      "group": "agents",
-      "what": "part 6b",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_process_started_after_an_upgrade_keeps_the_first_its_own_build_and_the_build_outside_the_range_is_refused_the_typed_routes --exact --nocapture --test-threads=1",
-      "needs": [
-        "KR_SHELL_PACKAGES"
-      ],
-      "exit": 0,
-      "seconds": 29,
-      "log": "lr6b-1126184541/live.log",
-      "error": null
-    },
-    {
-      "number": 12,
-      "group": "agents",
       "what": "part 7",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_c::gateway_a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --exact --nocapture --test-threads=1",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_c::gateway_a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --exact --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
@@ -247,10 +131,127 @@
       "error": null
     },
     {
+      "number": 4,
+      "group": "agents",
+      "what": "part 3",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 37,
+      "log": "lrs-3-1127113650/live.log",
+      "error": null
+    },
+    {
+      "number": 5,
+      "group": "agents",
+      "what": "part 4",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 30,
+      "log": "lrs-4-1127124540/live.log",
+      "error": null
+    },
+    {
+      "number": 6,
+      "group": "agents",
+      "what": "part 2a",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_c::gateway_slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device_at_the_agents_terminal --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 66,
+      "log": "lrs-2a-1127132823/live.log",
+      "error": null
+    },
+    {
+      "number": 7,
+      "group": "own-home",
+      "what": "a session started with the person's own home names their login keychain",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/cases-4779e488825089c9 a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 10,
+      "log": "lrown-home-1127134645/live.log",
+      "error": null
+    },
+    {
+      "number": 8,
+      "group": "agents",
+      "what": "part 8b",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_launch_whose_first_presentation_carries_a_forged_credential_is_refused_at_the_launch_check_and_the_hosts_own_credential_for_the_same_launch_is_admitted --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 18,
+      "log": "lr8b-1127141507/live.log",
+      "error": null
+    },
+    {
+      "number": 9,
+      "group": "agents",
+      "what": "part 5a",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 19,
+      "log": "lrsi-5a-1127144003/live.log",
+      "error": null
+    },
+    {
+      "number": 10,
+      "group": "agents",
+      "what": "part 5b",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_daemon_killed_with_a_request_pending_leaves_the_agent_and_the_restarted_daemon_serves_the_same_request --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 16,
+      "log": "lrsi-5b-1127150533/live.log",
+      "error": null
+    },
+    {
+      "number": 11,
+      "group": "agents",
+      "what": "part 2b",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 16,
+      "log": "lrs-2b-1127153654/live.log",
+      "error": null
+    },
+    {
+      "number": 12,
+      "group": "agents",
+      "what": "part 2c",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 15,
+      "log": "lrs-2c-1127161026/live.log",
+      "error": null
+    },
+    {
       "number": 13,
       "group": "agents",
       "what": "part 8a",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --exact --nocapture --test-threads=1",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --exact --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
@@ -262,14 +263,27 @@
     {
       "number": 14,
       "group": "agents",
-      "what": "part 8b",
-      "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_launch_whose_first_presentation_carries_a_forged_credential_is_refused_at_the_launch_check_and_the_hosts_own_credential_for_the_same_launch_is_admitted --exact --nocapture --test-threads=1",
+      "what": "part 6a",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --exact --nocapture --test-threads=1",
       "needs": [
         "KR_SHELL_PACKAGES"
       ],
       "exit": 0,
-      "seconds": 18,
-      "log": "lr8b-1127141507/live.log",
+      "seconds": 23,
+      "log": "lrs-6a-1127170229/live.log",
+      "error": null
+    },
+    {
+      "number": 15,
+      "group": "agents",
+      "what": "part 14.03a",
+      "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --exact --nocapture --test-threads=1",
+      "needs": [
+        "KR_SHELL_PACKAGES"
+      ],
+      "exit": 0,
+      "seconds": 11,
+      "log": "lrs-14.03a-1127172805/live.log",
       "error": null
     }
   ],
@@ -298,13 +312,62 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_device_prompts_the_agent_and_adds_an_image_and_the_local_terminal_shows_the_same_execution --exact --nocapture --test-threads=1",
           "evidence": {
-            "person_files": {},
+            "keys": {
+              "complete": true,
+              "held_by": 0,
+              "held_by_not_listed": 0,
+              "run_gone": true,
+              "unread_not_listed": 0,
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID"
+            },
+            "moved_work_directory": "none beside the run",
+            "person_files": {
+              "trees": [
+                {
+                  "path": "~/.codex",
+                  "changed": false,
+                  "entries_before": 12960,
+                  "entries_after": 12960
+                }
+              ]
+            },
             "route": "the pinned build",
             "run_started": true,
+            "shows": {
+              "arm": "pinned build",
+              "image": {
+                "answer": "red",
+                "code": "KR236D5AE6ECC4",
+                "syntax": "paste"
+              },
+              "images_in_the_record": 1,
+              "prompt": {
+                "answer": "1676",
+                "question": "What is 901 plus 775? Reply with only the number."
+              },
+              "published_is_the_sent": true,
+              "transfer": {
+                "caller": "paired device",
+                "driver": "kr-client uploads::send",
+                "published": {
+                  "byte_len": 96,
+                  "content_digest": "f6a996480096b673a0b79ff45d7d2c95e3962ce3c4a5d4a3a5532736beede47d",
+                  "declared_media_type": "image/png",
+                  "presented_as_image": true
+                },
+                "route": "paired host's data streams"
+              }
+            },
             "turns": {
-              "charged": 2
+              "charged": 2,
+              "counted_by_occurrence_of_their_line": 0,
+              "forms_of_the_names_that_are_no_uuid": 0,
+              "in_the_agents_record": 2,
+              "named_by_a_name_that_is_no_uuid": 0,
+              "named_by_uuid": 2,
+              "record_files_read": 1
             }
           }
         },
@@ -316,17 +379,203 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 3,
+              "step": 6,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_c::gateway_slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device_at_the_agents_terminal --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_c::gateway_slash_commands_interrupts_queued_prompts_and_steering_each_work_from_a_device_at_the_agents_terminal --exact --nocapture --test-threads=1",
           "evidence": {
-            "person_files": {},
+            "keys": {
+              "complete": true,
+              "held_by": 0,
+              "held_by_not_listed": 0,
+              "run_gone": true,
+              "unread_not_listed": 0,
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID"
+            },
+            "moved_work_directory": "none beside the run",
+            "person_files": {
+              "trees": [
+                {
+                  "path": "~/.codex",
+                  "changed": false,
+                  "entries_before": 12980,
+                  "entries_after": 12980
+                }
+              ]
+            },
             "route": "the pinned build",
             "run_started": true,
+            "shows": {
+              "agent_reads": [
+                {
+                  "call": "agent.capabilities",
+                  "error": null,
+                  "refused": null
+                },
+                {
+                  "call": "agent.commands",
+                  "error": null,
+                  "refused": null
+                }
+              ],
+              "arm": "pinned build",
+              "capability_states": [
+                [
+                  "plugin.metadata.match/1",
+                  "not_tested"
+                ],
+                [
+                  "plugin.presentation.declarative/1",
+                  "not_tested"
+                ],
+                [
+                  "plugin.broker.semantic_events/1",
+                  "not_tested"
+                ],
+                [
+                  "plugin.upstream.action/1",
+                  "not_tested"
+                ],
+                [
+                  "plugin.command_integration.launch/1",
+                  "not_tested"
+                ],
+                [
+                  "plugin.approval.decode/1",
+                  "not_tested"
+                ],
+                [
+                  "plugin.approval.respond/1",
+                  "not_tested"
+                ]
+              ],
+              "detection": {
+                "instances": [
+                  {
+                    "application_instance_id": "a1530bbe-f20f-47f6-9fa5-48dc07110d28",
+                    "bypass": "disabled",
+                    "ended_at": null,
+                    "mode": "native_terminal",
+                    "plugin_id": "kalareach/codex",
+                    "profile_id": "lp-1795786863287-a6f28cf1-a9c4-4526-b6cf-19a3365c16a6",
+                    "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                    "started_at": "1795786863287"
+                  }
+                ],
+                "waited_ms": 64
+              },
+              "driven": {
+                "arm": "pinned build",
+                "control": {
+                  "breaks_property": false,
+                  "what": "orders made wrong on purpose, which the queue and steering checks reject",
+                  "why_not": "the controls are the agent's own terminal keys, which only the agent could refuse, so the checks are shown wrong orders instead (the guard cases)"
+                },
+                "interrupt": {
+                  "key": "\u001b",
+                  "seen": true,
+                  "shows": "Conversation interrupted"
+                },
+                "login": "vendor subscription account served by the local subscription proxy",
+                "queued": {
+                  "answer": "1450",
+                  "order": {
+                    "after": {
+                      "busy": true,
+                      "unfinished": true
+                    },
+                    "before": {
+                      "busy": true,
+                      "unfinished": true
+                    },
+                    "busy_at_submission": true,
+                    "first_finished": 19,
+                    "new_turn": true,
+                    "queued_record": null,
+                    "records_queue": false,
+                    "second_answered": 29,
+                    "second_prompt": 26
+                  }
+                },
+                "slash": {
+                  "seen": true,
+                  "shows": "Current working directory:",
+                  "typed": "/pwd"
+                },
+                "steering": {
+                  "order": {
+                    "after": {
+                      "busy": false,
+                      "unfinished": true
+                    },
+                    "before": {
+                      "busy": true,
+                      "unfinished": true
+                    },
+                    "busy_at_submission": true,
+                    "first_finished": 39,
+                    "new_turn": false,
+                    "queued_record": null,
+                    "records_queue": false,
+                    "second_answered": 45,
+                    "second_prompt": 42
+                  },
+                  "steered": true
+                },
+                "turns_charged": 5
+              },
+              "surface": {
+                "answers": [
+                  {
+                    "call": "agent.prompt.submit",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.prompt.queue",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.turn.steer",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.turn.cancel",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "agent.approval.respond",
+                    "error": null,
+                    "refused": "STALE_SESSION"
+                  },
+                  {
+                    "call": "agent.draft.add_attachment",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  },
+                  {
+                    "call": "plugin.action.invoke turn.cancel",
+                    "error": null,
+                    "refused": "UNSUPPORTED_CAPABILITY"
+                  }
+                ],
+                "backend_files": 0,
+                "capability_records": 0,
+                "resources": 0
+              }
+            },
             "turns": {
-              "charged": 5
+              "charged": 5,
+              "counted_by_occurrence_of_their_line": 0,
+              "forms_of_the_names_that_are_no_uuid": 0,
+              "in_the_agents_record": 4,
+              "named_by_a_name_that_is_no_uuid": 0,
+              "named_by_uuid": 4,
+              "record_files_read": 1
             }
           }
         },
@@ -338,11 +587,11 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 4,
+              "step": 11,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_an_agent_on_its_terminal_route_is_advertised_no_typed_capability_and_every_typed_action_is_refused --exact --nocapture --test-threads=1",
           "evidence": {
             "keys": {
               "run_gone": true
@@ -596,11 +845,11 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 5,
+              "step": 12,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_under_a_binding_a_supported_action_is_permitted_and_an_unsupported_one_is_refused --exact --nocapture --test-threads=1",
           "evidence": {
             "keys": {
               "run_gone": true
@@ -752,17 +1001,55 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 6,
+              "step": 4,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_local_and_a_remote_answer_raced_to_one_approval_resolve_it_once --exact --nocapture --test-threads=1",
           "evidence": {
-            "person_files": {},
+            "keys": {
+              "complete": true,
+              "held_by": 0,
+              "held_by_not_listed": 0,
+              "run_gone": true,
+              "unread_not_listed": 0,
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID"
+            },
+            "moved_work_directory": "none beside the run",
+            "person_files": {
+              "trees": [
+                {
+                  "path": "~/.codex",
+                  "changed": false,
+                  "entries_before": 12962,
+                  "entries_after": 12962
+                }
+              ]
+            },
             "route": "the pinned build",
             "run_started": true,
+            "shows": {
+              "answers_in_the_record": 1,
+              "arm": "pinned build",
+              "command_ran": 0,
+              "control": {
+                "breaks_property": true,
+                "check": true,
+                "command_ran": 0,
+                "device_refused": true,
+                "what": "a second approval answered by the local terminal alone"
+              },
+              "device_answer": "QUESTION_RESOLVED",
+              "device_won": false
+            },
             "turns": {
-              "charged": 2
+              "charged": 2,
+              "counted_by_occurrence_of_their_line": 0,
+              "forms_of_the_names_that_are_no_uuid": 0,
+              "in_the_agents_record": 2,
+              "named_by_a_name_that_is_no_uuid": 0,
+              "named_by_uuid": 2,
+              "record_files_read": 1
             }
           }
         },
@@ -774,17 +1061,75 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 7,
+              "step": 5,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_b::gateway_a_disconnection_after_the_agent_took_a_prompt_leaves_one_reply_and_no_duplicate_work --exact --nocapture --test-threads=1",
           "evidence": {
-            "person_files": {},
+            "keys": {
+              "complete": true,
+              "held_by": 0,
+              "held_by_not_listed": 0,
+              "run_gone": true,
+              "unread_not_listed": 0,
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID"
+            },
+            "moved_work_directory": "none beside the run",
+            "person_files": {
+              "trees": [
+                {
+                  "path": "~/.codex",
+                  "changed": false,
+                  "entries_before": 12976,
+                  "entries_after": 12976
+                }
+              ]
+            },
             "route": "the pinned build",
             "run_started": true,
+            "shows": {
+              "after_reconnect": {
+                "finished_replies": 1,
+                "prompts": 1,
+                "screen_rows_holding_it": 1,
+                "shows": "KR4C26BF63FDCF-END"
+              },
+              "arm": "pinned build",
+              "at_the_drop": {
+                "finished_replies": 0,
+                "prompts": 1
+              },
+              "control": {
+                "breaks_property": true,
+                "check": true,
+                "finished_replies": 2,
+                "prompts": 2,
+                "what": "the same prompt sent again"
+              },
+              "cutoff": {
+                "code_on_a_screen": false,
+                "code_or_reply_mark_in_the_output": false,
+                "event_not_applied": false,
+                "fresh_screens": 0,
+                "reader_stopped": true,
+                "resyncs": 0
+              },
+              "markers": {
+                "reply_ends": "KR4C26BF63FDCF-END"
+              },
+              "stale_input": {
+                "refused_with": "AmbiguousAttachment"
+              }
+            },
             "turns": {
-              "charged": 2
+              "charged": 2,
+              "counted_by_occurrence_of_their_line": 0,
+              "forms_of_the_names_that_are_no_uuid": 0,
+              "in_the_agents_record": 2,
+              "named_by_a_name_that_is_no_uuid": 0,
+              "named_by_uuid": 2,
+              "record_files_read": 1
             }
           }
         },
@@ -797,11 +1142,11 @@
           "route": "stand_in",
           "runs": [
             {
-              "step": 8,
+              "step": 9,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_control_daemon_crash_leaves_the_agent_and_its_local_terminal_running --exact --nocapture --test-threads=1",
           "evidence": {
             "route": "the application stand-in",
             "run_started": true,
@@ -914,11 +1259,11 @@
           "route": "stand_in",
           "runs": [
             {
-              "step": 9,
+              "step": 10,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_daemon_killed_with_a_request_pending_leaves_the_agent_and_the_restarted_daemon_serves_the_same_request --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_daemon_killed_with_a_request_pending_leaves_the_agent_and_the_restarted_daemon_serves_the_same_request --exact --nocapture --test-threads=1",
           "evidence": {
             "route": "the application stand-in",
             "run_started": true,
@@ -941,11 +1286,11 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 10,
+              "step": 14,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_running_agent_keeps_its_build_through_an_upgrade_and_the_newer_build_gets_the_terminal_route --exact --nocapture --test-threads=1",
           "evidence": {
             "keys": {
               "run_gone": true
@@ -1090,22 +1435,53 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 11,
+              "step": 1,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_process_started_after_an_upgrade_keeps_the_first_its_own_build_and_the_build_outside_the_range_is_refused_the_typed_routes --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_process_started_after_an_upgrade_keeps_the_first_its_own_build_and_the_build_outside_the_range_is_refused_the_typed_routes --exact --nocapture --test-threads=1",
           "evidence": {
+            "keys": {
+              "complete": true,
+              "held_by": 0,
+              "held_by_not_listed": 0,
+              "run_gone": true,
+              "unread_not_listed": 0,
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID"
+            },
+            "moved_work_directory": "none beside the run",
             "newer_turns": {
               "after_the_probes": 0,
               "at_the_end": 0,
               "new_since_the_probes": 0
             },
-            "person_files": {},
+            "person_files": {
+              "trees": [
+                {
+                  "path": "~/.codex",
+                  "changed": false,
+                  "entries_before": 12790,
+                  "entries_after": 12790
+                }
+              ]
+            },
             "route": "the pinned build",
             "run_started": true,
+            "shows": {
+              "first_process_image_unchanged": true,
+              "fresh_approval_interpreted_by_the_pinned_table": true,
+              "second_instance_has_no_gateway": true,
+              "second_process_runs_the_newer_image": true,
+              "servers": 1
+            },
             "turns": {
-              "charged": 1
+              "charged": 1,
+              "counted_by_occurrence_of_their_line": 0,
+              "forms_of_the_names_that_are_no_uuid": 0,
+              "in_the_agents_record": 1,
+              "named_by_a_name_that_is_no_uuid": 0,
+              "named_by_uuid": 1,
+              "record_files_read": 1
             }
           }
         },
@@ -1117,17 +1493,82 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 12,
+              "step": 3,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_c::gateway_a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_c::gateway_a_second_process_on_the_same_saved_conversation_is_another_execution_not_merged --exact --nocapture --test-threads=1",
           "evidence": {
-            "person_files": {},
+            "keys": {
+              "complete": true,
+              "held_by": 0,
+              "held_by_not_listed": 0,
+              "run_gone": true,
+              "unread_not_listed": 0,
+              "variable": "SUBROUTER_CODEX_ACCOUNT_ID"
+            },
+            "moved_work_directory": "none beside the run",
+            "person_files": {
+              "trees": [
+                {
+                  "path": "~/.codex",
+                  "changed": false,
+                  "entries_before": 12962,
+                  "entries_after": 12962
+                }
+              ]
+            },
             "route": "the pinned build",
             "run_started": true,
+            "shows": {
+              "arm": "pinned build",
+              "control": {
+                "breaks_property": false,
+                "what": "session B's marker typed into session A",
+                "why_not": "no second execution ran, so there was no second session to type a marker from"
+              },
+              "files_before_the_second_start": 1,
+              "login": "vendor subscription account served by the local subscription proxy",
+              "resume": {
+                "outcome": "refused",
+                "shown": "This conversation is open in another app"
+              },
+              "session_a": {
+                "detection": {
+                  "instances": [
+                    {
+                      "application_instance_id": "9f521b9b-aeb0-41ec-aba2-4f44842910da",
+                      "bypass": "disabled",
+                      "ended_at": null,
+                      "mode": "native_terminal",
+                      "plugin_id": "kalareach/codex",
+                      "profile_id": "lp-1795779186698-19eb4c78-409c-467e-ab11-64848a666061",
+                      "refusal": "it was not launched through the integration, so no registration names it and none of its bridges is admitted",
+                      "started_at": "1795779186698"
+                    }
+                  ],
+                  "waited_ms": 26
+                }
+              },
+              "session_b": {
+                "ended_after_the_refusal": false,
+                "same_conversation": true,
+                "started_with": [
+                  "resume",
+                  "{conversation}"
+                ],
+                "still_running_read_only": true
+              },
+              "turns_charged": 1
+            },
             "turns": {
-              "charged": 1
+              "charged": 1,
+              "counted_by_occurrence_of_their_line": 0,
+              "forms_of_the_names_that_are_no_uuid": 0,
+              "in_the_agents_record": 1,
+              "named_by_a_name_that_is_no_uuid": 0,
+              "named_by_uuid": 1,
+              "record_files_read": 1
             }
           }
         },
@@ -1143,7 +1584,7 @@
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_forged_titles_transcripts_identifiers_and_hook_input_leave_the_host_unchanged --exact --nocapture --test-threads=1",
           "evidence": {
             "keys": {
               "run_gone": true
@@ -1342,11 +1783,11 @@
           "outcome": "passed",
           "runs": [
             {
-              "step": 14,
+              "step": 8,
               "outcome": "passed"
             }
           ],
-          "command": "env -i <driver environment> <harness inputs> <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_launch_whose_first_presentation_carries_a_forged_credential_is_refused_at_the_launch_check_and_the_hosts_own_credential_for_the_same_launch_is_admitted --exact --nocapture --test-threads=1",
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 gateway_a_launch_whose_first_presentation_carries_a_forged_credential_is_refused_at_the_launch_check_and_the_hosts_own_credential_for_the_same_launch_is_admitted --exact --nocapture --test-threads=1",
           "evidence": {
             "keys": {
               "run_gone": true
@@ -1401,7 +1842,45 @@
           "source": "kalareach:tests/e2e/agents/tests/gateway/staged_a.rs",
           "keyed_by": "attached_comment",
           "outcome": "not_run",
-          "reason": "not selected in this run"
+          "reason": "the build shows no composer without an account",
+          "runs": [
+            {
+              "step": 15,
+              "outcome": "not_run"
+            }
+          ],
+          "command": "/usr/bin/env -i HOME=~ USER={user} LOGNAME={user} PATH=/usr/bin:/bin:/usr/sbin:/sbin LANG=en_US.UTF-8 KR_REQUIRE_SHELL_PACKAGES=1 KR_SHELL_PACKAGES=<shells> KR_SHELL_PREFIX=<shells> KR_AGENTS_RESULT=/dev/fd/7 KR_AGENTS_GATEWAY_BUILD=<entry> KR_AGENTS_GENERATION=<generation> KR_AGENTS_TURNS=<turns> KR_AGENTS_KEY_SCAN=/dev/fd/8 KR_AGENTS_KEY_FD=3 KR_AGENTS_SCAN_FD=4 KR_ALLOW_ACCOUNT_LAUNCHD=1 <target>/debug/deps/gateway-2ab747c248c9cb07 staged_a::gateway_a_path_typed_at_the_agent_is_terminal_input_that_reaches_its_composer --exact --nocapture --test-threads=1",
+          "evidence": {
+            "keys": {
+              "run_gone": true
+            },
+            "moved_work_directory": "none beside the run",
+            "person_files": {
+              "trees": [
+                {
+                  "changed": false,
+                  "entries_after": 12999,
+                  "entries_before": 12999,
+                  "path": "~/.codex"
+                }
+              ]
+            },
+            "route": "the pinned build",
+            "run_started": true,
+            "shows": {
+              "arm": "pinned build",
+              "not_run": "the build shows no composer without an account"
+            },
+            "turns": {
+              "charged": 0,
+              "counted_by_occurrence_of_their_line": 0,
+              "forms_of_the_names_that_are_no_uuid": [],
+              "in_the_agents_record": 0,
+              "named_by_a_name_that_is_no_uuid": 0,
+              "named_by_uuid": 0,
+              "record_files_read": 0
+            }
+          }
         },
         {
           "test": "part 14.03b",
@@ -1428,7 +1907,9 @@
   "failures_outside_identifiers": [],
   "known_differences": [],
   "problems": [],
-  "warnings": [],
+  "warnings": [
+    "The rows read the build list's entry for kalareach/codex 0.155.1 from a file outside this tree (SHA-256 ff7381df4f41a0c651378655348886d57e11510677749ee5d97e2e7ac955f4fd). This tree holds the same entry from commit 42c1f1145dff73555e1c8dd27af11816177c51bc, member for member, except `distribution`, `source` and `prefix` of the entry and of its `newer` build: the file lacks the first two, and `prefix` is written differently in the file and in the list."
+  ],
   "summary": {
     "identifiers": 2,
     "passed": 1,
