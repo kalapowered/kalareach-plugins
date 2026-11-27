@@ -200,11 +200,12 @@ against a gateway, no shipped launch gives OpenCode one, and the pipeline counts
 applicable where a record shows them not run. `docs/pipeline.md` says what that leaves out. A build
 is added by committing a record that qualifies it, and withdrawn by removing its pin or by a newly
 measured record that no longer qualifies; the next generation names it or leaves it out, and the
-release keeps its version and digest. The pipeline writes the qualification results into the entry
-beside each build, from the same record, which the host release record in the core repository
-requires of a listed build: one for each capability the release declares, with the digest of the
-record's bytes. A candidate generation carries none. `docs/pipeline.md` says what each result
-states and what a reader of a generation can verify.
+release keeps its version and digest. Each of the qualification results are written by the pipeline
+into the entry beside the respective build, from the same record. When listing a build in a host's
+release record, in the core repository, there must be one for each of the capabilities the release
+declares, containing the digest of the record's bytes (a candidate generation will not have any).
+For details about the content of these results, as well as the checks which can be performed when
+inspecting a generation, see `docs/pipeline.md`
 
 ## Delegation
 
