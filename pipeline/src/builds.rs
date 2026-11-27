@@ -28,7 +28,9 @@
 //! - no part failed, and every part of section 12's eight cases ([`REQUIRED_PARTS`]) passed. A part
 //!   not run is not a pass, whatever the reason it could not run, except a gateway part of a
 //!   package on [`TERMINAL_EVIDENCE_PACKAGES`] while its release declares no command integration
-//!   and no native bridge;
+//!   and no native bridge. A part that passed on the stand-in route, which ran the core's own
+//!   package and not this build, counts for the parts of [`STAND_IN_PARTS`] only; one that passed
+//!   there outside them keeps the build out;
 //! - its release declares a capability, since a result is written for each one: a release that
 //!   declares none names no build in an ordinary generation, whatever its record shows.
 //!
@@ -44,9 +46,10 @@
 //! SHA-256 of the record file's bytes and a statement of what the record shows. The statement names
 //! the platform of the build. It says that every case passed, or, for a package on
 //! [`TERMINAL_EVIDENCE_PACKAGES`], which gateway parts did not run and that every other case part
-//! passed; it speaks of the parts of section 12's cases only. Nothing else writes a result, and a
-//! candidate generation, whose builds are named without requiring a record that qualifies them,
-//! carries none ([`Builds::results_for`]).
+//! passed, or which of parts 5a and 5b ([`STAND_IN_PARTS`]) passed on the stand-in agent and that
+//! every other part passed; it speaks of the parts of section 12's cases only. Nothing else writes a
+//! result, and a candidate generation, whose builds are named without requiring a record that
+//! qualifies them, carries none ([`Builds::results_for`]).
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -78,6 +81,13 @@ pub const REQUIRED_PARTS: [&str; 13] = records::CASE_PARTS;
 
 /// The parts of section 12's cases that run against a gateway.
 pub const GATEWAY_PARTS: [&str; 3] = ["5b", "6b", "8b"];
+
+/// The parts of section 12's cases whose pass on the stand-in route counts: a kill or restart of the
+/// control daemon cannot be made safe beside a live agent that writes with a person's login, so
+/// parts 5a and 5b have no arm against a real agent, and they run against the stand-in agent. A
+/// pass on that route for any other part is not one. This holds while the core has no arm of part
+/// 5a against a real agent.
+pub const STAND_IN_PARTS: [&str; 2] = ["5a", "5b"];
 
 /// The packages whose build is named on terminal evidence alone. A gateway part of one of them that
 /// did not run is carried as not applicable while its release declares no command integration and
@@ -496,16 +506,28 @@ fn launch_reasons(pinned: &Pinned) -> Vec<String> {
 struct Basis {
     /// The SHA-256 of the record file's bytes.
     digest: PayloadDigest,
-    /// The gateway parts that did not run and were carried as not applicable, in the order of
-    /// [`GATEWAY_PARTS`].
-    gateway_not_run: Vec<&'static str>,
+    /// What the statement says of the parts.
+    shown: Shown,
+}
+
+/// What a record shows of the parts of section 12's cases, as a result's statement says it.
+enum Shown {
+    /// Every part passed.
+    Every,
+    /// These gateway parts did not run and were carried as not applicable, in the order of
+    /// [`GATEWAY_PARTS`]; every other part passed.
+    GatewayNotRun(Vec<&'static str>),
+    /// These parts passed on the stand-in route, in the order of [`STAND_IN_PARTS`]; every other
+    /// part passed.
+    StandIn(Vec<&'static str>),
 }
 
 /// Whether one pinned build is named: everything that keeps it out, and, when nothing does, what
 /// its record shows.
 struct Assessment {
     reasons: Vec<String>,
-    /// What the record shows; none where no record was read.
+    /// What the record shows; none where no record was read, or where one statement cannot say what
+    /// it shows and a reason says so.
     basis: Option<Basis>,
 }
 
@@ -558,9 +580,9 @@ fn assess(
     }
     Ok(Assessment {
         reasons,
-        basis: Some(Basis {
+        basis: gaps.shown.map(|shown| Basis {
             digest: PayloadDigest::of(&bytes),
-            gateway_not_run: gaps.gateway_not_run,
+            shown,
         }),
     })
 }
@@ -570,16 +592,17 @@ fn assess(
 struct Gaps {
     /// What is lacking; nothing when the build is named.
     reasons: Vec<String>,
-    /// The gateway parts that did not run and were accepted as not applicable, in the order of
-    /// [`GATEWAY_PARTS`]. Each is accepted on its own, so this is some of the three, all of them or
-    /// none.
-    gateway_not_run: Vec<&'static str>,
+    /// What the record shows of the parts, for the statement; none where one statement cannot say
+    /// it, and then a reason says so.
+    shown: Option<Shown>,
 }
 
 /// What a record in good form lacks for its build to be named: a whole run, no failed part, and
 /// every part of section 12's cases passed, or, for a package on [`TERMINAL_EVIDENCE_PACKAGES`]
 /// whose release declares no command integration and no native bridge, is a gateway part that did
-/// not run.
+/// not run. A pass on the stand-in route counts for the parts of [`STAND_IN_PARTS`] only, and a
+/// record that shows gateway parts not run and parts on that route lacks a statement that names
+/// both.
 fn qualification_gaps(record: &Value, package: &LoadedPackage) -> Gaps {
     let mut gaps = Vec::new();
     if record["failures_outside_identifiers"]
@@ -641,7 +664,7 @@ fn qualification_gaps(record: &Value, package: &LoadedPackage) -> Gaps {
             not_passed.join(", ")
         ));
     }
-    let gateway_not_run = if gateway_not_applicable {
+    let gateway_not_run: Vec<&'static str> = if gateway_not_applicable {
         GATEWAY_PARTS
             .iter()
             .copied()
@@ -654,9 +677,44 @@ fn qualification_gaps(record: &Value, package: &LoadedPackage) -> Gaps {
     } else {
         Vec::new()
     };
+    let passed_on_the_stand_in =
+        |test: &Value| test["route"] == "stand_in" && test["outcome"] == "passed";
+    for part in records::all_tests(record)
+        .into_iter()
+        .filter(|test| passed_on_the_stand_in(test))
+        .filter_map(|test| test["part"].as_str())
+        .filter(|part| !STAND_IN_PARTS.contains(part))
+    {
+        gaps.push(format!(
+            "part {part} passed on the stand-in route, which counts for {} only",
+            part_names(&STAND_IN_PARTS)
+        ));
+    }
+    let stand_in: Vec<&'static str> = STAND_IN_PARTS
+        .iter()
+        .copied()
+        .filter(|part| {
+            cases
+                .get(part)
+                .is_some_and(|test| passed_on_the_stand_in(test))
+        })
+        .collect();
+    let shown = match (gateway_not_run.is_empty(), stand_in.is_empty()) {
+        (true, true) => Some(Shown::Every),
+        (false, true) => Some(Shown::GatewayNotRun(gateway_not_run)),
+        (true, false) => Some(Shown::StandIn(stand_in)),
+        (false, false) => {
+            gaps.push(
+                "the record names gateway parts not run and parts on the stand-in route, which \
+                 one statement cannot name"
+                    .to_owned(),
+            );
+            None
+        }
+    };
     Gaps {
         reasons: gaps,
-        gateway_not_run,
+        shown,
     }
 }
 
@@ -673,33 +731,60 @@ pub fn subject(build: &QualifiedBuild) -> String {
     format!("{} {}", build.application.as_str(), build.version)
 }
 
-/// What a result states about a build on `platform` whose record shows every part of section 12's
-/// cases passed except `gateway_not_run`, which did not run and are not applicable to the package.
-fn statement(gateway_not_run: &[&str], platform: &str) -> String {
-    if gateway_not_run.is_empty() {
-        format!("every case of the version qualification passed on {platform}")
-    } else {
-        format!(
-            "{} not run (no gateway); every other case part passed on {platform}",
-            gateway_not_run.join(", ")
-        )
+/// The parts `parts` named in words: `part 5a`, `parts 5a and 5b`.
+fn part_names(parts: &[&str]) -> String {
+    match parts {
+        [] => String::new(),
+        [one] => format!("part {one}"),
+        [rest @ .., last] => format!("parts {} and {last}", rest.join(", ")),
     }
 }
 
-/// Every statement the pipeline writes about a build on `platform`: that every case passed, and
-/// each combination of the gateway parts that did not run.
+/// What a result states about a build on `platform` whose record shows what `shown` says.
+fn statement(shown: &Shown, platform: &str) -> String {
+    match shown {
+        Shown::Every => format!("every case of the version qualification passed on {platform}"),
+        Shown::GatewayNotRun(parts) => format!(
+            "{} not run (no gateway); every other case part passed on {platform}",
+            parts.join(", ")
+        ),
+        Shown::StandIn(parts) => format!(
+            "{} passed on the stand-in agent; every other part passed on {platform}",
+            part_names(parts)
+        ),
+    }
+}
+
+/// Every subset of `parts`, the empty one first, each in the order of `parts`.
+fn subsets(parts: &'static [&'static str]) -> impl Iterator<Item = Vec<&'static str>> {
+    (0..1_usize << parts.len()).map(move |combination| {
+        parts
+            .iter()
+            .enumerate()
+            .filter(|(position, _)| combination & (1 << position) != 0)
+            .map(|(_, part)| *part)
+            .collect()
+    })
+}
+
+/// Every statement the pipeline writes about a build on `platform`: that every case passed, each
+/// combination of the gateway parts that did not run, and each non-empty set of the parts that
+/// passed on the stand-in route.
 #[must_use]
 pub fn statements(platform: &str) -> Vec<String> {
-    (0..1_usize << GATEWAY_PARTS.len())
-        .map(|combination| {
-            let not_run: Vec<&str> = GATEWAY_PARTS
-                .iter()
-                .enumerate()
-                .filter(|(position, _)| combination & (1 << position) != 0)
-                .map(|(_, part)| *part)
-                .collect();
-            statement(&not_run, platform)
-        })
+    let gateway = subsets(&GATEWAY_PARTS).map(|parts| {
+        if parts.is_empty() {
+            Shown::Every
+        } else {
+            Shown::GatewayNotRun(parts)
+        }
+    });
+    let stand_in = subsets(&STAND_IN_PARTS)
+        .filter(|parts| !parts.is_empty())
+        .map(Shown::StandIn);
+    gateway
+        .chain(stand_in)
+        .map(|shown| statement(&shown, platform))
         .collect()
 }
 
@@ -720,13 +805,12 @@ fn results_of(
         ))
     })?;
     let platform = records::platform_name(build.os, build.architecture);
-    let statement =
-        Summary::new(statement(&basis.gateway_not_run, &platform)).map_err(|source| {
-            layout(format!(
-                "{LIST}: the statement for {subject} cannot be written: {source}",
-                subject = subject.as_str()
-            ))
-        })?;
+    let statement = Summary::new(statement(&basis.shown, &platform)).map_err(|source| {
+        layout(format!(
+            "{LIST}: the statement for {subject} cannot be written: {source}",
+            subject = subject.as_str()
+        ))
+    })?;
     let mut ids: Vec<String> = capabilities
         .iter()
         .map(|request| capability_id(request.capability))

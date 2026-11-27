@@ -468,7 +468,7 @@ fn codex_build() -> QualifiedBuild {
 /// parts of section 12's cases passed: eleven against this release and the pinned executable, and
 /// parts 5a and 5b on the stand-in agent, which ran the core repository's own package. So the build
 /// is named, and its entry carries one result for each capability the release declares, each with
-/// the digest of the record file. Every other pinned build is left out for the parts of its own
+/// the digest of the record file and a statement that names parts 5a and 5b. Every other pinned build is left out for the parts of its own
 /// record that did not pass, and a script or a wheel for naming no executable at all, and its entry
 /// names no build and carries no result. The check goes through the builds the list pins, so a pin
 /// removed to withdraw a build does not break it.
@@ -576,7 +576,7 @@ fn the_records_as_they_stand_name_the_codex_build_and_leave_the_others_out() {
                     "0.4.0",
                     "codex 0.155.1",
                     PayloadDigest::parse(CODEX_RECORD_SHA256).expect("a digest"),
-                    PASSED_ON_MACOS,
+                    PASSED_WITH_PARTS_ON_THE_STAND_IN,
                 )
             );
         } else {
@@ -1840,6 +1840,11 @@ const OPENCODE_CAPABILITY_IDS: [&str; 4] = [
 /// What a result states of a build whose every part of the cases passed, on macOS on Apple silicon.
 const PASSED_ON_MACOS: &str = "every case of the version qualification passed on macos-aarch64";
 
+/// What a result states of a build whose record shows parts 5a and 5b passed on the stand-in agent
+/// and every other part passed, on macOS on Apple silicon.
+const PASSED_WITH_PARTS_ON_THE_STAND_IN: &str =
+    "parts 5a and 5b passed on the stand-in agent; every other part passed on macos-aarch64";
+
 /// One result, as a catalogue carries it for a qualified build.
 fn result(
     id: &str,
@@ -2077,6 +2082,93 @@ fn the_statement_speaks_of_the_cases_only_when_a_typed_path_part_did_not_run() {
             digest_of_file(&repository, OPENCODE_RECORD),
             "5b not run (no gateway); every other case part passed on macos-aarch64",
         )
+    );
+}
+
+/// The record with part `part` said to have run on the stand-in route.
+fn on_the_stand_in(record: &Value, part: &str) -> Value {
+    let mut record = record.clone();
+    let test = record["identifiers"][identifier_of(part)]["tests"]
+        .as_array_mut()
+        .expect("the identifier lists its tests")
+        .iter_mut()
+        .find(|test| test["part"] == part)
+        .unwrap_or_else(|| panic!("the record names part {part}"));
+    test["route"] = json!("stand_in");
+    record
+}
+
+/// The statement names the parts that passed on the stand-in route, parts 5a and 5b, each on its own
+/// and in that order, and says that every other part passed; a record that marks neither is stated
+/// as it was before.
+#[test]
+fn the_statement_names_the_parts_that_passed_on_the_stand_in_agent_and_no_others() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let cases: [(&[&str], &str); 4] = [
+        (&[], PASSED_ON_MACOS),
+        (
+            &["5a"],
+            "part 5a passed on the stand-in agent; every other part passed on macos-aarch64",
+        ),
+        (
+            &["5b"],
+            "part 5b passed on the stand-in agent; every other part passed on macos-aarch64",
+        ),
+        (&["5a", "5b"], PASSED_WITH_PARTS_ON_THE_STAND_IN),
+    ];
+    for (number, (marked, statement)) in cases.iter().enumerate() {
+        let repository = temporary.path().join(format!("repository-{number}"));
+        let record = marked.iter().fold(qualified_record(), |record, part| {
+            on_the_stand_in(&record, part)
+        });
+        claude_code_repository(&repository, &record);
+        assert_eq!(
+            entry_results(&repository, "kalareach/claude-code"),
+            results_of(
+                &CLAUDE_CODE_CAPABILITY_IDS,
+                "0.5.0",
+                "claude-code 2.1.278",
+                digest_of_file(&repository, CLAUDE_CODE_RECORD),
+                statement,
+            ),
+            "on the stand-in route: {marked:?}"
+        );
+    }
+}
+
+/// A pass on the stand-in route counts for parts 5a and 5b only, whatever the package. Any other
+/// part that passed on that route keeps the build out, and the reason names the part.
+#[test]
+fn a_part_other_than_5a_and_5b_that_passed_on_the_stand_in_route_leaves_the_build_out() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    for (number, part) in ["2b", "6b", "14.03a"].iter().enumerate() {
+        let repository = temporary.path().join(format!("repository-{number}"));
+        let record = on_the_stand_in(&on_the_stand_in(&qualified_record(), "5a"), part);
+        claude_code_repository(&repository, &record);
+        assert_eq!(
+            left_out_because(&repository),
+            vec![format!(
+                "part {part} passed on the stand-in route, which counts for parts 5a and 5b only"
+            )]
+        );
+    }
+}
+
+/// One statement names either the gateway parts that did not run or the parts that passed on the
+/// stand-in route, not both: a record that shows both leaves the build out.
+#[test]
+fn a_record_with_gateway_parts_not_run_and_parts_on_the_stand_in_route_leaves_the_build_out() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    let record = on_the_stand_in(&opencode_record_with(&["6b"]), "5a");
+    opencode_repository(&repository, "opencode", OPENCODE_RECORD, &record);
+    assert_eq!(
+        left_out_of(&repository, "kalareach/opencode"),
+        vec![
+            "the record names gateway parts not run and parts on the stand-in route, which one \
+             statement cannot name"
+                .to_owned()
+        ]
     );
 }
 
@@ -2505,8 +2597,9 @@ fn a_platform_is_named_as_a_record_file_names_it() {
 }
 
 /// The host writes a result's statement after the capability and a fixed explanation, and holds the
-/// reason to its bound: every statement fits it for every capability on every platform, and the
-/// longest is the one that names all three gateway parts on the platform with the longest name.
+/// reason to its bound of 200 characters: every statement fits it for every capability on every
+/// platform, and the longest is the one that names parts 5a and 5b on the stand-in agent on the
+/// platform with the longest name.
 #[test]
 fn every_statement_fits_the_host_s_reason_for_every_capability_on_every_platform() {
     let explanation = "this release was qualified against it, and this host has not been checked";
@@ -2515,11 +2608,11 @@ fn every_statement_fits_the_host_s_reason_for_every_capability_on_every_platform
         for architecture in ["aarch64", "x86_64"] {
             let platform = format!("{os}-{architecture}");
             let statements = builds::statements(&platform);
-            assert_eq!(statements.len(), 8, "{platform}");
+            assert_eq!(statements.len(), 11, "{platform}");
             let mut distinct = statements.clone();
             distinct.sort();
             distinct.dedup();
-            assert_eq!(distinct.len(), 8, "{platform}");
+            assert_eq!(distinct.len(), 11, "{platform}");
             for statement in &statements {
                 Summary::new(statement).expect("a statement is a summary");
                 longest = longest.max(statement.chars().count());
@@ -2533,7 +2626,7 @@ fn every_statement_fits_the_host_s_reason_for_every_capability_on_every_platform
             }
         }
     }
-    assert_eq!(longest, 80);
+    assert_eq!(longest, 88);
 }
 
 /// A subject is an application and a version in a label, which the SDK bounds; a build whose pair

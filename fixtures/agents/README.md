@@ -300,8 +300,8 @@ A confined part's record also lists what its checks do not cover, in the build l
 
 The catalogue pipeline names a pinned build in its release's index entry only when the record for
 that release, build and platform is in good form, is a whole run of this release whose parts ran
-against this build (the first of its `run.applications`, installed, with the pinned SHA-256), shows
-no part failed, and shows every part of the eight cases (1 to 8b above) passed. A part not run
+against this build (the first of its `run.applications`, installed, with the pinned SHA-256; parts
+5a and 5b may instead have passed on the stand-in route), shows no part failed, and shows every part of the eight cases (1 to 8b above) passed. A part not run
 is not a pass, with one exception. OpenCode (`kalareach/opencode`) can be named on what its
 terminal route shows: its parts 5b, 6b and 8b run against a gateway, no shipped launch gives
 OpenCode one, and the pipeline counts them as not applicable where a record shows them not run. The
@@ -313,7 +313,11 @@ one keeps the build out. `docs/pipeline.md` describes the rest.
 The index also takes the record's bytes. Each qualification result of a named build carries the
 SHA-256 of the record file, so a change to the file, a change of whitespace included, gives a new
 signed digest, and the generation that names the build is then built again. For OpenCode, the
-result's statement names each gateway part the record shows not run.
+result's statement names each gateway part the record shows not run. For a record whose parts say
+`"route": "stand_in"` and passed, the statement names those parts, as `parts 5a and 5b passed on
+the stand-in agent; every other part passed on <platform>`; a part on that route outside 5a and 5b
+is not a pass and keeps the build out, and a record that shows both gateway parts not run and parts
+on that route keeps it out too, since one statement cannot name both.
 
 ## Running it
 
