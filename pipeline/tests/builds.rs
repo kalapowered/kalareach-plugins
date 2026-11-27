@@ -1,4 +1,5 @@
-//! The index names each release's qualified executable builds, and nothing else.
+//! The index names each release's qualified executable builds and, for each declared capability of
+//! each, the result that states it, and nothing else.
 //!
 //! A build is named for a release when the build list pins it and the release's qualification
 //! record for it shows every part of section 12's eight cases passed. So that the rule is tested
@@ -10,18 +11,21 @@
 use std::path::{Path, PathBuf};
 
 use jiff::{Span, Timestamp};
-use kalareach_catalogue::keys::SigningDirectory;
+use kalareach_catalogue::development::DevelopmentSigning;
+use kalareach_catalogue::keys::{SigningDirectory, SigningMaterial};
 use kalareach_catalogue::packages::{self, Repository};
 use kalareach_catalogue::tuf::{self, Expiries, METADATA_DIR, TARGETS_DIR};
 use kalareach_catalogue::{Error, builds, index, repository_root};
+use kr_plugin_sdk::capability::{CapabilityState, EvidenceSource};
 use kr_plugin_sdk::catalogue::{
-    BuildsError, CatalogueIndex, IndexEntry, MAX_QUALIFIED_BUILDS, QualifiedBuild,
+    BuildsError, CatalogueIndex, IndexEntry, MAX_QUALIFIED_BUILDS, QualificationResult,
+    QualifiedBuild,
 };
 use kr_plugin_sdk::digest::PayloadDigest;
-use kr_plugin_sdk::ids::RepositoryGeneration;
+use kr_plugin_sdk::ids::{CapabilityId, RepositoryGeneration};
 use kr_plugin_sdk::matching::{Architecture, OperatingSystem};
 use kr_plugin_sdk::scalars::TimestampMs;
-use kr_plugin_sdk::text::Label;
+use kr_plugin_sdk::text::{Label, Summary};
 use kr_plugin_sdk::version::PackageVersion;
 use serde_json::{Value, json};
 
@@ -1451,7 +1455,7 @@ fn expiries() -> Expiries {
 async fn refused_before_signing(
     repository: &Repository,
     index: &CatalogueIndex,
-    signing: &SigningDirectory,
+    signing: &dyn SigningMaterial,
     temporary: &Path,
 ) -> Error {
     let out = temporary.join("generation");
@@ -1573,16 +1577,23 @@ async fn the_pipeline_refuses_a_build_on_a_platform_the_release_does_not_list_be
 }
 
 /// Signs `index` over the repository's payloads into `out`, the way a build does but without its
-/// checks: what a generation another builder signed could carry.
+/// checks: what a generation another builder signed could carry. With `candidate`, the signed
+/// metadata that pins the index says the generation is a candidate, as a candidate build writes it.
 async fn signed_without_checks(
     repository: &Repository,
     index: &CatalogueIndex,
-    signing: &SigningDirectory,
+    signing: &dyn SigningMaterial,
+    candidate: bool,
     out: &Path,
 ) {
     let staged =
         tuf::stage_targets(repository, index, &out.join(TARGETS_DIR)).expect("the targets stage");
-    let root_bytes = std::fs::read(signing.root_path()).expect("the trust root reads");
+    let root_bytes = signing
+        .roots()
+        .expect("the roots read")
+        .last()
+        .cloned()
+        .expect("the signing material holds a root");
     std::fs::write(out.join("root.json"), &root_bytes).expect("the trust root writes");
     let version = std::num::NonZeroU64::new(1).expect("one is not zero");
     let expiries = expiries();
@@ -1599,9 +1610,14 @@ async fn signed_without_checks(
         .timestamp_version(version)
         .timestamp_expires(expiries.timestamp);
     for target in &staged {
-        let built = tough::schema::Target::from_path(&target.path)
+        let mut built = tough::schema::Target::from_path(&target.path)
             .await
             .expect("the target reads");
+        if candidate && target.name == tuf::INDEX_TARGET {
+            built
+                .custom
+                .insert(tuf::CANDIDATE_MARK.to_owned(), Value::Bool(true));
+        }
         editor
             .add_target(target.name.as_str(), built)
             .expect("the target is added");
@@ -1622,12 +1638,10 @@ async fn signed_without_checks(
 /// even when its signatures hold.
 #[tokio::test]
 async fn verification_refuses_a_signed_generation_whose_builds_the_sdk_refuses() {
-    let Some(signing_dir) = std::env::var_os("KALAREACH_SIGNING_DIR") else {
-        return;
-    };
     let loaded = packages::load(&root()).expect("the repository loads");
-    let signing = SigningDirectory::open(Path::new(&signing_dir), &root())
-        .expect("the signing directory opens");
+    let signing = DevelopmentSigning::first()
+        .await
+        .expect("the first lineage");
     let mut index = index_of(&loaded.repository);
     let mut unlisted = claude_code_build();
     unlisted.os = OperatingSystem::Windows;
@@ -1636,7 +1650,7 @@ async fn verification_refuses_a_signed_generation_whose_builds_the_sdk_refuses()
 
     let temporary = tempfile::tempdir().expect("a temporary directory");
     let out = temporary.path().join("generation");
-    signed_without_checks(&loaded.repository, &index, &signing, &out).await;
+    signed_without_checks(&loaded.repository, &index, &signing, false, &out).await;
     let refusal = tuf::verify(&out, true)
         .await
         .expect_err("the generation is refused");
@@ -1645,4 +1659,654 @@ async fn verification_refuses_a_signed_generation_whose_builds_the_sdk_refuses()
         "kalareach/claude-code 0.5.0: a build runs on windows aarch64, which the entry does not \
          list among its platforms"
     );
+}
+
+// What the index says about the results of the builds it names. Each case builds a repository of its
+// own and states the results it expects in literal words, so that the pipeline is held to the form a
+// reader checks and not to its own spelling.
+
+/// The identifier a result gives each capability Claude Code's release declares, in the order a list
+/// of results writes them: by identifier.
+const CLAUDE_CODE_CAPABILITY_IDS: [&str; 8] = [
+    "plugin.approval.decode/1",
+    "plugin.approval.respond/1",
+    "plugin.broker.semantic_events/1",
+    "plugin.command_integration.launch/1",
+    "plugin.metadata.match/1",
+    "plugin.native_bridge.install/1",
+    "plugin.presentation.declarative/1",
+    "plugin.upstream.action/1",
+];
+
+/// The same for OpenCode's release.
+const OPENCODE_CAPABILITY_IDS: [&str; 4] = [
+    "plugin.broker.semantic_events/1",
+    "plugin.metadata.match/1",
+    "plugin.presentation.declarative/1",
+    "plugin.upstream.action/1",
+];
+
+/// What a result states of a build whose every part of the cases passed, on macOS on Apple silicon.
+const PASSED_ON_MACOS: &str = "every case of the version qualification passed on macos-aarch64";
+
+/// One result, as a catalogue carries it for a qualified build.
+fn result(
+    id: &str,
+    release: &str,
+    subject: &str,
+    digest: PayloadDigest,
+    statement: &str,
+) -> QualificationResult {
+    QualificationResult {
+        capability_id: CapabilityId::new(id).expect("a capability identifier"),
+        capability_version: PackageVersion::parse(release).expect("a version"),
+        subject: Label::new(subject).expect("a label"),
+        state: CapabilityState::VersionQualified,
+        source: EvidenceSource::SignedRecord,
+        profile_digest: digest,
+        statement: Summary::new(statement).expect("a summary"),
+    }
+}
+
+/// The results of one build of `ids`' release, in the order of the identifiers.
+fn results_of(
+    ids: &[&str],
+    release: &str,
+    subject: &str,
+    digest: PayloadDigest,
+    statement: &str,
+) -> Vec<QualificationResult> {
+    ids.iter()
+        .map(|id| result(id, release, subject, digest, statement))
+        .collect()
+}
+
+/// The results of the Claude Code build the list pins.
+fn claude_code_results(digest: PayloadDigest) -> Vec<QualificationResult> {
+    results_of(
+        &CLAUDE_CODE_CAPABILITY_IDS,
+        "0.5.0",
+        "claude-code 2.1.278",
+        digest,
+        PASSED_ON_MACOS,
+    )
+}
+
+/// The SHA-256 of the file at `relative` in `directory`.
+fn digest_of_file(directory: &Path, relative: &str) -> PayloadDigest {
+    PayloadDigest::of(&std::fs::read(directory.join(relative)).expect("the record reads"))
+}
+
+/// The results the index entry for `plugin_id` carries when the repository in `directory` is built.
+fn entry_results(directory: &Path, plugin_id: &str) -> Vec<QualificationResult> {
+    let loaded = packages::load(directory).expect("the repository loads");
+    index_of(&loaded.repository)
+        .entries
+        .iter()
+        .find(|entry| entry.plugin_id.as_str() == plugin_id)
+        .unwrap_or_else(|| panic!("the index carries the package; {:?}", loaded.rejected))
+        .qualification
+        .clone()
+}
+
+/// The Claude Code repository in `directory` and its index, with the results of the one build that
+/// the entry names written here by hand from what the record shows.
+fn well_formed(directory: &Path) -> (packages::Loaded, CatalogueIndex) {
+    claude_code_repository(directory, &qualified_record());
+    let loaded = packages::load(directory).expect("the repository loads");
+    let mut index = index_of(&loaded.repository);
+    claude_code_entry(&mut index).qualification =
+        claude_code_results(digest_of_file(directory, CLAUDE_CODE_RECORD));
+    (loaded, index)
+}
+
+/// Says that `index` is refused with `expected`, in the same words, when a build signs it and when a
+/// generation signed without the build's checks is verified.
+async fn assert_results_refused(repository: &Repository, index: &CatalogueIndex, expected: &str) {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let signing = DevelopmentSigning::first()
+        .await
+        .expect("the first lineage");
+    let at_build = refused_before_signing(repository, index, &signing, temporary.path()).await;
+    assert_eq!(at_build.to_string(), expected, "when a build signs it");
+
+    let out = temporary.path().join("signed");
+    signed_without_checks(
+        repository,
+        index,
+        &signing,
+        repository.builds.is_candidate(),
+        &out,
+    )
+    .await;
+    let at_verify = tuf::verify(&out, true)
+        .await
+        .expect_err("the generation is refused");
+    assert_eq!(at_verify.to_string(), expected, "when it is verified");
+}
+
+/// An entry names a build with one result for each capability its release declares: the release's
+/// version, the application and version the build is, the state of a version that was qualified, the
+/// signed record as the source, the digest of the record's bytes and what the record shows.
+#[test]
+fn an_entry_carries_one_result_for_each_declared_capability_of_a_build_it_names() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    claude_code_repository(&repository, &qualified_record());
+
+    assert_eq!(
+        entry_results(&repository, "kalareach/claude-code"),
+        claude_code_results(digest_of_file(&repository, CLAUDE_CODE_RECORD))
+    );
+}
+
+/// The digest a result carries is the SHA-256 of the record file's bytes, so that a reader finds
+/// it with `sha256sum`, and a change to the bytes, a whitespace edit among them, is a new digest.
+#[test]
+fn the_digest_is_the_sha256_of_the_record_file_and_a_whitespace_edit_changes_it() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    claude_code_repository(&repository, &qualified_record());
+    let before = entry_results(&repository, "kalareach/claude-code");
+    assert!(!before.is_empty(), "the entry carries no result");
+    let file = digest_of_file(&repository, CLAUDE_CODE_RECORD);
+    assert!(before.iter().all(|result| result.profile_digest == file));
+
+    let path = repository.join(CLAUDE_CODE_RECORD);
+    let mut bytes = std::fs::read(&path).expect("the record reads");
+    bytes.push(b'\n');
+    std::fs::write(&path, &bytes).expect("the record writes");
+    let after = entry_results(&repository, "kalareach/claude-code");
+    assert!(!after.is_empty(), "the entry carries no result");
+    assert_eq!(
+        claude_code_results(PayloadDigest::of(&bytes)),
+        after,
+        "the digest is of the new bytes"
+    );
+    assert_ne!(PayloadDigest::of(&bytes), file);
+}
+
+/// An entry that names two builds carries the results of each, in the builds' order, and each
+/// result names its own build's version and its own record's digest.
+#[test]
+fn the_results_of_two_builds_follow_the_builds_order() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    two_build_repository(&repository, &newer_build_record());
+
+    let mut expected = claude_code_results(digest_of_file(&repository, CLAUDE_CODE_RECORD));
+    expected.extend(results_of(
+        &CLAUDE_CODE_CAPABILITY_IDS,
+        "0.5.0",
+        "claude-code 2.1.281",
+        digest_of_file(&repository, NEWER_RECORD),
+        PASSED_ON_MACOS,
+    ));
+    assert_eq!(
+        entry_results(&repository, "kalareach/claude-code"),
+        expected
+    );
+}
+
+/// The statement says exactly what the record shows. OpenCode is named on its terminal evidence, so
+/// a gateway part that did not run is carried as not applicable, each on its own: the statement
+/// names the parts that did not run and says that every other part passed.
+#[test]
+fn the_statement_names_the_gateway_parts_that_did_not_run_and_no_others() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let cases: [(&[&str], &str); 8] = [
+        (&[], PASSED_ON_MACOS),
+        (
+            &["5b"],
+            "5b not run (no gateway); every other part passed on macos-aarch64",
+        ),
+        (
+            &["6b"],
+            "6b not run (no gateway); every other part passed on macos-aarch64",
+        ),
+        (
+            &["8b"],
+            "8b not run (no gateway); every other part passed on macos-aarch64",
+        ),
+        (
+            &["5b", "6b"],
+            "5b, 6b not run (no gateway); every other part passed on macos-aarch64",
+        ),
+        (
+            &["5b", "8b"],
+            "5b, 8b not run (no gateway); every other part passed on macos-aarch64",
+        ),
+        (
+            &["6b", "8b"],
+            "6b, 8b not run (no gateway); every other part passed on macos-aarch64",
+        ),
+        (
+            &["5b", "6b", "8b"],
+            "5b, 6b, 8b not run (no gateway); every other part passed on macos-aarch64",
+        ),
+    ];
+    for (number, (not_run, statement)) in cases.iter().enumerate() {
+        let repository = temporary.path().join(format!("repository-{number}"));
+        opencode_repository(
+            &repository,
+            "opencode",
+            OPENCODE_RECORD,
+            &opencode_record_with(not_run),
+        );
+        assert_eq!(
+            entry_results(&repository, "kalareach/opencode"),
+            results_of(
+                &OPENCODE_CAPABILITY_IDS,
+                "0.2.1",
+                "opencode 1.18.31",
+                digest_of_file(&repository, OPENCODE_RECORD),
+                statement,
+            ),
+            "not run: {not_run:?}"
+        );
+    }
+}
+
+/// An entry that names no build carries no result: a build left out for a part that did not pass
+/// leaves its entry as the package alone makes it, and so does a package no list pins a build for.
+#[test]
+fn an_entry_that_names_no_build_carries_no_result() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    claude_code_repository(
+        &repository,
+        &with_outcome(&qualified_record(), "2a", "not_run"),
+    );
+    add_example_package(&repository);
+
+    let loaded = packages::load(&repository).expect("the repository loads");
+    assert_eq!(loaded.repository.builds.named().count(), 0);
+    let index = index_of(&loaded.repository);
+    for entry in &index.entries {
+        assert!(entry.builds.is_empty(), "{}", entry.plugin_id);
+        assert!(entry.qualification.is_empty(), "{}", entry.plugin_id);
+    }
+    // The package that no build is pinned for is the entry its manifest alone makes.
+    let example = loaded
+        .repository
+        .packages
+        .iter()
+        .find(|loaded| {
+            loaded.package.manifest.plugin_id().as_str() == "kalareach/example-declarative"
+        })
+        .expect("the example package loads");
+    let expected = IndexEntry::from_manifest(
+        &example.package.manifest,
+        example.manifest_digest,
+        example.manifest_size_bytes,
+    );
+    assert_eq!(
+        index
+            .entries
+            .iter()
+            .find(|entry| entry.plugin_id.as_str() == "kalareach/example-declarative"),
+        Some(&expected)
+    );
+    let rendered = index.canonical_json().expect("the index renders");
+    assert!(rendered.contains("\"qualification\":[]"));
+    assert!(!rendered.contains("\"builds\""));
+}
+
+/// A candidate generation names the builds that no record qualifies, so it states no result: every
+/// list is empty. It signs and verifies, and says it is a candidate.
+#[tokio::test]
+async fn a_candidate_generation_names_builds_and_carries_no_result() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    claude_code_repository(&repository, &qualified_record());
+    let mut loaded = packages::load(&repository).expect("the repository loads");
+    let candidate = builds::load_candidate(&repository, &loaded.repository.packages)
+        .expect("a candidate set of builds loads");
+    loaded.repository.builds = candidate;
+    let mut index = index_of(&loaded.repository);
+    let entry = claude_code_entry(&mut index);
+    assert_eq!(entry.builds, vec![claude_code_build()]);
+    assert!(entry.qualification.is_empty());
+
+    let signing = DevelopmentSigning::first()
+        .await
+        .expect("the first lineage");
+    let out = temporary.path().join("generation");
+    tuf::build(
+        &loaded.repository,
+        &index,
+        &signing,
+        expiries(),
+        &out,
+        false,
+    )
+    .await
+    .expect("a candidate generation signs");
+    let verified = tuf::verify(&out, true)
+        .await
+        .expect("a candidate generation verifies");
+    assert!(verified.candidate);
+}
+
+/// A candidate generation that carries a result is refused: its builds were named without a record,
+/// so no result can state what one shows.
+#[tokio::test]
+async fn a_candidate_generation_that_carries_results_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let repository = temporary.path().join("repository");
+    let (mut loaded, mut index) = well_formed(&repository);
+    let candidate = builds::load_candidate(&repository, &loaded.repository.packages)
+        .expect("a candidate set of builds loads");
+    loaded.repository.builds = candidate;
+    assert_eq!(claude_code_entry(&mut index).builds.len(), 1);
+
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: the generation is a candidate, so its entries carry no \
+         qualification result, and this one carries 8",
+    )
+    .await;
+}
+
+/// The results the pipeline writes sign and verify as they are: the control for the refusals below.
+#[tokio::test]
+async fn a_generation_with_the_results_of_its_builds_signs_and_verifies() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let (loaded, index) = well_formed(&temporary.path().join("repository"));
+    let signing = DevelopmentSigning::first()
+        .await
+        .expect("the first lineage");
+    let out = temporary.path().join("generation");
+    tuf::build(
+        &loaded.repository,
+        &index,
+        &signing,
+        expiries(),
+        &out,
+        false,
+    )
+    .await
+    .expect("the generation signs");
+    let verified = tuf::verify(&out, true)
+        .await
+        .expect("the generation verifies");
+    assert!(!verified.candidate);
+    let entry = verified
+        .index
+        .entries
+        .iter()
+        .find(|entry| entry.plugin_id.as_str() == "kalareach/claude-code")
+        .expect("the index carries Claude Code");
+    assert_eq!(entry.qualification.len(), 8);
+}
+
+/// Results exist only with builds: an entry that carries results and names no build is refused.
+#[tokio::test]
+async fn results_with_no_build_are_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let (loaded, mut index) = well_formed(&temporary.path().join("repository"));
+    claude_code_entry(&mut index).builds.clear();
+
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: the entry names no build, so it carries no qualification \
+         result, and it carries 8",
+    )
+    .await;
+}
+
+/// And builds only with results: the host refuses a build no result accompanies, so an entry that
+/// names a build and carries none is refused.
+#[tokio::test]
+async fn a_build_with_no_result_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let (loaded, mut index) = well_formed(&temporary.path().join("repository"));
+    claude_code_entry(&mut index).qualification.clear();
+
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: the entry names 1 build and declares 8 capabilities, so it \
+         carries 8 qualification results, and it carries 0",
+    )
+    .await;
+}
+
+/// An entry that names a build and declares no capability has no result to carry, which the exact
+/// count alone would accept (nothing times a build is nothing), so the rule says it by itself.
+#[tokio::test]
+async fn a_build_of_a_release_that_declares_no_capability_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let (loaded, mut index) = well_formed(&temporary.path().join("repository"));
+    let entry = claude_code_entry(&mut index);
+    entry.capabilities.clear();
+    entry.qualification.clear();
+
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: the entry names 1 build and declares no capability, so no \
+         qualification result can state what a record shows of its builds",
+    )
+    .await;
+}
+
+/// One result for each declared capability of each build, no more and no fewer.
+#[tokio::test]
+async fn a_missing_or_an_extra_result_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let (loaded, mut index) = well_formed(&temporary.path().join("repository"));
+    claude_code_entry(&mut index).qualification.pop();
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: the entry names 1 build and declares 8 capabilities, so it \
+         carries 8 qualification results, and it carries 7",
+    )
+    .await;
+
+    let (loaded, mut index) = well_formed(&temporary.path().join("second"));
+    let entry = claude_code_entry(&mut index);
+    let again = entry.qualification[0].clone();
+    entry.qualification.push(again);
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: the entry names 1 build and declares 8 capabilities, so it \
+         carries 8 qualification results, and it carries 9",
+    )
+    .await;
+}
+
+/// Each result is for the capability of its place in the list: an identifier the release does not
+/// declare, one the pipeline does not write, or the right ones in another order, is refused.
+#[tokio::test]
+async fn a_result_for_another_capability_than_its_place_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let (loaded, mut index) = well_formed(&temporary.path().join("repository"));
+    claude_code_entry(&mut index).qualification[2].capability_id =
+        CapabilityId::new("agent.approval.respond/1").expect("an identifier");
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 3: the capability is \
+         agent.approval.respond/1, and this position is for plugin.broker.semantic_events/1",
+    )
+    .await;
+
+    let (loaded, mut index) = well_formed(&temporary.path().join("second"));
+    claude_code_entry(&mut index).qualification.swap(0, 1);
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 1: the capability is \
+         plugin.approval.respond/1, and this position is for plugin.approval.decode/1",
+    )
+    .await;
+}
+
+/// A catalogue result states a version that was qualified, from a signed record. A usable state
+/// claims what a host alone can know, and another state, or another source, is not what a build
+/// writes.
+#[tokio::test]
+async fn a_result_that_states_another_state_or_source_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let (loaded, mut index) = well_formed(&temporary.path().join("repository"));
+    claude_code_entry(&mut index).qualification[0].state = CapabilityState::QualifiedAvailable;
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 1: a catalogue result cannot claim that \
+         a capability is available on a host",
+    )
+    .await;
+
+    let (loaded, mut index) = well_formed(&temporary.path().join("second"));
+    claude_code_entry(&mut index).qualification[0].state = CapabilityState::Incompatible;
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 1: the state is Incompatible, and a \
+         qualified build's result states VersionQualified",
+    )
+    .await;
+
+    let (loaded, mut index) = well_formed(&temporary.path().join("third"));
+    claude_code_entry(&mut index).qualification[0].source = EvidenceSource::HostProbe;
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 1: a catalogue result comes from a \
+         signed record, not from HostProbe",
+    )
+    .await;
+}
+
+/// A result names the release's version and its build's application and version.
+#[tokio::test]
+async fn a_result_for_another_release_or_build_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let (loaded, mut index) = well_formed(&temporary.path().join("repository"));
+    claude_code_entry(&mut index).qualification[0].capability_version =
+        PackageVersion::parse("0.4.0").expect("a version");
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 1: the capability version is 0.4.0, and \
+         the release is 0.5.0",
+    )
+    .await;
+
+    let (loaded, mut index) = well_formed(&temporary.path().join("second"));
+    claude_code_entry(&mut index).qualification[0].subject =
+        Label::new("claude-code 2.1.281").expect("a label");
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 1: the subject is \"claude-code \
+         2.1.281\", and this position's build is \"claude-code 2.1.278\"",
+    )
+    .await;
+}
+
+/// Each statement names the platform of its build, and the check compares it with the platform the
+/// index gives the build, whatever the statement says otherwise.
+#[tokio::test]
+async fn a_statement_that_names_another_platform_than_its_build_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let (loaded, mut index) = well_formed(&temporary.path().join("repository"));
+    claude_code_entry(&mut index).qualification[0].statement =
+        Summary::new("every case of the version qualification passed on macos-x86_64")
+            .expect("a summary");
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 1: the statement \"every case of the \
+         version qualification passed on macos-x86_64\" is not one the pipeline writes for a build \
+         on macos-aarch64",
+    )
+    .await;
+
+    // A statement of words the pipeline does not write is refused the same way.
+    let (loaded, mut index) = well_formed(&temporary.path().join("second"));
+    claude_code_entry(&mut index).qualification[0].statement =
+        Summary::new("qualified").expect("a summary");
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 1: the statement \"qualified\" is not \
+         one the pipeline writes for a build on macos-aarch64",
+    )
+    .await;
+
+    // The platform comes from the build in the index: a build on Windows with the statement of a
+    // build on macOS.
+    let (loaded, mut index) = well_formed(&temporary.path().join("third"));
+    let entry = claude_code_entry(&mut index);
+    entry.builds[0].os = OperatingSystem::Windows;
+    entry.builds[0].architecture = Architecture::X86_64;
+    assert_results_refused(
+        &loaded.repository,
+        &index,
+        "kalareach/claude-code 0.5.0: qualification result 1: the statement \"every case of the \
+         version qualification passed on macos-aarch64\" is not one the pipeline writes for a \
+         build on windows-x86_64",
+    )
+    .await;
+}
+
+/// A statement that names the platform of its build is accepted for each platform the release
+/// lists, whichever way the SDK spells the operating system.
+#[tokio::test]
+async fn a_statement_that_names_the_platform_of_its_build_is_accepted_on_each_platform() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let platforms = [
+        (OperatingSystem::Linux, Architecture::X86_64, "linux-x86_64"),
+        (
+            OperatingSystem::Linux,
+            Architecture::Aarch64,
+            "linux-aarch64",
+        ),
+        (
+            OperatingSystem::MacOs,
+            Architecture::Aarch64,
+            "macos-aarch64",
+        ),
+        (
+            OperatingSystem::Windows,
+            Architecture::X86_64,
+            "windows-x86_64",
+        ),
+    ];
+    let signing = DevelopmentSigning::first()
+        .await
+        .expect("the first lineage");
+    for (os, architecture, name) in platforms {
+        let (loaded, mut index) = well_formed(&temporary.path().join(format!("repository-{name}")));
+        let entry = claude_code_entry(&mut index);
+        entry.builds[0].os = os;
+        entry.builds[0].architecture = architecture;
+        for result in &mut entry.qualification {
+            result.statement = Summary::new(format!(
+                "every case of the version qualification passed on {name}"
+            ))
+            .expect("a summary");
+        }
+        let out = temporary.path().join(format!("generation-{name}"));
+        tuf::build(
+            &loaded.repository,
+            &index,
+            &signing,
+            expiries(),
+            &out,
+            false,
+        )
+        .await
+        .unwrap_or_else(|refusal| panic!("{name}: {refusal}"));
+        tuf::verify(&out, true)
+            .await
+            .unwrap_or_else(|refusal| panic!("{name}: {refusal}"));
+    }
 }
