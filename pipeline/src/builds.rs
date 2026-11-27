@@ -26,7 +26,9 @@
 //!   build an upgrade part moved to is listed after it, and qualifies nothing;
 //! - the record's run is whole: no failure outside its identifiers, no problem, no failed step;
 //! - no part failed, and every part of section 12's eight cases ([`REQUIRED_PARTS`]) passed. A part
-//!   not run is not a pass, whatever the reason it could not run.
+//!   not run is not a pass, whatever the reason it could not run, except a gateway part of a
+//!   package on [`TERMINAL_EVIDENCE_PACKAGES`] while its release declares no command integration
+//!   and no native bridge.
 //!
 //! A build that misses any of them is left out, and [`Builds::omitted`] says why. Input that
 //! cannot be read for what it shows is refused instead: a build list or a record that breaks its
@@ -56,6 +58,14 @@ pub const LIST_VERSION: u32 = 1;
 /// The parts a record must show passed for its build to be named: every part of section 12's
 /// eight qualification cases.
 pub const REQUIRED_PARTS: [&str; 13] = records::CASE_PARTS;
+
+/// The parts of section 12's cases that run against a gateway.
+pub const GATEWAY_PARTS: [&str; 3] = ["5b", "6b", "8b"];
+
+/// The packages whose build is named on terminal evidence alone. A gateway part of one of them that
+/// did not run is carried as not applicable while its release declares no command integration and
+/// no native bridge. The packages are named here, and nothing in a record adds one.
+pub const TERMINAL_EVIDENCE_PACKAGES: [&str; 1] = ["kalareach/opencode"];
 
 /// How a launch reaches a build's pinned file.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Deserialize)]
@@ -465,13 +475,15 @@ fn reasons_to_leave_out(
         &pinned.version.to_string(),
         &pinned.sha256.to_string(),
     ));
-    reasons.extend(qualification_gaps(&record));
+    reasons.extend(qualification_gaps(&record, package));
     Ok(reasons)
 }
 
 /// What a record in good form lacks for its build to be named: a whole run, no failed part, and
-/// every part of section 12's cases passed.
-fn qualification_gaps(record: &Value) -> Vec<String> {
+/// every part of section 12's cases passed, or, for a package on [`TERMINAL_EVIDENCE_PACKAGES`]
+/// whose release declares no command integration and no native bridge, is a gateway part that did
+/// not run.
+fn qualification_gaps(record: &Value, package: &LoadedPackage) -> Vec<String> {
     let mut gaps = Vec::new();
     if record["failures_outside_identifiers"]
         .as_array()
@@ -507,13 +519,23 @@ fn qualification_gaps(record: &Value) -> Vec<String> {
         gaps.push(format!("parts {} failed", failed.join(", ")));
     }
     let cases = records::parts(record, records::CASES);
+    let manifest = &package.package.manifest;
+    // A gateway part that did not run is not a gap for a package named on terminal evidence; a
+    // failed part is still one.
+    let gateway_not_applicable = TERMINAL_EVIDENCE_PACKAGES
+        .contains(&manifest.plugin_id().as_str())
+        && manifest.command_integration.is_none()
+        && manifest.native_bridge.0.is_none();
     let not_passed: Vec<&str> = REQUIRED_PARTS
         .iter()
         .copied()
         .filter(|part| {
-            cases
-                .get(part)
-                .is_none_or(|test| test["outcome"] != "passed")
+            cases.get(part).is_none_or(|test| {
+                test["outcome"] != "passed"
+                    && !(gateway_not_applicable
+                        && GATEWAY_PARTS.contains(part)
+                        && test["outcome"] == "not_run")
+            })
         })
         .collect();
     if !not_passed.is_empty() {

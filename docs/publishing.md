@@ -194,11 +194,14 @@ binding mid-request is how a person ends up approving something other than what 
 
 The executable builds that an index entry names are not part of the package either. They come from
 the build list and the qualification records in `fixtures/agents`, and a build is named only when
-its record shows every part of the qualification cases passed. A build is added by committing a
-record that qualifies it, and withdrawn by removing its pin or by a newly measured record that no
-longer qualifies; the next generation names it or leaves it out, and the release keeps its version
-and digest. The pipeline writes no qualification result into the entry beside the build, which the
-host release record in the core repository requires of a listed build.
+its record shows every part of the qualification cases passed, with one exception. OpenCode
+(`kalareach/opencode`) can be named on what its terminal route shows: its parts 5b, 6b and 8b run
+against a gateway, no shipped launch gives OpenCode one, and the pipeline counts them as not
+applicable where a record shows them not run. `docs/pipeline.md` says what that leaves out. A build
+is added by committing a record that qualifies it, and withdrawn by removing its pin or by a newly
+measured record that no longer qualifies; the next generation names it or leaves it out, and the
+release keeps its version and digest. The pipeline writes no qualification result into the entry
+beside the build, which the host release record in the core repository requires of a listed build.
 
 ## Delegation
 
