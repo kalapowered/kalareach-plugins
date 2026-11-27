@@ -1119,7 +1119,7 @@
                 "reply_ends": "KR4C26BF63FDCF-END"
               },
               "stale_input": {
-                "refused_with": "AmbiguousAttachment"
+                "refused_with": "AMBIGUOUS_ATTACHMENT"
               }
             },
             "turns": {
