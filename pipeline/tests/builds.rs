@@ -1841,9 +1841,9 @@ const OPENCODE_CAPABILITY_IDS: [&str; 4] = [
 const PASSED_ON_MACOS: &str = "every case of the version qualification passed on macos-aarch64";
 
 /// What a result states of a build whose record shows parts 5a and 5b passed on the stand-in agent
-/// and every other part passed, on macOS on Apple silicon.
+/// and every other case part passed, on macOS on Apple silicon.
 const PASSED_WITH_PARTS_ON_THE_STAND_IN: &str =
-    "parts 5a and 5b passed on the stand-in agent; every other part passed on macos-aarch64";
+    "parts 5a and 5b passed on the stand-in agent; every other case part passed on macos-aarch64";
 
 /// One result, as a catalogue carries it for a qualified build.
 fn result(
@@ -2085,8 +2085,8 @@ fn the_statement_speaks_of_the_cases_only_when_a_typed_path_part_did_not_run() {
     );
 }
 
-/// The record with part `part` said to have run on the stand-in route.
-fn on_the_stand_in(record: &Value, part: &str) -> Value {
+/// The record with `change` made to the test of part `part`.
+fn with_test_of(record: &Value, part: &str, change: impl FnOnce(&mut Value)) -> Value {
     let mut record = record.clone();
     let test = record["identifiers"][identifier_of(part)]["tests"]
         .as_array_mut()
@@ -2094,13 +2094,22 @@ fn on_the_stand_in(record: &Value, part: &str) -> Value {
         .iter_mut()
         .find(|test| test["part"] == part)
         .unwrap_or_else(|| panic!("the record names part {part}"));
-    test["route"] = json!("stand_in");
+    change(test);
     record
 }
 
+/// The record with part `part` said to have run on the stand-in route: the test's `route` member
+/// says so, and so does the route its evidence names, as every gateway test has both.
+fn on_the_stand_in(record: &Value, part: &str) -> Value {
+    with_test_of(record, part, |test| {
+        test["route"] = json!("stand_in");
+        test["evidence"]["route"] = json!("the application stand-in");
+    })
+}
+
 /// The statement names the parts that passed on the stand-in route, parts 5a and 5b, each on its own
-/// and in that order, and says that every other part passed; a record that marks neither is stated
-/// as it was before.
+/// and in that order, and says that every other case part passed; a record that marks neither is
+/// stated as it was before. A part is marked by both of its marks, the test's and its evidence's.
 #[test]
 fn the_statement_names_the_parts_that_passed_on_the_stand_in_agent_and_no_others() {
     let temporary = tempfile::tempdir().expect("a temporary directory");
@@ -2108,11 +2117,11 @@ fn the_statement_names_the_parts_that_passed_on_the_stand_in_agent_and_no_others
         (&[], PASSED_ON_MACOS),
         (
             &["5a"],
-            "part 5a passed on the stand-in agent; every other part passed on macos-aarch64",
+            "part 5a passed on the stand-in agent; every other case part passed on macos-aarch64",
         ),
         (
             &["5b"],
-            "part 5b passed on the stand-in agent; every other part passed on macos-aarch64",
+            "part 5b passed on the stand-in agent; every other case part passed on macos-aarch64",
         ),
         (&["5a", "5b"], PASSED_WITH_PARTS_ON_THE_STAND_IN),
     ];
@@ -2132,6 +2141,49 @@ fn the_statement_names_the_parts_that_passed_on_the_stand_in_agent_and_no_others
                 statement,
             ),
             "on the stand-in route: {marked:?}"
+        );
+    }
+}
+
+/// Every gateway test carries two marks of its route: the test's `route` member and the route its
+/// evidence names. A record whose two marks disagree is not in good form, and the repository is
+/// refused, whichever of the two is the one that differs or is missing.
+#[test]
+fn a_record_whose_test_and_evidence_disagree_on_the_route_is_refused() {
+    let temporary = tempfile::tempdir().expect("a temporary directory");
+    let marked = on_the_stand_in(&qualified_record(), "5a");
+    let disagreeing = [
+        (
+            "the test says stand_in, its evidence the pinned build",
+            with_test_of(&marked, "5a", |test| {
+                test["evidence"]["route"] = json!("the pinned build");
+            }),
+        ),
+        (
+            "the test says stand_in, its evidence names no route",
+            with_test_of(&marked, "5a", |test| {
+                test["evidence"]
+                    .as_object_mut()
+                    .expect("the evidence is an object")
+                    .remove("route");
+            }),
+        ),
+        (
+            "the evidence says stand-in, its test no route",
+            with_test_of(&marked, "5a", |test| {
+                test.as_object_mut()
+                    .expect("a test is an object")
+                    .remove("route");
+            }),
+        ),
+    ];
+    for (number, (what, record)) in disagreeing.iter().enumerate() {
+        let repository = temporary.path().join(format!("repository-{number}"));
+        claude_code_repository(&repository, record);
+        let refusal = refused(&repository);
+        assert!(
+            refusal.contains("part 5a: the test's route and its evidence's route disagree"),
+            "{what}: {refusal}"
         );
     }
 }
@@ -2604,6 +2656,7 @@ fn a_platform_is_named_as_a_record_file_names_it() {
 fn every_statement_fits_the_host_s_reason_for_every_capability_on_every_platform() {
     let explanation = "this release was qualified against it, and this host has not been checked";
     let mut longest = 0;
+    let mut longest_reason = 0;
     for os in ["linux", "macos", "windows"] {
         for architecture in ["aarch64", "x86_64"] {
             let platform = format!("{os}-{architecture}");
@@ -2622,11 +2675,15 @@ fn every_statement_fits_the_host_s_reason_for_every_capability_on_every_platform
                     let reason = format!("{}: {explanation}. {statement}", capability.as_str());
                     DisabledReason::new(reason.as_str())
                         .unwrap_or_else(|source| panic!("{reason}: {source}"));
+                    longest_reason = longest_reason.max(reason.chars().count());
                 }
             }
         }
     }
-    assert_eq!(longest, 88);
+    assert_eq!(longest, 93);
+    // The longest capability name, 26 characters, with the longest statement on the longest platform
+    // name leaves four characters of the host's 200.
+    assert_eq!(longest_reason, 196);
 }
 
 /// A subject is an application and a version in a label, which the SDK bounds; a build whose pair

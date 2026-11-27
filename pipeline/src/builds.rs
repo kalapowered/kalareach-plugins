@@ -47,7 +47,7 @@
 //! the platform of the build. It says that every case passed, or, for a package on
 //! [`TERMINAL_EVIDENCE_PACKAGES`], which gateway parts did not run and that every other case part
 //! passed, or which of parts 5a and 5b ([`STAND_IN_PARTS`]) passed on the stand-in agent and that
-//! every other part passed; it speaks of the parts of section 12's cases only. Nothing else writes a
+//! every other case part passed; it speaks of the parts of section 12's cases only. Nothing else writes a
 //! result, and a candidate generation, whose builds are named without requiring a record that
 //! qualifies them, carries none ([`Builds::results_for`]).
 
@@ -515,10 +515,10 @@ enum Shown {
     /// Every part passed.
     Every,
     /// These gateway parts did not run and were carried as not applicable, in the order of
-    /// [`GATEWAY_PARTS`]; every other part passed.
+    /// [`GATEWAY_PARTS`]; every other case part passed.
     GatewayNotRun(Vec<&'static str>),
     /// These parts passed on the stand-in route, in the order of [`STAND_IN_PARTS`]; every other
-    /// part passed.
+    /// case part passed.
     StandIn(Vec<&'static str>),
 }
 
@@ -749,7 +749,7 @@ fn statement(shown: &Shown, platform: &str) -> String {
             parts.join(", ")
         ),
         Shown::StandIn(parts) => format!(
-            "{} passed on the stand-in agent; every other part passed on {platform}",
+            "{} passed on the stand-in agent; every other case part passed on {platform}",
             part_names(parts)
         ),
     }

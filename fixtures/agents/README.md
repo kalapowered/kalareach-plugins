@@ -315,9 +315,12 @@ SHA-256 of the record file, so a change to the file, a change of whitespace incl
 signed digest, and the generation that names the build is then built again. For OpenCode, the
 result's statement names each gateway part the record shows not run. For a record whose parts say
 `"route": "stand_in"` and passed, the statement names those parts, as `parts 5a and 5b passed on
-the stand-in agent; every other part passed on <platform>`; a part on that route outside 5a and 5b
-is not a pass and keeps the build out, and a record that shows both gateway parts not run and parts
-on that route keeps it out too, since one statement cannot name both.
+the stand-in agent; every other case part passed on <platform>`; a part on that route outside 5a
+and 5b is not a pass and keeps the build out, and a record that shows both gateway parts not run
+and parts on that route keeps it out too, since one statement cannot name both. A gateway test
+says its route twice, in its own `route` member and in the route its evidence names (`the
+application stand-in` or `the pinned build`); a record whose two marks disagree is not in good
+form, and the repository is refused.
 
 ## Running it
 

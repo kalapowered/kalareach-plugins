@@ -126,12 +126,14 @@ record that qualified it, and has these fields:
   parts may be carried as not applicable, it names each part that did not run and says that every
   other case part passed, as in `5b, 6b not run (no gateway); every other case part passed on
   macos-aarch64`. For a record whose parts 5a and 5b passed on the stand-in route it names them, as
-  in `parts 5a and 5b passed on the stand-in agent; every other part passed on macos-aarch64`. A
+  in `parts 5a and 5b passed on the stand-in agent; every other case part passed on
+  macos-aarch64`. A
   record that shows both gateway parts not run and parts on that route leaves the build out, since
   one statement cannot name both. A statement speaks of the parts of section 12's cases only: a record that
   qualifies a build can carry a typed-path part, 14.03a or 14.03b, as not run, and no statement says
-  whether those parts ran. A statement is at most 90 characters, short enough for a host's reason
-  that quotes it to stay within its 200 character bound.
+  whether those parts ran. A statement is at most 93 characters, short enough for a host's reason
+  that quotes it to stay within its 200 character bound: with the longest capability name and the
+  longest platform name the longest reason is 196.
 
 An entry that names no build carries no result, and still has `"qualification":[]`. A candidate
 generation names builds without requiring a record that qualifies them, so none of its entries

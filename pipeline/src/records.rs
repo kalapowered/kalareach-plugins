@@ -588,6 +588,15 @@ fn check_identifier(
                 "{identifier} part {part}: a part that ran names its command and its runs"
             ));
         }
+        // A gateway test says its route twice, in its own `route` member and in the route its
+        // evidence names; a record whose two marks differ says two things of one part.
+        if (test["route"] == "stand_in")
+            != (test["evidence"]["route"] == "the application stand-in")
+        {
+            problems.push(format!(
+                "{identifier} part {part}: the test's route and its evidence's route disagree"
+            ));
+        }
     }
     for part in parts {
         match seen.get(part) {

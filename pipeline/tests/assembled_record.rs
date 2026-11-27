@@ -227,6 +227,7 @@ fn inputs_for_the_package(ran: &[&str]) -> Value {
             "part": part, "test": test, "outcome": "passed", "reason": null,
             "evidence": {
                 "resources": 1,
+                "route": if STAND_IN.contains(part) { "the application stand-in" } else { "the pinned build" },
                 "log": format!("{SCRATCH}/evidence/codex/{part}.log"),
                 "ran_in": format!("{SCRATCH}/tmp/{part}"),
                 "searched": format!("{HOME}/Library/Caches/builds/codex"),
