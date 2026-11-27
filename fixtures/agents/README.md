@@ -42,10 +42,10 @@ record names each part on its own. The case numbers are the specification's.
 
 Each part the driver runs has a control, and its evidence says whether the control breaks the
 part's property (`breaks_property`). For 2c, 3, 4, 5a, 6a and 14.03a it does: the part passes
-only when its check fails under the control. Part 7 has the same control where a second process
-runs. Where the agent refuses the second process, no second execution exists to test: the agent's
-refusal is the pass, `breaks_property` is false and says why, and the evidence shows the words the
-agent printed. For 2a, 2b and 8a it cannot: only the agent could
+only when its check fails under the control. Part 7 has the same control where a second process runs. Where the agent refuses or ends the second
+start, no second execution exists to test: the part passes when the agent refuses or ends the second
+start and session A is as it was, `breaks_property` is false and says why, and the evidence shows
+the words the agent printed. For 2a, 2b and 8a it cannot: only the agent could
 refuse its own terminal keys, only a typed route could advertise or accept a typed action, and only
 a registration the host issued could change its state. Their controls show instead that the same
 connection's accepted path works, and the evidence says why no breaking control ran.
@@ -69,8 +69,9 @@ and what would change it.
 All thirteen parts of the Codex package run through the gateway driver,
 `tests/e2e/agents/tests/gateway.rs` and its staged modules in the core repository, and their record
 entries name the file that holds each test as their source. The driver installs and guards the
-Codex package alone, so parts 5b, 6b and 8b of any other package wait, as before, and the other
-parts of the other packages run through `cases.rs`. Parts 5a and 5b have no real arm: a kill or restart of the
+Codex package alone, so parts 5b, 6b and 8b of any other package wait, as before. The records of the other packages were
+made through `cases.rs` of earlier cores; at the core that made the Codex record, `cases.rs` holds
+no part's test. Parts 5a and 5b have no real arm: a kill or restart of the
 control daemon cannot be made safe beside a live agent that writes with a person's login. Their
 tests run against the stand-in agent, the runner gives them no build, and their record entries say
 `"route": "stand_in"`. The stand-in route installs the core repository's own Codex package, not
@@ -78,9 +79,8 @@ this tree's. Such an entry shows what the host does after a daemon crash, and sa
 release or of the agent. For this package parts 5a and 5b count from the stand-in route; no other
 part may. A core that gives part 5a an arm against a real agent makes a record that needs part 5a
 against the pinned build. The index's statement for the build names the parts that passed on the
-stand-in agent. `scripts/e2e-agents.sh` at this commit sends the Codex parts other than 5b, 6b and
-8b to `cases.rs` and puts only 5b on the stand-in route; it does not run the Codex parts against
-that core. The Codex record was made by starting the gateway driver's test programs one part at a
+stand-in agent. Against that core, `scripts/e2e-agents.sh` at this commit runs only the Codex parts 5b, 6b and 8b,
+and puts only 5b on the stand-in route. The Codex record was made by starting the gateway driver's test programs one part at a
 time, not by that script.
 
 The upgrade case also has a probe-only run. It runs the commands in the pinned entry's
@@ -109,7 +109,7 @@ common form:
 | `tests[].part` | The part the test is, from the table above |
 | `tests[].source` | Where the test is, prefixed by its repository: `kalareach:` for the driver's tests, `kalareach-plugins:` for a part recorded from the table above |
 | `tests[].needs` | For a part not run, what it needs: a vendor account, a connector binding, a launch registration or draft reads |
-| `tests[].evidence` | What a part observed, its control included; under `detection`, what the host announced about the launch; under `checker_controls`, each check shown a wrong observation and whether it rejected it; for a part with a login, under `account`, the login's kind, where it is kept, whose home the agent ran with and the turns the part started, never an identifier or a value, and, where the agent ran with the person's home, under `person_home`, what the part created there and removed, and every other change it saw; under `installed`, the package the host installed, which must be the one in `run.packages`; and under `provenance`, the PATH the session's shell searched, what each launch ran and how it reached the pinned file, and each executable image seen beneath the agent's sessions, with the SHA-256 of the file whose inode the process maps and where it lies (`build`, `newer build`, `runtime`, `run`, `shell` or `system`), from looks every `sample_interval_ms` from just before each launch until the part's sessions ended, and one more when the part's own steps ended; each look reads every process's mapped image, so an image that changes under the same process is seen, and hashes it through one handle on the mapped file. `pids` lists every process number seen beneath the sessions, and `system_programs_of_another_user` each of the system's own set-user-ID programs seen there (such as `/bin/ps`, which an agent runs), which the kernel will not describe to the person's user, by number and the protected file it runs. A process that started and ended between two looks is not there, and one that ended before its image was read is named under `ended_before_read`. `launches` says how each launch reached the pinned file. For a part the gateway driver ran with a login, `shows` holds what the part itself observed, in fixed words, numbers and shapes (the prompt and its answer, the image and its transfer, the control and whether it broke the property, each launch's detection, the order of queued and steering prompts, the process images of the upgrade part, the second process and the agent's refusal of it in part 7); `keys` the check of the login's variable; `person_files.trees` the entry count of the agent's directory in the person's home before and after, and whether it changed; and `turns` how the agent's record counts the turns. A text that is not the driver's fixed words, the build list's, or a shape the driver makes reads `<not published>` |
+| `tests[].evidence` | What a part observed, its control included; under `detection`, what the host announced about the launch; under `checker_controls`, each check shown a wrong observation and whether it rejected it; for a part with a login, under `account`, the login's kind, where it is kept, whose home the agent ran with and the turns the part started, never an identifier or a value, and, where the agent ran with the person's home, under `person_home`, what the part created there and removed, and every other change it saw; under `installed`, the package the host installed, which must be the one in `run.packages`; and under `provenance`, the PATH the session's shell searched, what each launch ran and how it reached the pinned file, and each executable image seen beneath the agent's sessions, with the SHA-256 of the file whose inode the process maps and where it lies (`build`, `newer build`, `runtime`, `run`, `shell` or `system`), from looks every `sample_interval_ms` from just before each launch until the part's sessions ended, and one more when the part's own steps ended; each look reads every process's mapped image, so an image that changes under the same process is seen, and hashes it through one handle on the mapped file. `pids` lists every process number seen beneath the sessions, and `system_programs_of_another_user` each of the system's own set-user-ID programs seen there (such as `/bin/ps`, which an agent runs), which the kernel will not describe to the person's user, by number and the protected file it runs. A process that started and ended between two looks is not there, and one that ended before its image was read is named under `ended_before_read`. `launches` says how each launch reached the pinned file. For a part the gateway driver ran with a login, `shows` holds what the part itself observed, in fixed words, numbers and shapes (the prompt and its answer, the image and its transfer, the control and whether it broke the property, each launch's detection, the order of queued and steering prompts, whether each process of the upgrade part kept its own image, the second process and the agent's refusal of it in part 7); `keys` the check of the login's variable; `person_files.trees` the entry count of the agent's directory in the person's home before and after, and whether it changed; and `turns` how the agent's record counts the turns. A text that is not the driver's fixed words, the build list's, or a shape the driver makes reads `<not published>` |
 | `tests[].condition` | On a part a vendor gate held: `{gate, observed, fallback}`, where `observed` is `untested` or `unavailable` and `fallback` names the test of the same record that ran the path used instead. The gated part stays `not_run`; the fallback carries its own outcome |
 | `attachment_paths[]` | The attachment path each operation declares: every action whose effect carries a prompt or an attachment, then the terminal route; `declared` is `typed_submission`, `verified_composer_insertion`, `terminal_draft_path`, or `null` for nothing declared, and `package_digest` is the manifest digest the declaration was read from |
 
@@ -220,12 +220,18 @@ call or answer without an identifier, or an answer tied to no call leaves the co
 fails the part. Since one call of a tool that runs code can ask more than once whatever its text
 holds, part 3 also requires that the part refused nothing from its prompt to the end of its
 control: any request besides the one it answers reaches a dialog, which the part refuses and
-records, and that fails the part. `fork` gives the arguments that start a conversation of its own
-from a saved one, where the agent has such a command. `resume_refused` gives the texts the agent
-shows when it refuses to resume a conversation another process holds. The second-process part
-passes on that refusal, since no second execution exists to merge, and shows the refusal. Where
-the resume arguments themselves start a new conversation from the saved one, the part says
-`resume_forks` and did not show two processes on one conversation's identifier. The
+records, and that fails the part. `fork` gives the arguments that start a conversation of its own from a saved one, where the agent
+has such a command. `resume_refused` gives the texts the agent shows when it refuses to resume a
+conversation another process holds, so that its start reaches no composer; a start that reaches no
+composer and shows none of them is an end, not a refusal. `commands` gives the agent's own slash
+commands that a driver sends by what they do: `fork` copies the conversation into a thread of its
+own, `new` starts a new conversation, and `quit` ends the agent. `draft` gives the texts the screen
+shows while the agent's start is still a draft, with its composer already on the screen, where what
+is typed at the composer would be dropped or moved; a composer drawn while one of them counts is not
+yet one a prompt can be typed at. `image_line` marks the line of the agent's conversation file that
+records an image given to the agent, so that the part reads the image the agent received from it.
+The second-process part passes when the agent refuses or ends the second start and session A is as
+it was: no second execution exists to merge, and the part shows what the agent printed. The
 composer waits for a prompt while the screen shows `composer` and not `busy`. While a part's own
 steps run, the probes among them, a thread of its own reads the files no part may change, those
 the person's own programs also write, and those only appended to (for their earlier lines), every
