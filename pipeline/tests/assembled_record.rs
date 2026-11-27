@@ -1179,6 +1179,111 @@ fn part_4_publishes_the_protocols_code_of_the_refusal_and_not_the_name_written()
     }
 }
 
+/// What part 4's stale input says of who turned it away, as the driver's newer shape writes it.
+const TURNED_AWAY_BY: &str =
+    "the host, on a lane opened for the old attachment on the new connection";
+
+/// Part 4's stale input, in the driver's newer shape, publishes who turned it away as the driver's
+/// own words and the path that answered as its two words, never the text that follows the path.
+/// Any other words read `<not published>`.
+#[test]
+fn part_4_publishes_the_path_that_turned_the_stale_input_away_and_no_text_after_it() {
+    let lane = "the lane path answered";
+    let serial = "the serial path answered";
+    let private = format!("the host refused the frame: {HOME}/.codex/{FREE_WORDS} {INSTANCE}");
+    for (answered, kept) in [
+        (
+            format!("{lane}: the host ended the stream before its first word"),
+            lane,
+        ),
+        (format!("{serial}: {private}"), serial),
+        (lane.to_owned(), lane),
+        (serial.to_owned(), serial),
+        (format!("{lane}:"), NOT_PUBLISHED),
+        (format!("{lane} : {private}"), NOT_PUBLISHED),
+        (format!("the host answered: {private}"), NOT_PUBLISHED),
+        (private.clone(), NOT_PUBLISHED),
+        (String::new(), NOT_PUBLISHED),
+    ] {
+        let record = record_with(
+            "4",
+            &[(
+                "/shows/stale_input",
+                json!({"turned_away_by": TURNED_AWAY_BY, "answered": answered}),
+            )],
+        );
+        assert_eq!(
+            test_of(&record, "4")["evidence"]["shows"]["stale_input"],
+            json!({"turned_away_by": TURNED_AWAY_BY, "answered": kept}),
+            "{answered}"
+        );
+        assert_names_none_of(&record, &[FREE_WORDS, INSTANCE], &answered);
+    }
+    let record = record_with(
+        "4",
+        &[(
+            "/shows/stale_input",
+            json!({"turned_away_by": private, "answered": lane}),
+        )],
+    );
+    assert_eq!(
+        test_of(&record, "4")["evidence"]["shows"]["stale_input"],
+        json!({"turned_away_by": NOT_PUBLISHED, "answered": lane})
+    );
+    assert_names_none_of(&record, &[FREE_WORDS, INSTANCE], "turned_away_by");
+}
+
+/// Part 4's stale input is in one of two shapes, the older one a committed record holds or the
+/// newer one: a row that mixes them, or holds a member that neither shape names, is refused by the
+/// member's name and not published, with none of the row's values said.
+#[test]
+fn part_4_refuses_a_stale_input_that_mixes_the_two_shapes_or_holds_a_member_neither_names() {
+    let lane = "the lane path answered";
+    let odd = format!("{HOME}/.codex/{FREE_WORDS}");
+    for (stale_input, named) in [
+        (
+            json!({"refused_with": "AmbiguousAttachment", "turned_away_by": TURNED_AWAY_BY}),
+            "stale_input",
+        ),
+        (
+            json!({"refused_with": "AmbiguousAttachment", "answered": lane}),
+            "stale_input",
+        ),
+        (
+            json!({"detail": FREE_WORDS, "turned_away_by": TURNED_AWAY_BY, "answered": lane}),
+            "stale_input",
+        ),
+        (
+            json!({"turned_away_by": TURNED_AWAY_BY, "answered": lane, "reason_text": FREE_WORDS}),
+            "reason_text",
+        ),
+        (
+            json!({"refused_with": "AmbiguousAttachment", "detail": FREE_WORDS, "also": FREE_WORDS}),
+            "also",
+        ),
+        (
+            json!({"turned_away_by": TURNED_AWAY_BY, odd.as_str(): FREE_WORDS}),
+            "stale_input",
+        ),
+    ] {
+        let inputs = staged_inputs(&["4"], |_, evidence| {
+            put(evidence, "/shows/stale_input", stale_input.clone());
+        });
+        let output = run_assembler(&inputs);
+        let said = String::from_utf8_lossy(&output.stderr);
+        assert!(
+            !output.status.success(),
+            "{stale_input} is published: {}",
+            String::from_utf8_lossy(&output.stdout).len()
+        );
+        assert!(output.stdout.is_empty(), "a refused row prints no record");
+        assert!(said.contains(named), "the refusal names {named}: {said}");
+        for value in [FREE_WORDS, HOME, "/.codex/"] {
+            assert!(!said.contains(value), "the refusal says {value}: {said}");
+        }
+    }
+}
+
 /// A moved work directory that names a path is not published: the one verdict the driver writes
 /// when nothing moved stands, and any other text of the member reads `<not published>`.
 #[test]

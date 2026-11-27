@@ -420,7 +420,15 @@ fn spoiled(record: &Value, entry: &Value, word: &str) -> Value {
                 fields
                     .iter_mut()
                     .filter(|(key, _)| key.as_str() != "servers_switched_off")
-                    .for_each(|(_, item)| spoil(item, word));
+                    .for_each(|(key, item)| match item {
+                        // Part 4's stale input is refused, not published, when it holds a member
+                        // that neither of its two shapes names, so it is given no member of a
+                        // word here; `assembled_record.rs` holds the case of that refusal.
+                        Value::Object(inner) if key == "stale_input" => {
+                            inner.values_mut().for_each(|item| spoil(item, word));
+                        }
+                        _ => spoil(item, word),
+                    });
                 fields.insert(word.to_owned(), Value::String(word.to_owned()));
             }
             _ => {}

@@ -228,7 +228,11 @@ def sets: {
   capability_states: ["qualified_available", "version_qualified", "missing_installation", "permission_required", "incompatible", "temporarily_unavailable", "not_tested"],
   resume_outcomes: ["refused", "merged", "forked", "ended"],
   moved_work: ["none beside the run"],
-  watched_directories: ["~/.codex"]
+  watched_directories: ["~/.codex"],
+  # Part 4's stale input (stale_input_schema): the driver's words for who turned it away, and the two
+  # paths by which the host answers, whose words begin its answer.
+  stale_turned_away: ["the host, on a lane opened for the old attachment on the new connection"],
+  stale_answers: ["the lane path answered", "the serial path answered"]
 };
 
 # The regular expression a build list path stands for: "{config}" is a directory of the run's own,
@@ -363,6 +367,12 @@ def valid($v; $c):
       | [sets.error_codes[] | select(. == $name or host_name_of_code == $name)]
       | select(length == 1)
       | .[0]
+    elif $v == "path_answered" then
+      select(type == "string")
+      | . as $text
+      | [sets.stale_answers[] | . as $words | select($words == $text or ($text | startswith($words + ": ")))]
+      | select(length == 1)
+      | .[0]
     elif $v == "capability_state" then
       select(type == "array" and length == 2 and all(.[]; type == "string")
              and (.[0] as $id | any($c.grants[]; ("plugin." + . + "/1") == $id))
@@ -394,6 +404,27 @@ def code_schema: {
 # The marker that a value is left out of its object or array.
 def omitted: {"omitted": true};
 
+# What part 4 says of the old attachment's next input, which the host turned away, in the two shapes
+# the driver has written it. The older one is `refused_with` (the error the call was refused with,
+# published as its code) and `detail` (the host's text, never published). The newer one is
+# `turned_away_by` (the driver's own words) and `answered` (the path that answered and then the
+# host's text, of which only the path's words are published). A committed record holds the older
+# shape, and the writer applied to every committed record must change none of them: take the older
+# shape out when no committed record holds it. A row that mixes the shapes, or holds a member that
+# neither names, is refused by the member's name: it is never published and never dropped unmarked.
+def stale_input_schema: {refused_with: "code_named", turned_away_by: "in:stale_turned_away", answered: "path_answered"};
+def stale_input_older: ["refused_with", "detail"];
+def stale_input_newer: ["turned_away_by", "answered"];
+def stale_input_checked:
+  keys_unsorted as $names
+  | [$names[] | select(IN(stale_input_older[]) | not) | select(IN(stale_input_newer[]) | not)] as $unknown
+  | if ($unknown | length) > 0 then
+      error("record-redaction: part 4's stale_input holds a member that neither shape names: "
+            + ($unknown | map(if test("^[a-z][a-z0-9_]{0,39}$") then . else "<a name of another shape>" end) | join(", ")))
+    elif any($names[]; IN(stale_input_older[])) and any($names[]; IN(stale_input_newer[])) then
+      error("record-redaction: part 4's stale_input mixes the older shape with the newer: " + ($names | join(", ")))
+    else . end;
+
 # The input as the schema says: a schema that is a string names a validator (a trailing "?" leaves
 # a value that is not valid out instead of marking it "<not published>"), one that is an array holds
 # the schema of every element, and one that is an object holds the schema of each key it names,
@@ -407,6 +438,8 @@ def project($schema; $c):
        | project(code_schema; $c)]
       | reduce .[] as $code ([]; if any(.[]; . == $code) then . else . + [$code] end)
     else not_published end
+  elif $schema == "stale_input" then
+    if type == "object" then stale_input_checked | project(stale_input_schema; $c) else not_published end
   elif ($schema | type) == "string" then
     . as $value
     | ($schema | endswith("?")) as $optional
@@ -623,7 +656,7 @@ def shows_schemas: {
       finished_replies: "number"
     },
     markers: {reply_ends: "mark_end"},
-    stale_input: {refused_with: "code_named"}
+    stale_input: "stale_input"
   }),
   "6b": {
     first_process_image_unchanged: "bool", fresh_approval_interpreted_by_the_pinned_table: "bool",
