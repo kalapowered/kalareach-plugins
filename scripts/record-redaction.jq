@@ -993,7 +993,9 @@ def assemble_record($package; $application; $version; $started; $finished; $evid
       + [{operation: "terminal", declared: null, source: "plugin.json", package_digest: $manifest_digest}]),
     failures_outside_identifiers: (if $own_home_error == "" then [] else
       [{test: "kr-e2e-agents --test cases a_session_started_with_a_persons_own_home_keeps_their_login_keychain_as_its_default",
-        source: "kalareach:tests/e2e/agents/tests/cases.rs", step: 1, reason: $own_home_error}] end),
+        source: "kalareach:tests/e2e/agents/tests/cases.rs",
+        step: ($steps | map(select(.group == "own-home") | .number) | first),
+        reason: $own_home_error}] end),
     known_differences: [],
     problems: [],
     warnings: [],

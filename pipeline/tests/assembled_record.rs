@@ -328,6 +328,35 @@ fn a_stand_in_part_with_no_result_line_leaves_the_record_in_the_form_records_are
     );
 }
 
+/// A failed own-home check is named by the number of its own step, wherever the run put it.
+#[test]
+fn a_failed_own_home_check_is_named_by_its_own_step() {
+    let mut inputs = inputs_for_the_package(&["2a", "2b"]);
+    let steps = inputs["steps"].as_array_mut().expect("steps");
+    let mut own_home = steps.remove(0);
+    for (index, step) in steps.iter_mut().enumerate() {
+        step["number"] = json!(index + 1);
+    }
+    own_home["number"] = json!(steps.len() + 1);
+    own_home["exit"] = json!(1);
+    own_home["error"] = json!("the session named no login keychain");
+    let number = own_home["number"].clone();
+    steps.push(own_home);
+    inputs["own_home"] = json!({});
+    inputs["own_home_error"] = json!("the session named no login keychain");
+    let record = assembled(&inputs);
+    let failures = record["failures_outside_identifiers"]
+        .as_array()
+        .expect("failures outside the identifiers");
+    assert_eq!(failures.len(), 1);
+    assert_eq!(failures[0]["step"], number);
+    let platform = records::Platform::parse("macos-aarch64").expect("a platform");
+    assert_eq!(
+        records::form_problems(&record, &platform),
+        Vec::<String>::new()
+    );
+}
+
 /// An assembled record is what the record's writer publishes: the writer, applied to it again,
 /// changes nothing, and no text of it names the run's account, its home or the folders it ran in.
 #[test]
