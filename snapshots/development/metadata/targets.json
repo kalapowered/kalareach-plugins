@@ -2,7 +2,7 @@
   "signatures": [
     {
       "keyid": "5547449f217effa345d4137e813ec466c94b64323476e0cab31e9f7598bb0361",
-      "sig": "800bc3ebc012ab928d7c88b33eb11b9a6f3a694d00bb42f80dabaf63483efd5fe25d98de1326e2951b536b089a927cd05b552bd613607bb183e98f9b87f7b40c"
+      "sig": "1f384b597b0677e92a511c881ded371c135760c511db92d9af8e03a7e85c350a0e18f2bb101b61995192192d490e13e84667443192eede3b4cca671fcfa8170a"
     }
   ],
   "signed": {
@@ -16,9 +16,9 @@
     "targets": {
       "index.json": {
         "hashes": {
-          "sha256": "13f1ac5a921c666f132a0d606e06ed6700503711bd6c1a61632d1b7b01e7e8d0"
+          "sha256": "60a68d6f4417d22518828ee4d85fca910bd7036e1527d49ab698da2e88a8b69a"
         },
-        "length": 26830
+        "length": 26991
       },
       "packages/kalareach/claude-code/0.5.0/README.md": {
         "hashes": {
