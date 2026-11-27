@@ -111,29 +111,36 @@ record that qualified it, and has these fields:
 - `subject` is the build's application and version, such as `claude-code 2.1.278`;
 - `state` is `version_qualified` and `source` is `signed_record`. The result says that the version
   was qualified. It does not say that a host has been checked, and it grants nothing;
-- `profile_digest` is the SHA-256 of the record file's bytes, as `sha256sum` prints it. A change to
-  the file, a change of whitespace included, gives a new digest;
+- `profile_digest` is the SHA-256 of the record file's bytes as committed, which
+  `git show <commit>:<path> | sha256sum` prints. A change to the file, a change of whitespace
+  included, gives a new digest;
 - `statement` names the platform of the build and says what the record shows. For a build whose
-  every part passed it reads `every case of the version qualification passed on macos-aarch64`.
-  For OpenCode, whose gateway parts may be carried as not applicable, it names each part that did
-  not run and says that every other part passed, as in
-  `5b, 6b not run (no gateway); every other part passed on macos-aarch64`. A statement is at most 75
-  characters, short enough for a host's reason that quotes it to stay within its 200 character bound.
+  every part of section 12's cases passed it reads
+  `every case of the version qualification passed on macos-aarch64`. For OpenCode, whose gateway
+  parts may be carried as not applicable, it names each part that did not run and says that every
+  other case part passed, as in `5b, 6b not run (no gateway); every other case part passed on
+  macos-aarch64`. A statement speaks of the parts of section 12's cases only: a record that
+  qualifies a build can carry a typed-path part, 14.03a or 14.03b, as not run, and no statement says
+  whether those parts ran. A statement is at most 80 characters, short enough for a host's reason
+  that quotes it to stay within its 200 character bound.
 
 An entry that names no build carries no result, and still has `"qualification":[]`. A candidate
-generation names builds that no record qualifies, so none of its entries carries a result either.
-A release that declares no capability has nothing a result could state; the pipeline refuses the
-generation that names a build of it.
+generation names builds without requiring a record that qualifies them, so none of its entries
+carries a result either. A release that declares no capability has nothing a result could state,
+so the loader leaves a build of it out and says why, and `validate` prints that reason; a
+candidate generation, which carries no result, still names it. Independently, `build` and `verify`
+refuse any other generation whose entry names a build and declares no capability.
 
 What a reader of a generation can verify: the signature over the index, which covers the results;
 that every entry's results agree with its builds, which `build` checks before it signs and `verify`
 checks again; that each `profile_digest` equals the SHA-256 of
-`fixtures/agents/<publisher>/<plugin>/<build version>/<platform>.json` at the commit the generation
-was built from; and, by running `validate` at that commit, that the build qualifies. A generation
-does not record that commit. For the generation the core repository bundles, its
-`bundled-plugins.lock` names it (`source.commit`); for another, a reader rebuilds the generation at a
-commit and compares. A result does not show that the run was honest, and the digest binds the
-result to the bytes of the record, not to the truth of them.
+`fixtures/agents/<publisher>/<plugin>/<build version>/<platform>.json` as committed at the commit
+the generation was built from (`git show <commit>:<path> | sha256sum`); and, by running `validate`
+at that commit, that the build qualifies. A generation does not record that commit. For the
+generation the core repository bundles, its `bundled-plugins.lock` names it (`source.commit`); for
+another, a reader rebuilds the generation at a commit and compares. A result does not show that
+the run was honest, and the digest binds the result to the bytes of the record, not to the truth of
+them.
 
 The builds are signed with the index and kept apart from the package's bytes, so a generation adds or
 withdraws a build without a new package. A build is added when its record newly qualifies, and
@@ -149,11 +156,12 @@ each executable. A generation that breaks it is refused, naming the entry, in th
 After the builds, `build` holds each entry's results to its builds, and `verify` does the same:
 results only with builds, and builds only with results. An entry that names builds declares a
 capability and carries exactly one result for each capability of each build, in the order above,
-with the identifier, version, subject, state, source and statement the pipeline writes; the
-statement must name the platform that the index gives the build. An entry that names no build carries
-no result, and a generation signed as a candidate carries none at all. A generation that breaks it is
-refused, naming the entry and the result. The digest is checked for its form, since the index does
-not hold the record.
+with the identifier, version, subject, state and source the pipeline writes and a statement of one
+of the eight forms the pipeline writes, naming the platform that the index gives the build. The
+index does not say which package may state which form, so a gateway form passes for any package.
+An entry that names no build carries no result, and a generation signed as a candidate carries none
+at all. A generation that breaks it is refused, naming the entry, and the result where one result
+is at fault. The digest is checked for its form, since the index does not hold the record.
 
 ## The generation
 
